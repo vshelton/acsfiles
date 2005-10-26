@@ -1,0 +1,11 @@
+dnl Pre-process with m4 instead of cpp: xrdb -cpp m4 .Xresources
+
+! XTerm-specific stuff
+include(XTerm.ad)
+
+! DDD
+  Ddd*separateSourceWindow: false
+	   Ddd*editCommand: gnuclient +@LINE@ @FILE@
+
+! Emacs stuff
+include(Emacs.ad)

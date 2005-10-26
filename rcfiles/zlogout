@@ -1,0 +1,21 @@
+
+case $TTY in
+(/dev/tty1|/dev/vc/1|/dev/conin)
+  [[ "$HOMESYSTEM" = ${HOST%%.*} ]] && fetchmail -q
+  unsetopt login
+  exit 0			# Don't save history on console shells
+  ;;
+esac
+
+# Save a record of this session
+outfile=$HOME/.hist/$(date '+%Y-%m-%d-%H%M').${HOST%%.*}
+[[ -e $outfile ]] && chmod 600 $outfile
+fc -nldf -$HISTSIZE | trim_extra_history >> $outfile
+chmod 400 $outfile
+[[ $UID = 0 ]] && chmod 440 $outfile
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

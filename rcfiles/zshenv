@@ -1,0 +1,74 @@
+
+# Order of execution for zsh startup:
+# 1. .zshenv - Always, unless -f is specified
+# 2. .zprofile - Only if login shell
+# 3. .zshrc - Only for interactive shells
+# 4. .zlogin - Only if login shell
+
+# .zshenv sets up the runtime path
+
+# Source a system-specific version of the specified rc file
+function system_specific {
+  # $1 = name of the startup file, ie .zshrc, .zshenv, etc
+  # $2 = suffix, ie -pre or -post
+  local this_rcpath=${ZDOTDIR:-~}/$1.${HOST%%.*}$2
+  [[ -f $this_rcpath ]] && . $this_rcpath
+}
+
+# Resolve a directory name to a name containing no symlinks
+function abspath {
+  cd $1 >& /dev/null || return
+  pwd -r
+  cd - >& /dev/null
+}
+
+# Set up common environment
+# This should be common for all the nodes within a network.
+# USRLOCAL is the destination hierarchy for locally-built packages
+# SRCROOT is the root of source hierarchy for locally-built packages
+# BLDROOT is the root of the build hierarchy for locally-built packages
+# ZIPROOT is the directory where tarfiles live
+sysprefix=$($HOME/bin/sysprefix)	# sysprefix is an OS-specific component
+system_specific .zshenv -pre
+
+# If nothing was specified, we'll default to the appropriate
+# settings for zion, my home computer
+export USRLOCAL=${USRLOCAL:-/usr/local}
+export SRCROOT=${SRCROOT:-/ide/src}
+export BLDROOT=${BLDROOT:-/ide/build}
+export ZIPROOT=${ZIPROOT:-/ide/zip}
+
+export HOMESYSTEM=zion
+export MANPATH=$USRLOCAL/man:/usr/X11R6/man:/usr/share/man
+export LC_COLLATE=C
+unset LANG
+unset LC_TIME
+
+path=(~/bin $USRLOCAL/bin /usr/X11R6/bin /bin /usr/bin /etc)
+
+# Define my functions. Some are used interactively and some
+# are used within scripts, so it's best to define the whole lot here.
+fpath=(~/lib/zsh-functions $fpath)
+autoload ${$(zcompile -t $fpath[1].zwc)[6,-1]}
+
+# Source a system-specific .zshenv
+system_specific .zshenv -post
+
+# Clean up paths: remove trailing slashes and non-existant directories
+setopt EXTENDED_GLOB
+cdpath=($^cdpath(N))
+cdpath=(${cdpath%%/##})
+manpath=($^manpath(N))
+manpath=(${manpath%%/##})
+path=($^path(N))
+path=(${path%%/##})
+
+# Under cygwin, for some reason typeset -U only works for the
+# colon-separated versions of the variables, not the array versions
+typeset -U CDPATH FPATH MANPATH PATH
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

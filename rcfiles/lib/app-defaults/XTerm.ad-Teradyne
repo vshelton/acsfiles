@@ -1,0 +1,53 @@
+#include "fonts.ad"
+
+! XTerm-specific stuff
+	  XTerm*background: PapayaWhip
+	   XTerm*charClass: 33:48,37:48,45-47:48,64:48
+	  XTerm*cutNewline: false
+XTerm*cutToBeginningOfLine: false
+       XTerm*eightBitInput: true
+	  XTerm*jumpScroll: on
+	  XTerm*loginShell: true
+	XTerm*pointerColor: maroon
+	XTerm*pointerShape: left_ptr
+	   XTerm*saveLines: 1000
+	   XTerm*scrollBar: on
+	  XTerm*tekInhibit: true
+	    XTerm*ttyModes: erase ^h kill ^u intr ^c
+	  XTerm*visualBell: true
+      XTerm*vt100.boldFont: LUCIDA_BOLD
+	  XTerm*vt100.font: LUCIDA
+!     XTerm*vt100.geometry: 100x40
+      XTerm*vt100.geometry: 85x25
+
+  XTerm*VT100.Translations: #override\n\
+	  <KeyPress>Prior : scroll-back(1,page)\n\
+	   <KeyPress>Next : scroll-forw(1,page)
+
+	    zion*iconTitle: zion
+	     	zion*title: zion
+       zion*vt100.geometry: 105x40+0-46
+	    root*iconTitle: root
+		root*title: root
+       root*vt100.geometry: 80x40+400-2
+	   root*background: LightGoldenrodYellow
+	   root*foreground: red
+	persona*background: MistyRose1
+     denver*vt100.geometry: 95x35
+
+! New aterm resources
+	    Aterm*geometry: 100x40
+		Aterm*font: LUCIDA
+	    Aterm*boldFont: LUCIDA_BOLD
+	   Aterm*saveLines: 4000
+	   Aterm*scrollBar: true
+	    Aterm*termName: xterm-color
+
+! See also ~/.kde/share/config/kvtrc
+	     Kvt*saveLines: 4000
+	    Kvt*loginShell: true
+
+! When using aterm
+!	  mithril*geometry: 105x40+5-100
+!	  mithril*iconName: mithril
+!	     root*geometry: 80x40+400-2

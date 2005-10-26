@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# denver cron job
+
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+files=~/Mail/Inc*(m+7)
+#ls -lrt ${~files}
+rm -f ${~files}
+
+# graycliff builds emacs and then zsh.
+# denver build XEmacs 21.4, 21.5 and the XEmacs packages
+#CC=cc CFLAGS='-xO5 -dalign -native -fast' update-zsh
+#CC=cc update-xemacs
+
+#update-emacs
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

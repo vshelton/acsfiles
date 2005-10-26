@@ -1,0 +1,39 @@
+#!/bin/sh
+#
+# Report the directory name of the source directory of the
+# most recent version of the specified package
+#
+# Usage: latest generic_package_name
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+err=1
+if [[ $# -ne 1 ]]; then
+  print -u2 "Usage: $progname <pkg>"
+  print -u2 "\tpkg is a stripped package name, like \"gcc\" or \"make\"."
+  exit $err
+fi
+pkgbase=$1
+
+((err=err+1))
+# Equivalent to: pkgname=$(ls -t $SRCROOT/pkgbase* | head -1)
+pkgname=$(print $SRCROOT/$pkgbase-*(om[1])) 2>/dev/null
+if [[ ! -e $pkgname ]]; then
+  # Try with no hyphen for tcl and tk
+  pkgname=$(print $SRCROOT/$pkgbase*(om[1])) 2>/dev/null
+  if [[ ! -e $pkgname ]]; then
+    print -u2 "$progname: no files with the prefix of \"$pkgbase-\" or \"$pkgbase\" could be found in $SRCROOT."
+    exit $err
+  fi
+fi
+
+((err=err+1))
+if [[ ! -r $pkgname ]]; then
+  print -u2 "$progname: $pkgname is unreadable."
+  exit $err
+fi
+
+print $pkgname

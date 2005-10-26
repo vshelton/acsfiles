@@ -1,0 +1,28 @@
+# Pretty-print the specified lisp files
+
+local force= tmpfile= trashit=
+[[ "$1" = "-f" ]] && force=1 && shift
+
+while [[ $# -gt 0 ]]
+do
+    [[ ! -f $1 ]] && print -u2 "$1 does not exist" && continue
+
+    tmpfile=/tmp/${1##*/}
+    if [[ ! -n "$force" ]] && [[ -f "$tmpfile" ]]
+    then
+	print -u2 -n "$tmpfile exists; over-write? "
+	read trashit
+	case "$trashit" in
+	y*|Y*)
+	    ;;
+	*)
+	    continue
+	    ;;
+	esac
+    fi
+    expand -4 "$1" | fold -90 >"$tmpfile"
+    #psify -lisp -lm36 -tm36 "$tmpfile" | psnup -2 | lp
+    psify -lisp -lm36 -tm36 "$tmpfile" | lp
+    rm "$tmpfile"
+    shift
+done

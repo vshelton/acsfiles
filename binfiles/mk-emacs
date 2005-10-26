@@ -1,0 +1,143 @@
+#!/bin/sh
+
+# Make FSF/GNU emacs either from CVS or from an unpacked tarball.
+# Usage: mk-emacs [version] [cfg_opts],
+# where version is either blank to refer to CVS
+# or the name of a source package already unpacked in $SRCROOT.
+# cfg_opts refers to emacs-specific configuration options, like
+# --without-xim or --with-x-toolkit=lucid
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+usage()
+{
+  print -u2 "usage: $progname [-hb] [emacs_version] [configure_args]
+	-h - Print this help message
+	-b - Do not specify 'bootstrap' target (use prebuilt .elc files)"
+}
+
+zparseopts -D h=help b=bootstrap
+
+if [[ -n $help ]]; then
+  usage
+  exit 0
+fi
+
+make_target=bootstrap
+[[ -n $bootstrap ]] && make_target=
+
+prefix=${USRLOCAL:-/usr/local}		# Architecture-dependent stuff
+share=${USRLOCAL:-/usr/local}		# Architecture-independent stuff
+
+# Default is to build from CVS
+if [[ $# = 0 ]] || [[ $1 == --* ]]; then
+
+  # Copy the sources from CVS to the source hierarchy
+  PROJECT=${PROJECT:-emacs}
+  VERSION=${VERSION:-$(today)}
+  TARGET=${TARGET:-$PROJECT-$VERSION}
+  mk-src $PROJECT
+
+# Target is assumed to be a tarfile already unpacked in $SRCROOT
+else
+  TARGET=$1
+  PROJECT=${1%-????-??-??}
+  shift
+fi
+
+# Set compiler options based on OS version
+case $(uname -a) in
+(SunOS*)
+  CFLAGS=${CFLAGS:--O2 -pipe -ffast-math -fno-exceptions}
+  ;;
+(*i?86*)
+  CFLAGS=${CFLAGS:--Os -malign-double -pipe -ffast-math -march=pentiumpro -mcpu=pentiumpro -fno-exceptions}
+  ;;
+esac
+
+# Set up special compiler options as necessary
+export CPPFLAGS=${CPPFLAGS:-"-I$prefix/include"}
+export LDFLAGS=${LDFLAGS:-"-L$prefix/lib -R$prefix/lib"}
+
+# Default options to configure.
+datadir="--datadir=$share/share"
+nls="--disable-nls"
+scroll_bars="--without-toolkit-scroll-bars"
+generic_cfg_opts=
+
+# Support options to configure.
+while [[ $# -gt 0 ]]
+do
+  case $1 in
+  (--datadir*)
+    datadir=$1
+    ;;
+  (--*nls)
+    nls=$1
+    ;;
+  (--*toolkit-scroll-bars)
+    scroll_bars=$1
+    ;;
+  (--*)
+    generic_cfg_opts="$generic_cfg_opts $1"
+    ;;
+  esac
+  shift
+done
+
+# Configure a build tree in a new sub-directory of the current directory
+SRCROOT=${SRCROOT:-$share/src}
+
+err=1
+cfg -s -o conf.out $SRCROOT/$TARGET $datadir $nls $scroll_bars ${=generic_cfg_opts}
+if [[ $? -ne 0 ]]; then
+  print -u2 "$progname: could not configure $TARGET."
+  exit $err
+fi
+
+((err=err+1))
+build_dir=$TARGET
+cd $build_dir
+if [[ $? -ne 0 ]]; then
+  print -u2 "$progname: couldn't cd to $build_dir\n"
+  exit $err
+fi
+
+((err=err+1))
+print -n "Building emacs..."
+make -e $make_target >& mk.out
+if [[ $? -ne 0 ]]; then
+  print -u2 "\n$progname: make bootstrap failed.  See $build_dir/mk.out."
+  exit $err
+fi
+
+#((err=err+1))
+#print -n "done.\nRunning tests..."
+#make check >& check.out
+#if [[ $? -ne 0 ]]; then
+#  print -u2 "\n$progname: make check failed.  See $build_dir/check.out."
+#  exit $err
+#fi
+
+print "done.\nInstalling package to $prefix/$TARGET."
+((err=err+1))
+make TAGS install >& inst.out
+if [[ $? -ne 0 ]]; then
+  print -u2 "$progname: make install failed.  See $build_dir/inst.out."
+  exit $err
+fi
+
+# Update the link to the latest emacs version
+emacs_name=$(print $prefix/$TARGET/bin/emacs-*(:t))
+cd $prefix/bin
+rm -f $emacs_name
+ln -s ../$TARGET/bin/$emacs_name
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

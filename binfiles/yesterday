@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Print yesterday's date as yyyy-mm-dd
+date --date=yesterday +'%Y-%m-%d'

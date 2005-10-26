@@ -1,0 +1,8 @@
+#!/usr/local/bin/perl
+
+# Report the total number of bytes of all the files listed
+$total = 0;
+foreach $file (@ARGV) {
+	$total += -s $file;
+}
+print "$total\n";

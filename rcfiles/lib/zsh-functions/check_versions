@@ -1,0 +1,12 @@
+
+# List all the projects that have source directories,
+# but have not been built in either SunOS-5.5 or SunOS-5.8
+
+setopt localoptions extendedglob
+
+cd $SRCROOT
+# Skip gnus and url packages, which are not OS-specific
+for f in *~gnus-????-??-??~url-????-??-??; do
+  ls -d ../build/SunOS-5.{5,8}/$f
+done >/dev/null
+

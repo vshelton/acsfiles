@@ -1,0 +1,5 @@
+# Print the number of files under the current directory
+# newer than the specified file
+new_files=($(find . -type f \( -not -path '*/CVS/*' \) -newer $1)) 2>/dev/null
+print ${#new_files}
+

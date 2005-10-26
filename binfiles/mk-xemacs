@@ -1,0 +1,464 @@
+#!/bin/sh
+
+# Make XEmacs, either from CVS or from a tarball.
+# Usage: mk-xemacs [odmn] version [cfg_opts],
+# where version is either '21.1', '21.4' or '21.5' to refer to CVS,
+# and anything else is assumed to be an already-unpacked
+# source distribution.
+# Options:
+#   -c Build and check, but don't install
+#   -d Build a debug version
+#   -o Build an optimized version
+#   -m Build a mule version
+#   -n Build a normal (non-optimized, non-debug) version
+# cfg_opts refers to XEmacs-specific configuration options, like
+# --with-sound=native or --with-dialogs=motif
+
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+usage() {
+  print -u2 "usage: $progname [-cdhmno] xemacs-version [configure_options]
+         -c - build XEmacs and run \'make check\', but do not install
+         -d - build and install a debug version
+         -h - print this help message
+         -m - build and install a mule version
+         -n - build and install a normal (non-optimized, non-debug) version
+         -o - build and install an optimized version
+         [configure_options] are options to pass to the XEmacs configure
+                             command, e.g. \'--with-dialogs=motif\'"
+}
+
+# Generate compiler flags
+# $1 = "debug" or "optimized"
+function generate_compiler_flags {
+
+  # CFLAGS has the highest priority,
+  # except -g will ALWAYS be specified for debugging
+  OPTIMIZE_FLAGS=$CFLAGS
+
+  DEBUG_FLAGS=
+# Temporary hack until icc understands gcc4
+if [[ $(uname -a) == *i?86* && $CC == *icc ]]; then
+  DEBUG_FLAGS="-cxxlib-gcc=$USRLOCAL/gcc-3.4.4"
+fi
+# End hack  
+  if [[ $1 == *debug* ]]; then
+    DEBUG_FLAGS="$DEBUG_FLAGS -g"
+    OPTIMIZE_FLAGS=${OPTIMIZE_FLAGS:-"-O"}
+    return 0
+  fi
+
+  # Allow CFLAGS to override the generated settings
+  if [[ -z $OPTIMIZE_FLAGS ]]; then
+
+    # Set compiler optimization flags based on OS version and compiler type
+    case $(uname -a) in
+    (SunOS*)
+      case $CC in
+      (*gcc*)
+        OPTIMIZE_FLAGS="-O2 -pipe -ffast-math -fno-exceptions"
+        ;;
+      # SunPro C Compiler?
+      (*)
+        OPTIMIZE_FLAGS="-xO2 -xspace"
+        ;;
+      esac
+      ;;
+    (*i?86*)
+      case $CC in
+      (*gcc*)
+        OPTIMIZE_FLAGS="-Os -malign-double -pipe -ffast-math -march=pentiumpro -mcpu=pentiumpro -fno-exceptions"
+        ;;
+      # Intel C Compiler?
+      (*)
+        # -Os    enable speed optimizations, but disable some optimizations which
+        #        increase code size for small speed benefit
+        # -tpp6  optimize for Pentium(R) Pro, Pentium(R) II and Pentium(R) III processors
+        # -ax<codes> generate code specialized for processors specified by <codes>
+        #            while also generating generic IA-32 code.  <codes> includes
+        #            one or more of the following characters:
+        #     K  Intel Pentium III and compatible Intel processors
+        #     W  Intel Pentium 4 and compatible Intel processors
+        #     N  Intel Pentium 4 and compatible Intel processors
+        #     P  Intel Pentium 4 processors with SSE3 extensions
+        #     B  Intel Pentium M and compatible Intel processors
+        # -x<codes>  generate specialized code to run exclusively on processors
+        #            indicated by <codes> as described above.
+        # Enable and specify the scope of Interprocedural (IP) Optimizations:
+        # -ip     enable single-file IP optimizations (within files)
+        OPTIMIZE_FLAGS="-Os -tpp6 -axK -xK -ip"
+        ;;
+      esac
+      ;;
+    esac
+  fi
+}
+
+# Configure and build XEmacs
+# $1 = Name of target directory
+# $2 = "debug" or "optimize" and/or "mule"
+function cfg_and_build {
+  local TARGET=$1
+  local build_options=
+
+  # Either optimized or debug.  Debug wins if both are specified
+  [[ $2 == *optimized*  ]] && build_options="$cfg_debug_off"
+  [[ $2 == *debug* ]] && build_options="$cfg_debug_on"
+  if [[ $2 == *mule* ]]; then
+    build_options="$build_options $cfg_mule_on"
+  else
+    build_options="$build_options $cfg_mule_off"
+  fi
+    
+  generate_compiler_flags $2
+
+  cfg -s -o conf.out $(relative $SRCROOT/$TARGET) $with_gcc $with_cflags="$DEBUG_FLAGS $OPTIMIZE_FLAGS" ${=with_site_prefixes} $with_infopath $enable_dialogs $enable_widgets $enable_sound $with_package_path $enable_pdump $enable_bignum $with_libs ${=build_options} ${=generic_cfg_opts} ${=debug_options}
+  if [[ $? -ne 0 ]]; then
+    print -u2 "\n$progname: could not configure $TARGET.\n"
+    return 1
+  fi
+
+  build_dir=$TARGET
+  cd $build_dir
+  if [[ $? -ne 0 ]]; then
+    print -u2 "\n$progname: couldn't cd to $build_dir.\n"
+    return 1
+  fi
+
+  # There is a bug in SunOS such that the following construct does
+  # not work in /bin/sh:
+  #   if ! test -f foo; then
+  #     echo no foo
+  #   fi
+  # Unfortunately, this defect is triggered in the pdump generation
+  # code up until approximately 2005-02.  The workaround is to use
+  # /usr/xpg4/bin/sh as the build shell.
+  makeopts=
+  [[ $(uname -a) == SunOS* ]] && makeopts="SHELL=/usr/xpg4/bin/sh -e"
+
+  print -n "Building XEmacs..."
+  make $lib_gcc $makeopts >& mk.out
+  if [[ $? -ne 0 ]]; then
+    print -u2 "\n$progname: make failed.  See $build_dir/mk.out:"
+    _POSIX2_VERSION=199209 tail mk.out >&2
+    print -u2 "\n"
+    cd -
+    return 1
+  fi
+
+  print -n "done.\nRunning tests..."
+  make -k check >& check.out
+  print "done."
+
+  if [[ -n $checkonly ]]; then
+    cd -
+    return 0
+  fi
+
+  print "Installing package to $prefix/$TARGET."
+  make TAGS install >& inst.out
+  if [[ $? -ne 0 ]]; then
+    print -u2 "\n$progname: make install failed.  See $build_dir/inst.out:"
+    _POSIX2_VERSION=199209 tail inst.out >&2
+    print -u2 "\n"
+    cd -
+    return 1
+  fi
+
+  # If the target is being built from a daily snapshot (includes the
+  # string '-YYYY-MM-DD' or '-YYYY-MM-DD-HHMM'), create an executable
+  # script with the version information stripped from it:
+  # TARGET=xemacs-21.2-2000-01-01 -> $prefix/bin/xemacs-21.2
+  stripped_target=
+  for pat in "-20??-??-??" "-20??-??-??-[0-9][0-9][0-9][0-9]" ;
+  do
+    if [[ $TARGET == xemacs-*${~pat} ]]; then
+      stripped_target=${TARGET%${~pat}}
+      break
+    fi
+  done
+  if [[ -n $stripped_target ]]; then
+    print exec "'$TARGET'" '"$@"' > $prefix/bin/$stripped_target
+    chmod 775 $prefix/bin/$stripped_target
+  fi
+  rm $prefix/bin/$TARGET >& /dev/null
+  ln -s xemacs-version $prefix/bin/$TARGET
+  cd - > /dev/null
+}
+
+#
+# Start of main script
+#
+#set -x
+progname=${0:t}
+setopt extended_glob
+
+zparseopts -D c=checkonly d=debug h=help m=mule n=normal o=optimized
+
+if [[ -n $help || $# == 0 ]]; then
+  usage
+  [[ -n $help ]] && exit 0 || exit 1
+fi
+
+# At this point, the version of XEmacs is the first argument.
+# This can either be a version number, like '21.5', in which case
+# the version is fetched from CVS, or a directory name, which must
+# be a directory under $SRCROOT.
+
+# Trim trailing slashes in case the argument is a directory name.
+argv[1]=${1%%/##}
+
+# Set up version-specific options.
+# If the version is to be extracted from CVS,
+# make a copy of the sources now.
+case $1 in
+# 19.16 does not currently work under SunOS-5.8.
+(*19.16*|*20.*)
+  PROJECT=$1
+  TARGET=$PROJECT
+  ;;
+
+# CVS versions of 21.x
+(21.*)  # Spell out PROJECT and VERSION to allow flexibility in over-riding.
+  PROJECT=${PROJECT:-xemacs-$1}
+  VERSION=${VERSION:-$(today)}
+  TARGET=${TARGET:-$PROJECT-$VERSION}
+  mk-src $PROJECT
+  ;;
+
+# Non-CVS versions of 21.x.
+(*21*)
+  TARGET=$1
+  PROJECT=${1%-????-??-??}
+  ;;
+
+(*)
+  print -u2 "$progname: unknown or unsupported revision."
+  exit 1
+  ;;
+esac
+shift
+
+# The default is a non-debug, non-optimized build.
+[[ -z "$optimized" && -z "$debug" && -z "$mule" ]] && normal=1
+
+prefix=${USRLOCAL:-/usr/local}          # Architecture-dependent stuff
+shared_root=${USRLOCAL:-/usr/local}     # Architecture-independent stuff
+
+# Default to gcc if no compiler specified
+export CC=${CC:-gcc}
+
+# Here are the options that are normally specified by this script.
+# The default options are now set up for XEmacss 21.5 with autoconf 2.5
+with_cflags="--with-cflags"
+enable_pdump="--disable-pdump"
+enable_bignum="--enable-bignum=gmp"
+enable_sound="--disable-sound"
+with_site_prefixes="--with-site-prefixes=$USRLOCAL"
+with_infopath="--with-infopath=$USRLOCAL/info"
+with_package_path="--with-package-path=$shared_root/site-packages::$shared_root/xemacs-packages"
+enable_dialogs="--disable-dialogs"
+enable_widgets="--disable-widgets"
+
+# For some reason the need for -lw is not detected on SunOS-5.5.
+# with_libs and lib_gcc are 2 different ways to accomplish the
+# same task: to link against -lw on SunOS-5.5.
+# with_libs is only supported under autoconf 2.5
+with_libs=
+[[ $(uname -a) == SunOS*5.5* ]] && with_libs="--with-libs=-lw"
+lib_gcc=
+
+# Need a way to enable/disable mule for different builds
+cfg_mule_off="--disable-mule"
+cfg_mule_on="--enable-mule --without-xim"
+
+# Need a way to turn optimization and debugging on or off for different builds.
+cfg_debug_off="--with-optimization --disable-debug --disable-assertions --disable-error-checking --with-cflags-warning= --with-cflags-optimization= --with-cflags-debugging= "
+cfg_debug_on="--enable-debug --enable-assertions --enable-memory-usage-stats --with-cflags-optimization= --with-cflags-debugging= "
+
+# Verify that the source directory exists and that there's an
+# executable configure script there.
+if [[ ! -d $SRCROOT/$TARGET ]]; then
+  print -u2 "$progname: source directory $SRCROOT/$TARGET does not exist."
+  exit 1
+fi
+if [[ ! -x $SRCROOT/$TARGET/configure ]]; then
+  print -u2 "$progname: there is no executable configure script in source directory $SRCROOT/$TARGET."
+  exit 1
+fi
+
+# Starting around 2005-03-12, XEmacs 21.5 converted to autoconf 2.59
+# and many configure options changed.
+# Test the version here.
+autoconf2_5=
+cd /tmp                 # Old versions of configure left temp files,
+                        # so change to the /tmp directory.
+$SRCROOT/$TARGET/configure --help | grep -c -- --with-site-prefixes >/dev/null && autoconf2_5=1
+cd -
+
+# If we're not configuring against autoconf 2.5x, fiddle
+# with the configure options.
+if [[ -z $autoconf2_5 ]]; then
+  with_cflags="--cflags"
+  enable_pdump="--pdump=no"
+  enable_bignum="--use-number-lib=gmp"
+  enable_sound="--with-sound=none"
+  with_site_prefixes="--site-includes=$prefix/include --site-libraries=$prefix/lib"
+  with_infopath="--infopath=$USRLOCAL/info"
+  with_package_path="--package-path=$shared_root/site-packages::$shared_root/xemacs-packages"
+  enable_dialogs="--with-dialogs=no"
+  enable_widgets="--with-widgets=no"
+
+  # Here's how to turn mule on or off at build time.
+  cfg_mule_off="--with-mule=no"
+  cfg_mule_on="--with-mule  --without-xim"
+
+  # Here's how to turn debugging on or off at build time.
+  cfg_debug_off="--debug=no --error-checking=none"
+  cfg_debug_on="--debug --error-checking=all"
+
+  # This hack is necessary because under SunOS-5.5 the need for
+  # -lw is not properly detected.  This workaround is not necessary
+  # with autoconf 2.5, where --with-libs serves the same purpose.
+  [[ $(uname -a) == SunOS*5.5* ]] && lib_gcc="lib_gcc=-lw"
+  with_libs=
+
+  case $TARGET in
+  (xemacs-19*)
+    with_infopath=
+    cfg_mule_off=
+    ;&          # Fall through
+  (xemacs-20*)
+    with_package_path=
+    cfg_mule_on="--with-mule"
+    ;&          # Fall through
+  (xemacs-21.1*)
+    enable_pdump=
+    enable_dialogs=
+    enable_widgets=
+    ;&          # Fall through
+  (xemacs-21.4*)
+    enable_bignum=
+    ;;
+  esac
+fi
+
+# This is the catchall for all configuration options that follow
+# the version name and are not directly understood by this script.
+generic_cfg_opts=
+
+# Temporary hack until the new mc alloc works on x86 without pdump
+if [[ $(uname -a) == *i?86* && $TARGET == *21.5* ]]; then
+  generic_cfg_opts=--disable-mc-alloc
+fi
+# End hack
+
+# Any remaining arguments are options to be passed to the
+# XEmacs configure command.
+
+# Insert the value of the envariable XEMACS_CONFIGURE_OPTIONS
+# at the beginning of the remaining argument list.  This
+# will enable us to parse these options and over-ride them
+# with arguments that were explicitly passed to the script.
+if [[ -n $XEMACS_CONFIGURE_OPTIONS ]]; then
+  2=($*)
+  1=(${=XEMACS_CONFIGURE_OPTIONS})
+fi
+
+while [[ $# -gt 0 ]]
+do
+  case $1 in
+  (--compiler=*)
+    CC=${1:s/--compiler=//}
+    ;;
+  (--with-compiler=*)
+    CC=${1:s/--with-compiler=//}
+    ;;
+  (--cflags=*)
+    CFLAGS=$1:s/--cflags=//}
+    ;;
+  (--with-cflags=*)
+    CFLAGS=$1:s/--with-cflags=//}
+    ;;
+  (--*pdump*)
+    # Old style options
+    if [[ -z $autoconf2_5 ]]; then
+      if [[ $1 == *=no || $1 == --without* || $1 == --disable* ]]; then
+        enable_pdump="--pdump=no"
+      else
+        enable_pdump="--pdump"
+      fi
+    # New options
+    else
+      if [[ $1 == *=no || $1 == --without* || $1 == --disable* ]]; then
+        enable_pdump="--disable-pdump"
+      else
+        enable_pdump="--enable-pdump"
+      fi
+    fi
+    ;;
+  (--*bignum*)
+    enable_bignum=$1
+    ;;
+  (--*sound*)
+    enable_sound=$1
+    ;;
+  (--*site-prefix*)
+    with_site_prefixes=$1
+    ;;
+  (--*infopath*)
+    with_infopath=$1
+    ;;
+  (--*package_path*)
+    with_package_path=$1
+    ;;
+  (--*dialogs*)
+    enable_dialogs=$1
+    ;;
+  (--*widgets*)
+    enable_widgets=$1
+    ;;
+  (--with*-libs*)
+    with_libs=$1
+    ;;
+  (--*)
+    generic_cfg_opts="$generic_cfg_opts $1"
+    ;;
+  esac
+  shift
+done
+
+# Configure a build tree in a new sub-directory of the current directory
+SRCROOT=${SRCROOT:-$shared_root/src}
+
+[[ -n $normal ]] && cfg_and_build $TARGET ""
+[[ -n $optimized ]] && cfg_and_build $TARGET optimized
+if [[ -n "$mule" ]]; then
+
+  # Mule support didn't exist until version 20
+  if [[ $TARGET == xemacs-19* ]]; then
+    print -u2 "XEmacs 19 does not support MULE"
+
+  else
+
+    # Make a symlink to the source directory
+    (cd $SRCROOT; [[ ! -e $TARGET-mule ]] && ln -s $TARGET $TARGET-mule)
+
+    cfg_and_build $TARGET-mule mule
+  fi
+fi
+
+if [[ -n "$debug" ]]; then
+
+  # Make a symlink to the source directory
+  (cd $SRCROOT; [[ ! -e $TARGET-debug ]] && ln -s $TARGET $TARGET-debug)
+
+  cfg_and_build "$TARGET-debug" debug
+fi
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

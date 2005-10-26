@@ -1,0 +1,54 @@
+# Make the latest installed version of some package be the default
+
+# usage: new_default <pkg> [directory]
+# e.g. new_default zsh
+# If no directory is specified, the parent of the install prefix
+# (ie, $prefix/.. in autoconf terms) is assumed.
+# See find_install_root for details.
+
+emulate -R zsh
+setopt local_options no_pushd_ignore_dups pushd_silent
+
+local integer verbose=0
+local ipath opt
+
+function usage {
+  print -u2 "usage: $1 [-v] <pkg> [directory]"
+}
+
+while getopts v opt
+do
+  case $opt in
+  (v)
+    verbose=1
+    ;;
+  (?)
+    usage $0
+    return 1
+    ;;
+  esac
+done
+(( OPTIND > 1 )) && shift $(( OPTIND - 1 ))
+
+if (( # != 1 )) && (( # != 2 ))
+then
+  usage $0
+  return 1
+fi
+
+ipath=${2:-$(find_install_root $1)/..}
+(( ? != 0 )) && return $?
+pushd $ipath
+
+(( verbose > 0 )) && command ls -ld $PWD/$1
+link-latest $1
+(( verbose > 0 )) && command ls -ld $PWD/$1
+
+popd
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:
+

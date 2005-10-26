@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# This script launches different version of XEmacs.
+# To use, symbolically link a file to this one, and
+# invoke it by the name of the link.
+
+linkname=`basename $0`
+
+PATH=$USRLOCAL/$linkname/bin:$PATH $USRLOCAL/$linkname/bin/xemacs "$@"

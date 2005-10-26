@@ -1,0 +1,46 @@
+#!/bin/sh
+#
+# Make and install versions of tkman and rman
+# Options:
+#   -u Unpack the sources from tarfiles
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+prefix=${USRLOCAL:-/usr/local}
+jobs=
+unpack=
+
+err=1
+while getopts ":u" opt
+do
+  case $opt in
+  (u)	unpack=-u
+	;;
+  # Unknown option
+  (?)	print -u2 "$progname: invalid option: $argv[$OPTIND]"
+	exit $err
+	;;
+  esac
+done
+
+shift $OPTIND-1			# Skip over options
+
+rmansrc=$(getsource $unpack rman)
+mkdir $rmansrc:t
+pushd $rmansrc:t
+symlink-tree $(relative $rmansrc)
+make
+make BINDIR=$prefix/bin MANDIR=$prefix/man/man1 install
+popd
+
+tkmansrc=$(getsource $unpack tkman)
+mkdir $tkmansrc:t
+cd $tkmansrc:t
+symlink-tree $(relative $tkmansrc)
+make BINDIR=$prefix/bin MANDIR=$prefix/man/man1 WISH=$prefix/bin/wish texinfodir=$prefix/share/infosrc gzgrep="\"zgrep -E\"" mastermen="\"$prefix/man /sup/man /pd/osman /usr/openwin/man /usr/share/man\"" masterbin="\"$prefix/bin /sup/bin /pd/osbin /usr/openwin/bin /usr/bin\"" manprint="{groff -man -Tps -te -l}" catprint=lpr install
+
+perl -p -e "s@/usr/local/bin/wish@$prefix/bin/wish@" <contrib/tkmanclient >$prefix/bin/tkmanclient
+chmod +rx $prefix/bin/tkmanclient

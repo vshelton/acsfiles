@@ -1,0 +1,29 @@
+#!/usr/bin/env perl
+
+# Extract the message ID from each file specified
+
+use warnings;
+
+$progname = "extract-msgid";
+$/ = "";			# Paragraph mode
+
+foreach $filename (@ARGV) {
+    if (!open(MSG, $filename)) {
+	warn "Couldn't open $filename: $!";
+	next;
+    }
+
+    # Read the email header
+    $header = <MSG>;
+
+    # Search for the message ID
+    if ($header !~ m{
+		     message-id:\s*
+		     (.*)	# Extract message id to $1
+		    }xi) {
+	die "$progname: No message id in header:\n$header";
+    }
+    $1 =~ m{<(.*)>};		# Strip off angle brackers
+    print "$filename $1\n";
+    close MSG;
+}

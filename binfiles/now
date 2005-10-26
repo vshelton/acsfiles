@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Print today's date as yyyy-mm-dd-HHMM
+date +'%Y-%m-%d-%H%M'

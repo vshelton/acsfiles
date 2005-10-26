@@ -1,0 +1,5 @@
+# Find files with trailing spaces or tabs
+# Default list of files to search is source and header files
+
+[[ $# -eq 0 ]] && set *.{cc,hh}
+egrep -l '[ 	]$' "$@"

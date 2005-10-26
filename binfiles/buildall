@@ -1,0 +1,297 @@
+#!/bin/sh
+#
+# Build an entire software tree of free software.
+#
+# This script does not bootstrap the full set - it assumes some
+# functionality is already in place.  In particular, this script
+# requires working versions of: zsh, gzip, make, makeinfo, tar
+# and XEmacs.  (XEmacs needs to have the xemacs-base, efs and
+# dired packages installed.)
+# The ordinary way to ensure this is to have a
+# minimally-seeded bootstrap directory apart from the standard
+# build tree, containing all those tools.  You must include that
+# directory in the path after the standard build hierarchy.
+# For example, these tools build and install into $USRLOCAL,
+# so the usual way to invoke this script is as follows:
+#
+#   PATH=$HOME/bin:$USRLOCAL/bin:$HOME/bootstrap/bin:xxx:yyy
+#   buildall -u
+#
+# Usage: buildall [-u] [--general_configuration_options...]
+# Options:
+#   -u Unpack the sources from tarfiles
+#   --general_configure_options to pass to all configure scripts
+#
+# Set the CC and CXX envariables to the C and C++ compilers to use
+# before invoking this script.
+#
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+unpack=
+general_cfg_opts=
+build_prefix=$USRLOCAL/build
+inst_prefix=$USRLOCAL
+
+# Set common package configuration options
+NLS=${NLS-"--disable-nls"}
+
+err=1
+while getopts ":u-:" opt
+do
+  case $opt in
+  (u)	unpack=-u
+	;;
+  (-)	general_cfg_opts="$general_cfg_opts --$OPTARG"
+	;;
+  # Unknown option
+  (?)	print -u2 "$progname: invalid option: $argv[$OPTIND]"
+	exit $err
+	;;
+  esac
+done
+
+shift $OPTIND-1			# Skip over options
+((err=err+1))
+
+mkdir -p $SRCROOT $build_prefix $inst_prefix
+mkdir -p $inst_prefix/{bin,etc,include,info,lib,libexec,man,share,var}
+
+cd $USRLOCAL/build
+
+print Building in $PWD
+print inst_prefix = $inst_prefix
+
+# coreutils can be used by many packages:
+#   xemacs-packages require GNU cp
+pkg=coreutils
+pkgsrc=$(getsource $unpack $pkg)
+bld -ck $(relative $pkgsrc) $NLS ${=general_cfg_opts}
+
+# Special packages, each one handled individually
+# m4 (required by autoconf)
+# m4 doesn't grok --datadir
+pkg=m4
+pkgsrc=$(getsource $unpack $pkg)
+bld -ck $(relative $pkgsrc) $NLS ${=general_cfg_opts}
+
+# autoconf gets installed to a version-specific subdirectory,
+# (i.e. autoconf-2.59) and linked into the main tree.
+pkg=autoconf
+pkgsrc=$(getsource $unpack $pkg)
+bld -sck $(relative $pkgsrc) $NLS ${=general_cfg_opts}
+linkup $pkgsrc:t
+
+# automake
+pkg=automake
+pkgsrc=$(getsource $unpack $pkg)
+bld -ck $(relative $pkgsrc) $NLS ${=general_cfg_opts}
+
+# Xpm, required by emacs and XEmacs
+mk-xpm $unpack
+
+# zlib and libpng, required by XEmacs
+mk-png $unpack
+
+# jpeg is needed by ghostscript and XEmacs
+mk-jpeg $unpack
+
+# tiff is used by XEmacs
+mk-tiff $unpack
+
+# perl is needed by texi2html
+mk-perl $unpack
+
+# texi2html, now needed by the XEmacs packages
+pkg=texi2html
+pkgsrc=$(getsource $unpack $pkg)
+bld -ck $(relative $pkgsrc) $NLS ${=general_cfg_opts}
+
+# XEmacs and gnus
+# This requires a working XEmacs
+pkgs="bbdb c-support calc cc-mode debug dired ecb ecrypto edebug ediff edit-utils efs eieio elib eshell eterm frame-icon general-docs gnus ibuffer igrep ispell mail-lib mailcrypt mmm-mode net-utils os-utils pc pcl-cvs pcomplete perl-modes prog-modes semantic sh-script speedbar texinfo text-modes time vc view-process xemacs-base xemacs-devel" mk-xp
+(
+  cd $inst_prefix
+  ln -s xemacs-packages-$(today) xemacs-packages
+  mkdir site-packages
+)
+
+with_gcc="--with-gcc=no"
+[[ -z "$CC"
+  || $CC == *gcc*
+  || $($CC --version 2>/dev/null) == *GCC* ]] && with_gcc=
+
+# Use a high degree of optimization for building XEmacs and emacs
+if [[ -z "$EMACS_CFLAGS" ]]; then
+  EMACS_CFLAGS=-O				# -O is the default CFLAGS
+  [[ -z "$with_gcc" ]] && EMACS_CFLAGS=-Os	# -Os is the default for gcc
+  case $(uname -s) in
+    (SunOS*)
+      # Set a Solaris-specific default CFLAGS
+      [[ -n "$with_gcc" ]] && EMACS_CFLAGS=-xO4
+    ;;
+  esac
+fi
+
+CC=$CC CFLAGS=$EMACS_CFLAGS mk-xemacs -odm 21.4 $with_gcc
+linkup xemacs-21.4-$(today)
+cp ~/bin/xemacs-version $inst_prefix/bin
+
+# emacs
+# 21.2 doesn't build on SunOS-5.8, so we'll just build a version from CVS
+build_emacs_21_2_plus=t
+if [[ -n $build_emacs_21_2_plus ]]; then
+  pkg=emacs
+  pkgsrc=$(getsource $unpack $pkg)
+  # Install will fail for emacs-21.2
+  mk-emacs $pkgsrc:t
+  # This workaround is specific to emacs-21.2
+  if [[ $? -ne 0 ]] && [[ $pkgsrc:t == "emacs-21.2" ]]; then
+    ln -s $build_prefix/${pkgsrc:t}/lisp/Makefile $pkgsrc/lisp
+    (cd $build_prefix/${pkgsrc:t}; make install)
+  fi
+fi
+mk-emacs
+
+# yodl is needed by zsh and Python is needed by yodl
+pkg=Python
+pkgsrc=$(getsource $unpack $pkg)
+bld -ck $(relative $pkgsrc) $NLS ${=general_cfg_opts}
+mk-yodl $unpack
+
+# Build a stock version of zsh
+pkg=zsh
+pkgsrc=$(getsource $unpack $pkg)
+mk-zsh $pkgsrc:t
+
+# Build a current version of zsh and make it the default
+mk-zsh
+linkup zsh-$(today)
+
+#
+# Build gcc
+#
+
+# Build dejagnu first, so we can test gcc, but dejagnu depends
+# on Tcl/Tk and expect
+mk-tcl $unpack
+
+# expect
+pkg=expect
+pkgsrc=$(getsource $unpack $pkg)
+bld -ck $(relative $pkgsrc) --with-{tcl,tk}=$inst_prefix/lib $NLS ${=general_cfg_opts}
+
+pkg=dejagnu
+pkgsrc=$(getsource $unpack $pkg)
+bld -ck $(relative $pkgsrc) $NLS ${=general_cfg_opts}
+
+# Build gcc
+pkg=gcc
+(
+  getsource $unpack $pkg-core
+  getsource $unpack $pkg-g++
+  getsource $unpack $pkg-testsuite
+) >/dev/null
+pkgsrc=$(getsource $pkg)
+gcc_PROJECT=$pkgsrc:t
+mk-gcc -c $gcc_PROJECT
+if [[ $? -ne 0 ]]; then
+  print -u2 "$progname: mk-gcc failed."
+  exit $err
+fi
+
+# Install gcc under its own subdirectory
+(cd $build_prefix/$gcc_PROJECT; make install)
+
+# Link the gcc subdirectory into the normal $USRLOCAL hierarchy
+linkup $gcc_PROJECT
+
+# Use gcc from here on
+unset CC
+unset CXX
+
+# ssh
+mk-openssh $unpack
+
+# ghostscript
+mk-ghostscript $unpack
+
+# I'd like to include gv in addition to ghostview, but gv requires
+# Xaw3d, and in order to install that, I need a complete X tree.
+# Maybe next revision I'll build a full X tree.
+mk-ghostview $unpack
+
+# Tkman
+mk-tkman $unpack
+
+# bzip2
+mk-bzip $unpack
+
+normal_packages="
+bash
+bc
+bison
+cvs
+diffstat
+diffutils
+elisp-manual
+emacs-lisp-intro
+fetchmail
+findutils
+flex
+gdb
+global
+gnupg
+grep
+gzip
+indent
+less
+links
+make
+patch
+screen
+tar
+texinfo
+wget
+xterm"
+
+# Process all the normal packages
+for pkg in ${=normal_packages}; do
+  pkgsrc=$(getsource $unpack $pkg)
+  bld -ck $(relative $pkgsrc) $NLS ${=general_cfg_opts}
+done
+
+# A few specials
+
+pkg=gmp
+pkgsrc=$(getsource $unpack $pkg)
+CC=cc ABI=32 bld -ck $(relative $pkgsrc) $NLS ${=general_cfg_opts} --disable-shared
+
+pkg=a2ps
+pkgsrc=$(getsource $unpack $pkg)
+bld -ck $(relative $pkgsrc) $NLS ${=general_cfg_opts} --with-medium=Letter --with-encoding=ascii
+
+# Building file on SunOS-5.5:
+#  bld -lci ../src/file-4.07 --disable-nls --disable-shared
+#  pushd ./file-4.07/src
+#  gcc -g -O2 -o file file.o  ./.libs/libmagic.a -L$USRLOCAL/lib -liberty
+#  make; make check; make install
+pkg=file
+pkgsrc=$(getsource $unpack $pkg)
+bld -lck $(relative $pkgsrc) $NLS ${=general_cfg_opts}
+
+pkg=groff
+pkgsrc=$(getsource $unpack $pkg)
+LDFLAGS="-L$USRLOCAL/gcc/lib -R$USRLOCAL/gcc/lib" bld -ck $(relative $pkgsrc) $NLS ${=general_cfg_opts}
+
+#pkg=trueprint
+#pkgsrc=$(getsource $unpack $pkg)
+#bld -ck $(relative $pkgsrc) $NLS ${=general_cfg_opts}
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

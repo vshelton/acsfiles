@@ -1,0 +1,86 @@
+#!/bin/sh
+
+# boise cron job
+
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+# Here is the crontab that invokes this script:
+#  # Build new copies of emacs, XEmacs and zsh monthly
+#  # Build new copies of emacs and zsh each weekday if anything has changed
+#  #min	hour	mnthday	month	weekday	command
+#  00	02	1	*	*	(PATH=/u/sheltonv/bin:/u/sheltonv/software/SunOS-5.5/bin:/usr/bin; export PATH; /u/sheltonv/bin/monthly.boise)
+#  00	06	*	*	1-5	(PATH=/u/sheltonv/bin:/u/sheltonv/software/SunOS-5.5/bin:/usr/bin; export PATH; /u/sheltonv/bin/daily.boise)
+
+# As you can see above, this command runs each weekday morning,
+# Don't, however, run this command on the first of the month; a
+# separate monthly script supplants this one then.  It should be
+# possible to specify this in the crontab, but I don't know how.
+(( $(date +%d) == 01 )) && exit 0
+
+# Change to the root of the build tree (see .zshenv for values)
+cd $BLDROOT
+
+for project in emacs zsh xemacs-21.4 xemacs-21.5; do
+
+  # Look for a source directory with no corresponding
+  # system-specific build directory
+  target=${project}-$(today)*(om[1])		# Use most-recently modified
+  srcdir=$(print $SRCROOT/${~target}) 2>/dev/null
+  blddir=$(sysprefix)/${srcdir:t}
+
+  if [[ -d $srcdir ]] && [[ ! -d $blddir ]]; then
+
+    case $project in
+    (xemacs*)
+      srcdir=${srcdir%(-debug|-mule)}
+      CC=cc CFLAGS='-xO2 -xspace' mk-xemacs -odm ${srcdir:t}
+      ;;
+
+    (zsh)
+      CC=cc CFLAGS='-fast' mk-zsh ${srcdir:t}
+      ;;
+
+    # emacs can only build with gcc right now
+    # use -b switch to leverage .elc files built on graycliff
+    (*)
+      mk-$project -b ${srcdir:t}
+      ;;
+    esac
+
+    print "\n\n"
+  fi
+done
+
+for pkg in xemacs-21.4 xemacs-21.5; do
+  if [[ -e $BLDROOT/$pkg-$(today) ]]; then
+    last2=( $BLDROOT/$pkg(.?|.??|-????-??-??)(oc[1,2]^M) )
+
+    latest=${last2[1]#$BLDROOT/}
+    older=${last2[2]#$BLDROOT/}
+
+    for ver in '' -mule -debug; do
+      print "\n\n$older$ver vs. $latest$ver"
+      diffs -s/$older/$latest/g $BLDROOT/{$older,$latest}$ver/conf.out
+    done
+  fi
+done
+
+for pkg in emacs zsh; do
+  if [[ -e $BLDROOT/$pkg-$(today) ]]; then
+    last2=( $BLDROOT/$pkg(.?|.??|-????-??-??)(oc[1,2]^M) )
+
+    latest=${last2[1]#$BLDROOT/}
+    older=${last2[2]#$BLDROOT/}
+
+    print "\n\n$older vs. $latest"
+    diffs -s/$older/$latest/g $BLDROOT/{$older,$latest}/conf.out
+  fi
+done
+
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

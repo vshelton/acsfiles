@@ -1,0 +1,53 @@
+#!/bin/sh
+
+# Check the autoconf outputs for the 2 most recent versions of
+# XEmacs 21.4, XEmacs 21.5, emacs and zsh,
+# on both SunOS 5.5 and 5.8, if appropriate.
+
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+cd $BLDROOT/..
+[[ $PWD = */SunOS* ]] && cd ..
+
+syslist=( . )
+[[ -e SunOS-5.5 ]] && syslist=( SunOS-5.5 )
+[[ -e SunOS-5.8 ]] && syslist=( $syslist SunOS-5.8 )
+
+for sys in $syslist; do
+  for pkg in xemacs-21.4 xemacs-21.5; do
+#    if [[ -e $sys/build/$pkg-$(today) ]]; then
+      last2=( $sys/build/$pkg(.?|.??|-????-??-??)(oc[1,2]^M) )
+
+      latest=${last2[1]#$sys/build/}
+      older=${last2[2]#$sys/build/}
+
+      for ver in '' -mule -debug; do
+        print "\n"
+        [[ $sys != . ]] && print -n "${sys}: "
+        print "$older$ver vs. $latest$ver"
+        diffs -s/$older/$latest/g $sys/build/{$older,$latest}$ver/conf.out
+      done
+#    fi
+  done
+
+  for pkg in emacs zsh; do
+#    if [[ -e $BLDROOT/$pkg-$(today) ]]; then
+      last2=( $BLDROOT/$pkg(.?|.??|-????-??-??)(oc[1,2]^M) )
+
+      latest=${last2[1]#$BLDROOT/}
+      older=${last2[2]#$BLDROOT/}
+
+      print "\n"
+      [[ $sys != . ]] && print -n "${sys}: "
+      print "$older vs. $latest"
+      diffs -s/$older/$latest/g $BLDROOT/{$older,$latest}/conf.out
+#    fi
+  done
+done
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

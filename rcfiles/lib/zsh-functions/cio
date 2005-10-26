@@ -1,0 +1,8 @@
+# Check in and check out RCS file(s)
+local file=
+for file in $@
+do
+	rcsdiff $file
+	ci $file
+done
+co $@

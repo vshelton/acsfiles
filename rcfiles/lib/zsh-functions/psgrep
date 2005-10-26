@@ -1,0 +1,4 @@
+# Originally from Zoltan Hidvegi <hzoli@cs.elte.hu>
+PS=/usr/bin/ps
+[[ -n $SVR4 ]] && PS=/usr/ucb/ps
+$PS auwwx | egrep "(${*:-.})|^USER  " | egrep -v 'ps auwwx$|egrep .*\|.USER' | $PAGER

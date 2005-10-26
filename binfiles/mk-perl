@@ -1,0 +1,47 @@
+#!/bin/sh
+#
+# Make and install perl
+# Options:
+#   -u Unpack the sources from tarfiles
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+unpack=
+general_cfg_opts=
+prefix=${USRLOCAL:-/usr/local}
+
+err=1
+while getopts ":u-:" opt
+do
+  case $opt in
+  (u)	unpack=-u
+	;;
+  # Unused in this case because we're not using configure
+  (-)	general_cfg_opts="$general_cfg_opts --$OPTARG"
+	;;
+  # Unknown option
+  (?)	print -u2 "$progname: invalid option: $argv[$OPTIND]"
+	exit $err
+	;;
+  esac
+done
+
+shift $OPTIND-1			# Skip over options
+
+CC=${CC:-gcc}
+use_gcc=
+case $CC in
+  (*gcc*)
+    use_gcc="-Dcc=gcc"
+    ;;
+esac
+
+perlsrc=$(getsource $unpack perl)
+mkdir $perlsrc:t
+cd $perlsrc:t
+
+sh $perlsrc/Configure -Dmksymlinks $use_gcc -Dprefix=$prefix -des
+make all test install

@@ -1,0 +1,89 @@
+#!/bin/sh
+#
+# Make and install openssh and its prerequisite, openssl
+# Options:
+#   -u Unpack the sources from tarfiles
+
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+prefix=${USRLOCAL:-/usr/local}
+jobs=
+unpack=
+
+err=1
+while getopts ":u" opt
+do
+  case $opt in
+  (u)	unpack=-u
+	;;
+  # Unknown option
+  (?)	print -u2 "$progname: invalid option: $argv[$OPTIND]"
+	exit $err
+	;;
+  esac
+done
+
+shift $OPTIND-1			# Skip over options
+
+# Sigh, openssl, another ill-behaved package.
+# Unpack it in the build tree.
+sslsrc=$(SRCROOT=$PWD getsource $unpack openssl)
+# If we weren't unpacking from a tarfile and if the getsource failed,
+# try unpacking from a tarfile.  This is necessary because we can't
+# build from a common source tree in this case.
+if [[ $? -ne 0 ]] && [[ -z "$unpack" ]]; then
+  print -u2 "$progname: couldn't find an already-unpacked openssl - trying to unpack a new version"
+  sslsrc=$(SRCROOT=$PWD getsource -u openssl)
+  err=$?
+  if [[ $err -ne 0 ]]; then
+    exit $err
+  fi
+fi
+pushd $sslsrc
+
+# Force gcc
+PATH=${${PATH:s@:/opt/SUNWspro/bin@@}:s@:/usr/ucb@@}
+# Configure openssl in a sub-shell, so we only fiddle with
+# PATH for the duration of configuration
+(
+  # gcc 3.1 has a messed-up version string
+  # and openssl configuration barfs on it
+  if [[ $(gcc --version) == *3.[12]* ]]; then
+    cat - >./gcc <<'EOF'
+#!/bin/sh
+# Remove bogosity from 'gcc --version' output for gcc 3.1+ 
+
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+# Grab all the paths to gcc and use the second one,
+# because this script should be the first one
+allpaths=($(whence -a gcc))
+exec=$allpaths[2]
+if [[ $1 != --version ]]; then
+  $exec $*
+else
+  # The version number is the last word on the first line for gcc 3.1
+  $exec --version | awk '{if (NR == 1) print $NF}'
+fi
+EOF
+
+    chmod a+x ./gcc
+    PATH=.:$PATH
+  fi
+
+  ./config --prefix=$prefix --openssldir=$prefix/openssl
+)
+make
+make test
+make install
+
+# Make openssh
+popd			# Leave ssl directory
+sshsrc=$(getsource $unpack openssh)
+# Force system versions of ls and tail because the regexp in the
+# perl fixprogs script does not understand hyphens like in 'SunOS-5.5'
+PATH=/usr/bin:$PATH CPPFLAGS=-I"$prefix/include" LDFLAGS="-L$prefix/lib" PERL==perl bld -ck $sshsrc --datadir=$USRLOCAL/share --with-ssl-dir=$prefix/openssl --disable-nls --with-privsep-path=$USRLOCAL/var/empty

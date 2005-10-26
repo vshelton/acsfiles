@@ -1,0 +1,11 @@
+# Set non-default shell enviroment, post .zshenv (AOA PC version)
+
+# Override variables set in .zshenv
+manpath=(/usr/local/man /usr/man)
+path=(~/bin /usr/local/bin /bin /usr/bin /etc $(cygpath $SYSTEMROOT)/system32 $(cygpath $SYSTEMROOT))
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

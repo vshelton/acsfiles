@@ -1,0 +1,47 @@
+#!/bin/sh
+
+# Unpack and build the latest copy of the specified packages
+# passing the specified options to configure.
+# Usage: mk pkg1 [pkg2...pkgn] [--disable-nls]
+
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+pkgs=
+bld_opts=
+cfg_opts=
+
+# Split out the packages from the options
+while [[ $# -gt 0 ]]
+do
+  case $1 in
+
+  # configure options
+  (--*)
+    cfg_opts="$cfg_opts $1"
+    ;;
+
+  # bld options
+  (-*)
+    bld_opts="$bld_opts $1"
+    ;;
+
+  # pkgs
+  (*)
+    pkgs="$pkgs $1"
+    ;;
+  esac
+  shift
+done
+
+cd $BLDROOT
+
+# Unpack and build each package
+for pkg in ${=pkgs}; do
+  pkgsrc=$(unpack $pkg)
+# print $pkgsrc
+  bld ${=bld_opts} $(relative $pkgsrc) ${=cfg_opts}
+done

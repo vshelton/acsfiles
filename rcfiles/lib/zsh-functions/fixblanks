@@ -1,0 +1,11 @@
+# Fix files with trailing spaces or tabs
+# Default list of files to search is source and header files
+
+local file=
+[[ $# -eq 0 ]] && set *.{cc,hh}
+for file in $(egrep -l '[ 	]$' "$@")
+do
+    print $file
+    mv $file $file.pre-blank
+    sed -e 's/[ 	]*$//' <$file.pre-blank >$file
+done

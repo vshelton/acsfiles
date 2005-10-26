@@ -1,0 +1,82 @@
+#!/usr/bin/env perl
+
+# Print the names of duplicate mail messages.
+
+use MD5;
+
+sub FindMHPath;
+sub IndexAllMails;
+
+# Index e-mail already in my archive.
+$mhpath = FindMHPath;
+IndexAllMails($mhpath);
+
+# Index e-mail about to be copied into archive.
+foreach $dir (@ARGV) {
+    IndexAllMails($dir)
+}
+
+# Index all the mails in the specified directory.
+sub IndexAllMails {
+    ($mailpath) = @_;
+    #print "mailpath = $mailpath\n";
+
+    $md5 = new MD5;
+
+    open(FIND, "find $mailpath -type f -name '[0-9]*' -links -2 -size +0 -print |") || die "Couldn't run find: $!";
+    while ($filename = <FIND>) {
+	chop $filename;
+
+	if (!open(MSG, $filename)) {
+	    warn "Couldn't open $filename: $!";
+	    next;
+	}
+	
+	# Read the email header
+	$/ = "";		# Paragraph mode
+	$header = <MSG>;
+	$/ = "\n";		# Restore normal input mode for find
+	
+	# Search for the message ID
+	$header =~ m{
+		     message-id:\s*
+		     (.*)	# Extract message id to $1
+		    }xi;
+
+	# Create an MD5 sum for the message body and store the filename
+	# in the MD5 hash using the MD5 sum as the key.
+	# Warn if the MD5 sum is not unique.
+	$md5->reset;
+	$md5->addfile(MSG);
+	$sum = $md5->hexdigest();	# Can only do this once.
+
+	# Warn of likely duplicate files
+	print "$sums{$sum} $filename\n" if ($sums{$sum} ne '');
+	$sums{$sum} = $filename;
+
+	# Message ID found - store the message ID in the message ID hash.
+	if ($1 ne '') {
+
+	    # Warn if the message ID is not unique.
+	    print "$msgs{$1} $filename\n" if ($msgs{$1} ne '');
+	    $msgs{$1} = $filename;
+	}
+
+	close MSG;
+    }
+}
+
+# Figure out MH path
+sub FindMHPath {
+    use Env qw(HOME);
+    $mhpath = "$HOME/Mail";
+    open(MH_PROFILE, "$HOME/.mh_profile") || die "Couldn't open mh profile: $!";
+    while (<MH_PROFILE>) {
+        if (/^path:\s*(.*)/i) {
+            $mhpath = "$HOME/$1";
+            last;
+        }
+    }
+    close MH_PROFILE;
+    return $mhpath;
+}

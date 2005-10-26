@@ -1,0 +1,8 @@
+# Print the source directory for the specified package.
+# If '-u' is specified as an optional parameter,
+# unpack the sources from a tarball.
+if [[ -u == $1 ]]; then
+  unpack $2
+else
+  latest $1
+fi

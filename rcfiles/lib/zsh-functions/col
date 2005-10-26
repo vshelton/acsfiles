@@ -1,0 +1,9 @@
+
+# Extract the specified column's data
+n=0
+if [[ $# -gt 0 ]]
+then
+	let n=$1-1
+	shift
+fi
+perl -lane "print \$F[$n]" "$@"

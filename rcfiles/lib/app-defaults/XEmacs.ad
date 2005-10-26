@@ -1,0 +1,9 @@
+#include "fonts.ad"
+
+! Most of the resources are shared with XEmacs, and thus
+! they are defined in "Emacs.ad".
+
+		    xemacs.geometry: 85x60-2+2
+xemacs.modeline.attributeBackground: Gray75
+      xemacs.modeline.attributeFont: -*-new century schoolbook-medium-r-*-*-10-*
+	    xemacs.topToolBarHeight: 0

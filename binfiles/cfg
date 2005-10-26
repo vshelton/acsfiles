@@ -1,0 +1,99 @@
+#!/bin/sh
+
+# Configure a project from a user-specified location
+# into a sub-directory of the current directory.
+#
+# Options:
+#   -s Configure for a snapshot prefix, like '$USRLOCAL/xemacs-2004-08-2
+#   -o Specify a file for configure's output
+#   -l Instead of building in a completely separate directory,
+#      create a link tree from the source directory to the build directory
+#   -p Completely specify a prefix, like '-p $USRLOCAL/foobar'
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+usage()
+{
+  print -u2 "usage: $progname [-hls] [-o outname] [-p prefix] source_dir [configure_args]
+       -h - Print this help message
+       -l - Create symlinks to the source directory
+       -o - Specify a file for configure's output
+       -p - Specify the installation prefix
+       -s - Configure for a snapshot prefix, like xemacs-2004-08-20"
+}
+
+zparseopts -D h=help l=symlink o:=output p:=prefix s=snapshot
+
+if [[ -n $help || $# == 0 ]]; then
+  usage
+  [[ -n $help ]] && exit 0 || exit 1
+fi
+
+err=2
+if [[ ! -x $1/configure ]]; then
+  print -u2 "$progname: No configure script exists in directory $1"
+  exit $err
+fi
+
+# Default to gcc if no compiler is specified in the environment
+CC=${CC:-gcc}
+CXX=${CXX:-g++}
+export CC CXX
+
+# Create a sub-directory for building the package
+setopt extendedglob
+src=${1%%/##}		# Trim trailing slashes (for :t modifier)
+shift
+build_dir=${src:t}
+((err=err+1))
+if [[ -d $build_dir ]]; then
+  print -u2 "$progname: directory $build_dir already exists"
+  exit $err
+fi
+mkdir -p $build_dir
+cd $build_dir
+
+# Handle the installation prefix:
+#  If no prefix-related options are specified, the default is to use
+#    the $USRLOCAL variable, which, in turn, defaults to /usr/local.
+#  If a -p option is specified, use it.
+#  If a -s option is specified, add a snapshot directory onto
+#    whatever prefix would be used.
+# If the snapshot option was specified, then the package prefix
+# name is unique for the snapshot, based on the name of the
+# package's source directory.
+: ${USRLOCAL:=/usr/local}
+prefix=${prefix[2]:-$USRLOCAL}
+[[ -n $snapshot ]] && prefix=$prefix/$build_dir
+
+# Since we have changed directories, if the path to the source directory
+# is not absolute it now takes an extra ".." to get there.
+[[ $src != /* ]] && src=../$src
+
+# Some packages don't build outside of the source directory
+if [[ -n $symlink ]]; then
+  symlink-tree $src >/dev/null
+
+  # Add the current directory to the front of the path.
+  PATH="$PWD:$PATH"
+else
+  # Add the source directory to the front of the path.
+  PATH=$src:$PATH
+fi
+
+print "Configuring $build_dir for installation prefix $prefix."
+
+# A relative output filename is relative to the newly-created build directory.
+[[ -n $output ]] && exec >& $output[2]
+
+# Configure the package
+configure --prefix=$prefix $@
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

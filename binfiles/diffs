@@ -1,0 +1,78 @@
+#!/bin/sh
+
+# Compare the two files, optionally making substitions to each file first.
+# Usage: diff-subst [-h] [-s/regex1/regex2/[g]] file1 [-s/regex3/regex4/[g]] file2
+#        -h - Print this help message
+#        -s - Run perl substitition on file before comparing"
+
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+usage()
+{
+  print -u2 "usage: $progname [-h] [-s/regex1/regex2/[g]] file1 [-s/regex3/regex4/[g]] file2
+       -h - Print this help message
+       -s - Run perl substitition on file before comparing"
+}
+
+if [[ $1 == "-h" ]]; then
+  usage
+  exit 0
+fi
+
+# Grab substitution pattern and name of first file
+if [[ $1 == -s* ]]; then
+  pat1=${1#-}
+  shift
+fi
+if (( $# < 1 )); then
+  usage
+  exit 1
+fi
+file1=$1
+shift
+if [[ ! -e $file1 ]]; then
+  print -u2 "$progname: $file1 does not exist".
+  exit 2
+fi
+
+# Grab substitution pattern and name of second file
+if [[ $1 == -s* ]]; then
+  pat2=${1#-}
+  shift
+fi
+if (( $# < 1 )); then
+  usage
+  exit 1
+fi
+file2=$1
+shift
+if [[ ! -e $file2 ]]; then
+  print -u2 "$progname: $file2 does not exist".
+  exit 2
+fi
+
+# Generate perl substitution commands, if necessary
+diff1=$file1
+[[ -n $pat1 ]] && diff1=( =(perl -p -e $pat1 < $file1) )
+diff2=$file2
+[[ -n $pat2 ]] && diff2=( =(perl -p -e $pat2 < $file2) )
+
+# Remove common prefixes from file labels
+split1=(${(s:/:)file1})
+split2=(${(s:/:)file2})
+integer i=1
+while [[ i -le $#split2 && $split2[i] == $split1[i] ]]
+do
+    ((++i > $#split1)) && break
+done
+
+diff --unified=0 --label ${(j:/:)split1[i,-1]} $diff1 --label ${(j:/:)split2[i,-1]} $diff2
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

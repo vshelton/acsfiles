@@ -1,0 +1,45 @@
+#!/bin/sh
+
+# Make and install a version of XPM
+# Options:
+#   -u Unpack the sources from tarfiles
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+unpack=
+general_cfg_opts=
+prefix=${USRLOCAL:-/usr/local}
+
+err=1
+while getopts ":u-:" opt
+do
+  case $opt in
+  (u)	unpack=-u
+	;;
+  # Unused in this case because we're not using configure
+  (-)	general_cfg_opts="$general_cfg_opts --$OPTARG"
+	;;
+  # Unknown option
+  (?)	print -u2 "$progname: invalid option: $argv[$OPTIND]"
+	exit $err
+	;;
+  esac
+done
+
+shift $OPTIND-1			# Skip over options
+
+CC=${CC:-gcc}
+
+pkg=xpm
+pkgsrc=$(getsource $unpack $pkg)
+echo "\n\n$pkg $pkgsrc"
+
+mkdir ${pkgsrc:t}
+cd ${pkgsrc:t}
+symlink-tree $pkgsrc
+cd lib
+make -f Makefile.noX CC=$CC  CFLAGS='-I/usr/openwin/include -O'
+make -f Makefile.noX CC=$CC  CFLAGS='-I/usr/openwin/include -O' DESTLIBDIR=$prefix/lib DESTINCLUDEDIR=$prefix/include/X11 install

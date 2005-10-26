@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# Verify that both SunOS-5.5 and SunOS-5.8 versions of
+# projects have been built.
+# 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+# User-visible and user-overridable variables are all caps
+USRLOCAL=${USRLOCAL:-/usr/local}
+SRCROOT=${SRCROOT:-$USRLOCAL/src}
+BLDROOT=${BLDROOT:-$USRLOCAL/build}
+OS_versions=( SunOS-5.5 SunOS-5.8 )
+pkgs=( $(ls $SRCROOT) )
+
+cd $BLDROOT/../..
+ls -d $^OS_versions/build/$^pkgs >/dev/null
+

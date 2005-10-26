@@ -1,0 +1,18 @@
+#!/usr/bin/env perl
+
+use warnings;
+use strict;
+
+# Delete all history lines which were inherited from previous shell invocations.
+# We do this by deleting all lines whose date and time are the same as the
+# date and time of the first line.
+
+# This command currently only works on one file at a time!
+
+my $FirstTime;
+
+while (<>) {
+    m'(\S+\s+\S+)\s';
+    $FirstTime = $1 if (!defined($FirstTime));
+    print if ("$FirstTime" ne "$1");
+}

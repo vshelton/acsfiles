@@ -1,0 +1,32 @@
+#!/bin/sh
+
+# Make a minimal XEmacs suitable for debugging from 21.4 sources.
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+export VERSION=$(now)
+mk-src xemacs-21.4
+cd $SRCROOT
+xemacs_name=xemacs-21.4-${VERSION%-????}-minimal
+rm -rf $xemacs_name
+mv xemacs-21.4-$VERSION $xemacs_name
+cd $xemacs_name
+
+export CC=${CC:-icc}
+export CFLAGS=${CFLAGS:-"-g -O"}
+
+# Configure and build in the source directory.
+# Don't worry about the installation prefix, because we're not going to install.
+./configure --site-includes=$USRLOCAL/include --site-libraries=$USRLOCAL/lib --infopath=$USRLOCAL/info --package-path=$USRLOCAL/site-packages::$USRLOCAL/xemacs-packages --pdump --error-checking=malloc --with-debug-malloc --with-{dialogs,jpeg,modules,mule,png,postgresql,site-modules,sound,tiff,widgets,x11,xpm}=no >& conf.out
+make >& mk.out
+
+err=$?
+if [[ $err -ne 0 ]]; then
+  print -u2 "$progname: make failed.  See $SRCROOT/$xemacs_name/mk.out."
+  exit $err
+fi
+
+print "$progname: XEmacs built in $SRCROOT/$xemacs_name"

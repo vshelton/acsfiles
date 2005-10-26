@@ -1,0 +1,32 @@
+#!/usr/bin/env perl
+
+# Extract the specified header from the supplied email messages.
+
+use warnings;
+
+($progname = $0) =~ s@^.*/@@;
+
+$which_field = shift;
+$/ = "";				# Paragraph mode
+
+unshift(@ARGV, '-') unless @ARGV;
+
+# Loop through all supplied files
+while ($ARGV = shift @ARGV) {
+    unless (open(ARGV, $ARGV)) {
+	print STDERR "$progname: Can't open $ARGV: $!\n";
+	next;
+    }
+
+    # Read the email header
+    $header = <>;
+
+    # Search for specified regexp in email header
+    $header =~ /$which_field/xi;
+    if (defined($1)) {
+	print "$1\n";
+    } else {
+	print STDERR "$progname: No match for \"$which_field\" in header of $ARGV\n";
+    }
+    close(ARGV);
+}

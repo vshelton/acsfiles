@@ -1,0 +1,58 @@
+#!/usr/bin/env perl
+
+# Save the specifed email message files (or stdin if none specified)
+# to a file named by the message id, extracted from the message header.
+
+use warnings;
+use Fcntl;
+
+($progname = $0) =~ s@^.*/@@;
+
+unshift(@ARGV, '-') unless @ARGV;
+
+# Loop through all supplied files
+fileloop:
+while ($ARGV = shift @ARGV) {
+    unless (open(ARGV, $ARGV)) {
+	print STDERR "$progname: Can't open $ARGV: $!\n";
+	next fileloop;
+    }
+
+    # Read the email header
+    $/ = "";				# Paragraph mode
+    $header = <>;
+
+    # $outname := message ID from email header
+    ($outname) = $header =~ m{
+			      message-id:\s*
+			      (.*)
+			     }xi;
+    unless (defined($outname)) {
+	print STDERR "$progname: No message id in header of $ARGV\n";
+	close(ARGV);
+	next fileloop;
+    }
+    $outname =~ s/<(.*)>/$1/;		# Strip off angle brackets
+
+    # Create a file named for the message id
+    unless (sysopen (FH, $outname, O_WRONLY | O_CREAT | O_TRUNC, 0400)) {
+	print STDERR "$progname: Can't open $outname: $!\n";
+	close(ARGV);
+	next fileloop;
+    }
+
+    # Copy entire message to output file
+    print FH "$header";
+    $/ = "\n";				# Necessary to copy faithfully
+
+    while (defined($_ = <ARGV>)) {
+	print FH $_;
+
+	if (eof) {
+	    print ($ARGV eq "-" ? "Message" : $ARGV, " copied to $outname\n");
+	    close(ARGV);
+	    close(FH) || print STDERR "$progname: Can't close $outname: $!\n";
+	    next fileloop;
+	}
+    }
+}

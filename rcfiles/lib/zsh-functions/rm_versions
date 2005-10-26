@@ -1,0 +1,74 @@
+# Allow the user to select and remove versions of src, build and
+# install kits for specified packages
+
+emulate -LR zsh
+
+local PROMPT3 buildkits dir opt removable
+local integer interactive=0 printonly=0 verbose=0
+
+# Trap interrupt
+trap "return 130" INT
+
+while getopts inv opt
+do
+  case $opt in
+  (i)
+    interactive=1
+    ;;
+  (n)
+    printonly=1
+    ;;
+  (v)
+    verbose=1
+    ;;
+  (?)
+    print -u2 "usage: $0 [-i] [-n] [-v] pkg"
+    return 1
+    ;;
+  esac
+done
+(( OPTIND > 1 )) && shift $(( OPTIND - 1 ))
+
+# Quit if no arguments were supplied
+if (( ARGC == 0 ))
+then
+  print -u2 "$0: No packages were requested."
+  return 2
+fi
+
+# List kits and allow user to choose interactively
+if (( interactive > 0 ))
+then
+  buildkits=($(all_versions $*))
+  [[ -z $buildkits ]] && return 0
+  removable=
+  PROMPT3="Select buildkit(s) to remove: "
+  select dir in "Remove kits" "Cancel" $buildkits
+  do
+    [[ $dir == Cancel ]] && return 0
+    [[ $dir == "Remove kits" ]] && break
+    removable=($removable $dir)
+  done
+
+# Not interactive, so generate the list of kits
+# without user intervention
+else
+  removable=($(all_versions $*))
+fi
+[[ -z $removable ]] && return 0
+
+if (( printonly + verbose > 0 ))
+then
+  echo rm -rf ${^$(all_dirs)}/$^removable(N^M)
+fi
+
+if (( printonly == 0 ))
+then
+  rm -rf ${^$(all_dirs)}/$^removable(N^M)
+fi
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

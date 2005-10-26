@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# Fetch all the XEmacs mailing list archives for the specified months
+# Usage: get-xemacs-ml <yyyymm> [yyyym2...]
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+foreach month
+  wget --http-user=xemacs-review --http-passwd=review-xemacs http://list-archive.xemacs.org/xemacs-review/xemacs-review.$month
+  wget http://list-archive.xemacs.org/xemacs-design/xemacs-design.$month
+  wget http://list-archive.xemacs.org/xemacs-patches/xemacs-patches.$month
+end
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

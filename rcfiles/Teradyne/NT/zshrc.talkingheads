@@ -1,0 +1,26 @@
+
+# zshrc file specific to my Win2K machine
+
+# Fix up prompt highlighting under Windows
+[[ $TERM = "cygwin" ]] && PROMPT="%S$PROMPT%s"
+
+# Match case-insensitively
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+
+# Match cygdrive prefix
+drives="c m s v y z"
+zstyle ':completion:*' fake-files '/:cygdrive' "/cygdrive:$drives"
+
+# Match drives as ~n
+for drive in ${=drives}; hash -d $drive=/cygdrive/$drive
+
+desktop=/cygdrive/c/Documents\ and\ Settings/SheltonV/Desktop
+alias cleartool='/cygdrive/c/Program\ Files/Rational/ClearCase/bin/cleartool'
+alias xemacs='/cygdrive/c/XEmacs-21.4/i586-pc-win32/xemacs'
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:
+

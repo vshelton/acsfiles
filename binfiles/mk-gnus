@@ -1,0 +1,58 @@
+#!/bin/sh
+
+# Make a gnus package from CVS.
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+function make_source {
+
+  # Copy the sources from CVS to the source hierarchy
+  PROJECT=$1
+  VERSION=$(today)
+  TARGET=$PROJECT-$VERSION
+  mk-src $PROJECT
+}
+
+prefix=${USRLOCAL:-/usr/local}		# Architecture-dependent stuff
+shared_root=${USRLOCAL:-/usr/local}	# Architecture-independent stuff
+
+mkdir -p $shared_root/site-packages/{etc,info,lisp}
+make_source gnus
+
+# Needed to build url package
+(cd $SRCROOT/$TARGET/lisp; ln -s ../contrib/xml.el)
+
+# Build and install gnus
+bld -k $(relative $SRCROOT/$TARGET) --with-xemacs --with-lispdir=$shared_root/site-packages/lisp/gnus --with-etcdir=$shared_root/site-packages/etc --infodir=$shared_root/site-packages/info --with-url=$shared_root/site-packages/lisp/w3 --with-w3=$shared_root/site-packages/lisp/w3
+if [[ $? -ne 0 ]]; then
+  print -u2 "Could not build gnus"
+  exit 1
+fi
+(
+  cd $shared_root/site-packages/lisp/gnus
+  xemacs -vanilla -batch -eval "(setq autoload-package-name \"gnus\")" -f batch-update-directory .
+)
+
+# Currently, this picks up the wrong gnus when built from a bootstrap XEmacs.
+# The solution is to build gnus after building XEmacs.
+make_source url
+mkdir $TARGET
+(
+  cd $TARGET
+  $(relative $SRCROOT/$TARGET)/configure --with-xemacs --with-package-dir=$shared_root/site-packages --infodir=$shared_root/site-packages/info
+  make
+  make install
+)
+
+# make_source w3
+# mkdir $TARGET
+# (
+#   cd $TARGET
+#   $(relative $SRCROOT/$TARGET)/configure --with-xemacs --with-package-dir=$shared_root/site-packages --infodir=$shared_root/site-packages/info --with-url=$shared_root/site-packages/w3
+#   make URLDIR=$shared_root/site-packages/w3
+#   #make URLDIR=$shared_root/site-packages/w3 install
+# )
+

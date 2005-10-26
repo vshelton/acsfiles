@@ -1,0 +1,1 @@
+xterm -name $1 -title $1 -xrm "*iconTitle: $1" -e rsh $1

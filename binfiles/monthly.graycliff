@@ -1,0 +1,34 @@
+#!/bin/sh
+
+# graycliff monthly cron job:
+# Make up-to-the minute versions of emacs, XEmacs and zsh
+
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+# Here is the crontab that invokes this script:
+#  # Build new copies of emacs, XEmacs and zsh monthly
+#  # Build new copies of emacs, XEmacs and zsh, each weekday if anything has changed
+#  #min	hour	mnthday	month	weekday	command
+#  #45	13	*	*	1-5	echo hello
+#  00	0	1	*	*	(PATH=/u/shelton/bin:/u/shelton/software/SunOS-5.8/bin:/usr/bin; export PATH; /u/shelton/bin/monthly.graycliff)
+#  00	5	*	*	1-5	(PATH=/u/shelton/bin:/u/shelton/software/SunOS-5.8/bin:/usr/bin; export PATH; /u/shelton/bin/daily.graycliff)
+
+# Make sure all the CVS directories have at least one new file
+cd ~/cvsroot
+touch {emacs,xemacs-21.4,xemacs-21.5,xemacs-packages,zsh}/ChangeLog
+cd -
+
+# graycliff builds emacs, zsh and then all the XEmacs projects
+update-emacs
+
+export CC=cc
+# CFLAGS derived from running 'cc -fast -#' on denver, an ultra2i
+CFLAGS='-fast -xarch=v8plusa -xchip=ultra2i -xcache=16/32/1:512/64/1' update-zsh
+CFLAGS='-xO2 -xspace' update-xemacs
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

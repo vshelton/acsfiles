@@ -1,0 +1,23 @@
+# rlogin to the specified system
+host=$1
+shift
+
+#rxcmd $host "/usr/openwin/bin/xterm -name $host -title $host -xrm \"*iconTitle: $host\" "$@" -e csh -f .login-to-zsh"
+
+# Instead we'll use this ugly hack which means we have to special-case
+# all the SunOS-4 hosts
+zshpath==zsh
+xtermpath==xterm
+case $host in
+(peach)
+  xtermpath=/usr/openwin/bin/xterm
+  zshpath=/u/shelton/new/SunOS-4.1/zsh/bin/zsh
+  ;;
+esac
+rxcmd $host "$xtermpath -name $host -title $host $@ -e $zshpath -l"
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

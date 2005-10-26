@@ -1,0 +1,55 @@
+
+# Kill programs by name
+# (Only works as a zsh function - may be run as a zsh script
+# by changing every 'return' to 'exit')
+local force=0 sig=
+
+while [[ $# -gt 0 ]]
+do
+    case "$1" in
+    -f)
+	force=1
+	shift
+	;;
+    -*)
+	sig="$1"
+	shift
+	;;
+    *)
+	break
+	;;
+    esac
+done
+
+[[ $# -eq 0 ]] && print -u2 "Usage: kprog [-f] [-sig] progname..." && return 1
+
+setopt local_options
+unsetopt shwordsplit
+
+local ans  pid pidlist procs
+local kill="kill $sig"
+
+procs="$(/usr/ucb/ps -ax | awk "\$5 ~ /$@/")"
+[[ ${#procs} -eq 0 ]] && print -u2 "No processes match \"$@\"" && return 2
+pidlist=($(print $procs | awk '{print $1}'))
+
+if [[ $force -eq 1 ]]
+then
+    set -x
+    ${=kill} $pidlist
+    set +x 2>/dev/null
+    return
+fi
+
+print "   PID TT       S  TIME COMMAND"
+print $procs
+for pid in $pidlist[*]
+do
+    print -n "Do you want to kill $pid? "
+    read ans
+    case $ans in
+    Y*|y*)
+	${=kill} $pid
+	;;
+    esac
+done

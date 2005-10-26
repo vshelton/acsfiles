@@ -1,0 +1,5 @@
+# Shorten the current directory to a ~ name
+# (Only works as a zsh function)
+
+eval $1=\$PWD
+: ~$1

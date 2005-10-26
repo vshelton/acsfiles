@@ -1,0 +1,2 @@
+# List processes' virtual memory usage - sorted
+vm "$@" | sort -nr +8

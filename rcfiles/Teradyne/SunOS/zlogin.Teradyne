@@ -1,0 +1,13 @@
+
+bindkey -s '^X^R' "print -r \"\!\!\" | .zsh^M"
+
+# Exceed starts up with a minimal set of XResources.
+# Install a full set of XResources if necessary.
+xres '^Emacs\.' >/dev/null
+(( status != 0 )) && xdef
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

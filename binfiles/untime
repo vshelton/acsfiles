@@ -1,0 +1,9 @@
+#!/sup/bin/perl
+while (@ARGV) {
+	$time = shift @ARGV;
+	($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = 
+	localtime($time);
+	++$mon;
+
+	print "$hour:$min $mon/$mday/$year\n";
+}

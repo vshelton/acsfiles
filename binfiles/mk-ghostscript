@@ -1,0 +1,56 @@
+#!/bin/sh
+#
+# Make and install GNU ghostscript, a postscript viewer
+# Options:
+#   -u Unpack the sources from tarfiles
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+prefix=${USRLOCAL:-/usr/local}
+jobs=
+unpack=
+
+err=1
+while getopts ":u" opt
+do
+  case $opt in
+  (u)	unpack=-u
+	;;
+  # Unknown option
+  (?)	print -u2 "$progname: invalid option: $argv[$OPTIND]"
+	exit $err
+	;;
+  esac
+done
+
+shift $OPTIND-1			# Skip over options
+
+# jpeg, libpng and zlib must already have been unpacked;
+# link to the most recently modified versions
+((err=err+1))
+ghostsrc=$(relative $(getsource $unpack ghostscript))
+pushd $ghostsrc
+for dir in jpeg libpng zlib; do
+  if [[ ! -d $(print ../$dir*(om[1])) ]]; then
+    print -u2 "$progname: no $dir source directory exists!"
+    exit $err
+  fi
+  ln -s ../$dir*(om[1]) $dir
+done
+popd
+
+[[ -d /usr/openwin/lib ]] && export LD_RUN_PATH=/usr/openwin/lib
+bld -ck -l $ghostsrc --datadir=$USRLOCAL/share --disable-nls
+bldstatus=$?
+if [[ $bldstatus -ne 0 ]]; then
+  print -u2 "$progname: bld failed."
+  exit $bldstatus
+fi
+
+# Install fonts
+pushd $USRLOCAL/share/ghostscript
+SRCROOT=$PWD unpack gnu-gs-fonts-std
+SRCROOT=$PWD unpack gnu-gs-fonts-other

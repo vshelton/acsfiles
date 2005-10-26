@@ -1,0 +1,53 @@
+#!/bin/sh
+#
+# Make and install yodl
+# Options:
+#   -u Unpack the sources from tarfiles
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+unpack=
+prefix=${USRLOCAL:-/usr/local}
+jobs=
+
+err=1
+while getopts ":u" opt
+do
+  case $opt in
+  (u)	unpack=-u
+	;;
+  # Unknown option
+  (?)	print -u2 "$progname: invalid option: $argv[$OPTIND]"
+	exit $err
+	;;
+  esac
+done
+
+shift $OPTIND-1			# Skip over options
+
+# yodl is ill-behaved, and won't configure in a separate directory,
+# nor in a symlinked directory, so unpack it directly to the
+# build tree
+SRCROOT=$PWD yodlsrc=$(getsource $unpack yodl)
+# If we weren't unpacking from a tarfile and if the getsource failed,
+# try unpacking from a tarfile.  This is necessary because we can't
+# build from a common source tree in this case.
+if [[ $? -ne 0 ]] && [[ -z "$unpack" ]]; then
+  print -u2 "$progname: couldn't find an already-unpacked yodl - trying to unpack a new version"
+  yodlsrc=$(SRCROOT=$PWD getsource -u yodl)
+  err=$?
+  if [[ $err -ne 0 ]]; then
+    exit $err
+  fi
+fi
+cd $yodlsrc:t
+# Hack out bison version test
+perl -pi.orig -e 's@bison_version=@bison_version=35 #bison_version=@' configure
+./configure --prefix=$prefix --disable-nls
+make
+make check 
+make install
+

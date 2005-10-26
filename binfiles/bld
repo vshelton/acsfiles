@@ -1,0 +1,100 @@
+#!/bin/sh
+
+# Configure and make a software package.
+#
+# Options:
+#   -c Run make check after running make
+#   -i Run make install after running make
+#   -k Keep going on all make targets (pass -k to make)
+#   -l Create a symlink tree from source dir to build dir
+#   -s Configure for a snapshot prefix, like '$USRLOCAL/egcs-1999-10-12'
+#   -t Run make test after running make
+#   -o Specify a file for configure's output
+#   -p Completely specify a prefix, like '-p $USRLOCAL/foobar'
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+usage()
+{
+  print -u2 "usage: $progname [-hls] [-o outname] [-p prefix] [ctik] source_dir [configure_args]
+       -h - Print this help message
+       -l - Create symlinks to the source directory
+       -o - Specify a file for configure's output
+       -p - Specify the installation prefix
+       -s - Configure for a snapshot prefix, like xemacs-2004-08-20
+       -c - Run \"make check\" for target package
+       -t - Run \"make test\" for target package
+       -i - Install package
+       -k - Keep going if make errors occur"
+}
+
+# Unfortunately, this script must know all of cfg's options
+# so it can ignore them and figure out what package is being built.
+zparseopts -D l+=cfg o+:=cfg p+:=cfg s=cfg c=check t=check i=inst k=kontinue h=help
+
+if [[ -n $help ]]; then
+  usage
+  exit 0
+fi
+
+cfg $cfg $@
+err=$?
+if (( $err != 0 )); then
+  print -u2 "cfg failed."
+  exit $err
+fi
+
+# Change to the directory created by cfg
+setopt extendedglob
+srcdir="${1%%/##}"		# Trim trailing slashes (for :t modifier)
+project=${srcdir:t}
+cd $project
+err=$?
+if (( $err != 0 )); then
+  print -u2 "$progname: couldn't cd to $project\n"
+  exit $err
+fi
+
+# Sometimes libintl.h gets detected on SunOS, and SunOS doesn't support it.
+if [[ $(uname -s) == SunOS && $@ == *--disable-nls* ]]; then
+  perl -pi.orig -e 's@(#define HAVE_LIBINTL_H.*)@/* \1 */@' config.h
+fi
+
+print "Making ${project:t}"
+make $kontinue >& mk.out
+err=$?
+if (( $err != 0 )) && [[ -z $kontinue ]]; then
+  print -u2 "$progname: make failed"
+  exit $err
+fi
+
+# Make 'check' or 'test' if requested
+[[ $check == *-t* ]] && check_target=test
+[[ $check == *-c* ]] && check_target=check
+if [[ -n $check_target ]]; then
+  make $kontinue $check_target
+  err=$?
+  if (( $err != 0 )) && [[ -z $kontinue ]]; then
+    print -u2 "$progname: make $check failed"
+    exit $err
+  fi
+fi
+
+# Make install if requested
+if [[ -n $inst ]]; then
+  make $kontinue install
+  err=$?
+  if (( $err != 0 )); then
+    print -u2 "$progname: make install failed"
+    exit $err
+  fi
+fi
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

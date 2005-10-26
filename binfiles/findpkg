@@ -1,0 +1,39 @@
+#!/bin/sh
+#
+# Report the filename of the most recent tarball
+# matching the specified package name
+#
+# Usage: findpkg generic_package_name
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+err=1
+if [[ $# -ne 1 ]]; then
+  print -u2 "Usage: $progname <pkg>"
+  print -u2 "\tpkg is a stripped package name, like \"gcc\" or \"make\"."
+  exit $err
+fi
+pkgbase=$1
+
+((err=err+1))
+# Equivalent to: pkgname=$(ls -t $ZIPROOT/pkgbase* | head -1)
+pkgname=$(print $ZIPROOT/$pkgbase-*(om[1])) 2>/dev/null
+if [[ ! -e $pkgname ]]; then
+  # Try with no hyphen for tcl and tk
+  pkgname=$(print $ZIPROOT/$pkgbase*(om[1])) 2>/dev/null
+  if [[ ! -e $pkgname ]]; then
+    print -u2 No files with the prefix of \"$pkgbase-\" or \"$pkgbase\" could be found in $ZIPROOT.
+    exit $err
+  fi
+fi
+
+((err=err+1))
+if [[ ! -r $pkgname ]]; then
+  print -u2 $pkgname is unreadable.
+  exit $err
+fi
+
+print $pkgname

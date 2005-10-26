@@ -1,0 +1,119 @@
+#!/bin/sh
+
+# Make and test an gcc snapshot, either from the CVS sources
+# or from a tarball.
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+prefix=${USRLOCAL:-/usr/local}
+jobs=
+check=
+
+err=1
+while getopts ":cj:" opt
+do
+  case $opt in
+  (c)	check=1
+	;;
+  (j)	jobs="-j $OPTARG"
+	;;
+  # Unknown option
+  (?)	print -u2 "$progname: invalid option: $argv[$OPTIND]"
+	exit $err
+	;;
+  esac
+done
+
+shift $OPTIND-1			# Skip over options
+
+# The default is to build from CVS.
+if [[ $# = 0 ]]; then
+
+  # Copy a source snapshot from CVS to the source tree
+  PROJECT=${PROJECT:-gcc}
+  mk-src $PROJECT
+
+  # The version stamp is based on the current date.
+  VERSION=${VERSION:-$PROJECT-$(today)}
+
+else
+  VERSION=$1
+fi
+
+# Configure a build tree in a new sub-directory of the current directory
+SRCROOT=${SRCROOT:-$prefix/src}
+SRCDIR=${SRCDIR:-$SRCROOT/$VERSION}
+gcc_LANG=
+case "$CC" in
+  (*gcc*)
+    CF='-O2 -pipe'
+    LIBCF='-O2 -pipe'
+    ;;
+  (*)
+    CF='-O'
+    LIBCF='-O'
+    ;;
+esac
+
+# Hack out ada, f77, java and objc
+pushd $SRCDIR/gcc
+rm -rf ada f java objc
+cd ..
+rm -rf libf2c libjava libobjc
+popd
+
+# Per-system tweaks
+case $(uname -a) in
+(SunOS*)
+  #CF='-O3 -pipe -ffast-math'
+  #gcc_LANG="--enable-languages='c,c++'"
+  ;;
+(*i?86*)
+  #CF="-O3 -pipe -march=pentiumpro -mcpu=pentiumpro -ffast-math"
+  #gcc_LANG="--with-gnu-as"
+  #gcc_LANG="--enable-languages='c,c++'"
+  ;;
+esac
+
+((err=err+1))
+cfg -o conf.out -s $SRCDIR --with-local_prefix=$inst_prefix --disable-nls $gcc_LANG
+if [[ $? -ne 0 ]]; then
+  print -u2 "$progname: could not configure $VERSION."
+  exit $err
+fi
+
+# Change to the newly-created build directory
+((err=err+1))
+build_dir=${SRCDIR:t}
+cd $build_dir
+if [[ $? -ne 0 ]]; then
+  print -u2 "$progname: couldn't cd to $build_dir\n"
+  exit $err
+fi
+
+# Bootstrap the compiler
+((err=err+1))
+
+# Build the compiler itself without debugging information,
+# but leave the debugging info in the libraries.
+make ${=jobs} CFLAGS="$CF" LIBCFLAGS="-g $LIBCF" LIBCXXFLAGS="-g $LIBCF -fno-implicit-templates" bootstrap-lean >& mk.out
+if [[ $? -ne 0 ]]; then
+  print -u2 "$progname: could not bootstrap; see $build_dir/mk.out"
+  exit $err
+fi
+
+((err=err+1))
+if [[ -n "$check" ]]; then
+  make -k check >& check.out
+  make mail-report.log
+  #distill-gcc-tests -e check.out  > $VERSION.results
+fi
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

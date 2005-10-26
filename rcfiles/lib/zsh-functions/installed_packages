@@ -1,0 +1,25 @@
+# List all the packages currently installed in the system
+
+local pkgdir pkgs
+
+USRLOCAL=${USRLOCAL:-/usr/local}
+
+# The packages are installed in $USRLOCAL/xemacs-packages
+# or sometimes $USRLOCAL/xemacs-packages/xemacs-packages,
+pkgdir=$USRLOCAL/xemacs-packages
+[[ ! -d $pkgdir/pkginfo ]] && pkgdir=$pkgdir/xemacs-packages
+
+if [[ ! -d $pkgdir/pkginfo ]]
+then
+  print -u2 $0: No package directory found at $USRLOCAL/xemacs-packages.
+  return 1
+fi
+
+pkgs=(${:-$pkgdir/pkginfo/*(N)})
+print ${~pkgs:t:s/MANIFEST.//}
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

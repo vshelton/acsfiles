@@ -1,0 +1,83 @@
+#include "fonts.ad"
+
+#define COMIC_SANS	-microsoft-comic sans ms-bold-r-*-*-14-*-*-*-*-*-*-*
+#undef COMIC_SANS
+#define COMIC_SANS	HELVETICA_BOLD
+#define FRAME		Emacs*EmacsFrame
+#define SMALL_NCSB	-*-new century schoolbook-medium-r-*-*-10-*
+
+! Set the foreground and background colors.
+! These colors will apply to all elements of XEmacs,
+! except those that specifically override them.
+			 Emacs.bitmapIcon: on
+			 Emacs*Foreground: Black
+			 Emacs*Background: wheat
+
+		  	    Emacs.toolBar: 0
+		  xemacs.topToolBarHeight: 0
+
+			Emacs*cursorColor: Red3
+		       Emacs*pointerColor: Red3
+
+			   FRAME.geometry: 85x60
+			       FRAME.Font: LUCIDA
+			Emacs*dialog*Font: HELVETICA_BOLD
+
+			       Emacs.font: LUCIDA
+	      Emacs.default.attributeFont: LUCIDA
+		 Emacs.bold.attributeFont: LUCIDA_BOLD
+	       Emacs.italic.attributeFont: COURIER_ITALIC
+	  Emacs.bold-italic.attributeFont: COURIER_BOLD_ITALIC
+
+	Emacs.major-heading.attributeFont: HELVETICA_BOLD
+      Emacs.section-heading.attributeFont: COURIER_ITALIC
+
+		 Emacs*menubar*Background: Gray75
+		 Emacs*menubar*Foreground: DarkSlateBlue
+		       Emacs*menubar*Font: COMIC_SANS
+
+!		   Emacs*popup*Background: Gray75
+		   Emacs*popup*Foreground: DarkSlateBlue
+
+	    Emacs*XlwScrollBar.Background: Gray75
+	 Emacs*XlwScrollBar.ArrowPosition: same
+
+	Emacs.isearch.attributeBackground: pale turquoise
+	Emacs.isearch.attributeForeground: blue
+
+   Emacs.zmacs-region.attributeBackground: lightyellow
+	 Emacs.zmacs-region.attributeFont: LUCIDA_BOLD
+   Emacs.zmacs-region.attributeForeground: black
+
+       FRAME.modeline.attributeBackground: light salmon
+	     FRAME.modeline.attributeFont: SMALL_NCSB
+
+	    FRAME.font-lock-comment-face.attributeFont: LUCIDA_BOLD
+      FRAME.font-lock-comment-face.attributeForeground: turquoise4
+
+	 FRAME.font-lock-doc-string-face.attributeFont: LUCIDA_BOLD
+   FRAME.font-lock-doc-string-face.attributeForeground: purple4
+
+      FRAME.font-lock-function-name-face.attributeFont: LUCIDA_BOLD
+FRAME.font-lock-function-name-face.attributeForeground: blue4
+
+	    FRAME.font-lock-keyword-face.attributeFont: LUCIDA_BOLD
+      FRAME.font-lock-keyword-face.attributeForeground: dark orchid
+
+       FRAME.font-lock-preprocessor-face.attributeFont: LUCIDA_BOLD
+ FRAME.font-lock-preprocessor-face.attributeForeground: orchid4
+
+	  FRAME.font-lock-reference-face.attributeFont: LUCIDA_BOLD
+    FRAME.font-lock-reference-face.attributeForeground: red3
+
+	     FRAME.font-lock-string-face.attributeFont: LUCIDA_BOLD
+       FRAME.font-lock-string-face.attributeForeground: dark goldenrod
+
+	       FRAME.font-lock-type-face.attributeFont: LUCIDA_BOLD
+	 FRAME.font-lock-type-face.attributeForeground: brown
+
+!     FRAME.font-lock-variable-name-face.attributeFont: LUCIDA_BOLD
+FRAME.font-lock-variable-name-face.attributeForeground: chocolate
+
+	    FRAME.font-lock-warning-face.attributeFont: LUCIDA_BOLD
+      FRAME.font-lock-warning-face.attributeForeground: black

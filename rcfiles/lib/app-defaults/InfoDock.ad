@@ -1,0 +1,14 @@
+#include "fonts.ad"
+
+! Most of the resources are shared with XEmacs, and thus
+! they are defined in "Emacs.ad".
+
+! This resource is used by the InfoDock startup script
+	    infodock*emacs.name: InfoDock
+	  infodock*pointerColor: Red3
+
+! XEmacs 19.12 built-in toolbar color -
+! use black so xbitmaps do not appear greyed out
+infodock*backgroundToolBarColor: black
+
+   infodock*EmacsFrame.geometry: 85x55

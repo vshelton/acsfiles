@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# Remove vestigial XEmacs commands
+
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+OS_dirs=( . )
+case $(uname -s) in
+(SunOS*)
+  OS_dirs=( ../SunOS-5.5 ../SunOS-5.8 )
+  ;;
+esac
+
+cd $USRLOCAL
+for d in $OS_dirs; do
+  [[ $d != . ]] && echo "\n$d"
+  pushd $d/bin
+  for f in xem*(@); do
+    [[ ! -d ../$f ]] && ls -ld $f && rm $f
+  done
+  popd
+done
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

@@ -1,0 +1,9 @@
+# Report the X display we're talking to
+case "$DISPLAY" in
+"" | unix:0* | localhost:0* | :0*)
+	print $(uname -n):0.0
+	;;
+*)
+	print $DISPLAY
+	;;
+esac

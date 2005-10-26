@@ -1,0 +1,17 @@
+
+# Set up common environment (AOA PC version)
+# This should be common for all the nodes within a network.
+# USRLOCAL is the destination hierarchy for locally-built packages
+# SRCROOT is the root of source hierarchy for locally-built packages
+# BLDROOT is the root of the build hierarchy for locally-built packages
+# ZIPROOT is the directory where tarfiles live
+export USRLOCAL=${USRLOCAL:-~/software)
+export SRCROOT=${SRCROOT:-$USRLOCAL/src}
+export BLDROOT=${BLDROOT:-$USRLOCAL/build}
+export ZIPROOT=${ZIPROOT:-$USRLOCAL/zip}
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

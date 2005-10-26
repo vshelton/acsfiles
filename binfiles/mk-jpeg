@@ -1,0 +1,34 @@
+#!/bin/sh
+#
+# Make and install the JPEG library
+# Options:
+#   -u Unpack the sources from tarfiles
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+prefix=${USRLOCAL:-/usr/local}
+jobs=
+unpack=
+
+err=1
+while getopts ":u" opt
+do
+  case $opt in
+  (u)	unpack=-u
+	;;
+  # Unknown option
+  (?)	print -u2 "$progname: invalid option: $argv[$OPTIND]"
+	exit $err
+	;;
+  esac
+done
+
+shift $OPTIND-1			# Skip over options
+
+jpegsrc=$(getsource $unpack jpeg)
+bld -ck $(relative $jpegsrc) --disable-nls
+cd ./$jpegsrc:t
+make install-lib

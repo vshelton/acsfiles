@@ -1,0 +1,80 @@
+#!/bin/sh
+
+# Make XEmacs packages from CVS sources
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+# Copy the packages tree to a build directory based on today's date
+VERSION=$(today)
+SRCROOT=$PWD mk-src xemacs-packages $VERSION
+err=$?
+if (( err != 0 )); then
+  print -u2 "$progname: mk-src error"
+  exit $err
+fi
+
+cd xemacs-packages-$VERSION
+err=$?
+if (( err != 0 )); then
+  print -u2 "$progname: could not change to xemacs-packages-$VERSION directory."
+  exit $err
+fi
+
+# If we don't have tex, then we can't build auctex.
+# If we don't build auctex, then we can't build x-symbol.
+setopt nonomatch
+if [[ ! -e =tex ]]; then
+  perl -pi.orig -e "
+    s@auctex@@;
+    s@x-symbol@@;
+  " xemacs-packages/Makefile
+  #rm -rf xemacs-packages/auctex xemacs-packages/x-symbol
+fi
+
+STAGING=${STAGING:-"$HOME/tmp/staging"}
+
+# Figure out what packages were previously installed
+pkgs=${pkgs:-$(installed_packages)}
+
+# Make a local rules file
+perl -p -e "
+    s@^XEMACS_21_5[\s]*=.*@XEMACS_21_5 =@;
+    s@^BUILD_WITHOUT_MULE[\s]*=.*@BUILD_WITHOUT_MULE = t@;
+    s@^NONMULE_INSTALLED_PACKAGES_ROOT[\s]*=.*@NONMULE_INSTALLED_PACKAGES_ROOT = $STAGING@;
+" < Local.rules.template > Local.rules
+
+make >& mk.out
+err=$?
+if (( err != 0 )); then
+  print -u2 "$progname: make failed.  See xemacs-packages-$VERSION/mk.out."
+  exit $err
+fi
+
+rm -rf $STAGING
+make bindist >>& mk.out
+err=$?
+if (( err != 0 )); then
+  print -u2 "$progname: make bindist failed.  See xemacs-packages-$VERSION/mk.out."
+  exit $err
+fi
+
+print "$progname: XEmacs packages copied to $STAGING."
+
+# Copy packages to $USRLOCAL/xemacs-packages-$(today)
+mkdir $USRLOCAL/xemacs-packages-$VERSION
+cd $STAGING
+for p in ${=pkgs}; do
+  tar xfz $p-[0-9]* -C $USRLOCAL/xemacs-packages-$VERSION
+done
+
+cd $USRLOCAL/xemacs-packages-$VERSION/lisp
+rm */*.el~*/_pkg.el
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

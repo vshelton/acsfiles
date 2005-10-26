@@ -1,0 +1,35 @@
+#!/bin/sh
+
+# graycliff cron job
+
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+# Here is the crontab that invokes this script:
+#  # Build new copies of emacs, XEmacs and zsh monthly
+#  # Build new copies of emacs, XEmacs and zsh, each weekday if anything has changed
+#  #min	hour	mnthday	month	weekday	command
+#  #45	13	*	*	1-5	echo hello
+#  00	0	1	*	*	(PATH=/u/sheltonv/bin:/u/sheltonv/software/SunOS-5.8/bin:/usr/bin; export PATH; /u/sheltonv/bin/monthly.graycliff)
+#  00	5	*	*	1-5	(PATH=/u/sheltonv/bin:/u/sheltonv/software/SunOS-5.8/bin:/usr/bin; export PATH; /u/sheltonv/bin/daily.graycliff)
+
+# As you can see above, this command runs each weekday morning,
+# Don't, however, run this command on the first of the month; a
+# separate monthly script supplants this one then.  It should be
+# possible to specify this in the crontab, but I don't know how.
+(( $(date +%d) == 01 )) && exit 0
+
+# graycliff builds emacs, zsh and then all the XEmacs projects
+update-emacs
+
+export CC=cc
+# CFLAGS derived from running 'cc -fast -#' on denver, an ultra2i
+export CFLAGS='-fast -xarch=v8plusa -xchip=ultra2i -xcache=16/32/1:512/64/1'
+update-zsh
+CC=cc CFLAGS='-xO2 -xspace' update-xemacs
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

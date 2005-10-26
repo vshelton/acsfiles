@@ -1,0 +1,2 @@
+#!/bin/sh
+exec env CVS_RSH=ssh cvs -w -z3 -d:ext:xemacs@cvs.xemacs.org:/pack/xemacscvs ${1+"$@"}

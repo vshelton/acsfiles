@@ -1,0 +1,39 @@
+# Update all the CVS archives
+emulate -R zsh
+setopt localoptions pushd_silent
+local d
+
+function update_root {
+  [[ -d ~/cvsroot/$1 ]] || continue
+  print "\n$1"
+  pushd ~/cvsroot/$1
+  loop_while_failing cvs -q update
+  popd
+}
+
+# rsync XEmacs's CVSRoot if we have a local copy
+XEmacsCVSRoot=${XEmacsCVSRoot:-/opt/CVSroot/XEmacs}
+if [[ -d $XEmacsCVSRoot ]]; then
+  loop_while_failing rsync -qavz --delete '--exclude=CVSROOT/config' sunsite.dk::xemacscvs $XEmacsCVSRoot
+fi
+
+roots=${roots:-"emacs exmh grep gnulib gnus url w3 xemacs-21.4 xemacs-21.5 xemacs-builds xemacs-packages xemacsweb zsh zsh-4.0"}
+ssh_roots=(emacs gnulib grep url w3 zsh-write)
+
+for d in ${=roots}; do
+
+  # Spawn a subshell so we can set CVS_RSH as appropriate
+  (
+    # If this root needs ssh, use it
+    [[ -n ${ssh_roots[(r)$d]} ]] && export CVS_RSH=ssh
+
+    update_root $d
+
+  )
+done
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

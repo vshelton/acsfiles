@@ -1,0 +1,32 @@
+
+# print all the source, build and install directories
+# e.g. on a default system, this would print:
+#   /usr/local/src
+#   /usr/local/build
+#   /usr/local
+
+setopt local_options
+setopt csh_null_glob null_glob no_mark_dirs pushd_silent no_pushd_ignoredups
+local all_dirs d ul
+typeset -U all_dirs
+
+ul=${USRLOCAL:-/usr/local}
+all_dirs=(${SRCROOT:-$ul/src} ${BLDROOT:-$ul/build} $ul)
+pushd $ul/..
+for d in SunOS* Linux*; do
+  [[ -d $d ]] && all_dirs=($all_dirs $PWD/$d)
+done
+popd
+pushd $BLDROOT/../..
+for d in SunOS* Linux*; do
+  [[ -d $d/build ]] && all_dirs=($all_dirs $PWD/$d/build)
+done
+popd
+
+print -l $all_dirs
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

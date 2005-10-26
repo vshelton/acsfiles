@@ -1,0 +1,41 @@
+# Print the directory (somewhere under $USRLOCAL) where the specified
+# command is installed.  For example, $USRLOCAL/bin/xemacs is a symbolic
+# link to $USRLOCAL/xemacs/bin/xemacs, but $USRLOCAL/xemacs is a symbolic
+# link to $USRLOCAL/xemacs-2003-10-23.  In this case,
+# find_install_root xemacs will print out $USRLOCAL/xemacs-2003-10-23.
+
+local cmdpath ipath upath
+
+if [[ $# -ne 1 ]]
+then
+  print -u2 "usage: $0 command
+       eg: $0 zsh would print /u/shelton2/software/SunOS-5.8"
+  return 1
+fi
+
+# $(whence -s xemacs) yields something like
+#   $USRLOCAL/bin/xemacs -> $USRLOCAL/xemacs-21.4-2003-10-23/bin/xemacs-21.4.14
+# this works because there is a symlink at or below $USRLOCAL such that
+# xemacs -> xemacs-21.4-2003-10-23.  Print where the symlink points.
+cmdpath=($(whence -s $1))
+if (( ? != 0 ))
+then
+  print -u2 "$0: there is no $1 in your \$PATH."
+  return 2
+fi
+
+ipath=$(cd $cmdpath[3]:h:h; pwd -r)
+upath=$(cd $USRLOCAL; pwd -r)
+if [[ $ipath != $upath* ]]
+then
+  print -u2 "$0: the $1 command is not in the \$USRLOCAL hierarchy."
+  return 3
+fi
+
+print $ipath
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

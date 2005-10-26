@@ -1,0 +1,14 @@
+
+case $TTY in
+(/dev/tty1|/dev/vc/1)
+  [[ $HOMESYSTEM = ${HOST%%.*} ]] && fetchmail -d 300 pop.gmail.com
+  startx -- -dpi 100 >& ~/.xsession-errors &
+  vlock
+  ;;
+esac
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

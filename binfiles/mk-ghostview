@@ -1,0 +1,46 @@
+#!/bin/sh
+#
+# Make and install a version of ghostview
+# Options:
+#   -u Unpack the sources from tarfiles
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+unpack=
+general_cfg_opts=
+prefix=${USRLOCAL:-/usr/local}
+
+err=1
+while getopts ":u-:" opt
+do
+  case $opt in
+  (u)	unpack=-u
+	;;
+  # Ignored in this case because we don't use configure.
+  (-)	general_cfg_opts="$general_cfg_opts --$OPTARG"
+	;;
+  # Unknown option
+  (?)	print -u2 "$progname: invalid option: $argv[$OPTIND]"
+	exit $err
+	;;
+  esac
+done
+
+shift $OPTIND-1			# Skip over options
+
+CC=${CC:-gcc}
+
+ghostsrc=$(getsource $unpack ghostview)
+mkdir $ghostsrc:t
+cd $ghostsrc:t
+symlink-tree $ghostsrc
+
+export OPENWINHOME=/usr/openwin
+xmkmf
+make CC=$CC CDEBUGFLAGS=-O CCOPTIONS=
+mkdir -p $prefix/lib/app-defaults
+make CC=$CC CDEBUGFLAGS=-O CCOPTIONS= BINDIR=$prefix/bin LIBDIR=$prefix/lib MANDIR=$prefix/man/man1 MANSUFFIX=1 install install.man
+

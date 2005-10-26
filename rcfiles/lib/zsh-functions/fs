@@ -1,0 +1,15 @@
+# Find all files matching the specified suffixes
+local pattern='\.c$|\.h$\.cc$|\.hh$'	# The default is all source files
+if [[ $# -gt 0 ]]						# Generate the patterns for egrep
+then
+	pattern="*\.${1}$"
+	shift
+	while [[$# -gt 0]]
+	do
+	pattern="$pattern|*\.${1}$"
+	shift
+	done
+fi
+
+# Find all files which match the specified suffixes
+f | egrep "$pattern"

@@ -1,0 +1,14 @@
+# Set non-default shell enviroment, post .zshenv (AOA linux version)
+
+path=( ~/bin $USRLOCAL/bin /usr/kerberos/bin /usr/X11R6/bin /bin /usr/bin /sbin )
+
+# Special bootstrap path, if appropriate
+[[ -e ~/.bootstrap-$sysprefix ]] && path=( ~/bin ~/bootstrap/bin $path)
+
+bindkey -s '^X^R' "print -r \"\!\!\" | .zsh^M"
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

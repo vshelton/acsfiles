@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# Record the ownership and permissions of all files, etc
+# under the current directory.
+
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+cmdname="${0:t}"
+
+# There is an unfortunate asymmetry with symlinks: although
+# find reports the mode of the link, chmod (used in the
+# RestoreState script) automatically dereferences the link.
+# We get around this by saving the state of the links first.
+destfile=all-files-$(now)
+find . -type l -printf "%m	%U	%G	%p\n" | sort > $destfile
+find . \! -type l -printf "%m	%U	%G	%p\n" | sort >>$destfile
+
+

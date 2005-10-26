@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# Make and install a version of the Xaw3d library
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+prefix=${USRLOCAL:-/usr/local}
+jobs=
+err=1
+
+xawsrc=$(unpack Xaw3d)
+# Sigh...
+pushd $SRCROOT
+mv xc/lib/Xaw3d $xawsrc:t
+rmdir xc/lib xc

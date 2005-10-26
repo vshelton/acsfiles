@@ -1,0 +1,21 @@
+# pushd function to emulate the old zsh behaviour.
+# With this, pushd +/-n lifts the selected element
+# to the top of the stack instead of cycling
+# the stack.
+local integer silent=0
+[[ -o pushdsilent ]] && silent=1
+emulate -RL zsh
+(( silent > 0 )) && setopt pushdsilent
+
+if [[ ARGC -eq 1 && "$1" == [+-]<-> ]] then
+  setopt pushdignoredups
+  builtin pushd ~$1
+else
+  builtin pushd "$@"
+fi
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

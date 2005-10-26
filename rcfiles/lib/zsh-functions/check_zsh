@@ -1,0 +1,16 @@
+# Run 'make check' on the object files for the version of zsh currently running
+
+# Change to the correct build directory through the magic of CDPATH
+# Note: not pushd/popd because I use pushdignoredups
+cd ${MODULE_PATH:h:h:h:t}
+
+make check
+cd -
+rm /tmp/zsh.ztst.*
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:
+

@@ -1,0 +1,10 @@
+# Extend a variable with a directory
+[[ $# -lt 2 ]] && echo "Usage: extend VAR value [value ...]" && return 1
+local var=$1; local val; shift
+for val in $*
+do
+	[[ ! -d ${val} ]] && continue
+	eval "local contents=\$$var"
+	[[ -z "$contents" ]] && export $var="$val" && continue
+	eval "[[ \$${var}[(iews/:/)$val] -eq 0 ]] && export $var=\${$var}:$val"
+done

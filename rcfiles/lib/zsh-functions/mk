@@ -1,0 +1,6 @@
+# Run make
+(
+	savefile errs
+	make $@ 2>&1 | tee errs
+	beep
+)

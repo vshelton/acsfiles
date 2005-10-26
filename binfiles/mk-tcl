@@ -1,0 +1,63 @@
+#!/bin/sh
+#
+# Make and install tcl and tk
+# Options:
+#   -u Unpack the sources from tarfiles
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+unpack=
+general_cfg_opts=
+prefix=${USRLOCAL:-/usr/local}
+
+err=1
+while getopts ":u-:" opt
+do
+  case $opt in
+  (u)	unpack=-u
+	;;
+  (-)	general_cfg_opts="$general_cfg_opts --$OPTARG"
+	;;
+  # Unknown option
+  (?)	print -u2 "$progname: invalid option: $argv[$OPTIND]"
+	exit $err
+	;;
+  esac
+done
+
+shift $OPTIND-1			# Skip over options
+
+CC=${CC:-gcc}
+use_gcc=
+case $CC in
+  (*gcc*)
+    use_gcc="--enable-gcc"
+    ;;
+esac
+
+tclsrc=$(getsource $unpack tcl)
+mkdir $tclsrc:t
+cd $tclsrc:t
+$tclsrc/unix/configure --prefix=$prefix $use_gcc --disable-nls  --disable-shared
+tclbld=$PWD
+make
+make test
+make install
+
+tksrc=$(getsource $unpack tk)
+mkdir ../$tksrc:t
+cd ../$tksrc:t
+$tksrc/unix/configure  --prefix=$prefix --with-tcl=$tclbld $use_gcc --disable-nls --disable-shared
+make
+#make test		# Not much point under Exceed
+make install
+
+# Link up the installed directory
+#linkup $tclsrc:t
+
+#pushd $prefix/bin
+#ln -s tclsh*(om[1]) tclsh
+#ln -s wish*(om[1]) wish

@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Print an OS-specific version name.
+echo "`uname -s`-`uname -r | sed 's/\([0-9]*\.[0-9]*\).*/\1/'`"

@@ -1,0 +1,10 @@
+#compdef rm_versions
+
+# Handle completion for the rm_versions command.
+compadd $(all_versions "${PREFIX}*")
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

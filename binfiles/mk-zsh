@@ -1,0 +1,145 @@
+#!/bin/sh
+
+# Make zsh from the latest CVS sources
+# Usage: mk-zsh [zsh-version] [configure opts]
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+# User-visible and user-overridable variables are all caps
+USRLOCAL=${USRLOCAL:-/usr/local}
+SRCROOT=${SRCROOT:-$USRLOCAL/src}
+VERSION=${VERSION:-$(today)}
+PROJECT=${PROJECT:-zsh}
+TARGET=${TARGET:-$PROJECT-$VERSION}
+# We need to remember how SRCDIR got set
+src_override=1          # Assume SRCDIR was set before script started
+if [[ -z $SRCDIR ]]; then
+  src_override=0
+  SRCDIR=${SRCDIR:-$SRCROOT/$TARGET}
+fi
+
+inst_prefix=$USRLOCAL
+err=1
+
+
+# If either there are no more remaining arguments,
+# or if the next argument is a configuration option,
+# copy a source snapshot from CVS to the source tree
+if [[ $# = 0 ]] || [[ "$1" == -* ]]; then
+  mk-src $PROJECT
+
+  # Generate a configure script
+  pushd $SRCDIR  || exit $err
+  ./Util/preconfig
+  if [[ $? -ne 0 ]]; then
+    print -u2 "preconfig failure on $PROJECT."
+    exit $err
+  fi
+  popd
+
+# Otherwise, $1 is the name of the already-unpacked source directory
+else
+  TARGET=$1
+  (( src_override == 0 )) && SRCDIR=$SRCROOT/$TARGET
+  shift
+fi
+
+# Default options to configure.
+with_tcsetpgrp="--with-tcsetpgrp"
+enable_dynamic="--enable-dynamic"
+generic_cfg_opts=
+
+broken_dynamic=
+SunOS4_hack=
+# Set configure options based on OS version
+case $(uname -a) in
+(SunOS * 4.*)
+# enable_dynamic="--disable-dynamic"
+  broken_dynamic=1
+  SunOS4_hack="NIBZSH=-liberty"
+  ;;
+esac
+
+# Support options to configure.
+while [[ $# -gt 0 ]]
+do
+  case $1 in
+  (--disable-dynamic*)
+    enable_dynamic=$1
+    ;;
+  (--enable-dynamic*)
+    enable_dynamic=$1
+    ;;
+  (--with-tcsetpgrp*)
+    with_tcsetpgrp=$1
+    ;;
+  (--*)
+    generic_cfg_opts="$generic_cfg_opts $1"
+    ;;
+  esac
+  shift
+done
+
+# Configure a build tree in a new sub-directory of the current directory
+((err=err+1))
+cfg -s -o conf.out $SRCDIR --datadir=$USRLOCAL/share  --enable-zsh-mem --enable-etcdir=$USRLOCAL/etc $enable_dynamic $with_tcsetpgrp --disable-nls --disable-locale ${=generic_cfg_opts}
+if [[ $? -ne 0 ]]; then
+  print -u2 "Could not configure $PROJECT."
+  exit $err
+fi
+
+((err=err+1))
+build_dir=$TARGET
+cd $build_dir
+if [[ $? -ne 0 ]]; then
+  print -u2 "$progname: couldn't cd to $build_dir\n"
+  exit $err
+fi
+
+# Make sure deltochar is linked in if we're building statically
+if [[ "$enable_dynamic" = "--disable-dynamic" ]]; then
+  perl -pi.orig -e "s@(.*deltochar.*)link=no.*@\1link=static auto=yes load=yes@" config.modules
+  make prep
+fi
+
+# If we're building on an OS with broken dynamic linking,
+# ie SunOS-4.1, statically link in complete and zle.
+# See INSTALL in the zsh source tree for more details
+if [[ -n "$broken_dynamic" ]]; then
+  perl -pi.orig -e "s@(.*complete .*|.*zle .*)link=dynamic(.*)@\1link=static\2@" config.modules
+  make prep
+fi
+
+print -n "Building zsh..."
+((err=err+1))
+make $SunOS4_hack >& mk.out
+if [[ $? -ne 0 ]]; then
+  print -u2 "\nmake failed.  See $build_dir/mk.out."
+  exit $err
+fi
+
+((err=err+1))
+print -n "done.\nRunning tests..."
+make check >& check.out
+if [[ $? -ne 0 ]]; then
+  print -u2 "\n$progname: make check failed.  See $build_dir/check.out."
+  exit $err
+fi
+rm /tmp/zsh.ztst.*
+print "done.\nInstalling package to $inst_prefix/$TARGET."
+
+((err=err+1))
+make install install.info >& inst.out
+if [[ $? -ne 0 ]]; then
+  print -u2 "make install failed.  See $build_dir/inst.out."
+  exit $err
+fi
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

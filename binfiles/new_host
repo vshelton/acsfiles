@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# Set up necessary links to login to a new host
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+system=$1
+
+cd ~
+ln -s .zlogin.Teradyne .zlogin.$system
+ln -s .zshenv.Teradyne-post .zshenv.$system-post
+ln -s .zshenv.Teradyne-pre .zshenv.$system-pre
+
+read -q "?Is $system a Solaris 5.8 (or greater) system? '
+(( status == 0 )) && touch .$system-SunOS-5.8
+
+cd bin
+ln -s amethyst $system
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

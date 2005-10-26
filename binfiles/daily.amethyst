@@ -1,0 +1,61 @@
+#!/bin/sh
+
+# amethyst cron job
+
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+# Here is the crontab that invokes this script:
+#  #min hour monthday month weekday command
+#  # amethyst builds xemacs-21.4 and xemacs-21.5 nightly
+#  #00    1    *        *     1-5     (PATH=/u/sheltonv/bin:/u/sheltonv/software/SunOS-5.5/bin:/usr/bin; export PATH; /u/sheltonv/bin/daily.amethyst)
+#  00   06    *        *     1-5     (PATH=/u/sheltonv/bin:/u/sheltonv/software/SunOS-5.5/bin:/usr/bin; export PATH; /u/sheltonv/bin/daily.amethyst)
+
+# As you can see above, this command runs each weekday morning,
+# Don't, however, run this command on the first of the month; a
+# separate monthly script on boise supplants this one then.  It
+# should be possible to specify this in the crontab,
+# but I don't know how.
+(( $(date +%d) == 01 )) && exit 0
+
+# Change to the root of the build tree (see .zshenv for values)
+cd $BLDROOT
+
+# Build xemacs-21.4 and 21.5 on amethyst.
+# Build zsh and emacs on boise.
+#for project in zsh xemacs-21.4 xemacs-21.5 emacs; do
+for project in xemacs-21.4 xemacs-21.5 ; do
+
+  # Look for a source directory with no corresponding
+  # system-specific build directory
+  target=${project}-$(today)*(om[1])		# Use most-recently modified
+  srcdir=$(print $SRCROOT/${~target}) 2>/dev/null
+  blddir=$(sysprefix)/${srcdir:t}
+
+  if [[ -d $srcdir ]] && [[ ! -d $blddir ]]; then
+
+    case $project in
+    (xemacs*)
+      srcdir=${srcdir%(-debug|-mule)}
+      CC=cc mk-xemacs -odm ${srcdir:t}
+      ;;
+
+    (zsh)
+      CC=cc CFLAGS='-fast' mk-zsh ${srcdir:t}
+      ;;
+
+    # emacs can only build with gcc right now
+    (*)
+      mk-$project ${srcdir:t}
+      ;;
+    esac
+
+    print "\n\n"
+  fi
+done
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

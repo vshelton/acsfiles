@@ -1,0 +1,19 @@
+
+# Set up common environment (Teradyne PC version)
+# This should be common for all the nodes within a network.
+# USRLOCAL is the destination hierarchy for locally-built packages
+# SRCROOT is the root of source hierarchy for locally-built packages
+# BLDROOT is the root of the build hierarchy for locally-built packages
+# Set system-specific variables
+export USRLOCAL=${USRLOCAL:-$HOME}
+export SRCROOT=${SRCROOT:-$USRLOCAL/src}
+export BLDROOT=${BLDROOT:-$USRLOCAL/build}
+export ZIPROOT=${ZIPROOT:-$USRLOCAL/zip}
+
+[[ -z $USER ]] && export USER=$(id -un)
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

@@ -1,0 +1,5 @@
+# Pretty-print C source
+for f in "$@"; do
+	#vgrind -d ~/lib/vgrindefs -lc -w "$f" | psnup -2 | lp
+	vgrind -lc -w "$f" | psnup -2 | lp
+done

@@ -1,0 +1,3 @@
+# Remove a function's old definition
+unfunction "$@"
+autoload "$@"

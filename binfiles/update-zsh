@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# Execute this script under the Z shell
+# The zsh environment will be set up by .zshenv
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+update_and_build zsh mk-zsh $*
+#PROJECT=zsh-4.0 update_and_build zsh-4.0 mk-zsh $*

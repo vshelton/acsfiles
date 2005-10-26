@@ -1,0 +1,24 @@
+# Loop a command several times until it passes, or until a maximum
+# number of loops has expired.
+
+local i
+local maxloops=25
+local retcode
+local sleep_period=${sleep_period:-10}
+
+for (( i=0; i < maxloops; i++ ))
+do
+  (( i > 0 )) && sleep $sleep_period
+  $*
+  retcode=$?
+  if (( $retcode == 0 )) break
+done 2>/dev/null
+
+(( i == maxloops )) && print -u2 "$0: \'$*\' returned non-zero values $maxloops times"
+return $retcode
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

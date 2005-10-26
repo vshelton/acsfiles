@@ -1,0 +1,33 @@
+# Dereference symbolic links pointing to directories
+
+local cmd nargs
+
+cmd=( ls -F )
+case $0 in
+(la)  cmd=( $cmd -a )
+      ;;
+(ll)  cmd=( ls -l )
+      ;;
+(lr)  cmd=( $cmd -R )
+      ;;
+esac
+
+cmd=( $cmd ${argv//#[^-]*/})	# Add options to command string. This will get
+				# confused by filenames which start with dash.
+argv=( ${argv//#-*} )           # Remove options from argv
+nargs=( ${^~argv}(N-M) )	# Expand filenames, add trailing slash to
+				# directories and symlinks to directories
+
+# This can happen because argv was null after stripping options (OK)
+# or because the expansion above produced no match (not OK).
+# In the latter case, we'll let ls generate the error.
+[[ $#nargs == 0 ]] && { $cmd $argv; return $? }
+
+$cmd $nargs			# All symbolic links that point to directories
+				# have had a slash appended to them.
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

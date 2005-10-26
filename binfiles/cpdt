@@ -1,0 +1,19 @@
+#!/usr/bin/env perl
+
+# Copy the date and time from one file to one or more files
+
+$file = shift @ARGV;
+($dev, $ino, $mode, $nlink, $uid, $gid, $rdev, $size, $atime,
+	$mtime, $ctime, $blksize, $blocks) = stat($file);
+die "Couldn't stat $file\n" if ($dev eq "");
+
+foreach $file (@ARGV) {
+	if (! -f $file) {
+		if (!open(FILE, ">$file")) {
+			warn "Couldn't create $file in order to update time\n";
+			next;
+		}
+		close FILE;
+	}
+}
+utime $atime, $mtime, @ARGV;

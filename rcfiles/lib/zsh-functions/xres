@@ -1,0 +1,11 @@
+
+# Query the loaded XResources for a specific resource
+[[ -z $DISPLAY ]] && return 1
+
+xrdb -q | grep -i $@
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

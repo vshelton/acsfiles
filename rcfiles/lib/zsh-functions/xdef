@@ -1,0 +1,12 @@
+
+# Set up the default XResources
+[[ -z $DISPLAY ]] && return 1
+
+xrdb $HOME/.Xdefaults
+xrdb -merge -cpp m4 -I$HOME/lib/app-defaults $HOME/.Xresources
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

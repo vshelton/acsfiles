@@ -1,0 +1,16 @@
+
+# Make a specified symlink point to the latest version of that thing
+# Usage: link-latest <package>
+#        ie: link-latest xemacs-packages
+
+[[ $# -lt 1 ]] && print -u2 "Usage: $0 linkname" && return 1
+
+package=$1
+rm $package || return $?
+ln -s ${package}*(oc[1]) $package
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

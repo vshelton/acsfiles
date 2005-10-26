@@ -1,0 +1,48 @@
+#!/bin/sh
+
+# Remotely login to the computer specified by $0
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+system=${0:t}
+
+suffix=
+case $system in
+  (*.new)
+    suffix=".new"
+    system=${system%.new}
+    ;;
+  (*.old)
+    suffix=".old"
+    system=${system%.old}
+    ;;
+esac
+
+# If the target system is a 5.8+ system, run 5.8 executables
+if [[ -e .$system-SunOS-5.8 ]]
+then
+  #xpath=$USRLOCAL/SunOS-5.8/bin/xterm
+  xpath=$USRLOCAL/bin/xterm
+  #zpath=$USRLOCAL/SunOS-5.8/bin/zsh
+  zpath=$USRLOCAL/bin/zsh
+
+# Otherwise, strip out a SunOS-5.8 path component, so we don't
+# try to execute SunOS-5.8 executables under SunOS-5.5
+# on the target system.
+else
+  path[(r)*SunOS-5.8*]=()
+  xpath==xterm
+  zpath==zsh
+fi
+
+# Apply a suffix to $USRLOCAL, if appropriate
+[[ -n $suffix ]] && path=${(@)path/$USRLOCAL/$USRLOCAL$suffix}
+
+rxcmd $system $xpath -name $system -title $system -e $zpath -l
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

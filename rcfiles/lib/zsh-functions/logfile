@@ -1,0 +1,2 @@
+# Change the name of the logfile for an xterm (doesn't work)
+print -n "\033]3;$@\007"

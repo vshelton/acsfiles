@@ -1,0 +1,22 @@
+# Loop a CVS update several times in case the CVS server is flaky
+
+local i
+local maxloops=20
+local retcode
+
+for (( i=0; i < maxloops; i++ ))
+do
+  (( i > 0 )) && sleep 5
+  cvs -q update
+  retcode=$?
+  if (( $retcode == 0 )) break
+done 2>/dev/null
+
+(( i == maxloops )) && print -u2 "$0: timed out updating ${PWD:t}"
+return $retcode
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

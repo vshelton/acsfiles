@@ -1,0 +1,48 @@
+#!/usr/bin/env perl
+
+# Save the specified email message files (or stdin if none specified)
+# to a file named by the message id, extracted from the message header.
+
+use warnings;
+use Fcntl;
+
+($progname = $0) =~ s@^.*/@@;
+
+# Process options here
+
+$hdr_regexp = "message-id:\\s*<(.*)>";
+
+unshift(@ARGV, '-') unless @ARGV;
+
+# Loop through all supplied files
+fileloop:
+while ($ARGV = shift @ARGV) {
+#    $outname = qx(./extract_mail_header 'message-id:\\s*<(.*)>' $ARGV);
+    $outname = qx(extract_mail_header "$hdr_regexp" $ARGV);
+    chop $outname;
+#    print "outname = \"$outname\"\n";
+
+    unless (open(ARGV, $ARGV)) {
+	print STDERR "$progname: Can't open $ARGV: $!\n";
+	next fileloop;
+    }
+
+    # Create a file named for the message id
+    unless (sysopen (FH, $outname, O_WRONLY | O_CREAT | O_TRUNC, 0400)) {
+	print STDERR "$progname: Can't open $outname: $!\n";
+	close(ARGV);
+	next fileloop;
+    }
+
+    # Copy entire message to output file
+    while (defined($_ = <ARGV>)) {
+	print FH $_;
+
+	if (eof) {
+	    print ($ARGV eq "-" ? "Message" : $ARGV, " copied to $outname\n");
+	    close(ARGV);
+	    close(FH) || print STDERR "$progname: Can't close $outname: $!\n";
+	    next fileloop;
+	}
+    }
+}

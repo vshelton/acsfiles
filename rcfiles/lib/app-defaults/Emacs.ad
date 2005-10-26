@@ -1,0 +1,175 @@
+include(fonts.m4)
+
+define(`BOLD', GetFont(`Fixed', `Bold', `Regular', `Small'))
+define(`BOLD_ITALIC', `GetFont(`Fixed', `Bold', `Italic', `Small')')
+define(`ITALIC', `GetFont(`Fixed', `Normal', `Italic', `Small')')
+define(`NORMAL', `GetFont(`Fixed', `Normal', `Regular', `Small')')
+
+dnl The default is to use a medium-sized font for the XEmacs menubar
+define(`HEADLINE', `GetFont(`Proportional', `Bold', `Regular', `Medium')')
+
+dnl If the host name is one of my AOA PC's, then define a smaller font
+dnl to use for the XEmacs menu
+define(`AOA_PC', `vshelton-pc')
+ifelse(substr(HOST, 0, len(AOA_PC)), AOA_PC,
+	`define(`HEADLINE', `GetFont(`Proportional', `Bold', `Regular', `Small')')')
+
+define(`MODELINE', `GetFont(`Proportional', `Normal', `Regular', `Tiny')')
+
+! Syntactic sugar
+define(`EFRAME', `Emacs*EmacsFrame')
+
+				       Emacs.bitmapIcon: on
+				xemacs.topToolBarHeight: 0
+					  Emacs.toolBar: 0
+					EFRAME.geometry: 85x60
+					    EFRAME.Font: NORMAL
+				      Emacs*dialog*Font: HEADLINE
+					     Emacs.font: NORMAL
+			    Emacs.default.attributeFont: NORMAL
+			       Emacs.bold.attributeFont: BOLD
+			     Emacs.italic.attributeFont: ITALIC
+			Emacs.bold-italic.attributeFont: BOLD_ITALIC
+			EFRAME.blue.attributeForeground: LightSteelBlue
+			       Emacs*menubar*Background: Gray75
+			       Emacs*menubar*Foreground: DarkSlateBlue
+				     Emacs*menubar*Font: HEADLINE
+				 Emacs*popup*Background: Gray75
+				 Emacs*popup*Foreground: DarkSlateBlue
+				       Emacs*popup*Font: HEADLINE
+			  Emacs*XlwScrollBar.Background: Gray75
+		       Emacs*XlwScrollBar.ArrowPosition: same
+
+				       Emacs.background: #305050
+				      Emacs.borderColor: black
+				      Emacs.cursorColor: indian red
+				       Emacs.foreground: #CCBB77
+				     Emacs.pointerColor: lightyellow
+
+      EFRAME.eshell-ls-archive-face.attributeForeground: green
+       EFRAME.eshell-ls-backup-face.attributeForeground: grey60
+      EFRAME.eshell-ls-clutter-face.attributeForeground: OrangeRed
+	  EFRAME.eshell-ls-directory-face.attributeFont: BOLD
+    EFRAME.eshell-ls-directory-face.attributeForeground: SkyBlue
+   EFRAME.eshell-ls-executable-face.attributeForeground: white
+      EFRAME.eshell-ls-missing-face.attributeForeground: red
+      EFRAME.eshell-ls-product-face.attributeForeground: LightSalmon
+     EFRAME.eshell-ls-readonly-face.attributeForeground: indian red
+      EFRAME.eshell-ls-special-face.attributeForeground: yellow
+      EFRAME.eshell-ls-symlink-face.attributeForeground: #6666dd
+   EFRAME.eshell-ls-unreadable-face.attributeForeground: red
+		EFRAME.eshell-prompt-face.attributeFont: BOLD
+	  EFRAME.eshell-prompt-face.attributeBackground: #305050
+	  EFRAME.eshell-prompt-face.attributeForeground: #EEDD99
+
+      EFRAME.font-lock-builtin-face.attributeForeground: LightSteelBlue
+	    EFRAME.font-lock-comment-face.attributeFont: BOLD_ITALIC
+      EFRAME.font-lock-comment-face.attributeForeground: grey66
+     EFRAME.font-lock-constant-face.attributeForeground: indian red
+   EFRAME.font-lock-doc-string-face.attributeForeground: DarkOrange
+EFRAME.font-lock-function-name-face.attributeForeground: aquamarine
+      EFRAME.font-lock-keyword-face.attributeForeground: LightCoral
+    EFRAME.font-lock-reference-face.attributeForeground: aquamarine
+       EFRAME.font-lock-string-face.attributeForeground: cadetblue2
+	 EFRAME.font-lock-type-face.attributeForeground: LightCoral
+EFRAME.font-lock-variable-name-face.attributeForeground: aquamarine
+	    EFRAME.font-lock-warning-face.attributeFont: BOLD
+      EFRAME.font-lock-warning-face.attributeForeground: Pink
+
+	       EFRAME.gnus-cite-attribution-face.attributeFont: ITALIC
+		EFRAME.gnus-emphasis-bold-italic.attributeFont: BOLD_ITALIC
+	  EFRAME.gnus-emphasis-bold-italic.attributeForeground: indian red
+		       EFRAME.gnus-emphasis-bold.attributeFont: BOLD
+		 EFRAME.gnus-emphasis-bold.attributeForeground: #EEDDAA
+		     EFRAME.gnus-emphasis-italic.attributeFont: ITALIC
+	       EFRAME.gnus-emphasis-italic.attributeForeground: indian red
+      EFRAME.gnus-emphasis-underline-bold-italic.attributeFont: BOLD_ITALIC
+EFRAME.gnus-emphasis-underline-bold-italic.attributeForeground: indian red
+	     EFRAME.gnus-emphasis-underline-bold.attributeFont: BOLD
+       EFRAME.gnus-emphasis-underline-bold.attributeForeground: #EEDDAA
+	   EFRAME.gnus-emphasis-underline-italic.attributeFont: ITALIC
+     EFRAME.gnus-emphasis-underline-italic.attributeForeground: indian red
+       EFRAME.gnus-group-mail-1-empty-face.attributeForeground: lightblue
+	     EFRAME.gnus-group-mail-1-face.attributeForeground: lightblue
+       EFRAME.gnus-group-mail-2-empty-face.attributeForeground: lightblue
+	     EFRAME.gnus-group-mail-2-face.attributeForeground: lightblue
+       EFRAME.gnus-group-mail-3-empty-face.attributeForeground: lightblue
+	     EFRAME.gnus-group-mail-3-face.attributeForeground: lightblue
+		 EFRAME.gnus-header-content-face.attributeFont: ITALIC
+	   EFRAME.gnus-header-content-face.attributeForeground: spring green
+	      EFRAME.gnus-header-from-face.attributeForeground: lightblue
+	      EFRAME.gnus-header-name-face.attributeForeground: SeaGreen3
+	      EFRAME.gnus-header-newsgroups-face.attributeFont: ITALIC
+	   EFRAME.gnus-header-subject-face.attributeForeground: spring green
+		      EFRAME.gnus-signature-face.attributeFont: ITALIC
+	  EFRAME.gnus-summary-normal-ticked-face.attributeFont: BOLD
+	    EFRAME.message-cited-text-face.attributeForeground: #CCBB77
+	   EFRAME.message-header-name-face.attributeForeground: #CCBB77
+	     EFRAME.message-header-to-face.attributeForeground: #CCBB77
+	     EFRAME.message-header-cc-face.attributeForeground: #CCBB77
+	  EFRAME.message-header-other-face.attributeForeground: #CCBB77
+	EFRAME.message-header-subject-face.attributeForeground: #CCBB77
+    EFRAME.gnus-summary-normal-ticked-face.attributeForeground: indian red
+	EFRAME.message-header-xheader-face.attributeForeground: lightblue
+	     EFRAME.message-separator-face.attributeForeground: lightblue
+
+		       Emacs.widget-button-face.attributeFont: BOLD
+	 Emacs.widget-button-pressed-face.attributeForeground: red
+	  Emacs.widget-documentation-face.attributeForeground: green
+		  Emacs.widget-field-face.attributeBackground: grey35
+		  Emacs.widget-field-face.attributeForeground: black
+	       Emacs.widget-inactive-face.attributeForeground: gray
+      Emacs.widget-single-line-field-face.attributeBackground: dim gray
+
+! Miscellaneous
+		       Emacs.fringe.attributeBackground: #305050
+		    Emacs.highlight.attributeBackground: #226644
+Emacs.highlight-changes-delete-face.attributeBackground: navy
+Emacs.highlight-changes-delete-face.attributeForeground: red
+       Emacs.highlight-changes-face.attributeBackground: navy
+			 EFRAME.info-node.attributeFont: BOLD_ITALIC
+		      Emacs.isearch.attributeBackground: pale turquoise
+		      Emacs.isearch.attributeForeground: blue
+	    Emacs.isearch-secondary.attributeBackground: #CCBB77
+	    Emacs.isearch-secondary.attributeForeground: #305050
+		     Emacs.modeline.attributeBackground: light salmon
+		     Emacs.modeline.attributeForeground: Black
+			   Emacs.modeline.attributeFont: MODELINE
+		       Emacs.region.attributeBackground: #226644
+		   Emacs.scroll-bar.attributeBackground: dark slate blue
+		   Emacs.scroll-bar.attributeForeground: light salmon
+	  Emacs.secondary-selection.attributeBackground: darkslategrey
+	  Emacs.special-string-face.attributeForeground: light green
+	  Emacs.trailing-whitespace.attributeBackground: #23415A
+		 Emacs.zmacs-region.attributeBackground: lightyellow
+		       Emacs.zmacs-region.attributeFont: BOLD
+		 Emacs.zmacs-region.attributeForeground: black
+
+! For FSF Emacs
+		    Emacs.mode-line.attributeBackground: light salmon
+			  Emacs.mode-line.attributeFont: MODELINE
+		    Emacs.mode-line.attributeForeground: blue4
+
+
+! Specify the colors of popup menus.
+*popup*Foreground:			Black
+*popup*Background:			Gray80
+
+! Specify the colors of the various sub-widgets of the dialog boxes.
+*dialog*Foreground:			Black
+! #A5C0C1 is a shade of blue
+*dialog*Background:			#A5C0C1
+! While this one is for Athena dialog boxes.
+*dialog*Command*Background:		WhiteSmoke
+
+! Emacs terminal shell
+define(`TBOLD', GetFont(`FixedNotItalic', `Bold', `Regular', `Small'))
+define(`TNORMAL', GetFont(`FixedNotItalic', `Normal', `Regular', `Small'))
+
+		   EmacsTerm.background: PapayaWhip
+	   EmacsTerm.bold.attributeFont: TBOLD
+		  EmacsTerm.cursorColor: Red
+	EmacsTerm.default.attributeFont: TNORMAL
+			 EmacsTerm.font: TNORMAL
+		   EmacsTerm.foreground: Black
+		 EmacsTerm.pointerColor: Red

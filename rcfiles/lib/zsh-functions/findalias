@@ -1,0 +1,7 @@
+# Find the mail aliases matching the specified pattern
+print "*** System-wide aliases:"
+ypcat -k mail.aliases | egrep -i "$@"
+print "*** Personal aliases:"
+egrep -i "$@" ~/Mail/aliases
+print "*** /etc/passwd:"
+ypcat passwd | egrep -i "$@"

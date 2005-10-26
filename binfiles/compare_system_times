@@ -1,0 +1,38 @@
+#!/bin/sh
+
+# Compare the local system time with the time on a remote fileserver.
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+iso_date()
+{
+  date +'%Y-%m-%d %H:%M:%S.%N'
+}
+
+# Don't remove the tempfile at the end if it already exists
+tempfile=$(date --iso-8601).$$
+cleanup=1
+[[ -e $tempfile ]] && cleanup=0
+
+# The date of the temp file should be between
+# the times printed by the 2 date commands
+iso_date
+touch $tempfile
+date2=$(iso_date)
+
+# Generates something like:
+# -rw-r--r--  1 sheltonv vobgrp 0 2004-11-30 12:48:53.969802000 -0500 foo
+command ls -l --time-style=full-iso $tempfile | read -A filestat
+print $filestat[6] $filestat[7] '<-- Remote fileserver time'
+print $date2
+
+(( cleanup != 0 )) && rm $tempfile
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

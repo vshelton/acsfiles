@@ -1,0 +1,39 @@
+#include "fonts.ad"
+
+		     XLess*editor: gnuclient -q
+	  XLess*editorDoesWindows: true
+		 XLess*Background: cornsilk
+	 XLess*confirm.background: sea green
+	  XLess*Cancel.background: orange red
+	      XLess*Ok.background: spring green
+	       XLess*standardFont: LUCIDA
+		   XLess*textFont: LUCIDA
+		  XLess*labelFont: HELVETICA_BOLD
+		 XLess*buttonFont: HELVETICA_BOLD
+		XLess*standardCur: left_ptr
+		  XLess*dialogCur: center_ptr
+
+    XLess.Paned.Text.Translations: #override\n\
+		       Ctrl<Key>S: no-op(RingBell)\n\
+		       Ctrl<Key>R: no-op(RingBell)\n\
+		       <Key>space: next-page()\n\
+			   <Key>F: next-page()\n\
+		       Ctrl<Key>B: previous-page()\n\
+			   <Key>B: previous-page()\n\
+			   <Key>K: scroll-one-line-down()\n\
+			   <Key>Y: scroll-one-line-down()\n\
+		      <Key>Return: scroll-one-line-up()\n\
+			   <Key>J: scroll-one-line-up()\n\
+			   <Key>E: scroll-one-line-up()\n\
+			   <Key>q: quit()\n
+
+XLess.Paned.Text.baseTranslations: #override\n\
+		       <Key>space: next-page()\n\
+			   <Key>F: next-page()\n\
+		       Ctrl<Key>B: previous-page()\n\
+			   <Key>K: scroll-one-line-down()\n\
+			   <Key>Y: scroll-one-line-down()\n\
+		      <Key>Return: scroll-one-line-up()\n\
+			   <Key>J: scroll-one-line-up()\n\
+			   <Key>E: scroll-one-line-up()\n\
+			   <Key>q: quit()\n

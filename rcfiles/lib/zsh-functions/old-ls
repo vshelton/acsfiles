@@ -1,0 +1,18 @@
+# Dereference symbolic links pointing to directories
+# by appending / to all directories listed on the command line.
+
+local cmd i
+cmd=( ls -F )
+[[ $0 == ll ]] && cmd=( ls -l )
+
+for (( i=1; i <= $#; ++i ))
+do
+  [[ -d $argv[$i] ]] && argv[$i]="$argv[$i]/"
+done
+$cmd $argv
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

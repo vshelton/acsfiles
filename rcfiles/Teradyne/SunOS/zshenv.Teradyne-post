@@ -1,0 +1,62 @@
+# Set non-default shell enviroment, post .zshenv (Teradyne version)
+
+# Override variables set in .zshenv
+export INFOPATH=$USRLOCAL/info
+export OPENWINHOME=${OPENWINHOME:-/usr/openwin}
+manpath=($USRLOCAL/man $OPENWINHOME/man /usr/share/man)
+case `/bin/uname -r` in
+(4*)
+  print -u2 "These scripts don\'t really work for $(/bin/uname -r) hosts."
+  print -u2 "You have been warned\!\!"
+  path=(~/bin $USRLOCAL/bin $OPENWINHOME/bin /usr/bin /usr/ucb /usr/etc)
+  ;;
+(5.4*|5.5*)
+  path=(~/bin
+        $USRLOCAL/bin
+        /opt/SUNWspro/bin
+        /usr/ccs/bin
+        $OPENWINHOME/bin
+        /usr/bin
+        /usr/ucb
+        /usr/sbin
+        /sbin)
+  ;;
+# For newer releases of the Solaris OS, use software built for SunOS-5.5
+# as a backing store
+# The abspath call works around a weird bug where a path component
+# containing ../ doesn't always work.
+(*)
+  path=(~/bin
+        $USRLOCAL/bin 
+        $(abspath $USRLOCAL/../SunOS-5.5/bin)
+#       /opt/SUNWspro/bin
+        /h/mom1/Solaris/mount_5.4/opt/WS_Compiler/SUNWspro.6.2/bin
+        /usr/ccs/bin
+        $OPENWINHOME/bin
+        /usr/bin
+        /usr/ucb
+        /usr/sbin
+        /sbin)
+    ;;
+esac
+
+# Special bootstrap path, if appropriate
+[[ -e $HOME/.bootstrap-$sysprefix ]] && path=( $HOME/bin $HOME/bootstrap/bin $path)
+
+export LM_LICENSE_FILE=/h/swe1/IMAGEBINS/image.svr4/7.1/common/license.dat:/image/common/license.dat
+export GNU_HOST=denver
+unset LC_COLLATE
+
+export ORGANIZATION="Teradyne, Inc"
+export MAILSPOOL="/var/mail/sheltonv"
+#export MAILADDRESS="shelton@icd.teradyne.com"
+
+bindkey -s '^X^R' "print -r \"\!\!\" | .zsh^M"
+
+alias ncftp=/pd/osbin/ncftp
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

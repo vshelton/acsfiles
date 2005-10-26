@@ -1,0 +1,9 @@
+# Dereference symbolic links pointing to directories
+
+ls -l ${^~argv}(N-M)
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

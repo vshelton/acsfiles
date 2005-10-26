@@ -1,0 +1,8 @@
+# Sort the views with most-recently-accessed first
+cdpath=(~ ~e/views/*/igxlwc(^oa))
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

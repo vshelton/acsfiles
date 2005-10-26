@@ -1,0 +1,13 @@
+# Change the title of an xterm
+if [[ $TERM == xterm* ]]
+then
+  print -n "\033]2;$@\007"
+else
+  print -u2 "$0 only works for xterm windows."
+fi
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

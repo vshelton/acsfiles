@@ -1,0 +1,113 @@
+# addpath()  # -*-ksh-*-
+
+# Replace or delete a value in a PATH-type variable.
+# The first argument is the variable name (not its value, i.e. no $).
+# The second is the component to add.
+#
+# Options:  there are two sets of mutually exclusive options (i.e.
+# the options inside the set are mutually exclusive, one from each
+# set may be used):
+#   The first set applies if the component is currently in the path.
+#	-k	Keep it where it is (default).
+#	-r	Replace it as given by the -a/-p option.
+#	-d	Delete it from the path.
+#   If it was not already in the path, or if -r was given, then:
+#	-a	Append the value to the end of the variable (default).
+#	-p	Prepend the value to the beginning of the variable.
+
+local var add before after varnam
+local where=-a mode=-k
+
+# We don't want substituted text from parameters to be used as patterns.
+[[ -n $ZSH_VERSION ]] && setopt localoptions
+unsetopt globsubst
+
+Usage() {
+  echo 'Usage: addpath [-k|r|d] [-a|p] variable value'
+  echo '-k|r|d: keep (default), replace or delete'
+  echo '-a|p: append (default) or prepend'
+}
+
+Doadd() {
+  # Uses $varnam, $var and $add from main function
+  local result
+  case "$where" in
+  -a)
+    result="${var}:${add}"
+    ;;
+  *)
+    result="${add}:${var}"
+    ;;
+  esac
+  eval "$varnam=\"$result\""
+}
+
+while [[ $1 = -* && $1 != '-' ]]
+do
+  case "$1" in
+  -[ap])
+    where=$1
+    shift
+    ;;
+  -[krd])
+    mode=$1
+    shift
+    ;;
+  *)
+    Usage
+    return 1
+    ;;
+  esac
+done
+[[ $1 = '-' ]] && shift
+
+(( $# != 2)) && Usage && return 1
+
+eval var=\"\$$1\"
+varnam=$1
+shift
+add=$1
+shift
+
+case "$var" in
+*:$add:*|*:$add|$add:*|$add)
+  case "$mode" in
+    -k)	# do nothing
+	;;
+    *)
+       # Remove the old value.
+       local found=true
+       while [[ $found = true ]]; do
+	 case "$var" in
+	   *:$add:*) var="${var%%:$add:*}:${var#*:$add:}"
+		     ;;
+	   *:$add) var="${var%%:$add}"
+		   ;;
+	   $add:*) var="${var##$add:}"
+		   ;;
+	   *) found=false
+	      ;;
+	 esac
+       done
+       # and replace it if necessary
+       if [[ $mode = -d ]]; then
+	 eval "$varnam=\"$var\""
+       else
+	 Doadd
+       fi
+       ;;
+  esac
+  ;;
+"")
+  if [[ $mode != -d ]]; then
+    eval "$varnam=\"$add\""
+  fi 
+  ;;
+*)
+   if [[ $mode != -d ]]; then
+     Doadd
+   fi
+   ;;
+esac
+
+unfunction Usage Doadd

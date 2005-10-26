@@ -1,0 +1,30 @@
+# Pretty-print the specified files
+
+local force= tmpfile= trashit=
+[[ "$1" = "-f" ]] && force=1 && shift
+
+while [[ $# -gt 0 ]]
+do
+    [[ ! -f $1 ]] && print -u2 "$1 does not exist" && continue
+
+    tmpfile=/tmp/${1##*/}
+    if [[ ! -n "$force" ]] && [[ -f "$tmpfile" ]]
+    then
+	print -u2 -n "$tmpfile exists; over-write? "
+	read trashit
+	case "$trashit" in
+	y*|Y*)
+	    ;;
+	*)
+	    shift
+	    continue
+	    ;;
+	esac
+    fi
+    expand -4 "$1" | fold -90 >"$tmpfile"
+    #psify -lm36 -tm36 "$tmpfile" | psnup -2 | lp
+    #psify -lm36 -tm36 "$tmpfile" | lp
+    psify -lm54 -tm54 "$tmpfile" | pstops -b -q -w8.0in -h10.5in 2:0L@0.690(1w,0)+1L@0.690(1w,0.5h) | lp
+    rm "$tmpfile"
+    shift
+done

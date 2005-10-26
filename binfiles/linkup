@@ -1,0 +1,87 @@
+#!/bin/sh
+#
+# Link a package installed into its own sub-tree (i.e. one built
+# via "bld -s") into the standard install path.
+#
+# Usage: linkup
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+inst_prefix=$USRLOCAL
+err=1
+
+# Make sure there is exactly one argument
+if [[ $# -ne 1 ]]; then
+  print -u2 "Usage: $progname <pkg>"
+  print -u2 "\tpkg is a full package name, like \"gcc-2.95-2002-04-11\""
+  exit $err
+fi
+
+pkgver=$1		# Long name, i.e. gcc-2.95-2002-04-11
+pkg=${pkgver%%-*}	# Generic name, i.e. gcc
+# Sigh, the Tcl/Tk rule
+setopt extended_glob
+[[ $pkgver = $pkg ]] && pkg=${pkgver%%([0-9.])#}
+
+cd $inst_prefix
+
+# Make sure the $pkgver directory exists
+if [[ ! -d $pkgver ]]; then
+  print -u2 "$progname: directory $inst_prefix/$pkgver does not exist"
+  exit $err
+fi
+
+# If a link of the generic name already exists, replace it
+if [[ -L $pkg ]]; then
+  rm $pkg
+
+# If a directory of the generic name already exists, rename it
+elif [[ -d $pkg ]]; then
+  mv $pkg $pkg-old-$(now)
+fi
+
+# Link the generic name to the specific name
+ln -s $pkgver $pkg
+
+# Link individual files from the sub-directories
+# to the normal install directories
+#for d in bin info; do
+#  [[ -d $d ]] || mkdir $d
+#  pushd $d
+#  if [[ -d ../$pkg/$d ]]; then
+#    for f in ../$pkg/$d/*; do
+#      # Don't override the info/dir file
+#      if [[ $d != info ]] || [[ $f != ../$pkg/$d/dir ]]; then
+#        ln -nsf $f .
+#      fi
+#    done
+#  fi
+#  popd
+#done
+#
+#[[ -d man ]] || mkdir man
+#pushd man
+#symlink-tree ../$pkg/man
+#if [[ -d ../$pkg/man ]]; then
+#  for d in $(cd ../$pkg/man; ls -d man*); do
+#    [[ -d $d ]] || mkdir $d
+#    pushd $d
+#    ln -nsf ../../$pkg/man/$d/* .
+#    popd
+#  done
+#fi
+
+# It's much simpler to use symlink-tree
+for d in bin info man; do
+  if [[ -d $pkg/$d ]]; then
+    [[ -d $d ]] || mkdir $d
+    pushd $d
+    exclude=
+    [[ $d = info ]] && exclude=dir
+    symlink-tree ../$pkg/$d $exclude
+    popd
+  fi
+done

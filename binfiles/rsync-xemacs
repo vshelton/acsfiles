@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# Update my rsync'ed copy of the XEmacs CVS tree.
+
+# Execute this script under the Z shell
+# The zsh environment will be set up by .zshenv
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+sleeptime=${1:-60}
+i=0
+
+while :
+do
+  ((i=i+1))
+  [[ $i -gt 1 ]] && print loop $i
+  rsync -qavz --delete '--exclude=/CVSROOT/config' '--exclude=/CVSROOT/private-key' sunsite.dk::xemacscvs /ide/CVSroot/XEmacs
+  [[ $? -eq 0 ]] && break
+  sleep $sleeptime
+done

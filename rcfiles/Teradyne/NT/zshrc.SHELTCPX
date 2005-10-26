@@ -1,0 +1,31 @@
+
+# zshrc file specific to my Win2K machine
+
+PROMPT="%2c %w %T%(#.#.); "
+PROMPT="%U: $PROMPT%u"
+if [[ $TERM != emacs ]]; then
+  prompt bart
+fi
+
+#zstyle ':completion:*' completer _expand _complete
+#zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'm:{a-zA-Z}={A-Za-z}' 'm:{a-zA-Z}={A-Za-z}' 'm:{a-zA-Z}={A-Za-z}'
+zstyle :compinstall filename '/cygdrive/e/acs/.zshrc.SHELTCPX'
+
+# Match case-insensitively
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+
+# Match cygdrive prefix
+drives="b c d e f i m s v"
+zstyle ':completion:*' fake-files '/:cygdrive' "/cygdrive:$drives"
+
+# Match drives as ~n
+for drive in ${=drives}; hash -d $drive=/cygdrive/$drive
+
+desktop=/cygdrive/c/Documents\ and\ Settings/SheltonV/Desktop
+alias cleartool='/cygdrive/c/Program\ Files/Rational/ClearCase/bin/cleartool'
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

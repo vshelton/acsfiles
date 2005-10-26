@@ -1,0 +1,26 @@
+
+# zshrc file specific to AOA (PC version)
+
+# Match case-insensitively
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+
+# Match cygdrive prefix
+drives="c e x y z"
+zstyle ':completion:*' fake-files '/:cygdrive' "/cygdrive:$drives"
+
+# Match drives as ~n
+for drive in ${=drives}; hash -d $drive=/cygdrive/$drive
+
+desktop=/cygdrive/c/Documents\ and\ Settings/$(whoami)/Desktop
+
+# Convert from cygwin path to a Windows path, like so: dir ~(e:cyg:)
+function cyg {
+  reply=("$(cygpath -w $REPLY)")
+}
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:
+

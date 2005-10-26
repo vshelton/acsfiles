@@ -1,0 +1,2 @@
+# Find all files below the specified directory
+find "${@:-.}" -type f -print

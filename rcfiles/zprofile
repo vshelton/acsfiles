@@ -1,0 +1,6 @@
+
+# Order of execution for zsh startup:
+# 1. .zshenv - Always, unless -f is specified
+# 2. .zprofile - Only if login shell
+# 3. .zshrc - Only for interactive shells
+# 4. .zlogin - Only if login shell

@@ -1,0 +1,158 @@
+
+# Order of execution for zsh startup:
+# 1. .zshenv - Always, unless -f is specified
+# 2. .zprofile - Only if login shell
+# 3. .zshrc - Only for interactive shells
+# 4. .zlogin - Only if login shell
+
+# .zshrc should be invariant from system to system
+
+umask 022
+
+# Environment definitions
+export EXINIT=":set ai nows"
+export EDITOR=$FCEDIT
+export LESS="-e -i -s -C -j2 -n"
+export MORE="-s"
+export PAGER="$(whence less)"
+[[ -z "$PAGER" ]] && PAGER=more
+export VISUAL=$FCEDIT
+
+# Capture core files
+whence ulimit >/dev/null && ulimit -c unlimited
+
+DIRSTACKSIZE=20
+FIGNORE='~'
+histchars=\!,#
+HISTSIZE=4096
+WORDCHARS='.-_'
+
+# Shell-specific behavior
+setopt NO_ALWAYS_LAST_PROMPT
+setopt APPEND_HISTORY
+setopt AUTOLIST
+setopt AUTOMENU
+setopt AUTO_REMOVE_SLASH
+setopt EXTENDED_GLOB
+setopt HASH_CMDS
+setopt HASH_DIRS
+setopt HIST_IGNORE_DUPS
+setopt HIST_NO_STORE
+setopt INTERACTIVE_COMMENTS
+setopt KSH_OPTION_PRINT
+setopt LIST_TYPES
+setopt MARKDIRS
+setopt NO_HUP
+setopt NO_FLOW_CONTROL
+setopt NO_LIST_BEEP
+setopt NO_NOMATCH
+setopt NOTIFY
+setopt NO_PROMPT_SP 2>/dev/null
+setopt PUSHD_IGNORE_DUPS
+setopt PUSHD_SILENT
+setopt RMSTARSILENT
+
+PROMPT="%2c %w %T%(#.#.); "
+# For some reason, $HOST is now an FQDN, so the right way
+# to do this test has changed to:
+# [[ ${HOST%%.*} != $HOMESYSTEM ]] && PROMPT="%m $PROMPT"
+PROMPT="%B: $PROMPT%b"
+PROMPT2="; "
+
+# But since I've started using Bart's prompt, I no longer need
+# the hostname in the first line of the prompt
+if [[ $TERM != emacs ]]; then
+  autoload -U promptinit
+  promptinit
+  prompt bart
+
+  stty -parenb -istrip cs8 clocal erase '^h'
+fi
+
+# Use emacs bindings
+bindkey -me
+bindkey -s '^X^E' "^Avared ^E^I^M"
+bindkey -s '^X^R' "su root -c \"\!\!\"^M"
+bindkey '^X#' pound-insert
+bindkey '^[OA' up-line-or-history               # make arrow keys work
+bindkey '^[OB' down-line-or-history
+bindkey '^[OC' forward-char
+bindkey '^[OD' backward-char
+bindkey '^X\t' accept-and-menu-complete
+bindkey '\e\t' reverse-menu-complete
+
+zmodload zsh/deltochar
+bindkey '\M-z' zap-to-char
+bindkey '\ez' zap-to-char
+
+# coreutils now supports NOT dereferencing symlinks to directories!
+ls --dereference-command-line-symlink-to-dir /dev/null >& /dev/null
+(( $? == 0 )) && alias ls="ls --dereference-command-line-symlink-to-dir"
+alias l='ls -F'
+alias la='ls -A'
+alias ll='ls -l'
+alias lr='ls -R'
+
+alias -- +w="chmod u+w"
+alias -- -w="chmod a-w"
+alias -- +x="chmod u+x"
+alias -- -x="chmod a-x"
+alias all_versions="noglob all_versions"
+alias aver=all_versions
+alias b=unpack_and_build
+alias beep='echo '
+alias d='dirs -v'
+alias eterm="emacs-22.0.50 --unibyte -name EmacsTerm -xrm \"EmacsTerm.iconName: ${HOST%%.*}\" -xrm \"EmacsTerm.title: ${HOST%%.*}\" --geometry 100x40 -eval '(emacs-term \"zsh\")'"
+alias grep='command grep --extended-regexp --text'
+alias h=history
+alias m=$PAGER
+alias new_xp='new_default -v xemacs-packages $USRLOCAL'
+alias new_zsh='new_default -v zsh'
+alias patch='command patch --version-control=numbered --backup'
+alias pd=pushd
+alias pp=popd
+alias rm_versions="noglob rm_versions"
+alias rmver="rm_versions -v"
+alias root="ZDOTDIR=$HOME/.root xterm -name root -e su root -c $USRLOCAL/bin/zsh"
+alias tfy='tar tv --use-compress-program=bzip2 -f'
+alias tfz='tar tvfz'
+alias ve=vared
+alias xfy='tar x --use-compress-program=bzip2 -f'
+alias xfz='tar xfz'
+
+unalias run-help
+autoload -U run-help
+
+FCEDIT=gnuclient
+export EDITOR=$FCEDIT VISUAL=$FCEDIT
+alias e="gnuclient -q"
+
+# The default port for gnuserv/gnuclient is 21490 + uid (see gnuserv.h).
+# We'll override it with something more memorable
+# ((GNU_PORT = $UID + 21490))
+export GNU_PORT=22222
+
+# Use tkman where appropriate
+[[ -n $DISPLAY ]] && whence tkmanclient >/dev/null && alias man=tkmanclient
+
+# Source a system-specific .zshrc before loading completion functions
+system_specific .zshrc
+
+## dabbrev for zsh!!
+zstyle ':completion:history-words:*:history-words' stop yes
+zstyle ':completion:history-words:*:history-words' list no
+zstyle ':completion:history-words:*' remove-all-dups yes
+zstyle ':completion:history-words:*' menu yes
+bindkey '\e[15~' _history-complete-older #F5
+bindkey '\e[28~' _history-complete-newer #Shift-F5
+
+
+# Load completion after setting zstyles
+autoload -U compinit
+compinit -u
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

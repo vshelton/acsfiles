@@ -1,0 +1,25 @@
+
+;; Make my life as a lisp programmer easier
+(require 'cl)
+
+;; Use a slash to separate directories
+(setq directory-sep-char ?/)
+
+(defun emacs-type ()
+  "Return \"xemacs\" or \"fsf\", as appropriate."
+  (interactive)
+  (cond ((featurep 'xemacs) "xemacs")
+	(t "fsf")))
+
+(let ((lispdir (expand-file-name "~/lib/lisp")))
+
+  ;; Add my generic lisp directory to the load path
+  (pushnew lispdir load-path :test 'equal)
+
+  ;; If there is a type-specific lisp directory, add it to the path
+  (pushnew (concat lispdir (char-to-string directory-sep-char)
+		   (emacs-type))
+	   load-path :test 'equal))
+
+;; Load my emacs initialization stuff
+(load-library "emacs")

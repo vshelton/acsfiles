@@ -5,13 +5,11 @@
 (when (string-match "win32" system-configuration)
   ;; Set up a left margin
   (set-specifier left-margin-width 1)
-;  (setq explicit-shell-file-name (getenv "ZSH_PATH")
-  (setq cygwin-root (getenv "CYGWIN_ROOT")
-	explicit-shell-file-name (append cygwin-root "/bin/bash.exe")
+  (setq explicit-shell-file-name (executable-find "bash")
 	shell-file-name explicit-shell-file-name
 	shell-command-switch "-c"
 	selection-sets-clipboard t
-	ispell-program-name (append cygwin-root "/bin/aspell.exe")
+	ispell-program-name (executable-find "aspell")
 	nt-fake-unix-uid 1)
 
   ;; I wish I could use 9 point, but there's some funky size

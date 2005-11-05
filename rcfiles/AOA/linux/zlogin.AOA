@@ -1,6 +1,4 @@
 
-bindkey -s '^X^R' "print -r \"\!\!\" | .zsh^M"
-
 # Local Variables:
 # mode: ksh
 # sh-indentation: 2

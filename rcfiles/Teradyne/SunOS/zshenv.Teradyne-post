@@ -51,8 +51,6 @@ export ORGANIZATION="Teradyne, Inc"
 export MAILSPOOL="/var/mail/sheltonv"
 #export MAILADDRESS="shelton@icd.teradyne.com"
 
-bindkey -s '^X^R' "print -r \"\!\!\" | .zsh^M"
-
 alias ncftp=/pd/osbin/ncftp
 
 # Local Variables:

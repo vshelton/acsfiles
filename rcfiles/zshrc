@@ -72,12 +72,12 @@ fi
 # Use emacs bindings
 bindkey -me
 bindkey -s '^X^E' "^Avared ^E^I^M"
-bindkey -s '^X^R' "su root -c \"\!\!\"^M"
+bindkey -s '^Xr' "su root -c \"\!\!\"^M"
 bindkey '^X#' pound-insert
-bindkey '^[OA' up-line-or-history               # make arrow keys work
-bindkey '^[OB' down-line-or-history
-bindkey '^[OC' forward-char
-bindkey '^[OD' backward-char
+bindkey $(echoti cup) up-line-or-history               # make arrow keys work
+bindkey $(echoti cud) down-line-or-history
+bindkey $(echoti cuf) forward-char
+bindkey $(echoti cub) backward-char
 bindkey '^X\t' accept-and-menu-complete
 bindkey '\e\t' reverse-menu-complete
 
@@ -138,14 +138,17 @@ export GNU_PORT=22222
 # Source a system-specific .zshrc before loading completion functions
 system_specific .zshrc
 
-## dabbrev for zsh!!
+# dabbrev for zsh
 zstyle ':completion:history-words:*:history-words' stop yes
 zstyle ':completion:history-words:*:history-words' list no
 zstyle ':completion:history-words:*' remove-all-dups yes
 zstyle ':completion:history-words:*' menu yes
-bindkey '\e[15~' _history-complete-older #F5
-bindkey '\e[28~' _history-complete-newer #Shift-F5
-
+#bindkey $(echoti kf5) _history-complete-older
+#shift_f5="kf17"
+#[[ $TERM == cygwin ]] && shift_f5="kf15"
+#bindkey $(echoti $shift_f5) _history-complete-newer
+bindkey '^X^R' _history-complete-older
+bindkey '^X^S' _history-complete-newer
 
 # Load completion after setting zstyles
 autoload -U compinit

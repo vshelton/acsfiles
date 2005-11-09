@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# Capture the screen environment
+
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+for var in SSH_AUTH_SOCK SSH_AGENT_PID DISPLAY WINDOWID SSH_TTY SSH_CLIENT SSH_CONNECTION SESSION_MANAGER; do
+  if [[ -n "${(P)var}" ]]; then
+    echo "export $var='${(P)var}'"
+  else
+    echo "unset $var"
+  fi
+done >~/.screenenv
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

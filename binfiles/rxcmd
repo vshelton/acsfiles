@@ -1,0 +1,38 @@
+#!/bin/sh
+# start an X11 process on another host
+# Date: 8 Dec 88 06:29:34 GMT
+# From: Chris Torek 
+# rsh $host -n "setenv DISPLAY $DISPLAY; exec $@ &/dev/null"
+#
+# An improved version:
+# rXcmd (suggested by John Robinson, jr@bbn.com)
+#       (generalized for sh,ksh by Keith Boyer, keith@cis.ohio-state.edu)
+#
+# but they put the rcmd in ()'s which left zombies again.  This
+# script combines the best of both.
+
+case $# in
+[01])  echo "Usage: $0 host x-cmd [args...]";;
+*)
+      case $SHELL in
+      *csh*)  host="$1"; shift
+	      xhost "$host" > /dev/null
+	      rsh "$host" -n \
+		      "setenv TERM xterm; setenv DISPLAY `hostname`:0; \
+		      exec $* & /dev/null" &
+	      ;;
+      *sh)
+	      host="$1"; shift
+	      xhost "$host" > /dev/null
+	      rsh "$host" -n \
+		      "TERM=xterm export TERM; \
+		      DISPLAY=`hostname`:0 export DISPLAY; \
+		      LD_LIBRARY_PATH=/usr/X11/lib export LD_LIBRARY_PATH; \
+		      PATH=\$PATH:/usr/X11/bin:/usr/bin/X11:/usr/local/bin; \
+		      export PATH; \
+		      exec $* < /dev/null > /dev/null 2>&1" &
+	      ;;
+      esac
+      ;;
+esac
+

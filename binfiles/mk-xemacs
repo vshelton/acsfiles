@@ -38,11 +38,6 @@ function generate_compiler_flags {
   OPTIMIZE_FLAGS=$CFLAGS
 
   DEBUG_FLAGS=
-# Temporary hack until icc understands gcc4
-if [[ $(uname -a) == *i?86* && $CC == *icc ]]; then
-  DEBUG_FLAGS="-cxxlib-gcc=$USRLOCAL/gcc-3.4.4"
-fi
-# End hack  
   if [[ $1 == *debug* ]]; then
     DEBUG_FLAGS="$DEBUG_FLAGS -g"
     OPTIMIZE_FLAGS=${OPTIMIZE_FLAGS:-"-O"}

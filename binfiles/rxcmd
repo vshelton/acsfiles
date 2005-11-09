@@ -1,8 +1,8 @@
 #!/bin/sh
 # start an X11 process on another host
 # Date: 8 Dec 88 06:29:34 GMT
-# From: Chris Torek 
-# rsh $host -n "setenv DISPLAY $DISPLAY; exec $@ &/dev/null"
+# From: Chris Torek <chris@mimsy.umd.edu>
+# rsh $host -n "setenv DISPLAY $DISPLAY; exec $@ </dev/null >&/dev/null"
 #
 # An improved version:
 # rXcmd (suggested by John Robinson, jr@bbn.com)
@@ -10,29 +10,44 @@
 #
 # but they put the rcmd in ()'s which left zombies again.  This
 # script combines the best of both.
+#
+# re-worked to check for NULL variables		acs@world.std.com; 7/8/96
+# made DISPLAY work from remote connections	acs@world.std.com; 3/17/97
+
+vars="DISPLAY LD_LIBRARY_PATH XFILESEARCHPATH FONTPATH HELPPATH MANPATH IMAGEBIN GNU_PORT"
 
 case $# in
 [01])  echo "Usage: $0 host x-cmd [args...]";;
 *)
-      case $SHELL in
-      *csh*)  host="$1"; shift
-	      xhost "$host" > /dev/null
-	      rsh "$host" -n \
-		      "setenv TERM xterm; setenv DISPLAY `hostname`:0; \
-		      exec $* & /dev/null" &
-	      ;;
-      *sh)
-	      host="$1"; shift
-	      xhost "$host" > /dev/null
-	      rsh "$host" -n \
-		      "TERM=xterm export TERM; \
-		      DISPLAY=`hostname`:0 export DISPLAY; \
-		      LD_LIBRARY_PATH=/usr/X11/lib export LD_LIBRARY_PATH; \
-		      PATH=\$PATH:/usr/X11/bin:/usr/bin/X11:/usr/local/bin; \
-		      export PATH; \
-		      exec $* < /dev/null > /dev/null 2>&1" &
-	      ;;
-      esac
-      ;;
-esac
+    host="$1"; shift
 
+    # If DISPLAY is explicitly set, export it as is
+    case $DISPLAY in
+    :*|"")
+    	DISPLAY=`hostname`:0 export DISPLAY
+	;;
+    esac
+
+    case $SHELL in
+    *csh*)
+	rcmd="setenv TERM xterm; \
+	    setenv PATH ${PATH}:$OPENWINHOME/bin; "
+	for e in $vars
+	do
+	    val=`eval echo \\$$e`
+	    [ -n "$val" ] && rcmd="$rcmd setenv $e $val; "
+	done
+	;;
+    *sh)
+	rcmd="TERM=xterm export TERM; \
+	    PATH=\$PATH:\$OPENWINHOME/bin; export PATH; "
+	for e in $vars
+	do
+	    val=`eval echo \\$$e`
+	    [ -n "$val" ] && rcmd="$rcmd $e=$val export $e; "
+	done
+	;;
+    esac
+    rsh $host -n "$rcmd exec $* </dev/null >& /dev/null" &
+    ;;
+esac

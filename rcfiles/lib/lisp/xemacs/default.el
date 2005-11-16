@@ -5,7 +5,6 @@
 (when (string-match "win32" system-configuration)
   ;; Set up a left margin
   (set-specifier left-margin-width 1)
-;  (setq explicit-shell-file-name (getenv "ZSH_PATH")
   (setq explicit-shell-file-name (executable-find "bash")
 	shell-file-name explicit-shell-file-name
 	shell-command-switch "-c"
@@ -13,20 +12,20 @@
 	ispell-program-name (executable-find "aspell")
 	nt-fake-unix-uid 1)
 
-(defun find-cygwin-root nil
-  "Find the root of the installed cygwin package"
-  (interactive)
-  (let ((path-separator "/")
-	(bash-path (executable-find "bash")))
-    ; Return nil if we can't find bash
-    (if (not (eq bash-path nil))
-	(mapconcat
-	 'concat
-	 (reverse (nthcdr 2 (reverse (split-path bash-path))))
-	 path-separator)
-      nil)))
+  (defun find-cygwin-root nil
+    "Find the root of the installed cygwin package"
+    (interactive)
+    (let ((path-separator "/")
+	  (bash-path (executable-find "bash")))
+      ;; Return nil if we can't find bash
+      (if (not (eq bash-path nil))
+	  (mapconcat
+	   'concat
+	   (reverse (nthcdr 2 (reverse (split-path bash-path))))
+	   path-separator)
+	nil)))
 
-(let ((info-dir (concat (find-cygwin-root) "/usr/share/info")))
+  (let ((info-dir (concat (find-cygwin-root) "/usr/share/info")))
   (if (file-exists-p info-dir)
       (setq Info-directory-list (nconc Info-directory-list (list info-dir)))))
 

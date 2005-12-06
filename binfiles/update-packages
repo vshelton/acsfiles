@@ -1,0 +1,54 @@
+#!/bin/sh
+
+# Copy and install the latest versions of the currently-installed
+# packages from the Unix host to my PC.
+#
+# Usage: update-packages [-v]
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+progname=${0:t}
+
+zparseopts -D v=verbose
+if (( $# != 0 )); then
+  print -u2 "usage: $progname [-v]"
+  exit 1
+fi
+
+pkg_root=${pkg_root:-/cygdrive/e/XEmacs}
+unix_staging=${unix_staging:-//cvs-srvr/vshelton/tmp/staging}
+
+# Save the list of old packages
+pkgs=( $(USRLOCAL=$pkg_root installed_packages) )
+
+# Move the old packages aside
+cd $pkg_root
+ls -ld --time-style='+%Y-%m-%d' zip | read -A
+# ls -dl --time-style='+%Y-%m-%d' zip
+# ==> drwxr-xr-x+ 2 SheltonV mkgroup-l-d 0 2005-02-28 zip
+# So $reply[6] = the old date, like '2005-02-28'
+[[ -n $verbose ]] && print -nu2 Moving packages to XEmacs-packages-$reply[6]...
+cd ..
+mv ${pkg_root:t} XEmacs-packages-$reply[6]
+[[ -n $verbose ]] && print -u2 done
+mkdir -p ${pkg_root:t}/{xemacs-packages,zip}
+
+[[ -n $verbose ]] && print -nu2 Copying packages from ${unix_staging}...
+for p in $pkgs; do
+  cp $unix_staging/${p}-[0-9].[0-9][0-9]-pkg.tar.gz $pkg_root/zip
+done
+[[ -n $verbose ]] && print -u2 done
+
+[[ -n $verbose ]] && print -nu2 Untarring packages in ${pkg_root}...
+cd $pkg_root/xemacs-packages
+for f in ../zip/*; do
+  tar xfz $f
+done
+[[ -n $verbose ]] && print -u2 done
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

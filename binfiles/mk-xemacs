@@ -44,7 +44,6 @@ function generate_compiler_flags {
     return 0
   fi
 
-  # Allow CFLAGS to override the generated settings
   if [[ -z $OPTIMIZE_FLAGS ]]; then
 
     # Set compiler optimization flags based on OS version and compiler type
@@ -61,28 +60,34 @@ function generate_compiler_flags {
       esac
       ;;
     (*i?86*)
+      arch=$(perl -e '
+        $arch="unknown";
+        open(CPUINFO, "< /proc/cpuinfo");
+
+        while (<CPUINFO>) {
+          if ( /model name/ ) {
+            $arch="pentium$1" if ( /pentium\(r\) (.)/i );
+            $arch="pentium3" if ( /pentium III/i );
+            last;       # Break as soon as a match is found
+	  }
+        }
+        print "$arch\n";')
+
+      archopt=
+      [[ $arch == pentium* ]] && archopt="-march=$arch"
       case $CC in
       (*gcc*)
-        OPTIMIZE_FLAGS="-Os -malign-double -pipe -ffast-math -march=pentiumpro -mcpu=pentiumpro -fno-exceptions"
+        OPTIMIZE_FLAGS="-Os -malign-double -pipe -ffast-math $archopt -fno-exceptions"
         ;;
       # Intel C Compiler?
       (*)
         # -Os    enable speed optimizations, but disable some optimizations which
         #        increase code size for small speed benefit
-        # -tpp6  optimize for Pentium(R) Pro, Pentium(R) II and Pentium(R) III processors
-        # -ax<codes> generate code specialized for processors specified by <codes>
-        #            while also generating generic IA-32 code.  <codes> includes
-        #            one or more of the following characters:
-        #     K  Intel Pentium III and compatible Intel processors
-        #     W  Intel Pentium 4 and compatible Intel processors
-        #     N  Intel Pentium 4 and compatible Intel processors
-        #     P  Intel Pentium 4 processors with SSE3 extensions
-        #     B  Intel Pentium M and compatible Intel processors
-        # -x<codes>  generate specialized code to run exclusively on processors
-        #            indicated by <codes> as described above.
+        # -march=<cpu>  generate code excusively for a given <cpu>
         # Enable and specify the scope of Interprocedural (IP) Optimizations:
         # -ip     enable single-file IP optimizations (within files)
-        OPTIMIZE_FLAGS="-Os -tpp6 -axK -xK -ip"
+        [[ $arch == pentium3 ]] && archopt="-march=pentiumiii"
+        OPTIMIZE_FLAGS="-Os -ip $archopt"
         ;;
       esac
       ;;

@@ -74,12 +74,16 @@ bindkey -me
 bindkey -s '^X^E' "^Avared ^E^I^M"
 bindkey -s '^Xr' "su root -c \"\!\!\"^M"
 bindkey '^X#' pound-insert
-bindkey $(echoti cup) up-line-or-history               # make arrow keys work
-bindkey $(echoti cud) down-line-or-history
-bindkey $(echoti cuf) forward-char
-bindkey $(echoti cub) backward-char
 bindkey '^X\t' accept-and-menu-complete
 bindkey '\e\t' reverse-menu-complete
+
+# Make arrow keys work if they're defined
+if echoti cup >& /dev/null; then
+  bindkey $(echoti cup) up-line-or-search
+  bindkey $(echoti cud) down-line-or-search
+  bindkey $(echoti cuf) forward-char
+  bindkey $(echoti cub) backward-char
+fi
 
 zmodload zsh/deltochar
 bindkey '\M-z' zap-to-char

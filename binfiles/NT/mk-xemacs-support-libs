@@ -1,0 +1,105 @@
+#!/bin/sh
+
+# Build and install the libraries used by XEmacs under Windows.
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+cmdname="${0:t}"
+
+# Set up the environment for a VC build
+. vcsetup
+
+# Initialize version numbers
+: ${ZIPROOT:=~/software/zip}
+: ${jpeg_ver:=jpeg-6b}
+: ${tiff_ver:=tiff-3.7.3}
+: ${zlib_ver:=zlib-1.2.3}
+: ${png_ver:=libpng-1.2.8}
+: ${xpm_ver:=xpm-3.4k}
+
+tar xfz $ZIPROOT/jpegsrc.v${jpeg_ver:s/jpeg-//}.tar.gz
+pushd ./${jpeg_ver}
+cp jconfig.vc jconfig.h
+nmake -f makefile.vc
+popd
+
+tar xfz $ZIPROOT/${tiff_ver}.tar.gz
+pushd ./${tiff_ver}
+nmake -f Makefile.vc
+popd
+
+tar xfz $ZIPROOT/${zlib_ver}.tar.gz
+mv ${zlib_ver} zlib
+pushd ./zlib
+nmake -f win32/Makefile.msc
+popd
+
+bunzip2 < $ZIPROOT/${png_ver}.tar.bz2 | tar xf -
+pushd ./${png_ver}
+nmake -f scripts/makefile.vcawin32
+nmake -f scripts/makefile.vcawin32 test
+popd
+
+tar xfz $ZIPROOT/${xpm_ver}.tar.gz
+pushd ./${xpm_ver}/lib
+cat > xpm.mak <<'EOF'
+#
+# XPM Makefile for Microsoft NMAKE without X libraries
+#
+
+!if !defined(DEBUG_XEMACS)
+DEBUG_XEMACS=0
+!endif
+
+!if $(DEBUG_XEMACS)
+OPT=-Od -Zi
+!else
+#OPT=-O2 -G5 -Zi
+OPT=-MD -O2
+!endif
+
+WARN_CPP_FLAGS = -W3
+
+CC=cl
+CFLAGS=-nologo -DFOR_MSW $(WARN_CPP_FLAGS) $(OPT) $(INCLUDES) -Fo$@ -c
+
+OBJS= data.obj create.obj misc.obj rgb.obj scan.obj parse.obj hashtab.obj \
+      WrFFrI.obj RdFToI.obj CrIFrDat.obj CrDatFrI.obj \
+      CrIFrBuf.obj CrBufFrI.obj \
+      RdFToDat.obj WrFFrDat.obj \
+      Attrib.obj Image.obj Info.obj RdFToBuf.obj WrFFrBuf.obj \
+      simx.obj
+
+# nmake rule
+
+.SUFFIXES:
+.SUFFIXES:	.c
+
+.c.obj:
+	$(CC) $(CFLAGS) $< -Fo$@
+
+
+# targets
+
+all: ..\X11\xpm.h Xpm.lib
+
+..\X11\xpm.h: ..\X11\NUL xpm.h
+	copy xpm.h ..\X11
+
+..\X11\NUL:
+	mkdir ..\X11
+
+Xpm.lib: $(OBJS)
+	lib -nologo -out:$@ $(OBJS)
+
+EOF
+
+nmake -f xpm.mak
+popd
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

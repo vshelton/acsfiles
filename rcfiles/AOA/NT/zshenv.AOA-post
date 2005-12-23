@@ -4,6 +4,9 @@
 manpath=(/usr/local/man /usr/man)
 path=(~/bin /usr/local/bin /bin /usr/bin /etc $(cygpath $SYSTEMROOT)/system32 $(cygpath $SYSTEMROOT))
 
+unset INCLUDE
+unset LIB
+
 # Local Variables:
 # mode: ksh
 # sh-indentation: 2

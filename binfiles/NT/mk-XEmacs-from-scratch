@@ -1,0 +1,204 @@
+#!/bin/sh
+
+# Build and install XEmacs versions (21.4, 21.5 and 21.4-cygwin)
+ 
+# Execute this script under the Z shell
+[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+cmdname="${0:t}"
+
+# Set up the environment for a VC build
+. vcsetup
+
+# Make a special sub-tree for the build environment
+#mkdir XEmacs-build-$(today)
+#cd ./XEmacs-build-$(today)
+
+# Optionally build the libraries
+if (( 1 == 0 )); then
+  mk-xemacs-support-libs
+fi
+
+#
+# Build and install XEmacs-21.4 from CVS
+#
+
+# Create an XEmacs-21.4 source kit
+pushd ~/cvsroot/xemacs-21.4
+cvs -q update
+popd
+SRCROOT=. mk-src xemacs-21.4
+pushd ./xemacs-21.4-$(today)/nt
+cp config.inc.samp config.inc
+patch <<'EOF'
+--- config.inc.samp	2005-01-30 21:54:55.000000000 -0500
++++ config.inc	2005-12-19 12:18:20.613952800 -0500
+@@ -2,9 +2,9 @@
+ 
+ ############################################################################
+ 
+-INSTALL_DIR=c:\Program Files\XEmacs\XEmacs-$(XEMACS_VERSION_STRING)
++INSTALL_DIR=e:\XEmacs\XEmacs-$(XEMACS_VERSION_STRING)
+ 
+-PACKAGE_PREFIX=c:\Program Files\XEmacs
++PACKAGE_PREFIX=e:\XEmacs\Packages
+ 
+ ############################################################################
+ 
+@@ -33,7 +33,7 @@
+ # (a self-installing .ZIP) and unzip them into an appropriate directory
+ # (by default, c:\src).  This gets you precompiled versions of all of
+ # the libraries below.
+-OPTIONAL_LIBRARY_DIR=c:\src
++OPTIONAL_LIBRARY_DIR=..\..
+ 
+ # Set this to enable XPM support (virtually mandatory), and specify
+ # the directory containing xpm.  Get the library from
+@@ -52,7 +52,7 @@
+ # libraries.
+ HAVE_PNG=1
+ PNG_DIR=$(OPTIONAL_LIBRARY_DIR)\libpng-1.2.8
+-ZLIB_DIR=$(OPTIONAL_LIBRARY_DIR)\zlib-1.2.1
++ZLIB_DIR=$(OPTIONAL_LIBRARY_DIR)\zlib
+ 
+ # Set this to enable JPEG support (useful, but not necessary), and specify
+ # the directory containing jpeg.  Get the latest version from
+@@ -64,19 +64,19 @@
+ # directory containing tiff.  Get the latest version from
+ # ftp://ftp.uu.net/graphics/tiff/.
+ HAVE_TIFF=1
+-TIFF_DIR=$(OPTIONAL_LIBRARY_DIR)\tiff-v3.5.7
++TIFF_DIR=$(OPTIONAL_LIBRARY_DIR)\tiff-3.7.3
+ 
+ # Set this to enable XFace support (not very important), and specify the
+ # directory containing compface.  Get the library from
+ # http://ftp.xemacs.org/aux/compface-1.5-1.tar.gz.
+-HAVE_XFACE=1
++HAVE_XFACE=0
+ COMPFACE_DIR=$(OPTIONAL_LIBRARY_DIR)\compface-1.5.1
+ 
+ ############################################################################
+ 
+ # Set this to specify the location of makeinfo. (If not set, XEmacs will
+ # attempt to use its built-in texinfo support when building info files.)
+-MAKEINFO=c:\cygwin\bin\makeinfo.exe
++MAKEINFO=e:\cygwin\bin\makeinfo.exe
+ 
+ ############################################################################
+ 
+
+EOF
+
+nmake -f xemacs.mak
+nmake -f xemacs.mak install
+popd
+
+#
+# Build and install XEmacs-21.5 from CVS
+#
+
+# Create an XEmacs-21.5 source kit
+pushd ~/cvsroot/xemacs-21.5
+cvs -q update
+popd
+SRCROOT=. mk-src xemacs-21.5
+pushd ./xemacs-21.5-$(today)/nt
+cp config.inc.samp config.inc
+patch <<'EOF'
+--- config.inc.samp	2005-11-24 20:41:50.000000000 -0500
++++ config.inc	2005-12-19 13:15:19.788429400 -0500
+@@ -4,9 +4,9 @@
+ #                            Install options                               #
+ ############################################################################
+ 
+-INSTALL_DIR=c:\Program Files\XEmacs\XEmacs-$(XEMACS_VERSION_STRING)
++INSTALL_DIR=e:\XEmacs\XEmacs-$(XEMACS_VERSION_STRING)
+ 
+-PACKAGE_PREFIX=c:\Program Files\XEmacs
++PACKAGE_PREFIX=e:\XEmacs\Packages
+ 
+ ############################################################################
+ #                      Compiled-in features: basic                         #
+@@ -31,7 +31,7 @@
+ # (a self-installing .ZIP) and unzip them into an appropriate directory
+ # (by default, c:\src).  This gets you precompiled versions of all of
+ # the libraries below.
+-OPTIONAL_LIBRARY_DIR=c:\src
++OPTIONAL_LIBRARY_DIR=..\..
+ 
+ # Set this to enable XPM support (virtually mandatory), and specify
+ # the directory containing xpm.  Get the library from
+@@ -52,7 +52,7 @@
+ # so we can preserve the version number, like for the other libraries.
+ HAVE_PNG=1
+ PNG_DIR=$(OPTIONAL_LIBRARY_DIR)\libpng-1.2.8
+-ZLIB_DIR=$(OPTIONAL_LIBRARY_DIR)\zlib-1.2.3
++ZLIB_DIR=$(OPTIONAL_LIBRARY_DIR)\zlib
+ 
+ # Set this to enable JPEG support (useful, but not necessary), and specify
+ # the directory containing jpeg.  Get the latest version from
+@@ -69,7 +69,7 @@
+ # Set this to enable XFace support (not very important), and specify the
+ # directory containing compface.  Get the library from
+ # http://ftp.xemacs.org/aux/compface-1.5.1.tar.gz.
+-HAVE_XFACE=1
++HAVE_XFACE=0
+ COMPFACE_DIR=$(OPTIONAL_LIBRARY_DIR)\compface-1.5.1
+ 
+ # Set this to enable bignum support (useful, but not necessary), and specify
+@@ -149,7 +149,7 @@
+ # Cygwin sitting around already.  If not, you should.  Cygwin provides a
+ # `makeinfo.exe' in /usr/bin/makeinfo (/usr/bin is virtual, it's /bin in
+ # the actual file system).
+-MAKEINFO=c:\cygwin\bin\makeinfo.exe
++MAKEINFO=e:\cygwin\bin\makeinfo.exe
+ 
+ # Set this to enable debug code in XEmacs that doesn't slow things down,
+ # and to add debugging information to the executable. (The code that's
+
+EOF
+
+nmake -f xemacs.mak
+nmake -f xemacs.mak install
+popd
+
+#
+# Make a cygwin 21.4 version
+#
+unset INCLUDE
+unset LIB
+export PATH=$oldPath
+KITDIR=$PWD
+
+xemacs_ver=xemacs-21.4-$(today)		# From mk-src above
+mkdir -p ~/software/build/$xemacs_ver
+pushd ~/software/build/$xemacs_ver
+$KITDIR/${xemacs_ver}/configure --prefix=/usr/local/${xemacs_ver} '--package-path=/cygdrive/e/XEmacs/Packages/site-packages::/cygdrive/e/XEmacs/Packages/xemacs-packages' '--with-dragndrop' '--without-x'
+make
+make check
+make install
+popd
+
+# Link /usr/local/bin/xemacs to the latest XEmacs
+pushd /usr/local
+rm xemacs
+ln -s xemacs*(oc[1]) xemacs
+popd
+
+#
+# Make a cygwin 21.5 version
+#
+xemacs_ver=xemacs-21.5-$(today)		# From mk-src above
+mkdir -p ~/software/build/$xemacs_ver
+pushd ~/software/build/$xemacs_ver
+$KITDIR/${xemacs_ver}/configure --prefix=/usr/local/${xemacs_ver} '--with-package-path=/cygdrive/e/XEmacs/Packages/site-packages::/cygdrive/e/XEmacs/Packages/xemacs-packages' '--with-dragndrop' '--without-x'
+make
+make check
+make install
+popd
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

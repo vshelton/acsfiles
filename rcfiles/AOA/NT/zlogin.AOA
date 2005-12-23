@@ -1,6 +1,13 @@
 
 # Override variables clobbered in cygwin's /etc/profile.d stuff
 path=(~/bin /usr/local/bin /bin /usr/bin /usr/X11R6/bin /etc $(cygpath $SYSTEMROOT)/system32 $(cygpath $SYSTEMROOT))
+SAVEHIST=1024
+
+# Change window title when directory changes
+function chpwd {
+  print -Pn "\e]0;%m:%~\a"
+}
+chpwd
 
 # Local Variables:
 # mode: ksh

@@ -2,7 +2,8 @@
 ;; This file gets executed after acs-custom.el
 ;(message "Entering default.el")
 
-(when (string-match "win32" system-configuration)
+(when (string-match "win32\\|cygwin" system-configuration)
+
   ;; Set up a left margin
   (set-specifier left-margin-width 1)
   (setq explicit-shell-file-name (executable-find "bash")

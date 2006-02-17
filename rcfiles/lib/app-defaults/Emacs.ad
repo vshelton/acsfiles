@@ -76,7 +76,7 @@ EFRAME.font-lock-variable-name-face.attributeForeground: aquamarine
 	    EFRAME.font-lock-warning-face.attributeFont: BOLD
       EFRAME.font-lock-warning-face.attributeForeground: Pink
 
-	       EFRAME.gnus-cite-attribution-face.attributeFont: ITALIC
+		    EFRAME.gnus-cite-attribution.attributeFont: ITALIC
 		EFRAME.gnus-emphasis-bold-italic.attributeFont: BOLD_ITALIC
 	  EFRAME.gnus-emphasis-bold-italic.attributeForeground: indian red
 		       EFRAME.gnus-emphasis-bold.attributeFont: BOLD
@@ -89,29 +89,30 @@ EFRAME.gnus-emphasis-underline-bold-italic.attributeForeground: indian red
        EFRAME.gnus-emphasis-underline-bold.attributeForeground: #EEDDAA
 	   EFRAME.gnus-emphasis-underline-italic.attributeFont: ITALIC
      EFRAME.gnus-emphasis-underline-italic.attributeForeground: indian red
-       EFRAME.gnus-group-mail-1-empty-face.attributeForeground: lightblue
-	     EFRAME.gnus-group-mail-1-face.attributeForeground: lightblue
-       EFRAME.gnus-group-mail-2-empty-face.attributeForeground: lightblue
-	     EFRAME.gnus-group-mail-2-face.attributeForeground: lightblue
-       EFRAME.gnus-group-mail-3-empty-face.attributeForeground: lightblue
-	     EFRAME.gnus-group-mail-3-face.attributeForeground: lightblue
-		 EFRAME.gnus-header-content-face.attributeFont: ITALIC
-	   EFRAME.gnus-header-content-face.attributeForeground: spring green
-	      EFRAME.gnus-header-from-face.attributeForeground: lightblue
-	      EFRAME.gnus-header-name-face.attributeForeground: SeaGreen3
-	      EFRAME.gnus-header-newsgroups-face.attributeFont: ITALIC
-	   EFRAME.gnus-header-subject-face.attributeForeground: spring green
-		      EFRAME.gnus-signature-face.attributeFont: ITALIC
-	  EFRAME.gnus-summary-normal-ticked-face.attributeFont: BOLD
-	    EFRAME.message-cited-text-face.attributeForeground: #CCBB77
-	   EFRAME.message-header-name-face.attributeForeground: #CCBB77
-	     EFRAME.message-header-to-face.attributeForeground: #CCBB77
-	     EFRAME.message-header-cc-face.attributeForeground: #CCBB77
-	  EFRAME.message-header-other-face.attributeForeground: #CCBB77
-	EFRAME.message-header-subject-face.attributeForeground: #CCBB77
-    EFRAME.gnus-summary-normal-ticked-face.attributeForeground: indian red
-	EFRAME.message-header-xheader-face.attributeForeground: lightblue
-	     EFRAME.message-separator-face.attributeForeground: lightblue
+	    EFRAME.gnus-group-mail-1-empty.attributeForeground: lightblue
+		  EFRAME.gnus-group-mail-1.attributeForeground: lightblue
+	    EFRAME.gnus-group-mail-2-empty.attributeForeground: lightblue
+		  EFRAME.gnus-group-mail-2.attributeForeground: lightblue
+	    EFRAME.gnus-group-mail-3-empty.attributeForeground: lightblue
+		  EFRAME.gnus-group-mail-3.attributeForeground: lightblue
+		      EFRAME.gnus-header-content.attributeFont: ITALIC
+		EFRAME.gnus-header-content.attributeForeground: spring green
+		   EFRAME.gnus-header-from.attributeForeground: lightblue
+		   EFRAME.gnus-header-name.attributeForeground: SeaGreen3
+		   EFRAME.gnus-header-newsgroups.attributeFont: ITALIC
+		EFRAME.gnus-header-subject.attributeForeground: spring green
+			   EFRAME.gnus-signature.attributeFont: ITALIC
+	       EFRAME.gnus-summary-normal-ticked.attributeFont: BOLD
+		 EFRAME.message-cited-text.attributeForeground: #CCBB77
+!		EFRAME.message-header-name.attributeForeground: lightblue
+		EFRAME.message-header-name.attributeForeground: #CCBB77
+		  EFRAME.message-header-to.attributeForeground: #CCBB77
+		  EFRAME.message-header-cc.attributeForeground: #CCBB77
+	       EFRAME.message-header-other.attributeForeground: #CCBB77
+	     EFRAME.message-header-subject.attributeForeground: #CCBB77
+	 EFRAME.gnus-summary-normal-ticked.attributeForeground: indian red
+	     EFRAME.message-header-xheader.attributeForeground: lightblue
+		  EFRAME.message-separator.attributeForeground: lightblue
 
 		       Emacs.widget-button-face.attributeFont: BOLD
 	 Emacs.widget-button-pressed-face.attributeForeground: red

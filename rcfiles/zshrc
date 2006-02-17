@@ -70,7 +70,7 @@ if [[ $TERM != emacs ]]; then
 fi
 
 # Use emacs bindings
-bindkey -me
+bindkey -me >& /dev/null
 bindkey -s '^X^E' "^Avared ^E^I^M"
 bindkey -s '^Xr' "su root -c \"\!\!\"^M"
 bindkey '^X#' pound-insert

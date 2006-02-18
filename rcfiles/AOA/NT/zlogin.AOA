@@ -1,6 +1,6 @@
 
 # Override variables clobbered in cygwin's /etc/profile.d stuff
-path=(~/bin /usr/local/bin /bin /usr/bin /usr/X11R6/bin /etc $(cygpath $SYSTEMROOT)/system32 $(cygpath $SYSTEMROOT))
+path=(~/bin /usr/local/bin /usr/bin /bin /usr/X11R6/bin /etc $(cygpath $SYSTEMROOT)/system32 $(cygpath $SYSTEMROOT))
 SAVEHIST=1024
 
 # Change window title when directory changes
@@ -8,6 +8,9 @@ function chpwd {
   print -Pn "\e]0;%m:%~\a"
 }
 chpwd
+
+# Since e:/XEmacs is the root of the XEmacs package tree, refer to it
+alias installed_packages="USRLOCAL=/cygdrive/e/XEmacs installed_packages"
 
 # Local Variables:
 # mode: ksh

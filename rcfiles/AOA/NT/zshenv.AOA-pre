@@ -5,7 +5,7 @@
 # SRCROOT is the root of source hierarchy for locally-built packages
 # BLDROOT is the root of the build hierarchy for locally-built packages
 # ZIPROOT is the directory where tarfiles live
-export USRLOCAL=${USRLOCAL:-~/software}
+export USRLOCAL=${USRLOCAL:-/usr/local}
 export SRCROOT=${SRCROOT:-$USRLOCAL/src}
 export BLDROOT=${BLDROOT:-$USRLOCAL/build}
 export ZIPROOT=${ZIPROOT:-$USRLOCAL/zip}

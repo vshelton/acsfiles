@@ -22,10 +22,6 @@ function cyg {
 # so modify the default bart prompt colors
 prompt bart red cyan
 
-# I now use the windows default black background,
-# so modify the default bart prompt colors
-prompt bart red cyan
-
 # Local Variables:
 # mode: ksh
 # sh-indentation: 2

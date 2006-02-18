@@ -2,7 +2,7 @@
 
 # Override variables set in .zshenv
 manpath=(/usr/local/man /usr/man)
-path=(~/bin /usr/local/bin /bin /usr/bin /etc $(cygpath $SYSTEMROOT)/system32 $(cygpath $SYSTEMROOT))
+path=(~/bin /usr/local/bin /usr/bin /bin /etc $(cygpath $SYSTEMROOT)/system32 $(cygpath $SYSTEMROOT))
 
 unset INCLUDE
 unset LIB

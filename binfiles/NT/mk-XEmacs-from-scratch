@@ -1,38 +1,94 @@
 #!/bin/sh
 
-# Build and install XEmacs versions (21.4, 21.5 and 21.4-cygwin)
+# Build and install XEmacs versions (21.4 and 21.5, both native and cygwin)
  
 # Execute this script under the Z shell
 [ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
 
 cmdname="${0:t}"
 
-# Set up the environment for a VC build
-. vcsetup
+# Function to build a cygwin version
+# usage: make_cygwin_version 21.4|21.5 [VERSION_STRING]
+make_cygwin_version () {
 
-# Make a special sub-tree for the build environment
-#mkdir XEmacs-build-$(today)
-#cd ./XEmacs-build-$(today)
+  if [[ $# -lt 1 ]]; then
+    print -u2 "$cmdname: $0 - too few arguments."
+    exit 1
+  fi
+
+  pkg_path='/cygdrive/e/XEmacs/site-packages::/cygdrive/e/XEmacs/xemacs-packages'
+  case $1 in
+  (21.4)
+    branch=$1
+    cfg_pkg="--package-path=$pkg_path"
+    ;;
+  (21.5)
+    branch=$1;
+    cfg_pkg="--with-package-path=$pkg_path"
+    ;;
+  (*)
+    print -u2 "$cmdname: $0 - illegal branch specified."
+    exit 1
+  esac
+
+  # The default version string is today's date
+  ver=${2:-$(today)}
+
+  print "\n\nBuilding XEmacs-$branch cygwin"
+  xemacs_ver=xemacs-$branch-$ver
+  srcdir=$PWD
+  mkdir -p ../build/$xemacs_ver
+  pushd ../build/$xemacs_ver
+  $srcdir/${xemacs_ver}/configure --prefix=$USRLOCAL/${xemacs_ver} $cfg_pkg --with-dragndrop --without-x
+  make
+  make check
+  make TAGS
+  make install
+
+  # A non-zero 3rd arg says to install this as the preferred
+  # cygwin XEmacs on the system
+  if [[ -n $3 ]]; then
+    latest=/cygdrive/e/LatestCygwinXEmacs
+    make install prefix=$latest
+    # Rename the executable to xemacs.exe so winclient will find it
+    # and the SendTo menu will work
+    mv $latest/bin/xemacs*.exe $latest/bin/xemacs.exe
+  fi
+
+  popd
+
+  # The command $xemacs_ver runs this version of XEmacs
+  ln -s xemacs-version $USRLOCAL/bin/$xemacs_ver
+}
+
+# Set up the environment for a VC build
+export oldPATH=$PATH
+. vcsetup
 
 # Optionally build the libraries
 if (( 1 == 0 )); then
   mk-xemacs-support-libs
 fi
 
+# The version is based on the date.
+# Capture that information now in case we're crossing midnight.
+export VERSION=$(today)
+
 #
 # Build and install XEmacs-21.4 from CVS
 #
+print "Building XEmacs-21.4 native"
 
 # Create an XEmacs-21.4 source kit
 pushd ~/cvsroot/xemacs-21.4
 cvs -q update
 popd
 SRCROOT=. mk-src xemacs-21.4
-pushd ./xemacs-21.4-$(today)/nt
+pushd ./xemacs-21.4-$VERSION/nt
 cp config.inc.samp config.inc
 patch <<'EOF'
 --- config.inc.samp	2005-01-30 21:54:55.000000000 -0500
-+++ config.inc	2005-12-19 12:18:20.613952800 -0500
++++ config.inc	2005-12-23 13:10:32.106022500 -0500
 @@ -2,9 +2,9 @@
  
  ############################################################################
@@ -41,7 +97,7 @@ patch <<'EOF'
 +INSTALL_DIR=e:\XEmacs\XEmacs-$(XEMACS_VERSION_STRING)
  
 -PACKAGE_PREFIX=c:\Program Files\XEmacs
-+PACKAGE_PREFIX=e:\XEmacs\Packages
++PACKAGE_PREFIX=e:\XEmacs
  
  ############################################################################
  
@@ -63,7 +119,7 @@ patch <<'EOF'
  
  # Set this to enable JPEG support (useful, but not necessary), and specify
  # the directory containing jpeg.  Get the latest version from
-@@ -64,19 +64,19 @@
+@@ -64,24 +64,24 @@
  # directory containing tiff.  Get the latest version from
  # ftp://ftp.uu.net/graphics/tiff/.
  HAVE_TIFF=1
@@ -86,6 +142,12 @@ patch <<'EOF'
  
  ############################################################################
  
+ # Set this to enable some debug code that doesn't slow things down.
+-DEBUG_XEMACS=1
++DEBUG_XEMACS=0
+ 
+ # Set this to speed up building, for development purposes.
+ QUICK_BUILD=0
 
 EOF
 
@@ -96,13 +158,14 @@ popd
 #
 # Build and install XEmacs-21.5 from CVS
 #
+print "\n\nBuilding XEmacs-21.5 native"
 
 # Create an XEmacs-21.5 source kit
 pushd ~/cvsroot/xemacs-21.5
 cvs -q update
 popd
 SRCROOT=. mk-src xemacs-21.5
-pushd ./xemacs-21.5-$(today)/nt
+pushd ./xemacs-21.5-$VERSION/nt
 cp config.inc.samp config.inc
 patch <<'EOF'
 --- config.inc.samp	2005-11-24 20:41:50.000000000 -0500
@@ -115,7 +178,7 @@ patch <<'EOF'
 +INSTALL_DIR=e:\XEmacs\XEmacs-$(XEMACS_VERSION_STRING)
  
 -PACKAGE_PREFIX=c:\Program Files\XEmacs
-+PACKAGE_PREFIX=e:\XEmacs\Packages
++PACKAGE_PREFIX=e:\XEmacs
  
  ############################################################################
  #                      Compiled-in features: basic                         #
@@ -162,40 +225,14 @@ nmake -f xemacs.mak
 nmake -f xemacs.mak install
 popd
 
-#
-# Make a cygwin 21.4 version
-#
+# Restore gcc build environment
 unset INCLUDE
 unset LIB
-export PATH=$oldPath
-KITDIR=$PWD
+export PATH=$oldPATH
 
-xemacs_ver=xemacs-21.4-$(today)		# From mk-src above
-mkdir -p ~/software/build/$xemacs_ver
-pushd ~/software/build/$xemacs_ver
-$KITDIR/${xemacs_ver}/configure --prefix=/usr/local/${xemacs_ver} '--package-path=/cygdrive/e/XEmacs/Packages/site-packages::/cygdrive/e/XEmacs/Packages/xemacs-packages' '--with-dragndrop' '--without-x'
-make
-make check
-make install
-popd
-
-# Link /usr/local/bin/xemacs to the latest XEmacs
-pushd /usr/local
-rm xemacs
-ln -s xemacs*(oc[1]) xemacs
-popd
-
-#
-# Make a cygwin 21.5 version
-#
-xemacs_ver=xemacs-21.5-$(today)		# From mk-src above
-mkdir -p ~/software/build/$xemacs_ver
-pushd ~/software/build/$xemacs_ver
-$KITDIR/${xemacs_ver}/configure --prefix=/usr/local/${xemacs_ver} '--with-package-path=/cygdrive/e/XEmacs/Packages/site-packages::/cygdrive/e/XEmacs/Packages/xemacs-packages' '--with-dragndrop' '--without-x'
-make
-make check
-make install
-popd
+# Make the cygwin versions
+make_cygwin_version 21.4 $VERSION t
+make_cygwin_version 21.5 $VERSION
 
 # Local Variables:
 # mode: ksh

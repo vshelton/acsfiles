@@ -5,7 +5,6 @@
 # Set up the environment for a VC build
 export INCLUDE='E:\Program Files\Microsoft Visual Studio\VC98\atl\include;E:\Program Files\Microsoft Visual Studio\VC98\mfc\include;E:\Program Files\Microsoft Visual Studio\VC98\include'
 export LIB='E:\Program Files\Microsoft Visual Studio\VC98\mfc\lib;E:\Program Files\Microsoft Visual Studio\VC98\lib'
-oldPath=$PATH
 export PATH='/cygdrive/e/acs/bin:/usr/local/bin:/cygdrive/e/Program Files/Microsoft Visual Studio/Common/Tools/WinNT:/cygdrive/e/Program Files/Microsoft Visual Studio/Common/MSDev98/Bin:/cygdrive/e/Program Files/Microsoft Visual Studio/Common/Tools:/cygdrive/e/Program Files/Microsoft Visual Studio/VC98/bin:/bin:/usr/bin:/usr/X11R6/bin:/etc:/cygdrive/c/WINDOWS/system32:/cygdrive/c/WINDOWS'
 
 # Local Variables:

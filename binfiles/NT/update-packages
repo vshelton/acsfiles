@@ -16,8 +16,11 @@ if (( $# != 0 )); then
   exit 1
 fi
 
-pkg_root=${pkg_root:-/cygdrive/e/XEmacs/Packages}
-unix_staging=${unix_staging:-//cvs-srvr/vshelton/tmp/staging}
+# Exit as soon as an error is detected
+set -e
+
+: ${pkg_root:=/cygdrive/e/XEmacs}
+: ${unix_staging:=//cvs-srvr/vshelton/tmp/staging}
 
 # Save the list of old packages
 pkgs=( $(USRLOCAL=$pkg_root installed_packages) )
@@ -30,7 +33,8 @@ ls -ld --time-style='+%Y-%m-%d' zip | read -A
 # So $reply[6] = the old date, like '2005-02-28'
 [[ -n $verbose ]] && print -nu2 Moving packages to XEmacs-packages-$reply[6]...
 cd ..
-mv ${pkg_root:t} XEmacs-packages-$reply[6]
+mkdir XEmacs-packages-$reply[6]
+mv ${pkg_root:t}/{mule-packages,site-packages,xemacs-packages,zip} XEmacs-packages-$reply[6]
 [[ -n $verbose ]] && print -u2 done
 mkdir -p ${pkg_root:t}/{xemacs-packages,zip}
 

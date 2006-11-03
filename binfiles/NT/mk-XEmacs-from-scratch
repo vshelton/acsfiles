@@ -1,16 +1,12 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 
 # Build XEmacs versions (21.4 and 21.5, both native and cygwin).
 # The native versions are not installed, but the cygwin versions
 # are installed to /usr/local/xemacs-21.x-$(today).
 # All kits reference packages installed under e:/XEmacs
- 
-# Execute this script under the Z shell
-[ ! -n "$ZSH_VERSION" ] && exec zsh -f "$0" ${1+"$@"}
 
-emulate zsh
-setopt pushdsilent
-cmdname="${0:t}"
+emulate -LR zsh
+progname=${0:t}
 
 # Optional '-l' argument means to build the libraries
 if [[ $1 == -l ]]; then
@@ -72,7 +68,7 @@ for ver in $*; do
     ;;
 
   (*)
-      print -u2 "$cmdname: illegal version \"$ver\" specified."
+      print -u2 "$progname: illegal version \"$ver\" specified."
       ;;
   esac
 done

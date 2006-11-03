@@ -1,0 +1,77 @@
+#!/usr/bin/env zsh
+
+# Build a Cygwin version of XEmacs
+# Function to build a cygwin version
+# usage: MakeCygwinXEmacs [21.4|21.5|xemacs-21.x-yyyy-mm-dd] [t] [21.4|21.5|xemacs-21.x-yyyy-mm-dd] [t]
+
+# Environment variables potentially used:
+# pkg_path - List of XEmacs package directories
+# site_prefix - Root of non-XEmacs software (i.e. /usr/local)
+
+emulate -LR zsh
+progname=${0:t}
+
+if [[ $# -lt 1 ]]; then
+  print -u2 "$progname: too few arguments."
+  exit 1
+fi
+
+: ${pkg_path:='/e/XEmacs/site-packages::/e/XEmacs/xemacs-packages'}
+export INSTALL==install	# Hack around configure bug tickled by --with-infopath
+export CFLAGS='-Os -malign-double -pipe -ffast-math'
+
+while (( $# > 0 )); do
+  branch=$1
+  shift
+  case $branch in
+  (21.4|xemacs-21.4*)
+    mule=
+    cfg_site_prefix="--site-prefixes="
+    package_path="--package-path=$pkg_path"
+    ;;
+  (21.5|xemacs-21.5*)
+    mule="-m"
+    cfg_site_prefix="--with-site-prefix="
+    package_path="--with-package-path=$pkg_path"
+    ;;
+  (*)
+    print -u2 "$progname: illegal branch specified."
+    exit 1
+  esac
+
+  mk-xemacs $mule $branch --without-x --with-dragndrop --pdump --with-dialogs --with-widgets --with-sound=native $cfg_site_prefix$site_prefix $package_path
+
+  # On cygwin, we're only building a mule version of 21.5,
+  # so make a special script to run this version as 'xemacs-21.5'.
+  if [[ -n $mule ]]; then
+    target=$branch
+    [[ $target == 21.? ]] && target=xemacs-$branch-${VERSION:-$(today)}
+    print exec "'$target-mule'" '"$@"' > ${site_prefix:-/usr/local}/bin/xemacs-21.5
+  fi
+
+  # 't' following a version indicates that the previously-built version
+  # should be installed as the default cygwin XEmacs on the system
+  if [[ $1 == t ]]; then
+    shift
+    latest=/e/LatestCygwinXEmacs
+    rm -rf $latest
+
+    # Ugh - we must know the algorithm mk-xemacs uses
+    # to build the version info
+    (
+      cd $branch >& /dev/null || cd xemacs-$branch-${VERSION:-$(today)}
+      make install prefix=$latest >& inst-latest.out
+    )
+
+    # Rename the executable to xemacs.exe so winclient will find it
+    # and the SendTo menu will work
+    mv $latest/bin/xemacs*.exe $latest/bin/xemacs.exe
+  fi
+
+done
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

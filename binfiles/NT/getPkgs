@@ -3,10 +3,10 @@
 # Download all the packages needed for the XEmacs setup kits
 
 emulate -LR zsh
-setopt nonomatch extendedglob
+progname=${0:t}
 
-: ${ftpsite:=ftp://ftp.xemacs.org/pub/xemacs/packages}
-: ${expsite:=ftp://ftp.xemacs.org/pub/xemacs/beta/experimental/packages}
+: ${ftpsite:=http://ftp.xemacs.org/pub/xemacs/packages}
+: ${expsite:=http://ftp.xemacs.org/pub/xemacs/beta/experimental/packages}
 default_pkgs="auctex
               bbdb
               c-support
@@ -82,27 +82,32 @@ default_pkgs="auctex
               xslt-process"
 : ${pkglist:=$default_pkgs}
 
+function getPackageFile {
+  local file=$1
+  mv $file $file.old 2>/dev/null
+  wget -q $expsite/$file && return 0
+  [[ ! -f $file ]] && wget -q $ftpsite/$file && return 0
+  return 1
+}
+
+# First get the latest package list
+getPackageFile package-index.LATEST.gpg
+if [[ ! -f package-index.LATEST.gpg ]]; then
+  print -u2 "$progname: could not retrieve package index."
+  exit 1
+fi
+
+# Find the right version of each package and fetch it
 for f in ${=pkglist}; do
-  #wget -q "$expsite/${f}*"
-  wget "$expsite/${f}*"
-  # I can't seem to get this:
-  #   if [[ -e ${f}-*-pkg.tar.gz ]]; then
-  # to work, so use `ls' instead
-  if ls ${f}-*-pkg.tar.gz >& /dev/null ; then
-    print "$(ls ${f}-*-pkg.tar.gz) (experimental)"
-  else
-    #wget -q "$ftpsite/${f}-*-pkg.tar.gz"
-    wget "$ftpsite/${f}-*-pkg.tar.gz"
-    print "$(ls ${f}-*-pkg.tar.gz)"
-  fi
+  grep "filename \"$f-[0-9]" package-index.LATEST.gpg | read fn pkg
+  pkg=${pkg:s/\"//:s/\"//}
+  getPackageFile $pkg
+  [[ ! -f $pkg ]] && print -u2 "$progname: could not get package $pkg."
 done
 
-# Uncompress all the package tarfiles
-gunzip *-pkg.tar.gz
-
-# Get newest package index
-wget -q $expsite/package-index.LATEST.gpg
-[[ ! -e package-index.LATEST.gpg ]] && wget -q $ftpsite/package-index.LATEST.gpg
+# Uncompress the compressed tar files (they will be compressed
+# in the setup kit.
+gunzip *.tar.gz
 
 # Local Variables:
 # mode: ksh

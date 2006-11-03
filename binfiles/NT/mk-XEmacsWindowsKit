@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 
 # Build native setup kits for XEmacs under Windows.
 # usage: mk-XEmacsWindowsKit [-p] [21.4.xx] [21.5-xx]
@@ -12,13 +12,9 @@
 #    (see http://www.jrsoftware.org/isdl.php#qsp for more details and
 #    http://files.jrsoftware.org/ispack/ispack-5.1.6.exe for the setup kit).
 
-# Execute this script under the Z shell
-[ ! -n "$ZSH_VERSION" ] && exec zsh -f "$0" ${1+"$@"}
-
-cmdname="${0:t}"
-
 # Set up a vanilla zsh environment
-emulate zsh
+emulate -LR zsh
+progname=${0:t}
 
 # Things to customize for your system
 : ${InnoSetup:="/e/Program Files/Inno Setup 5/iscc"}
@@ -56,13 +52,13 @@ for ver in $*; do
     kit_options="$kit_options /dMULE"
     ;;
   (*)
-    print -u2 "$cmdname: unknown version specified: \"$ver\"."
+    print -u2 "$progname: unknown version specified: \"$ver\"."
     continue
     ;;
   esac
 
   # Make and install the executables
-  ./MakeNativeXEmacs --install --install-root=$INSTALL_DIR $branch_options $branch
+  MakeNativeXEmacs --install --install-root=$INSTALL_DIR $branch_options $branch
 
   # Run the Inno Setup compiler to make the kit
   $InnoSetup XEmacs.iss /dExecSrc=$INSTALL_DIR /dPkgSrc=$PACKAGE_DIR /dXEmacsVersion=$ver ${=kit_options}

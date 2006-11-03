@@ -7,12 +7,9 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 
 # Match cygdrive prefix
 drives="c e f x y z"
-zstyle ':completion:*' fake-files '/:cygdrive' "/cygdrive:$drives"
+zstyle ':completion:*' fake-files "/:$drives"
 
-# Match drives as ~n
-for drive in ${=drives}; hash -d $drive=/cygdrive/$drive
-
-desktop=/cygdrive/c/Documents\ and\ Settings/$(whoami)/Desktop
+desktop=/c/Documents\ and\ Settings/$(whoami)/Desktop
 
 # Convert from cygwin path to a Windows path, like so: dir ~(e:cyg:)
 function cyg {

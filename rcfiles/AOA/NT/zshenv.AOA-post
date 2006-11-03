@@ -1,8 +1,7 @@
 # Set non-default shell enviroment, post .zshenv (AOA PC version)
 
 # Override variables set in .zshenv
-manpath=(/usr/local/man /usr/man)
-path=(~/bin /usr/local/bin /usr/bin /bin /etc $(cygpath $SYSTEMROOT)/system32 $(cygpath $SYSTEMROOT))
+path=($ZDOTDIR/bin $USRLOCAL/bin /usr/X11R6/bin /usr/bin /bin /etc $(cygpath $SYSTEMROOT)/system32 $(cygpath $SYSTEMROOT))
 
 unset INCLUDE
 unset LIB

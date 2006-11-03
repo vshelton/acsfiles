@@ -19,7 +19,7 @@ fi
 # Exit as soon as an error is detected
 set -e
 
-: ${pkg_root:=/cygdrive/e/XEmacs}
+: ${pkg_root:=/e/XEmacs}
 : ${unix_staging:=//cvs-srvr/vshelton/tmp/staging}
 
 # Save the list of old packages
@@ -27,10 +27,10 @@ pkgs=( $(USRLOCAL=$pkg_root installed_packages) )
 
 # Move the old packages aside
 cd $pkg_root
-ls -ld --time-style='+%Y-%m-%d' zip | read -A
+ls -ld --no-group --time-style='+%Y-%m-%d' zip | read -A
 # ls -dl --time-style='+%Y-%m-%d' zip
-# ==> drwxr-xr-x+ 2 SheltonV mkgroup-l-d 0 2005-02-28 zip
-# So $reply[6] = the old date, like '2005-02-28'
+# ==> drwxr-xr-x+ 2 vshelton 0 2006-03-01 zip
+# So $reply[5] = the old date, like '2005-02-28'
 [[ -n $verbose ]] && print -nu2 Moving packages to XEmacs-packages-$reply[6]...
 cd ..
 mkdir XEmacs-packages-$reply[6]

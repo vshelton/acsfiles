@@ -2,6 +2,8 @@
 # install kits for specified packages
 
 emulate -LR zsh
+setopt local_options
+setopt extended_glob
 
 local PROMPT3 buildkits dir opt removable
 local integer interactive=0 printonly=0 verbose=0

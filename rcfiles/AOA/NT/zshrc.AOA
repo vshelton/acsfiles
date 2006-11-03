@@ -3,9 +3,10 @@
 
 # Match case-insensitively
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+#setopt nocaseglob
 
 # Match cygdrive prefix
-drives="c e x y z"
+drives="c e f x y z"
 zstyle ':completion:*' fake-files '/:cygdrive' "/cygdrive:$drives"
 
 # Match drives as ~n
@@ -20,6 +21,7 @@ function cyg {
 
 # I now use the windows default black background,
 # so modify the default bart prompt colors
+PROMPT="%2c %w %T%(#.#.); "
 prompt bart red cyan
 
 # Local Variables:

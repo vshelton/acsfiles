@@ -8,7 +8,7 @@
 export USRLOCAL=${USRLOCAL:-/usr/local}
 export SRCROOT=${SRCROOT:-$USRLOCAL/src}
 export BLDROOT=${BLDROOT:-$USRLOCAL/build}
-export ZIPROOT=${ZIPROOT:-$USRLOCAL/zip}
+export ZIPROOT=${ZIPROOT:-$HOME/software/zip}
 
 # Local Variables:
 # mode: ksh

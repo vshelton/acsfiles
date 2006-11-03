@@ -1,0 +1,111 @@
+#!/usr/bin/env zsh
+
+# Download all the packages needed for the XEmacs setup kits
+
+emulate -LR zsh
+setopt nonomatch extendedglob
+
+: ${ftpsite:=ftp://ftp.xemacs.org/pub/xemacs/packages}
+: ${expsite:=ftp://ftp.xemacs.org/pub/xemacs/beta/experimental/packages}
+default_pkgs="auctex
+              bbdb
+              c-support
+              calc
+              cc-mode
+              debug
+              dired
+              ecb
+              ecrypto
+              edebug
+              ediff
+              edit-utils
+              efs
+              eieio
+              elib
+              emerge
+              eshell
+              footnote
+              fortran-modes
+              fsf-compat
+              gnus
+              hm--html-menus
+              ibuffer
+              igrep
+              ispell
+              jde
+              latin-euro-standards
+              latin-unity
+              locale
+              lookup
+              mail-lib
+              mailcrypt
+              mh-e
+              mmm-mode
+              mule-base
+              net-utils
+              os-utils
+              pc
+              pcl-cvs
+              pcomplete
+              perl-modes
+              prog-modes
+              ps-print
+              psgml
+              python-modes
+              re-builder
+              reftex
+              ruby-modes
+              sasl
+              scheme
+              semantic
+              sgml
+              sh-script
+              sieve
+              sounds-wav
+              speedbar
+              supercite
+              texinfo
+              text-modes
+              textools
+              time
+              tramp
+              vc
+              vhdl
+              viper
+              vm
+              w3
+              x-symbol
+              xemacs-base
+              xemacs-devel
+              xetla
+              xslide
+              xslt-process"
+: ${pkglist:=$default_pkgs}
+
+for f in ${=pkglist}; do
+  #wget -q "$expsite/${f}*"
+  wget "$expsite/${f}*"
+  # I can't seem to get this:
+  #   if [[ -e ${f}-*-pkg.tar.gz ]]; then
+  # to work, so use `ls' instead
+  if ls ${f}-*-pkg.tar.gz >& /dev/null ; then
+    print "$(ls ${f}-*-pkg.tar.gz) (experimental)"
+  else
+    #wget -q "$ftpsite/${f}-*-pkg.tar.gz"
+    wget "$ftpsite/${f}-*-pkg.tar.gz"
+    print "$(ls ${f}-*-pkg.tar.gz)"
+  fi
+done
+
+# Uncompress all the package tarfiles
+gunzip *-pkg.tar.gz
+
+# Get newest package index
+wget -q $expsite/package-index.LATEST.gpg
+[[ ! -e package-index.LATEST.gpg ]] && wget -q $ftpsite/package-index.LATEST.gpg
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

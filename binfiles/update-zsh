@@ -1,8 +1,14 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 
-# Execute this script under the Z shell
-# The zsh environment will be set up by .zshenv
-[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+# Update the CVS sources of zsh and if anything has changed, build them.
+
+emulate -LR zsh
 
 update_and_build zsh mk-zsh $*
-#PROJECT=zsh-4.0 update_and_build zsh-4.0 mk-zsh $*
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:
+

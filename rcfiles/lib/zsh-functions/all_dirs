@@ -5,8 +5,11 @@
 #   /usr/local/build
 #   /usr/local
 
+emulate -LR zsh
+
 setopt local_options
-setopt csh_null_glob null_glob no_mark_dirs pushd_silent no_pushd_ignoredups
+setopt csh_null_glob extended_glob null_glob no_mark_dirs pushd_silent no_pushd_ignoredups
+
 local all_dirs d ul
 typeset -U all_dirs
 

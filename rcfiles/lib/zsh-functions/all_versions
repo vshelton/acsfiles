@@ -2,7 +2,11 @@
 # print all versions of a particular command
 # e.g. all_versions emacs* => emacs-21.3 emacs-lisp-intro-2.05
 
-local x
+emulate -LR zsh
+setopt local_options
+setopt extended_glob
+
+typeset -a x
 x=( ${^$(all_dirs)}/$=~^*(N/:t) )
 print -l ${(ou)x}
 

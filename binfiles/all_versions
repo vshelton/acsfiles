@@ -1,0 +1,17 @@
+#!/usr/bin/env zsh
+
+# print all versions of a particular command
+# e.g. all_versions emacs* => emacs-21.3 emacs-lisp-intro-2.05
+
+emulate -LR zsh
+setopt extendedglob
+
+typeset -a x
+x=( ${^$(all_dirs)}/$=~^*(N/:t) )
+print -l ${(ou)x}
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

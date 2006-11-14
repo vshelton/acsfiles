@@ -1,0 +1,32 @@
+#!/usr/bin/env zsh
+
+# Make the latest installed version of some package be the default
+# usage: mk_default <pkg> [directory]
+# e.g. mk_default zsh $path[2]/..
+# If no directory is specified, $USRLOCAL is assumed
+
+emulate -LR zsh
+
+case $# in
+(1|2)
+  ;;
+(*)
+    print -u2 "usage: $0 <pkg> [directory]"
+    return 1
+    ;;
+esac
+
+# Default destination directory is $USRLOCAL, i.e. /usr/local
+: ${USRLOCAL:=/usr/local}
+
+cd ${2:-$USRLOCAL}
+command ls -ld $1
+link_latest $1
+command ls -ld $1
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:
+

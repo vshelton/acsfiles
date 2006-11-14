@@ -1,0 +1,77 @@
+#!/usr/bin/env zsh
+
+# Make the latest installed version of XEmacs be the default
+# version of XEmacs for the system.
+
+# usage: new_XEmacs [-v] [version]
+#     -v  operate in verbose mode
+#   version must be either 21.4 or 21.5; it defaults to 21.4.
+emulate -R zsh
+setopt extendedglob nopushdignoredups pushdsilent
+
+
+# Remove an old link and link to the directory
+# that matches the specified pattern.
+# $1 = matched pattern
+# $2 = link name
+function newlink {
+  local target
+  (( verbose > 0 )) && command ls -ld $PWD/$2
+  rm -f $2
+
+  # Link to the directory which matches the specified pattern.
+  target=$(print $1)
+  [[ -d $target ]] && ln -s $target $2
+
+  (( verbose > 0 )) && command ls -ld $PWD/$2
+}
+
+local integer verbose=0
+local ipath opt ver
+
+progname=${0:t}
+
+while getopts v opt
+do
+  case $opt in
+  (v)
+    verbose=1
+    ;;
+  (?)
+    print -u2 "usage: $progname [-v] [version]
+       Make the most-recently installed version of XEmacs the default version
+       on the system.  This command updates the 'xemacs', 'xemacs-debug' and
+       'xemacs-mule' commands.
+       The option '-v' makes $0 operate verbosely.
+       Version must be either 21.4 or 21.5; it defaults to 21.4."
+    return 1
+    ;;
+  esac
+done
+(( OPTIND > 1 )) && shift $(( OPTIND - 1 ))
+
+ver=21.4
+(( ARGC > 0 )) && ver=$1
+if [[ $ver != 21.[45] ]]
+then
+  print -u2 "$progname: 21.4 and 21.5 are the only versions supported."
+  return 2
+fi
+
+# Find the directory where the symlink to xemacs lives.
+ipath=$(find_install_root xemacs)
+(( ? != 0 )) && return $?
+cd $ipath/..
+
+# 'xemacs' has a funky pattern because we need to exclude
+# both mule and debug versions
+newlink xemacs-${ver}*~*-mule~*-debug(oc[1]) xemacs
+
+newlink xemacs-${ver}*-debug(oc[1]) xemacs-debug
+newlink xemacs-${ver}*-mule(oc[1]) xemacs-mule
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

@@ -1,0 +1,8 @@
+diff_output_files -pzsh- config.status $1 $2
+diff_output_files -pzsh- check.out $1 $2
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

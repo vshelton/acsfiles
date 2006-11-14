@@ -1,0 +1,12 @@
+
+# Resolve a directory name to a name containing no symlinks
+
+cd $1 >& /dev/null || return
+pwd -r
+cd - >& /dev/null
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

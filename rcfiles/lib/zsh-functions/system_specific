@@ -1,0 +1,15 @@
+
+# Source a system-specific version of the specified rc file
+# $1 = name of the startup file, ie .zshrc, .zshenv, etc
+# $2 = suffix, ie -pre or -post
+
+emulate -LR zsh
+
+local this_rcpath=${ZDOTDIR:-~}/$1.${HOST%%.*}$2
+[[ -f $this_rcpath ]] && . $this_rcpath
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

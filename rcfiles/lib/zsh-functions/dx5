@@ -1,0 +1,32 @@
+# Compare build results for XEmacs, either 21.4 or 21.5.
+# Usage: dx5 [-a] [-d] [-m] [-n] ver1 ver2
+emulate -LR zsh
+
+# Do the work of comparing the files
+# $1 - version name ("21.4" or "21.5")
+# $2 - directory suffix ("-debug" or "-mule", for example)
+# $3 - date1 (see diff_output_files)
+# $4 - date2 (see diff_output_files)
+function compare_files {
+  diff_output_files -pxemacs-${1}- $2 Installation $3 $4
+  diff_output_files -pxemacs-${1}- $2 check.out $3 $4
+}
+
+zparseopts -D a=all d=debug m=mule n=normal
+
+# Default to normal.
+[[ -z $mule && -z $debug ]] && normal=( "-n" )
+
+# The project name is dependent on the function invocation name.
+ver="21.5"
+[[ $0 == *4* ]] && ver="21.4"
+
+[[ -n $normal || -n $all ]] && compare_files $ver "" $1 $2
+[[ -n $debug || -n $all ]] && compare_files $ver "-s-debug" $1 $2
+[[ -n $mule || -n $all ]] && compare_files $ver "-s-mule" $1 $2
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

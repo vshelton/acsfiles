@@ -1,0 +1,45 @@
+#!/usr/bin/env zsh
+
+# Update CVS sources for a specified project and
+# if any new files are found, run a full build.
+# Syntax: update_and_build <project_name> <build_script> [build_options]
+# Assumptions:
+#   1. A CVS tree for the specified project exists at
+#      ~/cvsroot/<project_name>
+#   2. A build tree exists at $BLDROOT
+
+emulate -LR zsh
+
+local project_name=$1; shift
+local build_script=$1; shift
+local update_file="last_update"
+
+: ${CVSROOT:=$HOME/cvsroot/$project_name}
+pushd $CVSROOT
+if (( $? != 0 )); then
+  print -u2 "CVS directory $CVSROOT does not exist."
+  exit 1
+fi
+print "\n$project_name"
+loop_while_failing cvs -q update
+
+# Horrible hack to work around constantly updating version.sh
+# file in XEmacs 21.5
+if [[ $project_name = xemacs-21.5 ]]; then
+  touch --reference=$update_file version.sh
+fi
+
+if [[ $(newer_than $update_file) -gt 0 ]]; then
+  touch $update_file
+  pushd $BLDROOT
+  print "\nBuilding $project_name"
+  $build_script $*
+  popd
+fi
+popd
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

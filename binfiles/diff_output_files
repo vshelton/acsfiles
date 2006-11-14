@@ -1,0 +1,56 @@
+#!/usr/bin/env zsh
+
+# Compare 2 output files whose names differ by a string substitution and
+# substitute those strings within the bodies of the files before comparing.
+# Usage: diff_output_files [-h] [-p prefix] [-s suffix] filename [date1 [date2]]
+#            -h - Print this help message
+#            -p - Set prefix (project) name (defaults to "xemacs-21.5-")
+#            -s - Set suffix name (defaults to "-mule")
+#            If no date1 is specified, it defaults to $(yesterday)
+#            If no date2 is specified, it defaults to $(today)
+#
+# E.g. diff_output_files -p xemacs-21.5- -s -mule check.out 2006-11-10
+
+emulate -LR zsh
+progname=${0:t}
+
+usage()
+{
+  print -u2 "\
+usage: $progname [-h] [-p prefix] [-s suffix] filename [date1 [date2]]
+       -h - Print this help message
+       -p - Set prefix (project) name (defaults to \"xemacs-21.5-\"
+       -s - Set suffix name (defaults to nothing)
+       If no date1 is specified, it defaults to \$\(yesterday\)
+       If no date2 is specified, it defaults to \$\(today\)"
+}
+
+zparseopts -D h=help p:=pfx s:=sfx
+
+if [[ -n $help ]]; then
+  usage
+  exit 0
+fi
+
+if (( ARGC == 0 )) || (( ARGC > 3 )); then
+  usage
+  exit 1;
+fi
+
+filename=$1
+date1=${2:-$(yesterday)}
+date2=${3:-$(today)}
+
+[[ -n $pfx ]] && prefix=${pfx[2]}
+: ${prefix:="xemacs-21.5-"}
+suffix=
+[[ -n $sfx ]] && suffix=${sfx[2]}
+: ${BLDROOT:=/usr/local/build}
+
+diffs -s/$date1/$date2/g $BLDROOT/${prefix}{$date1,$date2}${suffix}/$filename
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

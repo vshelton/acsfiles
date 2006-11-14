@@ -1,0 +1,43 @@
+#!/usr/bin/env zsh
+
+# Print the directory (somewhere under $USRLOCAL) where the specified
+# command is installed.  For example, $USRLOCAL/bin/xemacs is a symbolic
+# link to $USRLOCAL/xemacs/bin/xemacs, but $USRLOCAL/xemacs is a symbolic
+# link to $USRLOCAL/xemacs-21.4-2006-09-29.  In this case,
+# find_install_root xemacs will print out $USRLOCAL/xemacs-21.4-2006-09-29.
+
+emulate -LR zsh
+local cmdpath ipath upath
+
+progname=${0:t}
+
+if (( ARGC != 1 )); then
+  print -u2 "usage: $progname command
+       eg: $progname zsh would print /usr/local"
+  return 1
+fi
+
+# $(whence -s xemacs) yields something like
+#   $USRLOCAL/bin/xemacs -> $USRLOCAL/xemacs-21.4-2006-09-29/bin/xemacs-21.4.19
+# this works because there is a symlink at or below $USRLOCAL such that
+# xemacs -> xemacs-21.4-2006-09-29.  Print where the symlink points.
+cmdpath=($(whence -s $1))
+if (( ? != 0 )); then
+  print -u2 "$progname: there is no $1 in your \$PATH."
+  return 2
+fi
+
+ipath=$(cd $cmdpath[3]/../..; pwd -r)
+upath=$(cd $USRLOCAL; pwd -r)
+if [[ $ipath != $upath* ]]; then
+  print -u2 "$progname: the $1 command is not in the \$USRLOCAL hierarchy."
+  return 3
+fi
+
+print $ipath
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

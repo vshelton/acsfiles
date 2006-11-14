@@ -1,0 +1,14 @@
+#!/usr/bin/env zsh
+
+# Print the number of files under the current directory
+# newer than the specified file
+
+emulate -LR zsh
+new_files=($(find . -type f \( -not -path '*/CVS/*' \) -newer $1)) 2>/dev/null
+print ${#new_files}
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

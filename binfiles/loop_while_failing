@@ -1,25 +1,23 @@
 #!/usr/bin/env zsh
 
-# Loop a command several times until it passes, or until a maximum
-# number of loops has expired.
+# Loop a command several times until the command passes,
+# or until a maximum number of loops has expired.
 
 emulate -LR zsh
 
-local i
-local maxloops=25
-local retcode
-local sleep_period=${sleep_period:-10}
+: ${maxloops:=25}
+: ${sleep_period:=10}
 
 for (( i=0; i < maxloops; i++ ))
 do
-  (( i > 0 )) && sleep $sleep_period
   $*
   retcode=$?
-  if (( $retcode == 0 )) break
+  (( retcode == 0 )) && break
+  sleep $sleep_period
 done 2>/dev/null
 
 (( i == maxloops )) && print -u2 "$0: \'$*\' returned non-zero values $maxloops times"
-return $retcode
+exit $retcode
 
 # Local Variables:
 # mode: shell-script

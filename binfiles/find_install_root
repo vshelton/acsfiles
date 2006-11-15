@@ -7,14 +7,13 @@
 # find_install_root xemacs will print out $USRLOCAL/xemacs-21.4-2006-09-29.
 
 emulate -LR zsh
-local cmdpath ipath upath
-
 progname=${0:t}
 
 if (( ARGC != 1 )); then
-  print -u2 "usage: $progname command
+  print -u2 "\
+usage: $progname command
        eg: $progname zsh would print /usr/local"
-  return 1
+  exit 1
 fi
 
 # $(whence -s xemacs) yields something like
@@ -24,14 +23,14 @@ fi
 cmdpath=($(whence -s $1))
 if (( ? != 0 )); then
   print -u2 "$progname: there is no $1 in your \$PATH."
-  return 2
+  exit 2
 fi
 
 ipath=$(cd $cmdpath[3]/../..; pwd -r)
 upath=$(cd $USRLOCAL; pwd -r)
 if [[ $ipath != $upath* ]]; then
   print -u2 "$progname: the $1 command is not in the \$USRLOCAL hierarchy."
-  return 3
+  exit 3
 fi
 
 print $ipath

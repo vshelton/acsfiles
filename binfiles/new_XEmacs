@@ -6,9 +6,9 @@
 # usage: new_XEmacs [-v] [version]
 #     -v  operate in verbose mode
 #   version must be either 21.4 or 21.5; it defaults to 21.4.
-emulate -R zsh
-setopt extendedglob nopushdignoredups pushdsilent
-
+emulate -LR zsh
+progname=${0:t}
+0=$progname                             # for error messages from builtins
 
 # Remove an old link and link to the directory
 # that matches the specified pattern.
@@ -16,52 +16,49 @@ setopt extendedglob nopushdignoredups pushdsilent
 # $2 = link name
 function newlink {
   local target
-  (( verbose > 0 )) && command ls -ld $PWD/$2
+  [[ -n $verbose ]] && command ls -ld $PWD/$2
   rm -f $2
 
   # Link to the directory which matches the specified pattern.
   target=$(print $1)
   [[ -d $target ]] && ln -s $target $2
 
-  (( verbose > 0 )) && command ls -ld $PWD/$2
+  [[ -n $verbose ]] && command ls -ld $PWD/$2
 }
 
-local integer verbose=0
-local ipath opt ver
-
-progname=${0:t}
-
-while getopts v opt
-do
-  case $opt in
-  (v)
-    verbose=1
-    ;;
-  (?)
-    print -u2 "usage: $progname [-v] [version]
+function usage {
+  print -u2 "\
+usage: $progname [-v] [version]
        Make the most-recently installed version of XEmacs the default version
        on the system.  This command updates the 'xemacs', 'xemacs-debug' and
        'xemacs-mule' commands.
-       The option '-v' makes $0 operate verbosely.
+       The option '-v' makes $progname operate verbosely.
        Version must be either 21.4 or 21.5; it defaults to 21.4."
-    return 1
-    ;;
-  esac
-done
-(( OPTIND > 1 )) && shift $(( OPTIND - 1 ))
+}
+
+zparseopts -D h=help v=verbose
+
+if [[ -n $help ]]; then
+  usage
+  exit 0
+fi
 
 ver=21.4
 (( ARGC > 0 )) && ver=$1
-if [[ $ver != 21.[45] ]]
-then
+if [[ $ver != 21.[45] ]]; then
   print -u2 "$progname: 21.4 and 21.5 are the only versions supported."
-  return 2
+  exit 1
 fi
 
 # Find the directory where the symlink to xemacs lives.
 ipath=$(find_install_root xemacs)
-(( ? != 0 )) && return $?
-cd $ipath/..
+if [[ ! -d $ipath ]]; then
+  print -u2 "$progname: install root $ipath not found"
+  exit 2
+fi
+cd $ipath/.. || exit $?
+
+setopt extendedglob
 
 # 'xemacs' has a funky pattern because we need to exclude
 # both mule and debug versions

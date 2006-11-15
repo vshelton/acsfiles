@@ -3,7 +3,7 @@
 alias installed_packages="USRLOCAL=/e/XEmacs installed_packages"
 
 # Remove .. from the CDPATH to try to speed up completion
-cdpath[(r)..]=
+cdpath[(r)..]=()
 
 # Local Variables:
 # mode: ksh

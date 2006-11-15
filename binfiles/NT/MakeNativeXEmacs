@@ -51,16 +51,20 @@ export INCLUDE LIB PATH
 
 XEMACS_VER=
 
-zparseopts -D h=help -help=help -with-mule=mule -without-mule=mule -with-debug=debug -without-debug=debug -package-root:=package_dir -prefix:=install_dir -install=install
+zparseopts -D h=help -help=help -with-mule=with_mule -without-mule=without_mule -with-debug=with_debug -without-debug=without_debug -package-root:=package_dir -prefix:=install_dir -install=install
 
 if [[ -n $help ]]; then
   usage
   exit 0
 fi
 
-# Non-null values for $mule and $debug signal to use those options
-[[ $mule = *out* ]] && mule=
-[[ $debug = *out* ]] && debug=
+# 3 options for debug and mule: with, without or no change from default
+debug=
+[[ -n $with_debug ]] && debug=1
+[[ -n $without_debug ]] && debug=0
+mule=
+[[ -n $with_mule ]] && mule=1
+[[ -n $without_mule ]] && mule=0
 
 # Strip out option strings
 package_dir[1]=()

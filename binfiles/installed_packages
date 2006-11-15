@@ -4,6 +4,7 @@
 
 emulate -LR zsh
 progname=$0:t
+
 : ${USRLOCAL:-/usr/local}
 
 # The packages are installed in $USRLOCAL/xemacs-packages
@@ -14,7 +15,7 @@ pkgdir=$USRLOCAL/xemacs-packages
 if [[ ! -d $pkgdir/pkginfo ]]
 then
   print -u2 $progname: No package directory found at $USRLOCAL/xemacs-packages.
-  return 1
+  exit 1
 fi
 
 pkgs=(${:-$pkgdir/pkginfo/*(N)})

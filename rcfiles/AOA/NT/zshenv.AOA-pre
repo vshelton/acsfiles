@@ -1,7 +1,13 @@
 
 # Set up common environment (AOA PC version)
+
+# USRLOCAL is the destination hierarchy for locally-built packages,
+# i.e. /usr/local or /opt.
+# SRCROOT is the root of source hierarchy for locally-built packages.
+# BLDROOT is the root of the build hierarchy for locally-built packages.
 # ZIPROOT is the directory where tarfiles live.
-: ${ZIPROOT:=$HOME/software/zip}
+: ${USRLOCAL:=/usr/local} ${SRCROOT:=$USRLOCAL/src}
+: ${BLDROOT:=$USRLOCAL/build} ${ZIPROOT:=~/software/zip}
 
 # Local Variables:
 # mode: ksh

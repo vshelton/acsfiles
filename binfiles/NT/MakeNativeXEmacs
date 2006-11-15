@@ -15,9 +15,24 @@
 #      (See VC_ROOT.)
 
 # Set up a vanilla zsh environment
-emulate zsh
-
+emulate -LR zsh
 progname=${0:t}
+0=$progname                             # For error messages from builtins
+
+function usage {
+  print -u2 "\
+usage: $progname [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--without-debug] [--package-root dir] [--prefix dir] [--install] <21.4|21.5>
+       -h|--help            print this help message and exit
+       --with-mule          turn on MULE support
+       --without-mule       turn off MULE support
+       --with-debug         turn on debugging
+       --without-debug      turn off debugging
+       --package-root dir   specify directory for root of installed packages
+       --prefix dir         specify installation directory
+       --install            install the executable
+       21.4                 build a 21.4 XEmacs kit from CVS
+       21.5                 build a 21.5 XEmacs kit from CVS"
+}
 
 # Things to customize
 : ${CVS_BASE:=~/cvsroot}
@@ -34,81 +49,35 @@ typeset -U PATH
 PATH="$cyg_VC_ROOT/Common/Tools/WinNT:$cyg_VC_ROOT/Common/MSDev98/bin:$cyg_VC_ROOT/Common/Tools:$cyg_VC_ROOT/VC98/bin:$PATH"
 export INCLUDE LIB PATH
 
-mule=
-debug=
-package_dir=
-install_dir=
-install=0
 XEMACS_VER=
 
-# Parse options
-while (( $# > 0 )); do
-  case $1 in
-  (-h|--help)
-    print -u2 "usage: $progname [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--without-debug] [--package-root=dir] [--install-root=dir] [--install] <21.4|21.5>
-                         -h|--help		print this help message and exit
-                         --with-mule		turn on MULE support
-                         --without-mule		turn off MULE support
-                         --with-debug		turn on debugging
-                         --without-debug	turn off debugging
-                         --package-root=dir	specify directory for root of installed packages
-                         --install-root=dir	specify installation directory
-                         --install		install the executable
-                         21.4			build a 21.4 XEmacs kit from CVS
-                         21.5			build a 21.5 XEmacs kit from CVS"
-    return 0
-    ;;
+zparseopts -D h=help -help=help -with-mule=mule -without-mule=mule -with-debug=debug -without-debug=debug -package-root:=package_dir -prefix:=install_dir -install=install
 
-  (--with-mule)
-    mule=1
-    ;;
+if [[ -n $help ]]; then
+  usage
+  exit 0
+fi
 
-  (--without-mule)
-    mule=0
-    ;;
+# Non-null values for $mule and $debug signal to use those options
+[[ $mule = *out* ]] && mule=
+[[ $debug = *out* ]] && debug=
 
-  (--with-debug)
-    debug=1
-    ;;
+# Strip out option strings
+package_dir[1]=()
+install_dir[1]=()
 
-  (--without-debug)
-    debug=0
-    ;;
-
-  (--package-root=*)
-    package_dir=${1#--package-root=}
-    ;;
-
-  (--install-root=*)
-    install_dir=${1#--install-root=}
-    ;;
-
-  (--install)
-    install=1
-    ;;
-
-  (-*)
-    print -u2 "$progname: unknown argument: \"$arg\""
-    return 1
-    ;;
-
-  (*)
-    if [[ $1 == 21.4 || $1 == 21.5 ]]; then
-      XEMACS_VER=$1
-    else
-      print -u2 "$progname: Only XEmacs 21.4 and XEmacs 21.5 are currently supported"
-      return 1
-    fi
-    ;;
-  esac
-  shift
-done
+if [[ $1 == 21.4 || $1 == 21.5 ]]; then
+  XEMACS_VER=$1
+else
+  print -u2 "$progname: Only XEmacs 21.4 and XEmacs 21.5 are currently supported"
+  exit 1
+fi
 
 # Update to latest CVS sources
 cd $CVS_BASE/xemacs-$XEMACS_VER
 if (( $? != 0 )); then
   print -u2 "$progname: CVS tree for XEmacs-$XEMACS_VER not found at $CVS_BASE/xemacs-$XEMACS_VER"
-  return 1
+  exit 1
 fi
 cvs -q update
 cd - >/dev/null
@@ -121,13 +90,13 @@ tar cf - -C $CVS_BASE/xemacs-$XEMACS_VER --exclude CVS . | tar xf -
 
 # Configure the sources
 cd nt
-unset HOME		# Don't pick up my emacs customizations
+unset HOME              # Don't pick up my emacs customizations
 # Configure for optional packages
 perl -pi -e "s@^OPTIONAL_LIBRARY_DIR=.*@OPTIONAL_LIBRARY_DIR=$(cygpath --mixed /)$LIB_DIR@;
-	     s@^ZLIB_DIR=.*@ZLIB_DIR=\\\$(OPTIONAL_LIBRARY_DIR)/$ZLIB_VER@;
-	     s@^TIFF_DIR=.*@TIFF_DIR=\\\$(OPTIONAL_LIBRARY_DIR)/$TIFF_VER@;
-	     s@^HAVE_XFACE=.*@HAVE_XFACE=0@;
-	     s@^MAKEINFO=.*@MAKEINFO=${(q)$(cygpath --windows =makeinfo.exe)}@" < config.inc.samp >config.inc
+             s@^ZLIB_DIR=.*@ZLIB_DIR=\\\$(OPTIONAL_LIBRARY_DIR)/$ZLIB_VER@;
+             s@^TIFF_DIR=.*@TIFF_DIR=\\\$(OPTIONAL_LIBRARY_DIR)/$TIFF_VER@;
+             s@^HAVE_XFACE=.*@HAVE_XFACE=0@;
+             s@^MAKEINFO=.*@MAKEINFO=${(q)$(cygpath --windows =makeinfo.exe)}@" < config.inc.samp >config.inc
 
 # Change installation directory if requested
 [[ -n $install_dir ]] && perl -pi -e "s@^INSTALL_DIR=.*@INSTALL_DIR=$install_dir/XEmacs-\\\$(XEMACS_VERSION_STRING)@" config.inc
@@ -144,7 +113,7 @@ if [[ -n $package_dir ]] &&  perl -pi -e "s@^#PACKAGE_PREFIX=.*@PACKAGE_PREFIX=$
 # Build and install XEmacs
 # need
 nmake -f xemacs.mak
-(( install )) && nmake -f xemacs.mak install
+[[ -n $install ]] && nmake -f xemacs.mak install
 
 # Local Variables:
 # mode: ksh

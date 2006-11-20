@@ -39,17 +39,16 @@ INSTALL_DIR=$(cygpath --mixed $PWD/installed)
 
 # Loop over the versions specified on the command line
 for ver in $*; do
-  kit_options="/dKitname=-$VERSION"
+  kit_options=("/dKitname=-$VERSION")
   case $ver in
   (21.4*)
     branch=21.4
     branch_options="--without-debug"
-    #kit_options=
     ;;
   (21.5*)
     branch=21.5
     branch_options="--with-mule"
-    kit_options="$kit_options /dMULE"
+    kit_options=($kit_options "/dMULE")
     ;;
   (*)
     print -u2 "$progname: unknown version specified: \"$ver\"."
@@ -58,10 +57,14 @@ for ver in $*; do
   esac
 
   # Make and install the executables
-  MakeNativeXEmacs --install --install-root=$INSTALL_DIR $branch_options $branch
+  MakeNativeXEmacs --install --prefix=$INSTALL_DIR $branch_options $branch
+  if (( $? != 0 )); then
+    print -u2 "$progname: \"MakeNativeXEmacs --install --prefix=$INSTALL_DIR $branch_options $branch\" failed."
+    exit 1;
+  fi
 
   # Run the Inno Setup compiler to make the kit
-  $InnoSetup XEmacs.iss /dExecSrc=$INSTALL_DIR /dPkgSrc=$PACKAGE_DIR /dXEmacsVersion=$ver ${=kit_options}
+  $InnoSetup XEmacs.iss /dExecSrc=$INSTALL_DIR /dPkgSrc=$PACKAGE_DIR /dXEmacsVersion=$ver $kit_options
 
 done
 

@@ -1,0 +1,3 @@
+#!/bin/sh
+# Supply alternate ssh identity
+ssh -i /e/acs/id/.ssh/identity -F /e/acs/id/.ssh/config $*

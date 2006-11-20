@@ -30,7 +30,7 @@ for ver in $*; do
     # Make but don't install a native version.
     # We'll run it from the source directory.
     print "Building XEmacs $ver native"
-    MakeNativeXEmacs --without-debug --package-root e:/XEmacs 21.4
+    MakeNativeXEmacs --without-debug --package-root=e:/XEmacs 21.4
 
     # Make and install a cygwin version and make it the default.
     print "Building XEmacs $ver cygwin"

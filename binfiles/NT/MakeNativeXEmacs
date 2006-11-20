@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 # Build a Windows-native version of XEmacs.
-# Usage: MakeNativeXEmacs [-h] [--with-mule] [--without-mule] [--with-debug] [--without-debug] [--package-path=path] [--install-path=path] [--install] <21.4|21.5>
+# Usage: MakeNativeXEmacs [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--without-debug] [--package-root=path] [--prefix=path] [--install] <21.4|21.5>
 #
 # Assumptions:
 #   1) There is a CVS hierarchy rooted at ~/cvsroot for whatever
@@ -27,8 +27,8 @@ usage: $progname [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--wi
        --without-mule       turn off MULE support
        --with-debug         turn on debugging
        --without-debug      turn off debugging
-       --package-root dir   specify directory for root of installed packages
-       --prefix dir         specify installation directory
+       --package-root=dir   specify directory for root of installed packages
+       --prefix=dir         specify installation directory
        --install            install the executable
        21.4                 build a 21.4 XEmacs kit from CVS
        21.5                 build a 21.5 XEmacs kit from CVS"
@@ -51,12 +51,16 @@ export INCLUDE LIB PATH
 
 XEMACS_VER=
 
-zparseopts -D h=help -help=help -with-mule=with_mule -without-mule=without_mule -with-debug=with_debug -without-debug=without_debug -package-root:=package_dir -prefix:=install_dir -install=install
+zparseopts -D h=help -help=help -with-mule=with_mule -without-mule=without_mule -with-debug=with_debug -without-debug=without_debug -package-root:=package_root -prefix:=prefix -install=install
 
 if [[ -n $help ]]; then
   usage
   exit 0
 fi
+
+# Strip out option strings and '='
+install_dir=${prefix[2]#=}
+package_dir=${package_root[2]#=}
 
 # 3 options for debug and mule: with, without or no change from default
 debug=
@@ -65,10 +69,6 @@ debug=
 mule=
 [[ -n $with_mule ]] && mule=1
 [[ -n $without_mule ]] && mule=0
-
-# Strip out option strings
-package_dir[1]=()
-install_dir[1]=()
 
 if [[ $1 == 21.4 || $1 == 21.5 ]]; then
   XEMACS_VER=$1

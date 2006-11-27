@@ -40,16 +40,12 @@ usage: $progname [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--wi
 : ${ZLIB_VER:=zlib}
 : ${TIFF_VER:=tiff-3.7.3}
 
-# Visual Studio settings
+# Visual Studio and Platform SDK root directories
 : ${VC_ROOT:="E:/Program Files/Microsoft Visual Studio"}
-: ${INCLUDE:="$VC_ROOT/VC98/include"}
-: ${LIB:="$VC_ROOT/VC98/lib"}
-cyg_VC_ROOT=$(cygpath $VC_ROOT)
-typeset -U PATH
-PATH="$cyg_VC_ROOT/Common/Tools/WinNT:$cyg_VC_ROOT/Common/MSDev98/bin:$cyg_VC_ROOT/Common/Tools:$cyg_VC_ROOT/VC98/bin:$PATH"
-export INCLUDE LIB PATH
+: ${SDK_ROOT:="E:/Program Files/Microsoft Platform SDK"}
 
-XEMACS_VER=
+# Set up for the Visual Studio compiler
+. vcsetup || exit 1
 
 zparseopts -D h=help -help=help -with-mule=with_mule -without-mule=without_mule -with-debug=with_debug -without-debug=without_debug -package-root:=package_root -prefix:=prefix -install=install
 
@@ -70,6 +66,7 @@ mule=
 [[ -n $with_mule ]] && mule=1
 [[ -n $without_mule ]] && mule=0
 
+XEMACS_VER=
 if [[ $1 == 21.4 || $1 == 21.5 ]]; then
   XEMACS_VER=$1
 else
@@ -115,7 +112,6 @@ perl -pi -e "s@^OPTIONAL_LIBRARY_DIR=.*@OPTIONAL_LIBRARY_DIR=$(cygpath --mixed /
 if [[ -n $package_dir ]] &&  perl -pi -e "s@^#PACKAGE_PREFIX=.*@PACKAGE_PREFIX=$package_dir@" config.inc
 
 # Build and install XEmacs
-# need
 nmake -f xemacs.mak
 [[ -n $install ]] && nmake -f xemacs.mak install
 

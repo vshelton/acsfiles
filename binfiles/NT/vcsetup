@@ -2,10 +2,33 @@
 # Set up for running Visual C++ under Cygwin
 # This script must be sourced.
 
+# Visual Studio and SDK roots which can be over-ridden.
+# The Visual Studio root must exist, but the SDK root is optional.
+: ${VC_ROOT:="E:/Program Files/Microsoft Visual Studio"}
+: ${SDK_ROOT:="E:/Program Files/Microsoft Platform SDK"}
+
+cyg_VC_ROOT=$(cygpath $VC_ROOT)
+if [[ ! -d $cyg_VC_ROOT ]]; then
+  print -u2 "The root of the Visual C++ install, \"$cyg_VC_ROOT\", does not exist.  Set the environment variable VC_ROOT."
+  return 1
+fi
+
 # Set up the environment for a VC build
-export INCLUDE='E:\Program Files\Microsoft Visual Studio\VC98\atl\include;E:\Program Files\Microsoft Visual Studio\VC98\mfc\include;E:\Program Files\Microsoft Visual Studio\VC98\include'
-export LIB='E:\Program Files\Microsoft Visual Studio\VC98\mfc\lib;E:\Program Files\Microsoft Visual Studio\VC98\lib'
-export PATH='/e/acs/bin:/usr/local/bin:/e/Program Files/Microsoft Visual Studio/Common/Tools/WinNT:/e/Program Files/Microsoft Visual Studio/Common/MSDev98/Bin:/e/Program Files/Microsoft Visual Studio/Common/Tools:/e/Program Files/Microsoft Visual Studio/VC98/bin:/bin:/usr/bin:/usr/X11R6/bin:/etc:/c/WINDOWS/system32:/c/WINDOWS'
+export INCLUDE="$VC_ROOT/VC98/atl/include;$VC_ROOT/VC98/mfc/include;$VC_ROOT/VC98/include"
+export LIB="$VC_ROOT/VC98/mfc/lib;$VC_ROOT/VC98/lib"
+path=( /e/acs/bin /usr/local/bin "$cyg_VC_ROOT/Common/Tools/WinNT" "$cyg_VC_ROOT/Common/MSDev98/Bin" "$cyg_VC_ROOT/Common/Tools" "$cyg_VC_ROOT/VC98/bin" /bin /usr/bin /usr/X11R6/bin /etc /c/WINDOWS/system32 /c/WINDOWS )
+
+# Add SDK paths only if requested by a command-line argument
+cyg_SDK_ROOT=$(cygpath $SDK_ROOT)
+if [[ $* == *SDK* && -d $cyg_SDK_ROOT ]]; then
+  INCLUDE="$SDK_ROOT/Include;$INCLUDE"
+  LIB="$SDK_ROOT/Lib;$LIB"
+  path[2]=( /usr/local/bin "$cyg_SDK_ROOT/Bin" "$cyg_SDK_ROOT/Bin/WinNT" )
+fi
+
+#print -R INCLUDE=\"$INCLUDE\"
+#print -R LIB=\"$LIB\"
+#print -R path=\"$path\"
 
 # Local Variables:
 # mode: ksh

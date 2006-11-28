@@ -587,9 +587,11 @@ Extends the region if it exists."
        (delete-selection-mode t)
        (transient-mark-mode t)
 
-       ;; Load lazy-lock to make the pretty stuff fast
        (global-font-lock-mode t)
-       (setq font-lock-support-mode 'lazy-lock-mode)
+       (or
+	(and (fboundp 'jit-lock-mode)
+	     (setq font-lock-support-mode 'jit-lock-mode))
+	(setq font-lock-support-mode 'lazy-lock-mode))
 
        (setq suggest-key-bindings 1)))
 

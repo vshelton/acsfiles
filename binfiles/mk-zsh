@@ -99,7 +99,12 @@ if (( err != 0 )); then
   exit $err
 fi
 print "done."
-
+print -n "Total tests: "
+grep -c starting check.out
+print -n "  passing tests: "
+grep -c successful check.out
+print -n "  skipped tests: "
+grep -c skipped check.out
 print "Installing package to $inst_prefix/$TARGET."
 make install install.info >& inst.out
 err=$?

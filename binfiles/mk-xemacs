@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 
 # Make XEmacs, either from CVS or from a tarball.
 # Usage: mk-xemacs [odmn] version [cfg_opts],
@@ -14,8 +14,10 @@
 # cfg_opts refers to XEmacs-specific configuration options, like
 # --with-sound=native or --with-dialogs=motif
 
-# Execute this script under the Z shell
-[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+emulate -LR zsh
+setopt extendedglob
+
+progname=${0:t}
 
 usage() {
   print -u2 "usage: $progname [-cdhmno] xemacs-version [configure_options]
@@ -191,8 +193,6 @@ function cfg_and_build {
 # Start of main script
 #
 #set -x
-progname=${0:t}
-setopt extended_glob
 
 zparseopts -D c=checkonly d=debug h=help m=mule n=normal o=optimized
 
@@ -348,12 +348,6 @@ fi
 # the version name and are not directly understood by this script.
 generic_cfg_opts=
 
-# Temporary hack until the new mc alloc works on x86 without pdump
-if [[ $(uname -a) == *i?86* && $TARGET == *21.5* ]]; then
-  generic_cfg_opts=--disable-mc-alloc
-fi
-# End hack
-
 # Any remaining arguments are options to be passed to the
 # XEmacs configure command.
 
@@ -410,7 +404,7 @@ do
   (--*infopath*)
     with_infopath=$1
     ;;
-  (--*package_path*)
+  (--*package-path*)
     with_package_path=$1
     ;;
   (--*dialogs*)

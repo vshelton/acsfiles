@@ -9,7 +9,9 @@ emulate -LR zsh
 # $4 - date2 (see diff_output_files)
 function compare_files {
   diff_output_files -pxemacs-${1}- $2 Installation $3 $4
+  [[ $? != 0 ]] && print                # Add blank line after diff output
   diff_output_files -pxemacs-${1}- $2 check.out $3 $4
+  [[ $? != 0 ]] && print                # Add blank line after diff output
 }
 
 zparseopts -D a=all d=debug m=mule n=normal

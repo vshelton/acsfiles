@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 
 # Configure a project from a user-specified location
 # into a sub-directory of the current directory.
@@ -9,10 +9,8 @@
 #   -l Instead of building in a completely separate directory,
 #      create a link tree from the source directory to the build directory
 #   -p Completely specify a prefix, like '-p $USRLOCAL/foobar'
- 
-# Execute this script under the Z shell
-[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
 
+emulate -LR zsh
 progname=${0:t}
 
 usage()
@@ -32,15 +30,13 @@ if [[ -n $help || $# == 0 ]]; then
   [[ -n $help ]] && exit 0 || exit 1
 fi
 
-err=2
 if [[ ! -x $1/configure ]]; then
   print -u2 "$progname: No configure script exists in directory $1"
-  exit $err
+  exit 1
 fi
 
 # Default to gcc if no compiler is specified in the environment
-CC=${CC:-gcc}
-CXX=${CXX:-g++}
+: ${CC:=gcc} ${CXX:-g++}
 export CC CXX
 
 # Create a sub-directory for building the package
@@ -48,10 +44,9 @@ setopt extendedglob
 src=${1%%/##}		# Trim trailing slashes (for :t modifier)
 shift
 build_dir=${src:t}
-((err=err+1))
 if [[ -d $build_dir ]]; then
   print -u2 "$progname: directory $build_dir already exists"
-  exit $err
+  exit 1
 fi
 mkdir -p $build_dir
 cd $build_dir

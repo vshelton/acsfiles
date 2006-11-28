@@ -1,11 +1,10 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 #
 # Unpack a tarball into the source directory.
 #
 # Usage: unpack generic_package_name
- 
-# Execute this script under the Z shell
-[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+emulate -LR zsh
 
 progname=${0:t}
 
@@ -63,3 +62,9 @@ $uncompress <$pkgname | tar xf -
 # Print the package name before leaving
 #print $PWD/${${${pkgname/*$pkgbase/$pkgbase}%.tar*}%.tgz}
 print $PWD/${${${pkgname:t}%.tar*}%.tgz}
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

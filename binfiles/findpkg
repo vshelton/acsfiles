@@ -1,13 +1,11 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 #
 # Report the filename of the most recent tarball
 # matching the specified package name
 #
 # Usage: findpkg generic_package_name
- 
-# Execute this script under the Z shell
-[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
 
+emulate -LR zsh
 progname=${0:t}
 
 err=1
@@ -37,3 +35,9 @@ if [[ ! -r $pkgname ]]; then
 fi
 
 print $pkgname
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

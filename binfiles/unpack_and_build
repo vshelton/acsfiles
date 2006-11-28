@@ -1,12 +1,10 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 
 # Unpack and build the latest copy of the specified packages
 # passing the specified options to configure.
-# Usage: mk pkg1 [pkg2...pkgn] [--disable-nls]
+# Usage: unpack_and_build pkg1 [pkg2...pkgn] [--disable-nls]
 
- 
-# Execute this script under the Z shell
-[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+emulate -LR zsh
 
 progname=${0:t}
 
@@ -45,3 +43,9 @@ for pkg in ${=pkgs}; do
 # print $pkgsrc
   bld ${=bld_opts} $(relative $pkgsrc) ${=cfg_opts}
 done
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

@@ -1,18 +1,17 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 
 # Compare the two files, optionally making substitions to each file first.
 # Usage: diff-subst [-h] [-s/regex1/regex2/[g]] file1 [-s/regex3/regex4/[g]] file2
 #        -h - Print this help message
 #        -s - Run perl substitition on file before comparing"
 
-# Execute this script under the Z shell
-[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
-
+emulate -LR zsh
 progname=${0:t}
 
 usage()
 {
-  print -u2 "usage: $progname [-h] [-s/regex1/regex2/[g]] file1 [-s/regex3/regex4/[g]] file2
+  print -u2 "\
+usage: $progname [-h] [-s/regex1/regex2/[g]] file1 [-s/regex3/regex4/[g]] file2
        -h - Print this help message
        -s - Run perl substitition on file before comparing"
 }

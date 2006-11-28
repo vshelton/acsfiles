@@ -1,9 +1,16 @@
-
 # Extract the specified column's data
-n=0
-if [[ $# -gt 0 ]]
-then
-	let n=$1-1
-	shift
+
+emulate -LR zsh
+
+column=0
+if (( ARGC > 0 )); then
+  (( column=$1-1 ))
+  shift
 fi
-perl -lane "print \$F[$n]" "$@"
+perl -lane "print \$F[$column]" "$@"
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

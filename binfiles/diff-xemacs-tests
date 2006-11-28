@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 
 # Compare the test results from 2 different versions of XEmacs.
 # Usage: diff-xemacs-results [-45adhmn] [date1] [date2]
@@ -12,9 +12,7 @@
 #        If no date1 is specified, the default is $(yesterday)
 #        If no date2 is specified, the default is $(today)
 
-# Execute this script under the Z shell
-[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
-
+emulate -LR zsh
 progname=${0:t}
 
 usage()
@@ -31,22 +29,35 @@ usage()
        The default date2 is \$(today)"
 }
 
-zparseopts -D 4=v 5=v a+=types d+=types h=help m+=types n+=types
+# Compare the files
+# $1 - version name ("21.4" or "21.5")
+# $2 - directory suffix ("-debug" or "-mule", for example)
+# $3 - date1
+# $4 - date2
+function compare_files {
 
-if [[ -n $help ]];
-then
+  # Special case versions like "21.4.16"
+  dir1=xemacs-${1}-$3
+  [[ $3 == 2[12].(?|??).(?|??) ]] && dir1=xemacs-$3
+  dir2=xemacs-${1}-$4
+  [[ $4 == 2[12].(?|??).(?|??) ]] && dir2=xemacs-$4
+
+  # Add directory suffixes
+  dir1=${dir1}${2}
+  dir2=${dir2}${2}
+
+  diff --unified=0 --label $dir1 $BLDROOT/$dir1/check.out --label $dir2 =(perl -p -e "s/$4/$3/g" < $BLDROOT/$dir2/check.out)
+}
+
+zparseopts -D 4=v 5=v a=all d=debug h=help m=mule n=normal
+
+if [[ -n $help ]]; then
   usage
   exit 0
 fi
 
-# all_types specifies the list of all types (normal, debug and mule) to compare
-# the default is to compare only the test results for the normal build
-[[ -z $types || $types == *-n* ]] && all_types=('')
-[[ $types == *-d* ]] && all_types[$#all_types+1]=-debug
-[[ $types == *-m* ]] && all_types[$#all_types+1]=-mule
-
-# -a means to compare all types: normal, debug and mule
-[[ $types == *-a* ]] && all_types=('' -debug -mule)
+# Compare the test results for the normal build by default
+[[ -z $mule && -z $debug ]] && normal=( "-n" )
 
 # If no dates are specified, the defaults are yesterday and today
 first=${1:-$(yesterday)}
@@ -57,22 +68,9 @@ second=${2:-$(today)}
 ver=21.4
 [[ $v == -5 ]] && ver=21.5
 
-# Special case versions like 21.4.16
-dir1=xemacs-$ver-$first
-[[ $first == 2[12].(?|??).(?|??) ]] && dir1=xemacs-$first
-dir2=xemacs-$ver-$second
-[[ $second == 2[12].(?|??).(?|??) ]] && dir2=xemacs-$second
-
-# Diff the test results for all the requested build types
-for i in {1..$#all_types}
-do
-  type=$all_types[$i]
-  diff --unified=0 --label $dir1$type $BLDROOT/$dir1$type/check.out --label $dir2$type =(perl -p -e "s/$second/$first/g" < $BLDROOT/$dir2$type/check.out)
-  diffstat=$?
-  (( $diffstat != 0 )) && (( $i != $#all_types )) && print "\n"
-done
-
-exit $diffstat
+[[ -n $normal || -n $all ]] && compare_files $ver "" $first $second
+[[ -n $debug || -n $all ]] && compare_files $ver "-debug" $first $second
+[[ -n $mule || -n $all ]] && compare_files $ver "-mule" $first $second
 
 # Local Variables:
 # mode: ksh

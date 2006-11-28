@@ -9,14 +9,20 @@
 
 umask 022
 
-# Environment definitions
+# Editor and pager definitions
 export EXINIT=":set ai nows"
-export EDITOR=$FCEDIT
-export LESS="-e -i -s -C -j2 -n"
+export LESS="-e -i -s -C -j2 -n -r -R"
 export MORE="-s"
 export PAGER="$(whence less)"
 [[ -z "$PAGER" ]] && PAGER=more
-export VISUAL=$FCEDIT
+export FCEDIT=gnuclient
+export EDITOR=$FCEDIT VISUAL=$FCEDIT
+alias e="gnuclient -q"
+
+# The default port for gnuserv/gnuclient is 21490 + uid (see gnuserv.h).
+# We'll override it with something more memorable
+# ((GNU_PORT = $UID + 21490))
+export GNU_PORT=22222
 
 # Capture core files
 whence ulimit >/dev/null && ulimit -c unlimited
@@ -28,39 +34,34 @@ HISTSIZE=4096
 WORDCHARS='.-_'
 
 # Shell-specific behavior
-setopt NO_ALWAYS_LAST_PROMPT
-setopt APPEND_HISTORY
-setopt AUTOLIST
-setopt AUTOMENU
-setopt AUTO_REMOVE_SLASH
-setopt EXTENDED_GLOB
-setopt HASH_CMDS
-setopt HASH_DIRS
-setopt HIST_IGNORE_DUPS
-setopt HIST_NO_STORE
-setopt INTERACTIVE_COMMENTS
-setopt KSH_OPTION_PRINT
-setopt LIST_TYPES
-setopt MARKDIRS
-setopt NO_HUP
-setopt NO_FLOW_CONTROL
-setopt NO_LIST_BEEP
-setopt NO_NOMATCH
-setopt NOTIFY
-setopt NO_PROMPT_SP 2>/dev/null
-setopt PUSHD_IGNORE_DUPS
-setopt PUSHD_SILENT
-setopt RMSTARSILENT
+setopt noalwayslastprompt
+setopt appendhistory
+setopt autolist
+setopt automenu
+setopt autoremoveslash
+setopt extendedglob
+setopt hashcmds
+setopt hashdirs
+setopt histignoredups
+setopt histnostore
+setopt interactivecomments
+setopt kshoptionprint
+setopt listtypes
+setopt markdirs
+setopt nohup
+setopt noflowcontrol
+setopt nolistbeep
+setopt nonomatch
+setopt notify
+setopt nopromptsp 2>/dev/null
+setopt pushdignoredups
+setopt pushdsilent
+setopt rmstarsilent
 
 PROMPT="%2c %w %T%(#.#.); "
-# For some reason, $HOST is now an FQDN, so the right way
-# to do this test has changed to:
-# [[ ${HOST%%.*} != $HOMESYSTEM ]] && PROMPT="%m $PROMPT"
 PROMPT="%B: $PROMPT%b"
 PROMPT2="; "
 
-# But since I've started using Bart's prompt, I no longer need
-# the hostname in the first line of the prompt
 if [[ $TERM != emacs ]]; then
   autoload -U promptinit
   promptinit
@@ -126,15 +127,6 @@ alias xfz='tar xfz'
 
 unalias run-help
 autoload -U run-help
-
-FCEDIT=gnuclient
-export EDITOR=$FCEDIT VISUAL=$FCEDIT
-alias e="gnuclient -q"
-
-# The default port for gnuserv/gnuclient is 21490 + uid (see gnuserv.h).
-# We'll override it with something more memorable
-# ((GNU_PORT = $UID + 21490))
-export GNU_PORT=22222
 
 # Use tkman where appropriate
 [[ -n $DISPLAY ]] && whence tkmanclient >/dev/null && alias man=tkmanclient

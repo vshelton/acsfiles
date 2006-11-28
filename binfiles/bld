@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 
 # Configure and make a software package.
 #
@@ -11,10 +11,8 @@
 #   -t Run make test after running make
 #   -o Specify a file for configure's output
 #   -p Completely specify a prefix, like '-p $USRLOCAL/foobar'
- 
-# Execute this script under the Z shell
-[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
 
+emulate -LR zsh
 progname=${0:t}
 
 usage()

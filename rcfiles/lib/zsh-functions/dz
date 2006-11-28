@@ -1,4 +1,5 @@
 diff_output_files -pzsh- config.status $1 $2
+[[ $? != 0 ]] && print                  # Add blank line after diff output
 diff_output_files -pzsh- check.out $1 $2
 
 # Local Variables:

@@ -8,49 +8,26 @@ setopt extendedglob
 
 progname=${0:t}
 
-local buildkits dir opt removable
-local integer interactive=0 printonly=0 verbose=0
+function usage {
+  print -u2 "usage: $progname [-i] [-n] [-v] pkg1 [pgg2 [pgk3...]]"
+}
 
-# Trap interrupt
-trap "return 130" INT
+zparseopts -D h=help i=interactive n=printonly v=verbose
 
-while getopts inv opt
-do
-  case $opt in
-  (i)
-    interactive=1
-    ;;
-  (n)
-    printonly=1
-    ;;
-  (v)
-    verbose=1
-    ;;
-  (?)
-    print -u2 "usage: $progname [-i] [-n] [-v] pkg"
-    return 1
-    ;;
-  esac
-done
-(( OPTIND > 1 )) && shift $(( OPTIND - 1 ))
-
-# Quit if no arguments were supplied
-if (( ARGC == 0 ))
-then
-  print -u2 "$progname: no packages were specified."
-  return 2
+if [[ -n $help ]]; then
+  usage
+  exit 0
 fi
 
 # List kits and allow user to choose interactively
-if (( interactive > 0 ))
-then
+if [[ -n $interactive ]]; then
   buildkits=($(all_versions $*))
-  [[ -z $buildkits ]] && return 0
+  [[ -z $buildkits ]] && exit 0
   removable=
   PROMPT3="Select buildkit(s) to remove: "
   select dir in "Remove kits" "Cancel" $buildkits
   do
-    [[ $dir == Cancel ]] && return 0
+    [[ $dir == Cancel ]] && exit 0
     [[ $dir == "Remove kits" ]] && break
     removable=($removable $dir)
   done
@@ -60,15 +37,13 @@ then
 else
   removable=($(all_versions $*))
 fi
-[[ -z $removable ]] && return 0
+[[ -z $removable ]] && exit 0
 
-if (( printonly + verbose > 0 ))
-then
+if [[ -n $printonly || -n $verbose ]]; then
   echo rm -rf ${^$(all_dirs)}/$^removable(N^M)
 fi
 
-if (( printonly == 0 ))
-then
+if [[ -z $printonly ]]; then
   rm -rf ${^$(all_dirs)}/$^removable(N^M)
 fi
 

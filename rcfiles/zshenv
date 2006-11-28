@@ -5,67 +5,52 @@
 # 3. .zshrc - Only for interactive shells
 # 4. .zlogin - Only if login shell
 
-# .zshenv sets up the runtime path
+# Remove duplicates from common path variables
+typeset -U cdpath fpath manpath path
 
-# Source a system-specific version of the specified rc file
-function system_specific {
-  # $1 = name of the startup file, ie .zshrc, .zshenv, etc
-  # $2 = suffix, ie -pre or -post
-  local this_rcpath=${ZDOTDIR:-~}/$1.${HOST%%.*}$2
-  [[ -f $this_rcpath ]] && . $this_rcpath
-}
+# in order to facilitate trying out new environments,
+# we'll use ZDOTDIR instead of HOME from here on out.
+: ${ZDOTDIR:=~}
 
-# Resolve a directory name to a name containing no symlinks
-function abspath {
-  cd $1 >& /dev/null || return
-  pwd -r
-  cd - >& /dev/null
-}
+# Define utility functions; some are used interactively and some
+# are used within scripts, so it's best to define the whole lot here.
+setopt extendedglob
+f=$ZDOTDIR/lib/zsh-functions
+if [[ -d $f ]]; then
+  fpath=($f $fpath)
+  autoload $(cd $f; ls *~*~)
+fi
 
-# Set up common environment
-# This should be common for all the nodes within a network.
-# USRLOCAL is the destination hierarchy for locally-built packages
-# SRCROOT is the root of source hierarchy for locally-built packages
-# BLDROOT is the root of the build hierarchy for locally-built packages
-# ZIPROOT is the directory where tarfiles live
-sysprefix=$($HOME/bin/sysprefix)	# sysprefix is an OS-specific component
+# Invoke system specific customizations
 system_specific .zshenv -pre
 
-# If nothing was specified, we'll default to the appropriate
-# settings for zion, my home computer
-export USRLOCAL=${USRLOCAL:-/usr/local}
-export SRCROOT=${SRCROOT:-/ide/src}
-export BLDROOT=${BLDROOT:-/ide/build}
-export ZIPROOT=${ZIPROOT:-/ide/zip}
+# Set up a common environment; typically this will
+# be common for all the nodes within a network.
+# USRLOCAL is the destination hierarchy for locally-built packages,
+# i.e. /usr/local or /opt.
+# SRCROOT is the root of source hierarchy for locally-built packages.
+# BLDROOT is the root of the build hierarchy for locally-built packages.
+# ZIPROOT is the directory where tarfiles live.
+: ${USRLOCAL:=/opt} ${SRCROOT:=$USRLOCAL/src}
+: ${BLDROOT:=$USRLOCAL/build} ${ZIPROOT:=$USRLOCAL/zip}
+export USRLOCAL SRCROOT BLDROOT ZIPROOT
 
-export HOMESYSTEM=zion
-export MANPATH=$USRLOCAL/man:/usr/X11R6/man:/usr/share/man
 export LC_COLLATE=C
 unset LANG
 unset LC_TIME
 
-path=(~/bin $USRLOCAL/bin /usr/X11R6/bin /bin /usr/bin /etc)
+path=($ZDOTDIR/bin $USRLOCAL/bin /usr/X11R6/bin /usr/bin /bin /etc)
 
-# Define my functions. Some are used interactively and some
-# are used within scripts, so it's best to define the whole lot here.
-fpath=(~/lib/zsh-functions $fpath)
-autoload ${$(zcompile -t $fpath[1].zwc)[6,-1]}
-
-# Source a system-specific .zshenv
+# Invoke system specific customizations
 system_specific .zshenv -post
 
-# Clean up paths: remove trailing slashes and non-existant directories
-setopt EXTENDED_GLOB
-cdpath=($^cdpath(N))
-cdpath=(${cdpath%%/##})
-manpath=($^manpath(N))
-manpath=(${manpath%%/##})
+# Clean up path: remove trailing slashes and non-existant directories
+# and resolve symbolic links
 path=($^path(N))
-path=(${path%%/##})
-
-# Under cygwin, for some reason typeset -U only works for the
-# colon-separated versions of the variables, not the array versions
-typeset -U CDPATH FPATH MANPATH PATH
+path=(${^path%%/##})
+for (( i=1; i < $#path+1; i++ )); do
+  [[ -L $path[$i] ]] && path[$i]=$(cd $path[$i]; pwd -r)
+done
 
 # Local Variables:
 # mode: ksh

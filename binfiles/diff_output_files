@@ -14,8 +14,7 @@
 emulate -LR zsh
 progname=${0:t}
 
-usage()
-{
+function usage {
   print -u2 "\
 usage: $progname [-h] [-p prefix] [-s suffix] filename [date1 [date2]]
        -h - Print this help message

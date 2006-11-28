@@ -5,12 +5,20 @@
 # 3. .zshrc - Only for interactive shells
 # 4. .zlogin - Only if login shell
 
-CDPATH=$BLDROOT:$SRCROOT:${BLDROOT:h}:${SRCROOT:h}:$USRLOCAL:~:..
+cdpath=($BLDROOT $SRCROOT ${BLDROOT:h} ${SRCROOT:h} $USRLOCAL ~ ..)
 
 SAVEHIST=$HISTSIZE
 HISTFILE=~/.zhistory
 
 system_specific .zlogin
+
+# Set manpath based on path
+manpath=()
+for p in $path
+do
+  m=${p:s/bin/man/}
+  [[ $m != $p ]] && [[ -d $m ]] && manpath=( $manpath $m )
+done
 
 if [[ ! -e ${ZDOTDIR:-$HOME}/.zlogin.${HOST%%.*} ]]; then
   print -u2 "\n\n\nWarning\!\!\!\nNo ${ZDOTDIR:-$HOME}/.zlogin.${HOST%%.*} script exists\!\nThe environment has not been initialized correctly\!\!\!\n\n\n"

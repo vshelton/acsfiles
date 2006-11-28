@@ -1,2 +1,5 @@
 #!/bin/sh
-exec env CVS_RSH=ssh cvs -w -z3 -d:ext:xemacs@cvs.xemacs.org:/pack/xemacscvs ${1+"$@"}
+# Override ssh by passing in CVS_RSH, if necessary
+: ${CVS_RSH:=ssh}
+export CVS_RSH
+cvs -w -z3 -d:ext:xemacs@cvs.xemacs.org:/pack/xemacscvs ${1+"$@"}

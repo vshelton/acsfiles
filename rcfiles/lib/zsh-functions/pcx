@@ -1,0 +1,4 @@
+cd ~
+rm .Xauthority
+xauth add vshelton-pc2:0 MIT-MAGIC-COOKIE-1 166440250c4b2f241e37251d4e467c36
+export DISPLAY=vshelton-pc2:0

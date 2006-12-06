@@ -1,7 +1,7 @@
 e:
 cd \cygwin\cygwin-downloads
 
-rsync -vaz --exclude mail-archives rsync://rsync.osuosl.org/cygwin/ .
+rem rsync -vaz --exclude mail-archives rsync://rsync.osuosl.org/cygwin/ .
 rsync -vaz --exclude mail-archives rsync://mirrors.kernel.org/sourceware/cygwin/ .
 rem pause
 

@@ -1,0 +1,20 @@
+# Verify and move one or more tarfiles to $ZIPROOT
+for f
+do
+  ff=$( ls ${f}*.tar.(gz|bz2)(.om[1]) )
+  gpg --verify $ff.sig
+  if [[ $? -ne 0 ]]
+  then
+    echo "$0: could not verify signature of $ff; exiting."
+    return
+  fi
+  rm $ff.sig
+  chmod a-w $ff
+  mv $ff $ZIPROOT
+done
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

@@ -26,7 +26,7 @@ if (( ? != 0 )); then
   exit 2
 fi
 
-ipath=$(cd $cmdpath[3]/../..; pwd -r)
+ipath=$(cd ${cmdpath[3]:h}/..; pwd -r)
 upath=$(cd $USRLOCAL; pwd -r)
 if [[ $ipath != $upath* ]]; then
   print -u2 "$progname: the $1 command is not in the \$USRLOCAL hierarchy."

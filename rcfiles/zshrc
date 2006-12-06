@@ -67,7 +67,7 @@ if [[ $TERM != emacs ]]; then
   promptinit
   prompt bart
 
-  stty -parenb -istrip cs8 clocal erase '^h'
+  stty -parenb -istrip cs8 clocal erase '^?'
 fi
 
 # Use emacs bindings
@@ -107,7 +107,7 @@ alias aver=all_versions
 alias b=unpack_and_build
 alias beep='echo '
 alias d='dirs -v'
-alias eterm="emacs-22.0.50 --unibyte -name EmacsTerm -xrm \"EmacsTerm.iconName: ${HOST%%.*}\" -xrm \"EmacsTerm.title: ${HOST%%.*}\" --geometry 100x40 -eval '(emacs-term \"zsh\")'"
+alias eterm="emacs-22.0.91 --unibyte -name EmacsTerm -xrm \"EmacsTerm.iconName: ${HOST%%.*}\" -xrm \"EmacsTerm.title: ${HOST%%.*}\" --geometry 120x40 -eval '(emacs-term \"zsh\")'"
 alias grep='command grep --extended-regexp --text'
 alias h=history
 alias m=$PAGER

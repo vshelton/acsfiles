@@ -1,8 +1,24 @@
+rem How to fetch rsync list:
+rem wget -O - http://cygwin.com/mirrors.txt | grep rsync | cut -d';' -f1 | sed -e 's;\(rsync://[0-9a-z.-]*\).*;\1;'
+
+rem The current list:
+rem rsync://rsync.osuosl.org
+rem rsync://sigunix.cwru.edu
+rem rsync://mirrors.xmission.com
+rem rsync://mirrors.kernel.org
+rem rsync://rsync.gtlib.gatech.edu
+rem rsync://mirror.etf.bg.ac.yu
+rem rsync://ftp.kaist.ac.kr
+rem rsync://mirror.averse.net
+rem rsync://ftp.esat.net
+rem rsync://bo.mirror.garr.it
+rem rsync://ftp.gwdg.de
+rem rsync://ftp.inf.tu-dresden.de
+
 e:
 cd \cygwin\cygwin-downloads
 
-rem rsync -vaz --exclude mail-archives rsync://rsync.osuosl.org/cygwin/ .
 rsync -vaz --exclude mail-archives rsync://mirrors.kernel.org/sourceware/cygwin/ .
-rem pause
+rem rsync -vaz --exclude mail-archives rsync://mirrors.xmission.co/cygwin/ .
 
 .\setup --local-install --local-package-dir e:/cygwin/cygwin-downloads --no-shortcuts

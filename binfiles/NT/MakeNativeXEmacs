@@ -105,6 +105,10 @@ perl -pi -e "s@^OPTIONAL_LIBRARY_DIR=.*@OPTIONAL_LIBRARY_DIR=$(cygpath --mixed /
 # Configure debugging if requested
 [[ -n $debug ]] && perl -pi -e "s@^DEBUG_XEMACS=.*@DEBUG_XEMACS=$debug@" config.inc
 
+# Don't require the C runtime debug library
+# This keeps the setup kits from requiring msvcrtd.dll
+perl -pi -e 's@.*BUILD_FOR_SETUP_KIT.*@BUILD_FOR_SETUP_KIT=1@' config.inc
+
 # Configure MULE if requested (only for 21.5)
 [[ -n $mule ]] &&  perl -pi -e "s@^MULE=.*@MULE=$mule@" config.inc
 

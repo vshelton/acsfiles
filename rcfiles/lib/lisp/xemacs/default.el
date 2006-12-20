@@ -52,6 +52,13 @@
       (set-face-font 'bold-italic (format "%s:%s:%d::%s"
 					  family "Bold Italic"
 					  size encoding)))))
+  (let* ((family "Bodoni MT")
+	 (size 9)
+	 (encoding "Western")
+	 (spec (format "%s:%s:%d::%s" family "Regular" size encoding)))
+    (progn
+      (set-face-font 'buffers-tab spec)
+      (set-face-font 'modeline spec)))
 
 (defun xemacs-source-directory ()
   "Return the path to the root of the XEmacs source tree."
@@ -74,3 +81,8 @@
 	("/lisp" . (xemacs-source-directory))))
 
 ;(message "Leaving default.el")
+
+;; Local Variables:
+;; eval: (setq tab-width 8)
+;; eval: (setq indent-tabs-mode t)
+;; End:

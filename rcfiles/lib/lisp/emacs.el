@@ -112,14 +112,14 @@ Goes backward if ARG is negative; error if CHAR not found."
 			   (goto-char (if (> arg 0) (1- (point)) (1+ (point))))
 			   (point)))))
 
-;;; 21.2 tabs only on WinDoze
+;;; Buffer tabs only on Windows
 (defmacro when-specifierp (specifier &rest form)
   `(when (and (boundp ',specifier)
 	     (specifierp ,specifier))
-    ,@form))
+     ,@form))
 (put 'when-specifierp 'lisp-indent-function 1)
 
-(unless (string-match "win32" system-configuration)
+(unless (string-match "win32\\|cygwin" system-configuration)
   (when-specifierp default-gutter-visible-p
     (set-specifier default-gutter-visible-p nil)
     (setq gutter-visible-p nil)))

@@ -1,0 +1,24 @@
+#!/usr/bin/env zsh
+
+# Copy the cvs-srvr backup tarballs to a machine where
+# they will be copied to tape.
+
+emulate -LR zsh
+progname=${0:t}
+
+set -x
+srcdir="//cvs-srvr/Data"
+destdir="//aoadb1/d\$/Linux Backups/cvs-srvr"
+
+pushd "$destdir"
+cp -p "$srcdir"/cvs-srvr* .
+for f in "$srcdir"/MD5SUM*; do
+  cp -p "$f" .
+  md5sum -c "$f"
+done
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

@@ -1,0 +1,31 @@
+#!/usr/bin/env zsh
+
+# Make cygport from the latest CVS sources
+# Usage: mk-cygport
+
+emulate -LR zsh
+progname=${0:t}
+
+# Quit as soon as an error is detected
+set -e
+set -x
+
+# User-visible and user-overridable variables are all caps
+: ${USRLOCAL:=/usr/local}
+: ${BLDROOT:=$USRLOCAL/build}
+: ${SRCROOT:=$USRLOCAL/src}
+: ${VERSION:=$(today)}
+
+CVSROOT=~/cvsroot/cygwin/cygport mk-src cygport
+cd $BLDROOT
+mkdir cygport-$VERSION
+cd ./cygport-$VERSION
+$SRCROOT/${PWD:t}/autogen.sh --prefix=$USRLOCAL --enable-maintainer-mode --mandir=${USRLOCAL}/man --sysconfdir=${USRLOCAL}/etc
+make check
+make install
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

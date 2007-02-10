@@ -1,0 +1,36 @@
+#!/usr/bin/env zsh
+
+# Download and install XEmacs packages that are not
+# part of the XEmacs Windows setup kit.
+
+# Environment variables potentially used:
+# pkg_path - List of XEmacs package directories
+# site_prefix - Root of non-XEmacs software (i.e. /usr/local)
+
+emulate -LR zsh
+progname=${0:t}
+
+set -x
+
+: ${ZIPROOT:=~/software/zip}
+cd $ZIPROOT
+
+: ${auctex_ver:=11.84}
+: ${riece_ver:=1.22}
+
+if [[ -n $download ]]; then
+  wget http://ftp.gnu.org/pub/gnu/auctex/auctex-${auctex_ver}-pkg.tar.gz{,.sig}
+  gpg --verify auctex-${auctex_ver}-pkg.tar.gz.sig
+
+  wget http://ftp.xemacs.org/pub/xemacs/packages/riece-${riece_ver}-pkg.tar.gz
+fi
+
+: ${SITE_PKG_ROOT:=/e/XEmacs/site-packages}
+tar xfz auctex-${auctex_ver}-pkg.tar.gz -C $SITE_PKG_ROOT
+tar xfz riece-${riece_ver}-pkg.tar.gz -C $SITE_PKG_ROOT
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

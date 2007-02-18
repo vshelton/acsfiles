@@ -92,14 +92,8 @@
 ;      split-window-keep-point	nil)
 ;(popper-install)
 
-;; Map the menu key to the electric buffer list
+;; Load the electric buffer support
 (require 'ebuff-menu)
-(define-key global-map			  '[menu] 'electric-buffer-list)
-(define-key electric-buffer-menu-mode-map '[menu] 'Electric-buffer-menu-quit)
-
-;; Under Exceed, the menu key shows up as shift f10
-(define-key global-map                    [(shift f10)] 'electric-buffer-list)
-(define-key electric-buffer-menu-mode-map [(shift f10)] 'Electric-buffer-menu-quit)
 
 ;; Stolen from XEmacs 21.0; used for M-z
 (when (not (fboundp 'zap-up-to-char))
@@ -241,11 +235,13 @@ Extends the region if it exists."
 (define-key acs::keymap		"%"	'query-replace-regexp)
 (define-key acs::keymap		"4"	'tabs-4)
 (define-key acs::keymap		"8"	'tabs-8)
+; f2 capital B brings up a narrowed electric buffer list
 (define-key acs::keymap		"B"	(function
 					 (lambda ()
 					   (interactive)
 					   (electric-buffer-list t))))
 (define-key acs::keymap		"a"	'auto-fill-mode)
+; f2 lower b brings up an electric buffer list
 (define-key acs::keymap		"b"	'electric-buffer-list)
 (define-key acs::keymap		"f"	'font-lock-mode)
 (define-key acs::keymap		"g"	'grep)
@@ -254,6 +250,10 @@ Extends the region if it exists."
 (define-key acs::keymap		"t"	'toggle-tab-width)
 (define-key acs::keymap		"w"	'what-line)
 (define-key acs::keymap		"x"	'text-mode)
+(define-key global-map			  '[menu] 'electric-buffer-list)
+(define-key electric-buffer-menu-mode-map '[menu] 'Electric-buffer-menu-quit)
+
+(define-key electric-buffer-menu-mode-map [f2 b] 'Electric-buffer-menu-quit)
 
 ;; If not under X, make sure the backspace key deletes the previous character.
 (and (not window-system)

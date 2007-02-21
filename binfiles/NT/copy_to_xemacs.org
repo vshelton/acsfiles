@@ -1,0 +1,38 @@
+#!/usr/bin/env zsh
+
+# Copy the most recent setup kits and Readme files to ftp.xemacs.org.
+
+# Set up a vanilla zsh environment
+emulate -LR zsh
+progname=${0:t}
+
+function do_scp {
+  if [[ "$1" == "-v" ]]; then
+    shift
+    print scp $* ftp.xemacs.org:
+  fi
+  scp -i ~/id/.ssh/identity -F ~/id/.ssh/config $* slb@ftp.xemacs.org:
+}
+
+# Default behavior is to copy both the most recent 21.4 and 21.4
+# setup kits and Readme files to ftp.xemacs.org
+
+both=
+zparseopts -D 4=stable 5=beta
+[[ -z $stable && -z $beta ]] && both=1
+if [[ -n $stable || -n $both ]]; then
+  stable_exe=( XEmacs_Setup_21.4*.exe(om) )
+  stable_readme=( ReadMe-21.4*(om) )
+fi
+if [[ -n $beta || -n $both ]]; then
+  beta_exe=( XEmacs_Setup_21.5*.exe(om) )
+  beta_readme=( ReadMe-21.5*(om) )
+fi
+
+do_scp -v $stable_readme[1] $stable_exe[1] $beta_readme[1] $beta_exe[1]
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

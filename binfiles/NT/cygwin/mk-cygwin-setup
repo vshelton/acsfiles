@@ -1,0 +1,30 @@
+#!/usr/bin/env zsh
+
+# Build a cygwin setup.exe from CVS sources
+
+# Set up a vanilla zsh environment
+emulate -LR zsh
+progname=${0:t}
+
+# Extract latest sources from CVS
+CVSROOT=~/cvsroot/cygwin mk-src cygwin-setup
+
+# Prepare sources
+target=cygwin-setup-$(today)
+cd $SRCROOT/$target
+./bootstrap.sh
+
+# Build from source
+cd $BLDROOT
+# Currently, there are errors from 'make check'
+CC='/usr/bin/gcc -mno-cygwin' CXX='/usr/bin/g++ -mno-cygwin' bld -ck $SRCROOT/$target --disable-shared --enable-maintainer-mode
+
+cd ./$target
+#make install
+cp setup.exe /usr/local/bin/cygwin-setup.exe
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

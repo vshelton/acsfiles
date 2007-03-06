@@ -1,0 +1,80 @@
+#!/usr/bin/env zsh
+
+# Generate a default cygwin setup.ini file.
+# This is accomplshed by extending the default setup.ini file
+# with the package names listed in the file extra_packages.
+# The setup.ini files will be created under the name setup-yyyy-mm-dd.ini.
+# Assumptions:
+#  1. Cygwin is already installed on the machine.  (At a first glance,
+#     sh, rsync, patch and perl are required.)
+#  2. A local cygwin mirror has been set up in the current directory.
+#  3. The file extra_packages contains the list of packages to add
+#     to the default list of cygwin packages.  Alternatively, if the
+#     environment variable extra_packages is set, it must be a list
+#     of packages to add to the cygwin base install:
+#       extra_packages="bison flex" ./MakeSetupFile
+#     will suffice.  (Replace "bison flex" with whatever additional packages
+#     you want to have in the setup kit.
+
+# Once you have run this script, do the following:
+#   mkdir minimal_cygwin_disk-$(today)
+#   pushd ./minimal_cygwin_disk-$(today)
+#   cp ../setup-$(today).ini setup.ini
+#   cp ../setup.exe ../autorun.inf .
+#   tar -C .. -f - -c $(grep '^install:' setup.ini | awk '{print $2}') | tar xf -
+#   #cp /e/AOA_Software/tools/arm-xscale-cygwin-gcc.tar.gz .
+#   svn export svn://cvs-srvr/tools/arm-xscale-cygwin-gcc.tar.gz
+#   Run Sonic Record Now Plus to create the data disk
+
+emulate zsh
+setopt extended_glob
+progname=${0:t}
+
+# Define the list of packages to be added to the base kit.
+if [[ -n $extra_packages ]]; then
+  extra=( $extra_packages )
+else
+  extra=( $(<extra_packages) )
+fi
+
+# Sync up to the latest packages
+if [[ -n $sync_packages ]]; then
+  cyg_mirror=${cyg_mirror:-rsync://rsync.osuosl.org/cygwin/}
+  rsync -az --exclude mail-archives $cyg_mirror .
+fi
+
+outfile=setup-$(today).ini
+
+# Make sure there's a blank line at the end of the setup.ini file
+# so reading by paragraphs works correctly for the last record.
+echo >> setup.ini
+
+# Extract the entry for each base package from the setup.ini file
+./find_base.pl > $outfile
+
+# Extract the entry for each extra package from the setup.ini file
+for pkg in $extra; do
+  if ! grep "@ $pkg\$" $outfile >& /dev/null; then
+    ./read_setup.pl $pkg >> $outfile
+  fi
+done
+
+# Find all the packages required by all the packages listed
+# in our new output file
+for i in {1..3}; do              # Really should be until no more changes...
+  reqd=( $(sed -ne 's/requires: //p' < $outfile) )
+  for pkg in $(print -l $reqd | sort -u); do
+    if ! grep "@ $pkg\$" $outfile >& /dev/null; then
+      ./read_setup.pl $pkg >> $outfile
+    fi
+  done
+done
+
+# Make all the packages 'Base', so they all get installed by default.
+perl -pi -e 's/^category: (?!base)/category: Base /i' $outfile
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

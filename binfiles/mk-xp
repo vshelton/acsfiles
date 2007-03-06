@@ -1,10 +1,11 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 
 # Make XEmacs packages from CVS sources
  
 # Execute this script under the Z shell
 [ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
 
+emulate -LR zsh
 progname=${0:t}
 
 # Copy the packages tree to a build directory based on today's date

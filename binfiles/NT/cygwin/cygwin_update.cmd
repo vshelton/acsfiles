@@ -26,7 +26,7 @@ cd \cygwin-mirror
 @echo on
 
 rsync -vaz --exclude mail-archives rsync://mirrors.kernel.org/sourceware/cygwin/ .
-rem rsync -vaz --exclude mail-archives rsync://mirrors.xmission.co/cygwin/ .
+rem rsync -vaz --exclude mail-archives rsync://mirrors.xmission.com/cygwin/ .
 rem rsync -vaz --exclude mail-archives rsync://rsync.gtlib.gatech.edu/ .
 
 rem .\setup --local-install --local-package-dir e:/cygwin/cygwin-downloads --no-shortcuts

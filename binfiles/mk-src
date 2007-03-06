@@ -28,7 +28,8 @@ TARGET="$PROJECT-$VERSION"
 : ${USRLOCAL:=/usr/local} ${SRCROOT:=$USRLOCAL/src}
 SRCDIR="${SRCDIR:-$SRCROOT/$TARGET}"
 
-: ${CVSROOT:=$HOME/cvsroot/$PROJECT}
+: ${CVSROOT:=$HOME/cvsroot}
+CVSROOT=$CVSROOT/$PROJECT
 if [[ ! -d "$CVSROOT" ]]; then
   print -u2 "There is no CVS hierarchy at $CVSROOT."
   exit 2

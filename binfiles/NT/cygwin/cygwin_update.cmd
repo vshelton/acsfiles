@@ -17,17 +17,13 @@ rem rsync://bo.mirror.garr.it
 rem rsync://ftp.gwdg.de
 rem rsync://ftp.inf.tu-dresden.de
 
-rem e:
-rem cd \cygwin\cygwin-downloads
-
 f:
-cd \cygwin-mirror
+cd \cygwin\cygwin-mirror
 
 @echo on
 
-rsync -vaz --exclude mail-archives rsync://mirrors.kernel.org/sourceware/cygwin/ .
-rem rsync -vaz --exclude mail-archives rsync://mirrors.xmission.com/cygwin/ .
+rem rsync -vaz --exclude mail-archives rsync://mirrors.kernel.org/sourceware/cygwin/ .
+rsync -vaz --exclude mail-archives rsync://mirrors.xmission.com/cygwin/ .
 rem rsync -vaz --exclude mail-archives rsync://rsync.gtlib.gatech.edu/ .
 
-rem .\setup --local-install --local-package-dir e:/cygwin/cygwin-downloads --no-shortcuts
-.\setup --local-install --local-package-dir f:/cygwin-mirror --no-shortcuts
+.\setup --local-install --local-package-dir f:/cygwin/cygwin-mirror --no-shortcuts

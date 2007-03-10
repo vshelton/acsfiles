@@ -16,62 +16,138 @@
 #     will suffice.  (Replace "bison flex" with whatever additional packages
 #     you want to have in the setup kit.
 
-# Once you have run this script, do the following:
-#   mkdir minimal_cygwin_disk-$(today)
-#   pushd ./minimal_cygwin_disk-$(today)
-#   cp ../setup-$(today).ini setup.ini
-#   cp ../setup.exe ../autorun.inf .
-#   tar -C .. -f - -c $(grep '^install:' setup.ini | awk '{print $2}') | tar xf -
-#   #cp /e/AOA_Software/tools/arm-xscale-cygwin-gcc.tar.gz .
-#   svn export svn://cvs-srvr/tools/arm-xscale-cygwin-gcc.tar.gz
-#   Run Sonic Record Now Plus to create the data disk
+# Once you have run this script, run Sonic Record Now Plus or some
+# similar software to create the data disk.
 
 emulate zsh
 setopt extended_glob
 progname=${0:t}
 
+function all_packages {
+  grep '^@ ' < $1 | awk '{print $2}' | sort -u
+}
+
+function usage {
+  print -u2 "\
+usage: $progname -ahsx
+       Create a cygwin setup kit in the subdirectory, cygwin_disk-yyyy-mm-dd.
+       All cygwin base packages are included in this kit.  Any additional
+       packages listed in the file extra_packages are copied into the
+       sub-directory and marked as base packages in the setup kit so they
+       will be installed when the setup kit is installed.  The environment
+       variable \$extra_packages overrides the contents of the extra_packages
+       file, if any.
+       -a Copy the most recent arm-xscale crosscompiler tarball, (extracted
+          from AOA's subversion repository) into the destination directory.
+       -h Print this help message.
+       -s Sync the packages with a cygwin mirror before running the script.
+          The environment variable \$cygwin_mirror specifies which
+          cygwin mirror use.
+       -v Print progress messages.
+       -x Copy the latest XEmacs setup kits to the destination directory.
+          The environment variable \$xemacs_kit_home specifies where to
+          find the XEmacs setup kits."
+}
+
+# Parse the options
+zparseopts -D a=copy_arm_tools h=help s=sync_packages v=verbose x=copy_XEmacs_kits
+
+if [[ -n $help ]]; then
+  usage
+  exit 0
+fi
+
+: ${mirror_dir:=$PWD/cygwin-mirror}
+
+# Add current directory to $PATH.
+path=($PWD $path)
+
+# Sync up to the latest packages.
+if [[ -n $sync_packages ]]; then
+  cd $mirror_dir
+  cygwin_mirror=${cygwin_mirror:-rsync://mirrors.xmission.com/cygwin/}
+  [[ -n $verbose ]] && print -u2 "Syncing packages from cygwin mirror: $cygwin_mirror"
+  rsync -az --exclude mail-archives $cygwin_mirror .
+  cd -
+fi
+
 # Define the list of packages to be added to the base kit.
 if [[ -n $extra_packages ]]; then
-  extra=( $extra_packages )
+  extra=( ${=extra_packages} )
 else
-  extra=( $(<extra_packages) )
+  [[ -r extra_packages ]] && extra=( $(<extra_packages) )
 fi
 
-# Sync up to the latest packages
-if [[ -n $sync_packages ]]; then
-  cyg_mirror=${cyg_mirror:-rsync://rsync.osuosl.org/cygwin/}
-  rsync -az --exclude mail-archives $cyg_mirror .
-fi
+# Create and change to the output directory.
+outdir=cygwin_disk-$(today)
+[[ -n $verbose ]] && print -u2 "Making a cygwin setup kit in $outdir"
+mkdir $outdir
+cp autorun.inf $outdir
+cd $outdir
 
-outfile=setup-$(today).ini
+cp $mirror_dir/setup.exe .
+cp $mirror_dir/setup.ini .
 
 # Make sure there's a blank line at the end of the setup.ini file
 # so reading by paragraphs works correctly for the last record.
 echo >> setup.ini
 
-# Extract the entry for each base package from the setup.ini file
-./find_base.pl > $outfile
+# Extract the entry for each base package from the setup.ini file.
+outfile=setup-$(today).ini
+find_base.pl > $outfile
 
-# Extract the entry for each extra package from the setup.ini file
+if [[ -n $verbose ]]; then
+  if [[ -z $extra ]]; then
+    print -u2 "Adding no extra packages to the base cygwin setup kit"
+  else
+    print -u2 "Adding these packages to the base cygwin set kit: $extra"
+  fi
+fi
+
+# Extract the entry for each extra package from the setup.ini file.
 for pkg in $extra; do
   if ! grep "@ $pkg\$" $outfile >& /dev/null; then
-    ./read_setup.pl $pkg >> $outfile
+    read_setup.pl $pkg >> $outfile
   fi
 done
 
+master_pkg="_update-info-dir"
+
 # Find all the packages required by all the packages listed
-# in our new output file
-for i in {1..3}; do              # Really should be until no more changes...
+# in our new output file.  Keep doing this until there are
+# no more changes in the list of all packages.
+prev=()
+all_packages=( $(all_packages $outfile | grep -v $master_pkg) )
+while [[ $all_packages != $prev ]]; do
   reqd=( $(sed -ne 's/requires: //p' < $outfile) )
   for pkg in $(print -l $reqd | sort -u); do
     if ! grep "@ $pkg\$" $outfile >& /dev/null; then
-      ./read_setup.pl $pkg >> $outfile
+      read_setup.pl $pkg >> $outfile
     fi
   done
+  prev=( $all_packages )
+  all_packages=( $(all_packages $outfile | grep -v $master_pkg) )
 done
 
-# Make all the packages 'Base', so they all get installed by default.
-perl -pi -e 's/^category: (?!base)/category: Base /i' $outfile
+# Make the _update-info-dir package dependent on all the other packages
+# so all the packages get installed by default.
+depend_all.pl $master_pkg $all_packages < $outfile > setup.ini
+
+# Copy the packages into the release sub-directory.
+[[ -n $verbose ]] && print -u2 "Copying the packages to $outdir"
+tar -C $mirror_dir -f - -c $(grep '^install:' setup.ini | awk '{print $2}') | tar xf -
+
+# Copy arm cross-compiler kit
+if [[ -n $copy_arm_tools ]]; then
+  svn export svn://cvs-srvr/tools/arm-xscale-cygwin-gcc.tar.gz >& /dev/null
+fi
+
+# Copy most recent XEmacs setup kits
+if [[ -n $copy_XEmacs_kits ]]; then
+  : ${xemacs_kit_home:=$HOME/software/XEmacsWindowsKit}
+  cp $xemacs_kit_home/XEmacs_Setup_21.4*(om[1]) .
+  cp $xemacs_kit_home/XEmacs_Setup_21.5*(om[1]) .
+fi
 
 # Local Variables:
 # mode: ksh

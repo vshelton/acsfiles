@@ -43,7 +43,7 @@ while ( $next_record ) {
         ($cur, $test) = split /\n\[test\]/, $record;
     }
 
-    # sdescs can be more than one line long, and there
+    # sdescs can be more than one line long, and
     # a record doesn't need to have an ldesc.
     ($sdesc{$pkg}) = ($cur =~ /sdesc: (.*)\nldesc/s);
     if ( $sdesc{$pkg} eq "" ) {

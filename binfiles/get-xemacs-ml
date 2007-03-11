@@ -8,10 +8,22 @@
 
 progname=${0:t}
 
-foreach month
-  wget --http-user=xemacs-review --http-passwd=review-xemacs http://list-archive.xemacs.org/xemacs-review/xemacs-review.$month
-  wget http://list-archive.xemacs.org/xemacs-design/xemacs-design.$month
-  wget http://list-archive.xemacs.org/xemacs-patches/xemacs-patches.$month
+aroot="http://calypso.tux.org/pipermail"
+names=(January February March April May June July August September October November December)
+
+foreach date
+  year=${date%??}
+  mndx=${date#????}
+  month=${names[$mndx]}
+  list=xemacs-review
+  wget -O $list.$date.gz --http-user=xemacs-review --http-passwd=review-xemacs $aroot/$list/$year-$month.txt.gz
+  gunzip $list.$date.gz || rm $list.$date.gz
+  list=xemacs-design
+  wget -O $list.$date.gz $aroot/$list/$year-$month.txt.gz
+  gunzip $list.$date.gz || rm $list.$date.gz
+  list=xemacs-patches
+  wget -O $list.$date.gz $aroot/$list/$year-$month.txt.gz
+  gunzip $list.$date.gz || rm $list.$date.gz
 end
 
 # Local Variables:

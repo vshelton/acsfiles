@@ -1,0 +1,117 @@
+#!/usr/bin/env zsh
+
+# Generate a default cygwin setup.ini file.
+# This is accomplshed by extending the default setup.ini file
+# with the package names listed in the file extra_packages.
+# The setup.ini files will be created under the name setup-yyyy-mm-dd.ini.
+# Assumptions:
+#  1. Cygwin is already installed on the machine.  (At a first glance,
+#     sh, rsync, patch and perl are required.)
+#  2. A local cygwin mirror has been set up in the current directory.
+#  3. The file extra_packages contains the list of packages to add
+#     to the default list of cygwin packages.  Alternatively, if the
+#     environment variable extra_packages is set, it must be a list
+#     of packages to add to the cygwin base install:
+#       extra_packages="bison flex" ./MakeSetupFile
+#     will suffice.  (Replace "bison flex" with whatever additional packages
+#     you want to have in the setup kit.
+
+# Once you have run this script, run Sonic Record Now Plus or some
+# similar software to create the data disk.
+
+emulate zsh
+setopt extended_glob
+progname=${0:t}
+
+function usage {
+  print -u2 "\
+usage: $progname -ahsx
+       Create a cygwin setup kit in the subdirectory, cygwin_disk-yyyy-mm-dd.
+       All cygwin base packages are included in this kit.  Any additional
+       packages listed in the file extra_packages are copied into the
+       sub-directory and marked as base packages in the setup kit so they
+       will be installed when the setup kit is installed.  The environment
+       variable \$extra_packages overrides the contents of the extra_packages
+       file, if any.
+       -a Copy the most recent arm-xscale crosscompiler tarball, (extracted
+          from AOA's subversion repository) into the destination directory.
+       -h Print this help message.
+       -s Sync the packages with a cygwin mirror before running the script.
+          The environment variable \$cygwin_mirror specifies which
+          cygwin mirror use.
+       -v Print progress messages.
+       -x Copy the latest XEmacs setup kits to the destination directory.
+          The environment variable \$xemacs_kit_home specifies where to
+          find the XEmacs setup kits."
+}
+
+# Parse the options
+zparseopts -D a=copy_arm_tools h=help s=sync_packages v=verbose x=copy_XEmacs_kits
+
+if [[ -n $help ]]; then
+  usage
+  exit 0
+fi
+
+: ${mirror_dir:=$PWD/cygwin-mirror}
+
+# Add current directory to $PATH.
+path=($PWD $path)
+
+# Sync up to the latest packages.
+if [[ -n $sync_packages ]]; then
+  cd $mirror_dir
+  cygwin_mirror=${cygwin_mirror:-rsync://mirrors.xmission.com/cygwin/}
+  [[ -n $verbose ]] && print -u2 "Syncing packages from cygwin mirror: $cygwin_mirror"
+  rsync -az --exclude mail-archives $cygwin_mirror .
+  cd -
+fi
+
+# Define the list of packages to be added to the base kit.
+if [[ -n $extra_packages ]]; then
+  extra=( ${=extra_packages} )
+else
+  [[ -r extra_packages ]] && extra=( $(<extra_packages) )
+fi
+
+# Create and change to the output directory.
+outdir=cygwin_disk-$(today)
+[[ -n $verbose ]] && print -u2 "Making a cygwin setup kit in $outdir"
+mkdir $outdir
+cp autorun.inf $outdir
+cd $outdir
+
+cp $mirror_dir/setup.exe $mirror_dir/setup.ini .
+
+if [[ -n $verbose ]]; then
+  if [[ -z $extra ]]; then
+    print -u2 "Adding no extra packages to the base cygwin setup kit"
+  else
+    print -u2 "Adding these packages to the base cygwin set kit: $extra"
+  fi
+fi
+
+# Generate the setup.ini file.
+MakeSetupIni.pl $extra
+
+# Copy the packages into the release sub-directory.
+[[ -n $verbose ]] && print -u2 "Copying the packages to $outdir"
+tar -C $mirror_dir -f - -c $(grep '^install:' setup.ini | awk '{print $2}') | tar xf -
+
+# Copy the arm-xscale cross-compiler kit.
+if [[ -n $copy_arm_tools ]]; then
+  svn export svn://cvs-srvr/tools/arm-xscale-cygwin-gcc.tar.gz >& /dev/null
+fi
+
+# Copy the most recent XEmacs setup kits.
+if [[ -n $copy_XEmacs_kits ]]; then
+  : ${xemacs_kit_home:=$HOME/software/XEmacsWindowsKit}
+  cp $xemacs_kit_home/XEmacs_Setup_21.4*(om[1]) .
+  cp $xemacs_kit_home/XEmacs_Setup_21.5*(om[1]) .
+fi
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

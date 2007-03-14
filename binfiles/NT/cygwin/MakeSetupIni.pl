@@ -104,7 +104,7 @@ while ( %prev_package_list ne %package_list ) {
 #----------------------------------------------------------------------------
 
 $master_pkg="_update-info-dir";
-$requires{$master_pkg} = sort keys %package_list;
+$requires{$master_pkg} = join(" ", sort keys %package_list);
 
 #---------------------------------------------------------------
 # Write out a new setup.ini file, comprised only of the packages

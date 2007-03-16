@@ -46,9 +46,7 @@ while ( $next_record ) {
     # sdescs can be more than one line long, and
     # a record doesn't need to have an ldesc.
     ($sdesc{$pkg}) = ($cur =~ /sdesc: (.*)\nldesc/s);
-    if ( $sdesc{$pkg} eq "" ) {
-        ($sdesc{$pkg}) = ($cur =~ /sdesc: (.*)\n/);
-    }
+    ($sdesc{$pkg}) = ($cur =~ /sdesc: (.*)\n/) if ( $sdesc{$pkg} eq "" )
     ($ldesc{$pkg}) = ($cur =~ /\nldesc: (.*)\ncategory:/s);
     ($category{$pkg}) = ($cur =~ /\ncategory: (.*)/);
     ($requires{$pkg}) = ($cur =~ /\nrequires: (.*)/);
@@ -98,10 +96,11 @@ while ( %prev_package_list ne %package_list ) {
     }
 }
 
-#----------------------------------------------------------------------------
-# Make one of the Base packages require all the packages in the package list.
-# This will make all the packages get installed by default when setup is run.
-#----------------------------------------------------------------------------
+#------------------------------------------------------------
+# Make one of the Base packages dependent on all the packages
+# in the package list.  That way, when setup.exe is run, all
+# the packages in the kit get installed by default.
+#------------------------------------------------------------
 
 $master_pkg="_update-info-dir";
 $requires{$master_pkg} = join(" ", sort keys %package_list);

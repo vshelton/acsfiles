@@ -1,23 +1,28 @@
 #!/usr/bin/env zsh
 
-# Generate a default cygwin setup.ini file.
-# This is accomplshed by extending the default setup.ini file
-# with the package names listed in the file extra_packages.
-# The setup.ini files will be created under the name setup-yyyy-mm-dd.ini.
+# Generate a cygwin setup kit in the directory cygwin-yyyy-mm-dd.
+# Every package belonging to the Base category and all the packages
+# listed in the extra_packages file will be included in the setup kit.
+# All of the packages will be installed by default when setup.exe is run.
+#
 # Assumptions:
-#  1. Cygwin is already installed on the machine.  (At a first glance,
-#     sh, rsync, patch and perl are required.)
-#  2. A local cygwin mirror has been set up in the current directory.
+#  1. Cygwin is already installed on the machine.  At least coreutils,
+#     gawk, grep, perl, rsync, tar and zsh must be installed.
+#  2. A local repository of cygwin packages has been set up in the
+#     cygwin_mirror subdirectory.  Use the cygwin_mirror environment
+#     variable to change the location of the repository.  The -s option
+#     to this script can be used to create or sync up the repository.
 #  3. The file extra_packages contains the list of packages to add
 #     to the default list of cygwin packages.  Alternatively, if the
 #     environment variable extra_packages is set, it must be a list
-#     of packages to add to the cygwin base install:
-#       extra_packages="bison flex" ./MakeSetupFile
-#     will suffice.  (Replace "bison flex" with whatever additional packages
-#     you want to have in the setup kit.
-
-# Once you have run this script, run Sonic Record Now Plus or some
-# similar software to create the data disk.
+#     of packages to add to the cygwin base install; e.g.
+#       extra_packages="bison flex" ./MakeCygwinKit
+#     will add bison and flex to the setup kit.
+#
+# Once you have run this script, burn the contents of the
+# cygwin-yyyy-mm-dd directory onto a CD, and that CD can be
+# used to install all the specified cygwin packages, without
+# requiring network access.
 
 emulate zsh
 setopt extended_glob
@@ -25,42 +30,37 @@ progname=${0:t}
 
 function usage {
   print -u2 "\
-usage: $progname -ahsx
-       Create a cygwin setup kit in the subdirectory, cygwin_disk-yyyy-mm-dd.
+usage: $progname -hsv
+       Create a cygwin setup kit in the subdirectory cygwin_disk-yyyy-mm-dd.
        All cygwin base packages are included in this kit.  Any additional
        packages listed in the file extra_packages are copied into the
-       sub-directory and marked as base packages in the setup kit so they
+       subdirectory and marked as base packages in the setup kit so they
        will be installed when the setup kit is installed.  The environment
        variable \$extra_packages overrides the contents of the extra_packages
        file, if any.
-       -a Copy the most recent arm-xscale crosscompiler tarball, (extracted
-          from AOA's subversion repository) into the destination directory.
        -h Print this help message.
        -s Sync the packages with a cygwin mirror before running the script.
           The environment variable \$cygwin_mirror specifies which
           cygwin mirror use.
-       -v Print progress messages.
-       -x Copy the latest XEmacs setup kits to the destination directory.
-          The environment variable \$xemacs_kit_home specifies where to
-          find the XEmacs setup kits."
+       -v Print progress messages."
 }
 
 # Parse the options
-zparseopts -D a=copy_arm_tools h=help s=sync_packages v=verbose x=copy_XEmacs_kits
+zparseopts -D h=help s=sync_packages v=verbose
 
 if [[ -n $help ]]; then
   usage
   exit 0
 fi
 
-: ${mirror_dir:=$PWD/cygwin-mirror}
+: ${cygwin_mirror:=$PWD/cygwin_mirror}
 
 # Add current directory to $PATH.
 path=($PWD $path)
 
 # Sync up to the latest packages.
 if [[ -n $sync_packages ]]; then
-  cd $mirror_dir
+  cd $cygwin_mirror
   cygwin_mirror=${cygwin_mirror:-rsync://mirrors.xmission.com/cygwin/}
   [[ -n $verbose ]] && print -u2 "Syncing packages from cygwin mirror: $cygwin_mirror"
   rsync -az --exclude mail-archives $cygwin_mirror .
@@ -75,13 +75,13 @@ else
 fi
 
 # Create and change to the output directory.
-outdir=cygwin_disk-$(today)
+outdir=cygwin_disk-$(date +'%Y-%m-%d')
 [[ -n $verbose ]] && print -u2 "Making a cygwin setup kit in $outdir"
 mkdir $outdir
 cp autorun.inf $outdir
 cd $outdir
 
-cp $mirror_dir/setup.exe $mirror_dir/setup.ini .
+cp $cygwin_mirror/setup.exe $cygwin_mirror/setup.ini .
 
 if [[ -n $verbose ]]; then
   if [[ -z $extra ]]; then
@@ -94,21 +94,9 @@ fi
 # Generate the setup.ini file.
 MakeSetupIni.pl $extra
 
-# Copy the packages into the release sub-directory.
+# Copy the packages into the release subdirectory.
 [[ -n $verbose ]] && print -u2 "Copying the packages to $outdir"
-tar -C $mirror_dir -f - -c $(grep '^install:' setup.ini | awk '{print $2}') | tar xf -
-
-# Copy the arm-xscale cross-compiler kit.
-if [[ -n $copy_arm_tools ]]; then
-  svn export svn://cvs-srvr/tools/arm-xscale-cygwin-gcc.tar.gz >& /dev/null
-fi
-
-# Copy the most recent XEmacs setup kits.
-if [[ -n $copy_XEmacs_kits ]]; then
-  : ${xemacs_kit_home:=$HOME/software/XEmacsWindowsKit}
-  cp $xemacs_kit_home/XEmacs_Setup_21.4*(om[1]) .
-  cp $xemacs_kit_home/XEmacs_Setup_21.5*(om[1]) .
-fi
+tar -C $cygwin_mirror -f - -c $(grep '^install:' setup.ini | awk '{print $2}') | tar xf -
 
 # Local Variables:
 # mode: ksh

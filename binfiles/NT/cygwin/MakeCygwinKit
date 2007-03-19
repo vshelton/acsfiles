@@ -9,8 +9,8 @@
 #  1. Cygwin is already installed on the machine.  At least coreutils,
 #     gawk, grep, perl, rsync, tar and zsh must be installed.
 #  2. A local repository of cygwin packages has been set up in the
-#     cygwin_mirror subdirectory.  Use the cygwin_mirror environment
-#     variable to change the location of the repository.  The -s option
+#     directory identified by the cygwin_repo environment variable
+#     (defaults to the directory cygwin_repo).  The -s option
 #     to this script can be used to create or sync up the repository.
 #  3. The file extra_packages contains the list of packages to add
 #     to the default list of cygwin packages.  Alternatively, if the
@@ -32,16 +32,21 @@ function usage {
   print -u2 "\
 usage: $progname -hsv
        Create a cygwin setup kit in the subdirectory cygwin_disk-yyyy-mm-dd.
-       All cygwin base packages are included in this kit.  Any additional
-       packages listed in the file extra_packages are copied into the
-       subdirectory and marked as base packages in the setup kit so they
-       will be installed when the setup kit is installed.  The environment
-       variable \$extra_packages overrides the contents of the extra_packages
-       file, if any.
+       The contents of cygwin_disk-yyyy-mm-dd can then be burned onto a CD.
+       All cygwin base packages are included in the generated kit.  The
+       contents of the file \"extra_packages\" (or the environment variable
+       \$extra_packages) can be used to specify additional packages to add
+       to the generated kit.  All of the specified packages will be installed
+       by default when setup.exe is run.
+       In order for this script to work, the directory identified
+       by the environment variable \$cygwin_repo (which has a default value
+       of \"cygwin_repo\") must contain a mirror image of the cygwin package
+       repository.  You can use the -s option to bootstrap this directory.
+       Options:
        -h Print this help message.
        -s Sync the packages with a cygwin mirror before running the script.
-          The environment variable \$cygwin_mirror specifies which
-          cygwin mirror use.
+          The environment variable \$cygwin_site specifies which
+          cygwin mirror to use.
        -v Print progress messages."
 }
 
@@ -53,17 +58,19 @@ if [[ -n $help ]]; then
   exit 0
 fi
 
-: ${cygwin_mirror:=$PWD/cygwin_mirror}
+: ${cygwin_repo:=$PWD/cygwin_repo}
 
 # Add current directory to $PATH.
 path=($PWD $path)
 
 # Sync up to the latest packages.
 if [[ -n $sync_packages ]]; then
-  cd $cygwin_mirror
-  cygwin_mirror=${cygwin_mirror:-rsync://mirrors.xmission.com/cygwin/}
-  [[ -n $verbose ]] && print -u2 "Syncing packages from cygwin mirror: $cygwin_mirror"
-  rsync -az --exclude mail-archives $cygwin_mirror .
+  cd $cygwin_repo
+  # This command will display a list of mirror sites that support rsync:
+  #  wget -q -O - http://cygwin.com/mirrors.txt | grep rsync | cut -d';' -f1 | sed -e 's;\(rsync://[0-9a-z.-]*\).*;\1;'
+  cygwin_site=${cygwin_site:-rsync://mirrors.xmission.com/cygwin/}
+  [[ -n $verbose ]] && print -u2 "Syncing packages from cygwin mirror: $cygwin_site"
+  rsync -az --exclude mail-archives $cygwin_site .
   cd -
 fi
 
@@ -81,13 +88,13 @@ mkdir $outdir
 cp autorun.inf $outdir
 cd $outdir
 
-cp $cygwin_mirror/setup.exe $cygwin_mirror/setup.ini .
+cp $cygwin_repo/setup.exe $cygwin_repo/setup.ini .
 
 if [[ -n $verbose ]]; then
   if [[ -z $extra ]]; then
     print -u2 "Adding no extra packages to the base cygwin setup kit"
   else
-    print -u2 "Adding these packages to the base cygwin set kit: $extra"
+    print -u2 "Adding these packages to the base cygwin setup kit: $extra"
   fi
 fi
 
@@ -96,7 +103,7 @@ MakeSetupIni.pl $extra
 
 # Copy the packages into the release subdirectory.
 [[ -n $verbose ]] && print -u2 "Copying the packages to $outdir"
-tar -C $cygwin_mirror -f - -c $(grep '^install:' setup.ini | awk '{print $2}') | tar xf -
+tar -C $cygwin_repo -f - -c $(grep '^install:' setup.ini | awk '{print $2}') | tar xf -
 
 # Local Variables:
 # mode: ksh

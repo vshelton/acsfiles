@@ -18,7 +18,7 @@ rem rsync://ftp.gwdg.de
 rem rsync://ftp.inf.tu-dresden.de
 
 f:
-cd \cygwin\cygwin-mirror
+cd \cygwin\cygwin_repo
 
 @echo on
 
@@ -26,4 +26,4 @@ rem rsync -vaz --exclude mail-archives rsync://mirrors.kernel.org/sourceware/cyg
 rsync -vaz --exclude mail-archives rsync://mirrors.xmission.com/cygwin/ .
 rem rsync -vaz --exclude mail-archives rsync://rsync.gtlib.gatech.edu/ .
 
-.\setup --local-install --local-package-dir f:/cygwin/cygwin-mirror --no-shortcuts
+.\setup --local-install --local-package-dir f:/cygwin/cygwin_repo --no-shortcuts

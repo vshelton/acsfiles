@@ -46,7 +46,7 @@ while ( $next_record ) {
     # sdescs can be more than one line long, and
     # a record doesn't need to have an ldesc.
     ($sdesc{$pkg}) = ($cur =~ /sdesc: (.*)\nldesc/s);
-    ($sdesc{$pkg}) = ($cur =~ /sdesc: (.*)\n/) if ( $sdesc{$pkg} eq "" )
+    ($sdesc{$pkg}) = ($cur =~ /sdesc: (.*)\n/) if ( $sdesc{$pkg} eq "" );
     ($ldesc{$pkg}) = ($cur =~ /\nldesc: (.*)\ncategory:/s);
     ($category{$pkg}) = ($cur =~ /\ncategory: (.*)/);
     ($requires{$pkg}) = ($cur =~ /\nrequires: (.*)/);

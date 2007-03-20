@@ -71,7 +71,7 @@ function generate_compiler_flags {
             $arch="pentium$1" if ( /pentium\(r\) (.)/i );
             $arch="pentium3" if ( /pentium III/i );
             last;       # Break as soon as a match is found
-	  }
+          }
         }
         print "$arch\n";')
 
@@ -112,10 +112,10 @@ function cfg_and_build {
   else
     build_options="$build_options $cfg_mule_off"
   fi
-    
+
   generate_compiler_flags $2
 
-  cfg -s -o conf.out $(relative $SRCROOT/$TARGET) $with_gcc $with_cflags="$DEBUG_FLAGS $OPTIMIZE_FLAGS" ${=with_site_prefixes} $with_infopath $enable_dialogs $enable_widgets $enable_sound $with_package_path $enable_pdump $enable_bignum $with_libs ${=build_options} ${=generic_cfg_opts} ${=debug_options}
+  cfg -s -o conf.out $(relative $SRCROOT/$TARGET) $with_gcc $with_cflags="$DEBUG_FLAGS $OPTIMIZE_FLAGS" ${=with_site_prefixes} $with_infopath $enable_dialogs $enable_widgets $enable_sound $with_package_path $enable_pdump $enable_bignum $with_default_eol_detection $with_libs ${=build_options} ${=generic_cfg_opts} ${=debug_options}
   if [[ $? -ne 0 ]]; then
     print -u2 "\n$progname: could not configure $TARGET.\n"
     return 1
@@ -250,16 +250,17 @@ shared_root=${USRLOCAL:-/usr/local}     # Architecture-independent stuff
 export CC=${CC:-gcc}
 
 # Here are the options that are normally specified by this script.
-# The default options are now set up for XEmacss 21.5 with autoconf 2.5
-with_cflags="--with-cflags"
-enable_pdump="--disable-pdump"
+# The default options are now set up for XEmacs 21.5 with autoconf 2.5
 enable_bignum="--enable-bignum=gmp"
+enable_dialogs="--disable-dialogs"
+enable_pdump="--disable-pdump"
 enable_sound="--disable-sound"
-with_site_prefixes="--with-site-prefixes=$USRLOCAL"
+enable_widgets="--disable-widgets"
+with_cflags="--with-cflags"
+with_default_eol_detection="--with-default-eol-detection"
 with_infopath="--with-infopath=$USRLOCAL/info"
 with_package_path="--with-package-path=$shared_root/site-packages::$shared_root/xemacs-packages"
-enable_dialogs="--disable-dialogs"
-enable_widgets="--disable-widgets"
+with_site_prefixes="--with-site-prefixes=$USRLOCAL"
 
 # For some reason the need for -lw is not detected on SunOS-5.5.
 # with_libs and lib_gcc are 2 different ways to accomplish the
@@ -300,15 +301,16 @@ cd -
 # If we're not configuring against autoconf 2.5x, fiddle
 # with the configure options.
 if [[ -z $autoconf2_5 ]]; then
-  with_cflags="--cflags"
-  enable_pdump="--pdump=no"
   enable_bignum="--use-number-lib=gmp"
+  enable_dialogs="--with-dialogs=no"
+  enable_pdump="--pdump=no"
   enable_sound="--with-sound=none"
-  with_site_prefixes="--site-includes=$prefix/include --site-libraries=$prefix/lib"
+  enable_widgets="--with-widgets=no"
+  with_cflags="--cflags"
+  with_default_eol_detection="--with-file-coding=yes"
   with_infopath="--infopath=$USRLOCAL/info"
   with_package_path="--package-path=$shared_root/site-packages::$shared_root/xemacs-packages"
-  enable_dialogs="--with-dialogs=no"
-  enable_widgets="--with-widgets=no"
+  with_site_prefixes="--site-includes=$prefix/include --site-libraries=$prefix/lib"
 
   # Here's how to turn mule on or off at build time.
   cfg_mule_off="--with-mule=no"
@@ -416,6 +418,12 @@ do
   (--with*-libs*)
     with_libs=$1
     ;;
+  (*eol-detection*)
+    with_default_eol_detection=$1
+  ;;
+  (*file-coding*)
+    with_default_eol_detection=$1
+  ;;
   (--*)
     generic_cfg_opts="$generic_cfg_opts $1"
     ;;

@@ -1,0 +1,70 @@
+#!/usr/bin/env zsh
+
+# Backup my user files on my laptop.
+
+emulate zsh
+progname=${0:t}
+
+: ${rsync_cmd:=rsync}
+: ${rsync_opts:="--backup --recursive --archive"}
+
+backup_src=(/e/acs/ /usr/local/)
+backup_dest=(/f/backups/acs /f/backups/usr-local)
+
+function usage {
+  print -u2 "\
+usage: $progname -h
+       Backup the files on my system.
+       Paths to backup are (currently) hard-coded to /e/acs and /usr/local.
+       Options:
+       -h Print this help message.
+       -v Display progress messages."
+}
+
+function do_backup {
+  if [[ $# -ne 2 ]]; then
+    print -u2 "$progname: do_backup: src dest\n"
+    exit 1;
+  fi
+
+  sync_files $1 $2
+  generate_delete_list $1 $2
+}
+
+function sync_files {
+  if [[ $# -ne 2 ]]; then
+    print -u2 "$progname: sync_files: src dest\n"
+    exit 1;
+  fi
+
+  [[ -n $verbose ]] && print "Backing up $1 to $2."
+  ${=rsync_cmd} ${=rsync_opts} $1 $2
+}
+
+function generate_delete_list {
+  if [[ $# -ne 2 ]]; then
+    print -u2 "$progname: generate_delete_list: src dest\n"
+    exit 1;
+  fi
+
+  [[ -n $verbose ]] && print "Generating delete list for $1 in $2/rsync-delete-list.txt."
+  ${=rsync_cmd} ${=rsync_opts} --dry-run --delete $1 $2 >& $2/rsync-delete-list.txt
+}
+
+# Parse the options
+zparseopts -D h=help v=verbose
+
+if [[ -n $help ]]; then
+  usage
+  exit 0
+fi
+
+for (( i=1; i <= ${#backup_src}; ++i )) do
+  do_backup ${backup_src[$i]} ${backup_dest[$i]}
+done
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

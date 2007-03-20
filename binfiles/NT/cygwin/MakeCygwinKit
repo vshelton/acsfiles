@@ -30,7 +30,7 @@ progname=${0:t}
 
 function usage {
   print -u2 "\
-usage: $progname -hsv
+usage: $progname -ahsvx
        Create a cygwin setup kit in the subdirectory cygwin_disk-yyyy-mm-dd.
        The contents of cygwin_disk-yyyy-mm-dd can then be burned onto a CD.
        All cygwin base packages are included in the generated kit.  The
@@ -43,15 +43,20 @@ usage: $progname -hsv
        of \"cygwin_repo\") must contain a mirror image of the cygwin package
        repository.  You can use the -s option to bootstrap this directory.
        Options:
+       -a Copy the most recent arm-xscale crosscompiler tarball, (extracted
+          from AOA's subversion repository) into the destination directory.
        -h Print this help message.
        -s Sync the packages with a cygwin mirror before running the script.
           The environment variable \$cygwin_site specifies which
           cygwin mirror to use.
-       -v Print progress messages."
+       -v Print progress messages.
+       -x Copy the latest XEmacs setup kits to the destination directory.
+          The environment variable \$xemacs_kit_home specifies where to
+          find the XEmacs setup kits."
 }
 
 # Parse the options
-zparseopts -D h=help s=sync_packages v=verbose
+zparseopts -D a=copy_arm_tools h=help s=sync_packages v=verbose x=copy_XEmacs_kits
 
 if [[ -n $help ]]; then
   usage
@@ -104,6 +109,18 @@ MakeSetupIni.pl $extra
 # Copy the packages into the release subdirectory.
 [[ -n $verbose ]] && print -u2 "Copying the packages to $outdir"
 tar -C $cygwin_repo -f - -c $(grep '^install:' setup.ini | awk '{print $2}') | tar xf -
+
+# Copy the arm-xscale cross-compiler kit.
+if [[ -n $copy_arm_tools ]]; then
+  svn export svn://cvs-srvr/tools/arm-xscale-cygwin-gcc.tar.gz >& /dev/null
+fi
+
+# Copy the most recent XEmacs setup kits.
+if [[ -n $copy_XEmacs_kits ]]; then
+  : ${xemacs_kit_home:=$HOME/software/XEmacsWindowsKit}
+  cp $xemacs_kit_home/XEmacs_Setup_21.4*(om[1]) .
+  cp $xemacs_kit_home/XEmacs_Setup_21.5*(om[1]) .
+fi
 
 # Local Variables:
 # mode: ksh

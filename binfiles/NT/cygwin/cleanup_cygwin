@@ -1,0 +1,28 @@
+#!/usr/bin/env zsh
+
+# Move the obsolete cygwin packages aside
+
+emulate zsh
+progname=${0:t}
+
+: ${cygwin_root:=/f/cygwin}
+: ${mirror_dir:=$cygwin_root/cygwin_repo}
+: ${trash:=$cygwin_root/old/obsolete_packages}
+
+# This command will display a list of mirror sites that support rsync:
+#  wget -q -O - http://cygwin.com/mirrors.txt | grep rsync | cut -d';' -f1 | sed -e 's;\(rsync://[0-9a-z.-]*\).*;\1;'
+cygwin_site=${cygwin_site:-rsync://mirrors.xmission.com/cygwin/}
+
+cd $mirror_dir
+
+# Run rsync --dry-run --delete to generate a list of obsolete files
+flist=( $(rsync -az --exclude mail-archives --dry-run --delete $cygwin_site . | grep '^deleting' | awk '{print $2}') )
+
+tar cf - --remove-files $flist | tar -xf - -C $trash --preserve
+
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

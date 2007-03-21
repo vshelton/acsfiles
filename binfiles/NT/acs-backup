@@ -8,8 +8,12 @@ progname=${0:t}
 : ${rsync_cmd:=rsync}
 : ${rsync_opts:="--backup --recursive --archive"}
 
-backup_src=(/e/acs/ /usr/local/)
-backup_dest=(/f/backups/acs /f/backups/usr-local)
+typeset -A backup_list
+backup_list=(
+#   source          destination
+    /e/acs/         /f/backups/acs
+    /usr/local      /f/backups/usr-local
+)
 
 function usage {
   print -u2 "\
@@ -59,8 +63,8 @@ if [[ -n $help ]]; then
   exit 0
 fi
 
-for (( i=1; i <= ${#backup_src}; ++i )) do
-  do_backup ${backup_src[$i]} ${backup_dest[$i]}
+for k in ${(k)backup_list}; do
+  do_backup $k $backup_list[$k]
 done
 
 # Local Variables:

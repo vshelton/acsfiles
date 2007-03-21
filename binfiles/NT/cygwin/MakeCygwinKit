@@ -30,9 +30,11 @@ progname=${0:t}
 
 function usage {
   print -u2 "\
-usage: $progname -ahsvx
-       Create a cygwin setup kit in the subdirectory cygwin_disk-yyyy-mm-dd.
-       The contents of cygwin_disk-yyyy-mm-dd can then be burned onto a CD.
+usage: $progname \[-ahsvx\] \[-o outdir\]
+       Create a cygwin setup kit into an output directory.  The default
+       output directory is cygwin_disk-yyyy-mm-dd, but the directory
+       can be changed through use of the -o option.  The contents
+       of the output directory can then be burned onto a CD.
        All cygwin base packages are included in the generated kit.  The
        contents of the file \"extra_packages\" (or the environment variable
        \$extra_packages) can be used to specify additional packages to add
@@ -46,6 +48,7 @@ usage: $progname -ahsvx
        -a Copy the most recent arm-xscale crosscompiler tarball, (extracted
           from AOA's subversion repository) into the destination directory.
        -h Print this help message.
+       -o outdir - specify the name of the output directory.
        -s Sync the packages with a cygwin mirror before running the script.
           The environment variable \$cygwin_site specifies which
           cygwin mirror to use.
@@ -56,7 +59,7 @@ usage: $progname -ahsvx
 }
 
 # Parse the options
-zparseopts -D a=copy_arm_tools h=help s=sync_packages v=verbose x=copy_XEmacs_kits
+zparseopts -D a=copy_arm_tools h=help o:=output_opt s=sync_packages v=verbose x=copy_XEmacs_kits
 
 if [[ -n $help ]]; then
   usage
@@ -87,9 +90,18 @@ else
 fi
 
 # Create and change to the output directory.
-outdir=cygwin_disk-$(date +'%Y-%m-%d')
+if [[ -n $output_opt ]]; then
+  outdir=$output_opt[2]
+else
+  outdir=cygwin_disk-$(date +'%Y-%m-%d')
+fi
 [[ -n $verbose ]] && print -u2 "Making a cygwin setup kit in $outdir"
-mkdir $outdir
+if [[ ! -d $outdir ]]; then
+  if ! mkdir $outdir ; then
+    print -u2 "$progname: could not create $outdir."
+    exit 1
+  fi
+fi
 cp autorun.inf $outdir
 cd $outdir
 
@@ -112,14 +124,15 @@ tar -C $cygwin_repo -f - -c $(grep '^install:' setup.ini | awk '{print $2}') | t
 
 # Copy the arm-xscale cross-compiler kit.
 if [[ -n $copy_arm_tools ]]; then
+  [[ -n $verbose ]] && print -u2 "Copying arm crosstools to $outdir"
   svn export svn://cvs-srvr/tools/arm-xscale-cygwin-gcc.tar.gz >& /dev/null
 fi
 
 # Copy the most recent XEmacs setup kits.
 if [[ -n $copy_XEmacs_kits ]]; then
   : ${xemacs_kit_home:=$HOME/software/XEmacsWindowsKit}
-  cp $xemacs_kit_home/XEmacs_Setup_21.4*(om[1]) .
-  cp $xemacs_kit_home/XEmacs_Setup_21.5*(om[1]) .
+  [[ -n $verbose ]] && print -u2 "Copying latest XEmacs setup kits from $xemacs_kit_home to $outdir"
+  cp -p $xemacs_kit_home/XEmacs_Setup_21.4*(om[1]) $xemacs_kit_home/XEmacs_Setup_21.5*(om[1]) .
 fi
 
 # Local Variables:

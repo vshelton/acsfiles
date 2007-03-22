@@ -6,6 +6,7 @@
 [ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
 
 emulate -LR zsh
+setopt extended_glob
 progname=${0:t}
 
 # Copy the packages tree to a build directory based on today's date

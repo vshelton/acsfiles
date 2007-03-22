@@ -1,13 +1,12 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 #
 # Link a package installed into its own sub-tree (i.e. one built
 # via "bld -s") into the standard install path.
 #
 # Usage: linkup
- 
-# Execute this script under the Z shell
-[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
 
+emulate zsh
+setopt extendedglob
 progname=${0:t}
 
 inst_prefix=$USRLOCAL
@@ -23,7 +22,6 @@ fi
 pkgver=$1		# Long name, i.e. gcc-2.95-2002-04-11
 pkg=${pkgver%%-*}	# Generic name, i.e. gcc
 # Sigh, the Tcl/Tk rule
-setopt extended_glob
 [[ $pkgver = $pkg ]] && pkg=${pkgver%%([0-9.])#}
 
 cd $inst_prefix

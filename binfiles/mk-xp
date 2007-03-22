@@ -1,33 +1,41 @@
 #!/usr/bin/env zsh
 
 # Make XEmacs packages from CVS sources
- 
-# Execute this script under the Z shell
-[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
 
 emulate -LR zsh
-setopt extended_glob
+setopt extendedglob nonomatch
 progname=${0:t}
 
-# Copy the packages tree to a build directory based on today's date
-VERSION=$(today)
-SRCROOT=$PWD mk-src xemacs-packages $VERSION
-err=$?
-if (( err != 0 )); then
-  print -u2 "$progname: mk-src error"
-  exit $err
+function usage() {
+  print -u2 "\
+usage: $progname [-hsv]
+       Options:
+       -h - print this help message.
+       -s - build and install vc-mode which supports svn.
+       -v - print verbose progress messages."
+}
+
+zparseopts -D h=help s=svn v=verbose
+if [[ -n $help ]]; then
+  usage
+  exit 1
 fi
 
-cd xemacs-packages-$VERSION
-err=$?
-if (( err != 0 )); then
-  print -u2 "$progname: could not change to xemacs-packages-$VERSION directory."
-  exit $err
+# Copy the packages tree to a build directory based on today's date
+: ${VERSION:=$(today)}
+: ${SRCROOT:=$PWD}
+if ! mk-src xemacs-packages $VERSION ; then
+  print -u2 "$progname: mk-src error."
+  exit 1
+fi
+
+if ! cd $SRCROOT/xemacs-packages-$VERSION ; then
+  print -u2 "$progname: could not change to $SRCROOT/xemacs-packages-$VERSION directory."
+  exit 1
 fi
 
 # If we don't have tex, then we can't build auctex.
 # If we don't build auctex, then we can't build x-symbol.
-setopt nonomatch
 if [[ ! -e =tex ]]; then
   perl -pi.orig -e "
     s@auctex@@;
@@ -36,10 +44,27 @@ if [[ ! -e =tex ]]; then
   #rm -rf xemacs-packages/auctex xemacs-packages/x-symbol
 fi
 
-STAGING=${STAGING:-"$HOME/tmp/staging"}
+: ${STAGING:="$HOME/tmp/staging"}
 
 # Figure out what packages were previously installed
 pkgs=${pkgs:-$(installed_packages)}
+
+# Build experimental VC package that supports subversion
+if [[ -n $svn ]]; then
+  [[ -n $verbose ]] && print "$progname: including subversion-aware version of vc package."
+  # Make sure only one vc package is included in the package list
+  pkgs=${${pkgs#vc }% vc}
+  case $pkgs in
+  (^* vc *)
+    pkgs="$pkgs vc"
+  ;;
+  esac
+  mv xemacs-packages/vc xemacs-packages/vc-dist
+  mv unsupported/scop/vc xemacs-packages
+  perl -pi.orig -e "
+    s@../../../XEmacs.rules@../../XEmacs.rules@;
+  " xemacs-packages/vc/Makefile
+fi
 
 # Make a local rules file
 perl -p -e "
@@ -48,26 +73,25 @@ perl -p -e "
     s@^NONMULE_INSTALLED_PACKAGES_ROOT[\s]*=.*@NONMULE_INSTALLED_PACKAGES_ROOT = $STAGING@;
 " < Local.rules.template > Local.rules
 
-make >& mk.out
-err=$?
-if (( err != 0 )); then
-  print -u2 "$progname: make failed.  See xemacs-packages-$VERSION/mk.out."
-  exit $err
+[[ -n $verbose ]] && print "$progname: building all packages."
+if ! make >& mk.out ; then
+  print -u2 "$progname: make failed.  See $SRCROOT/xemacs-packages-$VERSION/mk.out."
+  exit 2
 fi
 
 rm -rf $STAGING
-make bindist >>& mk.out
-err=$?
-if (( err != 0 )); then
-  print -u2 "$progname: make bindist failed.  See xemacs-packages-$VERSION/mk.out."
-  exit $err
+[[ -n $verbose ]] && print "$progname: building bindist target."
+if ! make bindist >>& mk.out ; then
+  print -u2 "$progname: make bindist failed.  See $SRCROOT/xemacs-packages-$VERSION/mk.out."
+  exit 3
 fi
 
-print "$progname: XEmacs packages copied to $STAGING."
+[[ -n $verbose ]] && print "$progname: copying XEmacs packages to $STAGING."
 
 # Copy packages to $USRLOCAL/xemacs-packages-$(today)
 mkdir $USRLOCAL/xemacs-packages-$VERSION
 cd $STAGING
+[[ -n $verbose ]] && print "$progname: installing $pkgs to $USRLOCAL/xemacs-packages-$VERSION."
 for p in ${=pkgs}; do
   tar xfz $p-[0-9]* -C $USRLOCAL/xemacs-packages-$VERSION
 done

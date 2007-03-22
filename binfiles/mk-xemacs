@@ -19,7 +19,7 @@ setopt extendedglob
 
 progname=${0:t}
 
-usage() {
+function usage() {
   print -u2 "usage: $progname [-cdhmno] xemacs-version [configure_options]
          -c - build XEmacs and run \'make check\', but do not install
          -d - build and install a debug version

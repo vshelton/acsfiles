@@ -9,6 +9,8 @@ cd $BLDROOT/${MODULE_PATH:h:h:h:t}
 
 make check
 
+cd -
+
 # Local Variables:
 # mode: shell-script
 # sh-indentation: 2

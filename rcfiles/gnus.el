@@ -47,7 +47,8 @@
 ;      nnmail-delete-incoming nil	; save a copy of incoming mail
       gnus-secondary-select-methods
       '((nnml "")
-	(nnfolder ""))
+	(nnfolder "")
+	(nnmaildir ""))
       nnmh-get-new-mail nil
       nnmh-be-safe t
       nnml-get-new-mail t

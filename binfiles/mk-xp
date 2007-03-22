@@ -8,7 +8,7 @@ progname=${0:t}
 
 function usage() {
   print -u2 "\
-usage: $progname [-hsv]
+usage: $progname [-hsv] [package1 [package2 ...]]
        Options:
        -h - print this help message.
        -s - build and install vc-mode which supports svn.
@@ -21,7 +21,9 @@ if [[ -n $help ]]; then
   exit 1
 fi
 
-# Copy the packages tree to a build directory based on today's date
+pkgs=${*:-debug edit-utils prog-modes xemacs-base xemacs-devel}
+
+# Copy the packages tree to a build directory
 : ${VERSION:=$(today)}
 : ${SRCROOT:=$PWD}
 if ! mk-src xemacs-packages $VERSION ; then
@@ -46,19 +48,11 @@ fi
 
 : ${STAGING:="$HOME/tmp/staging"}
 
-# Figure out what packages were previously installed
-pkgs=${pkgs:-$(installed_packages)}
-
 # Build experimental VC package that supports subversion
 if [[ -n $svn ]]; then
   [[ -n $verbose ]] && print "$progname: including subversion-aware version of vc package."
-  # Make sure only one vc package is included in the package list
-  pkgs=${${pkgs#vc }% vc}
-  case $pkgs in
-  (^* vc *)
-    pkgs="$pkgs vc"
-  ;;
-  esac
+  # Make sure exactly one vc package is included in the package list
+  pkgs="$(perl -pe 's@(\A|\s)vc\s+@ @g;') vc"
   mv xemacs-packages/vc xemacs-packages/vc-dist
   mv unsupported/scop/vc xemacs-packages
   perl -pi.orig -e "

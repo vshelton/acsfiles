@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 
 # Make FSF/GNU emacs either from CVS or from an unpacked tarball.
 # Usage: mk-emacs [version] [cfg_opts],
@@ -6,17 +6,15 @@
 # or the name of a source package already unpacked in $SRCROOT.
 # cfg_opts refers to emacs-specific configuration options, like
 # --without-xim or --with-x-toolkit=lucid
- 
-# Execute this script under the Z shell
-[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
 
+emulate zsh
 progname=${0:t}
 
-usage()
-{
-  print -u2 "usage: $progname [-hb] [emacs_version] [configure_args]
-	-h - Print this help message
-	-b - Do not specify 'bootstrap' target (use prebuilt .elc files)"
+function usage() {
+  print -u2 "\
+usage: $progname [-hb] [emacs_version] [configure_args]
+       -h - Print this help message
+       -b - Do not specify 'bootstrap' target (use prebuilt .elc files)"
 }
 
 zparseopts -D h=help b=bootstrap
@@ -29,8 +27,8 @@ fi
 make_target=bootstrap
 [[ -n $bootstrap ]] && make_target=
 
-prefix=${USRLOCAL:-/usr/local}		# Architecture-dependent stuff
-share=${USRLOCAL:-/usr/local}		# Architecture-independent stuff
+prefix=${USRLOCAL:-/usr/local}          # Architecture-dependent stuff
+share=${USRLOCAL:-/usr/local}           # Architecture-independent stuff
 
 # Default is to build from CVS
 if [[ $# = 0 ]] || [[ $1 == --* ]]; then

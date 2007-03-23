@@ -52,7 +52,7 @@ fi
 if [[ -n $svn ]]; then
   [[ -n $verbose ]] && print "$progname: including subversion-aware version of vc package."
   # Make sure exactly one vc package is included in the package list
-  pkgs="$(perl -pe 's@(\A|\s)vc\s+@ @g;') vc"
+  pkgs="$(print $pkgs | perl -pe 's@(\A|\s)vc\s+@ @g;') vc"
   mv xemacs-packages/vc xemacs-packages/vc-dist
   mv unsupported/scop/vc xemacs-packages
   perl -pi.orig -e "

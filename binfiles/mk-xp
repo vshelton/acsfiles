@@ -24,8 +24,8 @@ fi
 pkgs=${*:-debug edit-utils prog-modes xemacs-base xemacs-devel}
 
 # Copy the packages tree to a build directory
+SRCROOT=$PWD
 : ${VERSION:=$(today)}
-: ${SRCROOT:=$PWD}
 if ! mk-src xemacs-packages $VERSION ; then
   print -u2 "$progname: mk-src error."
   exit 1

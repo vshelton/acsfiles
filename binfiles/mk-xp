@@ -18,10 +18,10 @@ usage: $progname [-hsv] [package1 [package2 ...]]
 zparseopts -D h=help s=svn v=verbose
 if [[ -n $help ]]; then
   usage
-  exit 1
+  exit 0
 fi
 
-pkgs=${*:-debug edit-utils prog-modes xemacs-base xemacs-devel}
+pkgs=( ${(z)*:-dired edit-utils efs prog-modes xemacs-base xemacs-devel} )
 
 # Copy the packages tree to a build directory
 SRCROOT=$PWD
@@ -46,13 +46,14 @@ if [[ ! -e =tex ]]; then
   #rm -rf xemacs-packages/auctex xemacs-packages/x-symbol
 fi
 
-: ${STAGING:="$HOME/tmp/staging"}
+: ${STAGING:=$HOME/tmp/staging}
 
 # Build experimental VC package that supports subversion
 if [[ -n $svn ]]; then
   [[ -n $verbose ]] && print "$progname: including subversion-aware version of vc package."
   # Make sure exactly one vc package is included in the package list
-  pkgs="$(print $pkgs | perl -pe 's@(\A|\s)vc\s+@ @g;') vc"
+  pkgs=( $pkgs vc )
+  pkgs=( $(print ${(F)pkgs} | sort -u) )
   mv xemacs-packages/vc xemacs-packages/vc-dist
   mv unsupported/scop/vc xemacs-packages
   perl -pi.orig -e "
@@ -86,7 +87,7 @@ fi
 mkdir $USRLOCAL/xemacs-packages-$VERSION
 cd $STAGING
 [[ -n $verbose ]] && print "$progname: installing $pkgs to $USRLOCAL/xemacs-packages-$VERSION."
-for p in ${=pkgs}; do
+for p in $pkgs; do
   tar xfz $p-[0-9]* -C $USRLOCAL/xemacs-packages-$VERSION
 done
 

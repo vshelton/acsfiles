@@ -1,8 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 
-# Execute this script under the Z shell
-# The zsh environment will be set up by .zshenv
-[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+emulate zsh
 
 # If the repository is local, rsync from the master site before 'cvs update'
 local root=$(< ~/cvsroot/xemacs-21.4/CVS/Root)
@@ -23,3 +21,9 @@ done
 #update_and_build xemacs-21.5 mk-xemacs-21.5 -odm $* 21.5
 
 update_and_build xemacs-packages mk-xp -s $(installed_packages)
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

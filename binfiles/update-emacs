@@ -1,9 +1,3 @@
-#!/bin/sh
-
-# Execute this script under the Z shell
-# The zsh environment will be set up by .zshenv
-[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
-
-roots=cvsupdate
-#CVS_RSH=ssh update_and_build emacs mk-emacs $*
+#!/usr/bin/env zsh
+emulate zsh
 update_and_build emacs mk-emacs $*

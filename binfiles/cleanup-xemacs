@@ -1,10 +1,8 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 
 # Remove vestigial XEmacs commands
 
-# Execute this script under the Z shell
-[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
-
+emulate zsh
 progname=${0:t}
 
 OS_dirs=( . )

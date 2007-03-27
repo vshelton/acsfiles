@@ -1,33 +1,42 @@
 #!/usr/bin/env zsh
 
 # Download and install XEmacs packages that are not
-# part of the XEmacs Windows setup kit.
-
-# Environment variables potentially used:
-# pkg_path - List of XEmacs package directories
-# site_prefix - Root of non-XEmacs software (i.e. /usr/local)
+# installed by default in the XEmacs Windows setup kit.
 
 emulate -LR zsh
 progname=${0:t}
 
-set -x
-
+: ${XEMACS_KIT_BUILD_DIR:=~/software/XEmacsWindowsKit}
+: ${XEMACS_KIT_PKG_DIR:=$XEMACS_KIT_BUILD_DIR/packages}
+: ${XEMACS_INSTALL_ROOT:=/e/XEmacs}
+: ${SITE_PKG_INSTALL_DIR:=$XEMACS_INSTALL_ROOT/site-packages}
+: ${XEMACS_PKG_INSTALL_DIR:=$XEMACS_INSTALL_ROOT/xemacs-packages}
+: ${XEMACS_PKGS:="calc ecrypto ibuffer igrep ispell ps-print ruby"}
 : ${ZIPROOT:=~/software/zip}
-cd $ZIPROOT
+: ${SITE_PKGS:="auctex riece vc"}
 
-: ${auctex_ver:=11.84}
-: ${riece_ver:=1.22}
+# Install packages included in kit, but not installed by default.
+# This allows me not to think and to install the recommended kit.
+for p in ${=XEMACS_PKGS}; do
+  print "Installing $p in $XEMACS_PKG_INSTALL_DIR"
+  tar xf $XEMACS_KIT_PKG_DIR/$p*-pkg.tar(om[1]) -C $XEMACS_PKG_INSTALL_DIR
+done
 
+# Included here mostly for documentation purposes.
 if [[ -n $download ]]; then
+: ${auctex_ver:=11.84}
+: ${riece_ver:=1.23}
+: ${vc_ver:=0.90}  # Experimental vc must be built locally
   wget http://ftp.gnu.org/pub/gnu/auctex/auctex-${auctex_ver}-pkg.tar.gz{,.sig}
   gpg --verify auctex-${auctex_ver}-pkg.tar.gz.sig
 
   wget http://ftp.xemacs.org/pub/xemacs/packages/riece-${riece_ver}-pkg.tar.gz
 fi
 
-: ${SITE_PKG_ROOT:=/e/XEmacs/site-packages}
-tar xfz auctex-${auctex_ver}-pkg.tar.gz -C $SITE_PKG_ROOT
-tar xfz riece-${riece_ver}-pkg.tar.gz -C $SITE_PKG_ROOT
+for p in ${=SITE_PKGS}; do
+  print "Installing $p in $SITE_PKG_INSTALL_DIR"
+  tar xfz $ZIPROOT/$p*-pkg.tar.gz(om[1]) -C $SITE_PKG_INSTALL_DIR
+done
 
 # Local Variables:
 # mode: ksh

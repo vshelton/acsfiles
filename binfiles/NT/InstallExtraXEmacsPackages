@@ -11,15 +11,19 @@ progname=${0:t}
 : ${XEMACS_INSTALL_ROOT:=/e/XEmacs}
 : ${SITE_PKG_INSTALL_DIR:=$XEMACS_INSTALL_ROOT/site-packages}
 : ${XEMACS_PKG_INSTALL_DIR:=$XEMACS_INSTALL_ROOT/xemacs-packages}
-: ${XEMACS_PKGS:="calc ecrypto ibuffer igrep ispell ps-print ruby"}
+: ${XEMACS_PKGS:="c-support calc cc-mode debug dired ecb ecrypto edebug
+                  ediff eieio fsf-compat ibuffer igrep ispell mail-lib
+                  net-utils os-utils pc perl-modes prog-modes ps-print
+                  ruby-modes semantic sh-script sounds-wav speedbar
+                  text-modes time xemacs-devel"}
 : ${ZIPROOT:=~/software/zip}
 : ${SITE_PKGS:="auctex riece vc"}
 
-# Install packages included in kit, but not installed by default.
-# This allows me not to think and to install the recommended kit.
+# Install packages included in kit, but not installed in the minimal install.
+# This allows me not to think and to install the smallest kit.
 for p in ${=XEMACS_PKGS}; do
   print "Installing $p in $XEMACS_PKG_INSTALL_DIR"
-  tar xf $XEMACS_KIT_PKG_DIR/$p*-pkg.tar(om[1]) -C $XEMACS_PKG_INSTALL_DIR
+  tar xf $XEMACS_KIT_PKG_DIR/$p-*-pkg.tar(om[1]) -C $XEMACS_PKG_INSTALL_DIR
 done
 
 # Included here mostly for documentation purposes.

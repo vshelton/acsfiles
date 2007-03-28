@@ -5,36 +5,37 @@
 #
 # Usage: latest generic_package_name
 
-emulate zsh
+emulate -LR zsh
+setopt nonomatch
 progname=${0:t}
 
-if [[ $# -ne 1 ]]; then
-  print -u2 "Usage: $progname <pkg>"
-  print -u2 "\tpkg is a stripped package name, like \"gcc\" or \"make\"."
+if (( $# != 1 )); then
+  print -u2 "\
+usage: $progname <pkg>
+       pkg is a bare package name, like \"gcc\" or \"make\"."
   exit 1
 fi
 pkgbase=$1
 
-# Equivalent to: pkgname=$(ls -t $SRCROOT/pkgbase* | head -1)
-pkgname=$(print $SRCROOT/$pkgbase-*(om[1])) 2>/dev/null
-if [[ ! -e $pkgname ]]; then
+pkgs=( $SRCROOT/${pkgbase}-*(om) )
+if [[ ! -e $pkgs[1] ]]; then
   # Try with no hyphen for tcl and tk
-  pkgname=$(print $SRCROOT/$pkgbase*(om[1])) 2>/dev/null
-  if [[ ! -e $pkgname ]]; then
+  pkgs=( $SRCROOT/${pkgbase}*(om) )
+  if [[ ! -e $pkgs[1] ]]; then
     print -u2 "$progname: no files with the prefix of \"$pkgbase-\" or \"$pkgbase\" could be found in $SRCROOT."
     exit 1
   fi
 fi
 
-if [[ ! -r $pkgname ]]; then
+if [[ ! -r $pkgs[1] ]]; then
   print -u2 "$progname: $pkgname is unreadable."
   exit 1
 fi
 
-print $pkgname
+print $pkgs[1]
 
 # Local Variables:
-# mode: shell-script
+# mode: ksh
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

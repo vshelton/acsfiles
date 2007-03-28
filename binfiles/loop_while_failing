@@ -20,7 +20,7 @@ done 2>/dev/null
 exit $retcode
 
 # Local Variables:
-# mode: shell-script
+# mode: ksh
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

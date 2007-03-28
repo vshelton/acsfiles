@@ -2,15 +2,11 @@
 
 # Remove vestigial XEmacs commands
 
-emulate zsh
+emulate -LR zsh
 progname=${0:t}
 
 OS_dirs=( . )
-case $(uname -s) in
-(SunOS*)
-  OS_dirs=( ../SunOS-5.5 ../SunOS-5.8 )
-  ;;
-esac
+[[ $(uname -s) == SunOS* ]] && OS_dirs=( ../SunOS-5.5 ../SunOS-5.8 )
 
 cd $USRLOCAL
 for d in $OS_dirs; do
@@ -23,7 +19,7 @@ for d in $OS_dirs; do
 done
 
 # Local Variables:
-# mode: shell-script
+# mode: ksh
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

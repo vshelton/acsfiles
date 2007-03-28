@@ -39,7 +39,7 @@ fi
 popd
 
 # Local Variables:
-# mode: shell-script
+# mode: ksh
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

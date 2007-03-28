@@ -22,7 +22,7 @@ pkgs=(${:-$pkgdir/pkginfo/*(N)})
 print ${~pkgs:t:s/MANIFEST.//}
 
 # Local Variables:
-# mode: shell-script
+# mode: ksh
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

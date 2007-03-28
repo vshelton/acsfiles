@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-emulate zsh
+emulate -LR zsh
 
 # If the repository is local, rsync from the master site before 'cvs update'
 local root=$(< ~/cvsroot/xemacs-21.4/CVS/Root)
@@ -23,7 +23,7 @@ done
 update_and_build xemacs-packages mk-xp -s $(installed_packages)
 
 # Local Variables:
-# mode: shell-script
+# mode: ksh
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

@@ -7,7 +7,7 @@
 # cfg_opts refers to emacs-specific configuration options, like
 # --without-xim or --with-x-toolkit=lucid
 
-emulate zsh
+emulate -LR zsh
 progname=${0:t}
 
 function usage() {

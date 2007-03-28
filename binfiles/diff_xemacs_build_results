@@ -13,7 +13,8 @@ progname=${0:t}
 
 usage()
 {
-  print -u2 "usage: $progname [-h] [-d] [-m] [-4] [-5] date1 [date2]
+  print -u2 "\
+usage: $progname [-h] [-d] [-m] [-4] [-5] date1 [date2]
        -h - Print this help message
        -d - Compare debug builds
        -m - Compare mule builds
@@ -37,7 +38,7 @@ fi
 
 date1=$1
 date2=$(today)
-(( ARGC > 1 )) && date2=$2
+(( $# > 1 )) && date2=$2
 
 proj="xemacs-21.5"
 [[ -n $stable ]] && proj="xemacs-21.4"

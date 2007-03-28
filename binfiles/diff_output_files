@@ -31,7 +31,7 @@ if [[ -n $help ]]; then
   exit 0
 fi
 
-if (( ARGC == 0 )) || (( ARGC > 3 )); then
+if (( $# == 0 )) || (( $# > 3 )); then
   usage
   exit 1;
 fi

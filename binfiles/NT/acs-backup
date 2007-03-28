@@ -12,7 +12,7 @@ typeset -A backup_list
 backup_list=(
 #   source          destination
     /e/acs/         /f/backups/acs
-    /usr/local      /f/backups/usr-local
+    /usr/local/     /f/backups/usr-local
 )
 
 function usage {

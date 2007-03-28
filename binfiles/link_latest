@@ -7,7 +7,7 @@
 emulate -LR zsh
 progname=${0:t}
 
-if (( ARGC != 1 )); then
+if (( $# != 1 )); then
   print -u2 "Usage: $progname linkname"
   exit 1
 fi
@@ -17,7 +17,7 @@ rm $package || exit $?
 ln -s ${package}*(oc[1]) $package
 
 # Local Variables:
-# mode: shell-script
+# mode: ksh
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

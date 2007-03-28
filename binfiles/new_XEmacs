@@ -6,7 +6,10 @@
 # usage: new_XEmacs [-v] [version]
 #     -v  operate in verbose mode
 #   version must be either 21.4 or 21.5; it defaults to 21.4.
+
 emulate -LR zsh
+setopt extendedglob
+
 progname=${0:t}
 0=$progname                             # for error messages from builtins
 
@@ -44,7 +47,7 @@ if [[ -n $help ]]; then
 fi
 
 ver=21.4
-(( ARGC > 0 )) && ver=$1
+(( $# > 0 )) && ver=$1
 if [[ $ver != 21.[45] ]]; then
   print -u2 "$progname: 21.4 and 21.5 are the only versions supported."
   exit 1
@@ -58,8 +61,6 @@ if [[ ! -d $ipath ]]; then
 fi
 cd $ipath/.. || exit $?
 
-setopt extendedglob
-
 # 'xemacs' has a funky pattern because we need to exclude
 # both mule and debug versions
 newlink xemacs-${ver}*~*-mule~*-debug(oc[1]) xemacs
@@ -68,7 +69,7 @@ newlink xemacs-${ver}*-debug(oc[1]) xemacs-debug
 newlink xemacs-${ver}*-mule(oc[1]) xemacs-mule
 
 # Local Variables:
-# mode: shell-script
+# mode: ksh
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

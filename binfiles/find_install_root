@@ -9,7 +9,7 @@
 emulate -LR zsh
 progname=${0:t}
 
-if (( ARGC != 1 )); then
+if (( $# != 1 )); then
   print -u2 "\
 usage: $progname command
        eg: $progname zsh would print /usr/local"
@@ -21,7 +21,7 @@ fi
 # this works because there is a symlink at or below $USRLOCAL such that
 # xemacs -> xemacs-21.4-2006-09-29.  Print where the symlink points.
 cmdpath=($(whence -s $1))
-if (( ? != 0 )); then
+if (( $? != 0 )); then
   print -u2 "$progname: there is no $1 in your \$PATH."
   exit 2
 fi
@@ -36,7 +36,7 @@ fi
 print $ipath
 
 # Local Variables:
-# mode: shell-script
+# mode: ksh
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

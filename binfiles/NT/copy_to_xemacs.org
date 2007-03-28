@@ -11,7 +11,8 @@ function do_scp {
     shift
     print scp $* ftp.xemacs.org:
   fi
-  scp -i ~/id/.ssh/identity -F ~/id/.ssh/config $* slb@ftp.xemacs.org:
+  #scp -i ~/id/.ssh/identity -F ~/id/.ssh/config $* slb@ftp.xemacs.org:
+  scp -i ~/id/.ssh/identity -F ~/id/.ssh/config $* slb@ftp.xemacs.org:/ftp/xemacs/windows/testing
 }
 
 # Default behavior is to copy both the most recent 21.4 and 21.4

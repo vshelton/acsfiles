@@ -9,14 +9,14 @@
 #  1. Cygwin is already installed on the machine.  At least coreutils,
 #     gawk, grep, perl, rsync, tar and zsh must be installed.
 #  2. A local repository of cygwin packages has been set up in the
-#     directory identified by the cygwin_repo environment variable
+#     directory identified by the CYGWIN_REPO environment variable
 #     (defaults to the directory cygwin_repo).  The -s option
 #     to this script can be used to create or sync up the repository.
 #  3. The file extra_packages contains the list of packages to add
 #     to the default list of cygwin packages.  Alternatively, if the
-#     environment variable extra_packages is set, it must be a list
+#     environment variable EXTRA_PACKAGES is set, it must be a list
 #     of packages to add to the cygwin base install; e.g.
-#       extra_packages="bison flex" ./MakeCygwinKit
+#       EXTRA_PACKAGES="bison flex" ./MakeCygwinKit
 #     will add bison and flex to the setup kit.
 #
 # Once you have run this script, burn the contents of the
@@ -37,11 +37,11 @@ usage: $progname \[-ahsvx\] \[-o outdir\]
        of the output directory can then be burned onto a CD.
        All cygwin base packages are included in the generated kit.  The
        contents of the file \"extra_packages\" (or the environment variable
-       \$extra_packages) can be used to specify additional packages to add
+       \$EXTRA_PACKAGES) can be used to specify additional packages to add
        to the generated kit.  All of the specified packages will be installed
        by default when setup.exe is run.
        In order for this script to work, the directory identified
-       by the environment variable \$cygwin_repo (which has a default value
+       by the environment variable \$CYGWIN_REPO (which has a default value
        of \"cygwin_repo\") must contain a mirror image of the cygwin package
        repository.  You can use the -s option to bootstrap this directory.
        Options:
@@ -50,11 +50,11 @@ usage: $progname \[-ahsvx\] \[-o outdir\]
        -h Print this help message.
        -o outdir - specify the name of the output directory.
        -s Sync the packages with a cygwin mirror before running the script.
-          The environment variable \$cygwin_site specifies which
+          The environment variable \$CYGWIN_SITE specifies which
           cygwin mirror to use.
        -v Print progress messages.
        -x Copy the latest XEmacs setup kits to the destination directory.
-          The environment variable \$xemacs_kit_home specifies where to
+          The environment variable \$XEMACS_KIT_HOME specifies where to
           find the XEmacs setup kits."
 }
 
@@ -66,25 +66,25 @@ if [[ -n $help ]]; then
   exit 0
 fi
 
-: ${cygwin_repo:=$PWD/cygwin_repo}
+: ${CYGWIN_REPO:=$PWD/cygwin_repo}
 
 # Add current directory to $PATH.
 path=($PWD $path)
 
 # Sync up to the latest packages.
 if [[ -n $sync_packages ]]; then
-  cd $cygwin_repo
+  cd $CYGWIN_REPO
   # This command will display a list of mirror sites that support rsync:
   #  wget -q -O - http://cygwin.com/mirrors.txt | grep rsync | cut -d';' -f1 | sed -e 's;\(rsync://[0-9a-z.-]*\).*;\1;'
-  cygwin_site=${cygwin_site:-rsync://mirrors.xmission.com/cygwin/}
-  [[ -n $verbose ]] && print -u2 "Syncing packages from cygwin mirror: $cygwin_site"
-  rsync -az --exclude mail-archives $cygwin_site .
+  CYGWIN_SITE=${CYGWIN_SITE:-rsync://mirrors.kernel.org/sourceware/cygwin/}
+  [[ -n $verbose ]] && print -u2 "Syncing packages from cygwin mirror: $CYGWIN_SITE"
+  rsync -az --exclude mail-archives $CYGWIN_SITE .
   cd -
 fi
 
 # Define the list of packages to be added to the base kit.
-if [[ -n $extra_packages ]]; then
-  extra=( ${=extra_packages} )
+if [[ -n $EXTRA_PACKAGES ]]; then
+  extra=( ${=EXTRA_PACKAGES} )
 else
   [[ -r extra_packages ]] && extra=( $(<extra_packages) )
 fi
@@ -105,7 +105,7 @@ fi
 cp autorun.inf $outdir
 cd $outdir
 
-cp $cygwin_repo/setup.exe $cygwin_repo/setup.ini .
+cp $CYGWIN_REPO/setup.exe $CYGWIN_REPO/setup.ini .
 
 if [[ -n $verbose ]]; then
   if [[ -z $extra ]]; then
@@ -120,7 +120,7 @@ MakeSetupIni.pl $extra
 
 # Copy the packages into the release subdirectory.
 [[ -n $verbose ]] && print -u2 "Copying the packages to $outdir"
-tar -C $cygwin_repo -f - -c $(grep '^install:' setup.ini | awk '{print $2}') | tar xf -
+tar -C $CYGWIN_REPO -f - -c $(grep '^install:' setup.ini | awk '{print $2}') | tar xf -
 
 # Copy the arm-xscale cross-compiler kit.
 if [[ -n $copy_arm_tools ]]; then
@@ -130,9 +130,9 @@ fi
 
 # Copy the most recent XEmacs setup kits.
 if [[ -n $copy_XEmacs_kits ]]; then
-  : ${xemacs_kit_home:=$HOME/software/XEmacsWindowsKit}
-  [[ -n $verbose ]] && print -u2 "Copying latest XEmacs setup kits from $xemacs_kit_home to $outdir"
-  cp -p $xemacs_kit_home/XEmacs_Setup_21.4*(om[1]) $xemacs_kit_home/XEmacs_Setup_21.5*(om[1]) .
+  : ${XEMACS_KIT_HOME:=$HOME/software/XEmacsWindowsKit}
+  [[ -n $verbose ]] && print -u2 "Copying latest XEmacs setup kits from $XEMACS_KIT_HOME to $outdir"
+  cp -p $XEMACS_KIT_HOME/XEmacs_Setup_21.4*(om[1]) $XEMACS_KIT_HOME/XEmacs_Setup_21.5*(om[1]) .
 fi
 
 # Local Variables:

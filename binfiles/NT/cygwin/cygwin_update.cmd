@@ -20,10 +20,8 @@ rem rsync://ftp.inf.tu-dresden.de
 f:
 cd \cygwin\cygwin_repo
 
-@echo on
+if X%CYGWIN_SITE% == X set CYGWIN_SITE="rsync://mirrors.kernel.org/sourceware/cygwin/"
 
-rem rsync -vaz --exclude mail-archives rsync://mirrors.kernel.org/sourceware/cygwin/ .
-rsync -vaz --exclude mail-archives rsync://mirrors.xmission.com/cygwin/ .
-rem rsync -vaz --exclude mail-archives rsync://rsync.gtlib.gatech.edu/ .
+rsync -vaz --exclude mail-archives %CYGWIN_SITE% .
 
 .\setup --local-install --local-package-dir f:/cygwin/cygwin_repo --no-shortcuts

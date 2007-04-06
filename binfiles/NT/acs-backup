@@ -21,28 +21,29 @@ usage: $progname -h
        Backup the files on my system.
        Paths to backup are (currently) hard-coded to /e/acs and /usr/local.
        Options:
+       -d Delete old files from the backup directory.
        -h Print this help message.
        -v Display progress messages."
 }
 
 function do_backup {
   if [[ $# -ne 2 ]]; then
-    print -u2 "$progname: do_backup: src dest\n"
+    print -u2 "$progname: $0: src dest\n"
     exit 1;
   fi
 
   sync_files $1 $2
-  generate_delete_list $1 $2
+  [[ -z $delete ]] && generate_delete_list $1 $2
 }
 
 function sync_files {
   if [[ $# -ne 2 ]]; then
-    print -u2 "$progname: sync_files: src dest\n"
+    print -u2 "$progname: $0: src dest\n"
     exit 1;
   fi
 
   [[ -n $verbose ]] && print "Backing up $1 to $2."
-  ${=rsync_cmd} ${=rsync_opts} $1 $2
+  ${=rsync_cmd} ${=rsync_opts} $delete $1 $2
 }
 
 function generate_delete_list {
@@ -56,12 +57,15 @@ function generate_delete_list {
 }
 
 # Parse the options
-zparseopts -D h=help v=verbose
+zparseopts -D d=delete h=help v=verbose
 
 if [[ -n $help ]]; then
   usage
   exit 0
 fi
+
+# Options (-d and -v) are passed as globals, not parameters
+[[ -n $delete ]] && delete="--delete"
 
 for k in ${(k)backup_list}; do
   do_backup $k $backup_list[$k]

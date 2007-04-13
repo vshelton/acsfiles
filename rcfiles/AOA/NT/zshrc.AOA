@@ -9,7 +9,22 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 drives="c e f x y z"
 zstyle ':completion:*' fake-files "/:$drives"
 
-desktop=/c/Documents\ and\ Settings/$(whoami)/Desktop
+desktop="$(cygpath -D)"
+
+# Create aliases for common MS Office programs
+office_ver="11.0"
+office_root=$(cygpath "$(regtool get /HKEY_LOCAL_MACHINE/Software/Microsoft/Office/$office_ver/Common/InstallRoot/Path)" )
+function office {                                 
+  cmd=$office_root/$1
+  office_args=()
+  for ((i=2; i <= $ARGC; ++i )) {
+    office_args[$i]=$(cygpath -w $argv[$i])
+  }
+  $cmd $office_args &
+}     
+alias excel='office EXCEL.EXE'
+alias powerpoint='office POWERPNT.EXE'
+alias word='office WINWORD.EXE'
 
 # Convert from cygwin path to a Windows path, like so: dir ~(e:cyg:)
 function cyg {

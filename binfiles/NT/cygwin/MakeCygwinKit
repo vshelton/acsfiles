@@ -130,7 +130,7 @@ fi
 
 # Copy the most recent XEmacs setup kits.
 if [[ -n $copy_XEmacs_kits ]]; then
-  : ${XEMACS_KIT_HOME:=$HOME/software/XEmacsWindowsKit}
+  : ${XEMACS_KIT_HOME:=/c/XEmacsBuild}
   [[ -n $verbose ]] && print -u2 "Copying latest XEmacs setup kits from $XEMACS_KIT_HOME to $outdir"
   cp -p $XEMACS_KIT_HOME/XEmacs_Setup_21.4*(om[1]) $XEMACS_KIT_HOME/XEmacs_Setup_21.5*(om[1]) .
 fi

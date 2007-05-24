@@ -32,10 +32,10 @@ fi
 
 # Give both versions a consistent datestamp
 export VERSION=$(date +'%Y-%m-%d')
-INSTALL_DIR=$(cygpath --mixed $PWD/installed)
+INSTALL_DIR=$(cygpath --mixed $PWD/installed/$VERSION)
 
 # If no arguments were supplied, build latest versions of 21.4 and 21.5
-(( $# == 0 )) && set 21.4.20 21.5-b27
+(( $# == 0 )) && set 21.4.20 21.5-b28
 
 # Loop over the versions specified on the command line
 for ver in $*; do

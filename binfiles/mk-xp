@@ -68,6 +68,11 @@ perl -p -e "
     s@^NONMULE_INSTALLED_PACKAGES_ROOT[\s]*=.*@NONMULE_INSTALLED_PACKAGES_ROOT = $STAGING@;
 " < Local.rules.template > Local.rules
 
+# Build with a non-default XEmacs if requested to
+if [[ -n $XEMACS ]]; then
+  perl -pi.orig -e "s@XEMACS_BINARY[\s]*=.*@XEMACS_BINARY = $XEMACS@;" Local.rules
+fi
+
 [[ -n $verbose ]] && print "$progname: building all packages."
 if ! make >& mk.out ; then
   print -u2 "$progname: make failed.  See $SRCROOT/xemacs-packages-$VERSION/mk.out."

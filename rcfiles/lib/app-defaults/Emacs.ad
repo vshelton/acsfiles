@@ -40,87 +40,88 @@ define(`EFRAME', `Emacs*EmacsFrame')
 			  Emacs*XlwScrollBar.Background: Gray75
 		       Emacs*XlwScrollBar.ArrowPosition: same
 
-				       Emacs.background: #305050
-				      Emacs.borderColor: black
-				      Emacs.cursorColor: indian red
-				       Emacs.foreground: #CCBB77
-				     Emacs.pointerColor: lightyellow
+! 				       Emacs.background: #305050
+ 				       Emacs.background: PapayaWhip
+! 				      Emacs.borderColor: black
+! 				      Emacs.cursorColor: indian red
+! 				       Emacs.foreground: #CCBB77
+! 				     Emacs.pointerColor: lightyellow
 
-      EFRAME.eshell-ls-archive-face.attributeForeground: green
-       EFRAME.eshell-ls-backup-face.attributeForeground: grey60
-      EFRAME.eshell-ls-clutter-face.attributeForeground: OrangeRed
-	  EFRAME.eshell-ls-directory-face.attributeFont: BOLD
-    EFRAME.eshell-ls-directory-face.attributeForeground: SkyBlue
-   EFRAME.eshell-ls-executable-face.attributeForeground: white
-      EFRAME.eshell-ls-missing-face.attributeForeground: red
-      EFRAME.eshell-ls-product-face.attributeForeground: LightSalmon
-     EFRAME.eshell-ls-readonly-face.attributeForeground: indian red
-      EFRAME.eshell-ls-special-face.attributeForeground: yellow
-      EFRAME.eshell-ls-symlink-face.attributeForeground: #6666dd
-   EFRAME.eshell-ls-unreadable-face.attributeForeground: red
-		EFRAME.eshell-prompt-face.attributeFont: BOLD
-	  EFRAME.eshell-prompt-face.attributeBackground: #305050
-	  EFRAME.eshell-prompt-face.attributeForeground: #EEDD99
+!       EFRAME.eshell-ls-archive-face.attributeForeground: green
+!        EFRAME.eshell-ls-backup-face.attributeForeground: grey60
+!       EFRAME.eshell-ls-clutter-face.attributeForeground: OrangeRed
+! 	  EFRAME.eshell-ls-directory-face.attributeFont: BOLD
+!     EFRAME.eshell-ls-directory-face.attributeForeground: SkyBlue
+!    EFRAME.eshell-ls-executable-face.attributeForeground: white
+!       EFRAME.eshell-ls-missing-face.attributeForeground: red
+!       EFRAME.eshell-ls-product-face.attributeForeground: LightSalmon
+!      EFRAME.eshell-ls-readonly-face.attributeForeground: indian red
+!       EFRAME.eshell-ls-special-face.attributeForeground: yellow
+!       EFRAME.eshell-ls-symlink-face.attributeForeground: #6666dd
+!    EFRAME.eshell-ls-unreadable-face.attributeForeground: red
+! 		EFRAME.eshell-prompt-face.attributeFont: BOLD
+! 	  EFRAME.eshell-prompt-face.attributeBackground: #305050
+! 	  EFRAME.eshell-prompt-face.attributeForeground: #EEDD99
 
-      EFRAME.font-lock-builtin-face.attributeForeground: LightSteelBlue
-	    EFRAME.font-lock-comment-face.attributeFont: BOLD_ITALIC
-      EFRAME.font-lock-comment-face.attributeForeground: grey66
-     EFRAME.font-lock-constant-face.attributeForeground: indian red
-   EFRAME.font-lock-doc-string-face.attributeForeground: DarkOrange
-EFRAME.font-lock-function-name-face.attributeForeground: aquamarine
-      EFRAME.font-lock-keyword-face.attributeForeground: LightCoral
-    EFRAME.font-lock-reference-face.attributeForeground: aquamarine
-       EFRAME.font-lock-string-face.attributeForeground: cadetblue2
-	 EFRAME.font-lock-type-face.attributeForeground: LightCoral
-EFRAME.font-lock-variable-name-face.attributeForeground: aquamarine
-	    EFRAME.font-lock-warning-face.attributeFont: BOLD
-      EFRAME.font-lock-warning-face.attributeForeground: Pink
+!       EFRAME.font-lock-builtin-face.attributeForeground: LightSteelBlue
+! 	    EFRAME.font-lock-comment-face.attributeFont: BOLD_ITALIC
+!       EFRAME.font-lock-comment-face.attributeForeground: grey66
+!      EFRAME.font-lock-constant-face.attributeForeground: indian red
+!    EFRAME.font-lock-doc-string-face.attributeForeground: DarkOrange
+! EFRAME.font-lock-function-name-face.attributeForeground: aquamarine
+!       EFRAME.font-lock-keyword-face.attributeForeground: LightCoral
+!     EFRAME.font-lock-reference-face.attributeForeground: aquamarine
+!        EFRAME.font-lock-string-face.attributeForeground: cadetblue2
+! 	 EFRAME.font-lock-type-face.attributeForeground: LightCoral
+! EFRAME.font-lock-variable-name-face.attributeForeground: aquamarine
+! 	    EFRAME.font-lock-warning-face.attributeFont: BOLD
+!       EFRAME.font-lock-warning-face.attributeForeground: Pink
 
-		    EFRAME.gnus-cite-attribution.attributeFont: ITALIC
-		EFRAME.gnus-emphasis-bold-italic.attributeFont: BOLD_ITALIC
-	  EFRAME.gnus-emphasis-bold-italic.attributeForeground: indian red
-		       EFRAME.gnus-emphasis-bold.attributeFont: BOLD
-		 EFRAME.gnus-emphasis-bold.attributeForeground: #EEDDAA
-		     EFRAME.gnus-emphasis-italic.attributeFont: ITALIC
-	       EFRAME.gnus-emphasis-italic.attributeForeground: indian red
-      EFRAME.gnus-emphasis-underline-bold-italic.attributeFont: BOLD_ITALIC
-EFRAME.gnus-emphasis-underline-bold-italic.attributeForeground: indian red
-	     EFRAME.gnus-emphasis-underline-bold.attributeFont: BOLD
-       EFRAME.gnus-emphasis-underline-bold.attributeForeground: #EEDDAA
-	   EFRAME.gnus-emphasis-underline-italic.attributeFont: ITALIC
-     EFRAME.gnus-emphasis-underline-italic.attributeForeground: indian red
-	    EFRAME.gnus-group-mail-1-empty.attributeForeground: lightblue
-		  EFRAME.gnus-group-mail-1.attributeForeground: lightblue
-	    EFRAME.gnus-group-mail-2-empty.attributeForeground: lightblue
-		  EFRAME.gnus-group-mail-2.attributeForeground: lightblue
-	    EFRAME.gnus-group-mail-3-empty.attributeForeground: lightblue
-		  EFRAME.gnus-group-mail-3.attributeForeground: lightblue
-		      EFRAME.gnus-header-content.attributeFont: ITALIC
-		EFRAME.gnus-header-content.attributeForeground: spring green
-		   EFRAME.gnus-header-from.attributeForeground: lightblue
-		   EFRAME.gnus-header-name.attributeForeground: SeaGreen3
-		   EFRAME.gnus-header-newsgroups.attributeFont: ITALIC
-		EFRAME.gnus-header-subject.attributeForeground: spring green
-			   EFRAME.gnus-signature.attributeFont: ITALIC
-	       EFRAME.gnus-summary-normal-ticked.attributeFont: BOLD
-		 EFRAME.message-cited-text.attributeForeground: #CCBB77
-!		EFRAME.message-header-name.attributeForeground: lightblue
-		EFRAME.message-header-name.attributeForeground: #CCBB77
-		  EFRAME.message-header-to.attributeForeground: #CCBB77
-		  EFRAME.message-header-cc.attributeForeground: #CCBB77
-	       EFRAME.message-header-other.attributeForeground: #CCBB77
-	     EFRAME.message-header-subject.attributeForeground: #CCBB77
-	 EFRAME.gnus-summary-normal-ticked.attributeForeground: indian red
-	     EFRAME.message-header-xheader.attributeForeground: lightblue
-		  EFRAME.message-separator.attributeForeground: lightblue
+! 		    EFRAME.gnus-cite-attribution.attributeFont: ITALIC
+! 		EFRAME.gnus-emphasis-bold-italic.attributeFont: BOLD_ITALIC
+! 	  EFRAME.gnus-emphasis-bold-italic.attributeForeground: indian red
+! 		       EFRAME.gnus-emphasis-bold.attributeFont: BOLD
+! 		 EFRAME.gnus-emphasis-bold.attributeForeground: #EEDDAA
+! 		     EFRAME.gnus-emphasis-italic.attributeFont: ITALIC
+! 	       EFRAME.gnus-emphasis-italic.attributeForeground: indian red
+!       EFRAME.gnus-emphasis-underline-bold-italic.attributeFont: BOLD_ITALIC
+! EFRAME.gnus-emphasis-underline-bold-italic.attributeForeground: indian red
+! 	     EFRAME.gnus-emphasis-underline-bold.attributeFont: BOLD
+!        EFRAME.gnus-emphasis-underline-bold.attributeForeground: #EEDDAA
+! 	   EFRAME.gnus-emphasis-underline-italic.attributeFont: ITALIC
+!      EFRAME.gnus-emphasis-underline-italic.attributeForeground: indian red
+! 	    EFRAME.gnus-group-mail-1-empty.attributeForeground: lightblue
+! 		  EFRAME.gnus-group-mail-1.attributeForeground: lightblue
+! 	    EFRAME.gnus-group-mail-2-empty.attributeForeground: lightblue
+! 		  EFRAME.gnus-group-mail-2.attributeForeground: lightblue
+! 	    EFRAME.gnus-group-mail-3-empty.attributeForeground: lightblue
+! 		  EFRAME.gnus-group-mail-3.attributeForeground: lightblue
+! 		      EFRAME.gnus-header-content.attributeFont: ITALIC
+! 		EFRAME.gnus-header-content.attributeForeground: spring green
+! 		   EFRAME.gnus-header-from.attributeForeground: lightblue
+! 		   EFRAME.gnus-header-name.attributeForeground: SeaGreen3
+! 		   EFRAME.gnus-header-newsgroups.attributeFont: ITALIC
+! 		EFRAME.gnus-header-subject.attributeForeground: spring green
+! 			   EFRAME.gnus-signature.attributeFont: ITALIC
+! 	       EFRAME.gnus-summary-normal-ticked.attributeFont: BOLD
+! 		 EFRAME.message-cited-text.attributeForeground: #CCBB77
+! !		EFRAME.message-header-name.attributeForeground: lightblue
+! 		EFRAME.message-header-name.attributeForeground: #CCBB77
+! 		  EFRAME.message-header-to.attributeForeground: #CCBB77
+! 		  EFRAME.message-header-cc.attributeForeground: #CCBB77
+! 	       EFRAME.message-header-other.attributeForeground: #CCBB77
+! 	     EFRAME.message-header-subject.attributeForeground: #CCBB77
+! 	 EFRAME.gnus-summary-normal-ticked.attributeForeground: indian red
+! 	     EFRAME.message-header-xheader.attributeForeground: lightblue
+! 		  EFRAME.message-separator.attributeForeground: lightblue
 
-		       Emacs.widget-button-face.attributeFont: BOLD
-	 Emacs.widget-button-pressed-face.attributeForeground: red
-	  Emacs.widget-documentation-face.attributeForeground: green
-		  Emacs.widget-field-face.attributeBackground: grey35
-		  Emacs.widget-field-face.attributeForeground: black
-	       Emacs.widget-inactive-face.attributeForeground: gray
-      Emacs.widget-single-line-field-face.attributeBackground: dim gray
+! 		       Emacs.widget-button-face.attributeFont: BOLD
+! 	 Emacs.widget-button-pressed-face.attributeForeground: red
+! 	  Emacs.widget-documentation-face.attributeForeground: green
+! 		  Emacs.widget-field-face.attributeBackground: grey35
+! 		  Emacs.widget-field-face.attributeForeground: black
+! 	       Emacs.widget-inactive-face.attributeForeground: gray
+!       Emacs.widget-single-line-field-face.attributeBackground: dim gray
 
 ! Miscellaneous
 		       Emacs.fringe.attributeBackground: #305050
@@ -136,13 +137,13 @@ Emacs.highlight-changes-delete-face.attributeForeground: red
 		     Emacs.modeline.attributeBackground: light salmon
 		     Emacs.modeline.attributeForeground: Black
 			   Emacs.modeline.attributeFont: MODELINE
-		       Emacs.region.attributeBackground: #226644
+		       Emacs.region.attributeBackground: slategrey
 		   Emacs.scroll-bar.attributeBackground: dark slate blue
 		   Emacs.scroll-bar.attributeForeground: light salmon
 	  Emacs.secondary-selection.attributeBackground: darkslategrey
 	  Emacs.special-string-face.attributeForeground: light green
 	  Emacs.trailing-whitespace.attributeBackground: #23415A
-		 Emacs.zmacs-region.attributeBackground: lightyellow
+		 Emacs.zmacs-region.attributeBackground: gray
 		       Emacs.zmacs-region.attributeFont: BOLD
 		 Emacs.zmacs-region.attributeForeground: black
 

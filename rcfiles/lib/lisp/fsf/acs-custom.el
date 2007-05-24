@@ -29,7 +29,6 @@
  '(mail-user-agent (quote message-user-agent))
  '(mouse-yank-at-point nil)
  '(find-file-compare-truenames t)
- '(shell-file-name "zsh")
  '(gnuserv-frame (quote gnuserv-visible-frame-function))
  '(gnus-expert-user t)
  '(user-mail-address "acs@xemacs.org" t)

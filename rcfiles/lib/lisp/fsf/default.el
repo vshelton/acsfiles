@@ -8,3 +8,44 @@
 (and (fboundp 'set-scroll-bar-mode) (set-scroll-bar-mode 'right))
 
 (and (fboundp 'fringe-mode) (fringe-mode 0))
+
+(defun emacs-term (program)
+  "Start a terminal-emulator in a new buffer.
+The buffer is in Term mode; see `term-mode' for the
+commands to use in that buffer.
+
+\\<term-raw-map>Type \\[switch-to-buffer] to switch to another buffer."
+  (interactive (list (read-from-minibuffer
+		      "Run program: "
+		      (or (and
+			   (boundp 'explicit-shell-file-name)
+			   explicit-shell-file-name)
+			  shell-file-name
+			  (getenv "ESHELL")
+			  (getenv "SHELL")
+			  "/bin/sh"))))
+  ;; Run the shell in login mode
+  (set-buffer (make-term "terminal" program nil "-l"))
+  (term-mode)
+  (term-char-mode)
+  (switch-to-buffer "*terminal*"))
+; Configure term.el
+(setq term-buffer-maximum-size 0
+      ansi-term-color-vector
+      [nil "black" "red" "green" "yellow" "steel blue"
+	   "magenta" "cyan" "white"])
+
+(defun acs::term-mode-hook ()
+  "My hook for terminal mode"
+  (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *")
+  (make-local-variable 'mouse-yank-at-point)
+  (make-local-variable 'transient-mark-mode)
+  (setq mouse-yank-at-point t)
+  (setq transient-mark-mode nil)
+  (auto-fill-mode -1)
+  (setq tab-width 8)
+  ; Make '.', '-' and '/' part of words for mouse highlighting
+  (modify-syntax-entry ?. "w")
+  (modify-syntax-entry ?- "w")
+  (modify-syntax-entry ?/ "w"))
+(add-hook 'term-mode-hook 'acs::term-mode-hook)

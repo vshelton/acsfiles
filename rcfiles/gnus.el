@@ -66,11 +66,12 @@
 	("XEmacs"	"^To:.*@xemacs.org")
 	("XEmacs"	"^cc:.*@xemacs.org")
 	("gcc"		"^Sender: gcc-owner")
-	("ding"		"^Sender:.*ding")
-	("security"	"^Delivered-To:.*security")
-	("security"	"^Sender:.*Linux-Security")
+	("ding"		"^To:.*ding@gnus.org")
+	("ding"		"^cc:.*ding@gnus.org")
 	("CCW"		"^From:.*pjmayher")
 	("CCW"		"^From:.*zecco")
+	("CCW"		"^To:.*schendel")
+	("CCW"		"^cc:.*schendel")
 	("inbox"	""))
 
       message-required-mail-headers '(From

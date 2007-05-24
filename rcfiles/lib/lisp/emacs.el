@@ -47,8 +47,6 @@
 ;; Load various modes
 (autoload 'tar-mode "tar-mode")			; before jka-compr
 (require 'jka-compr)
-;(require 'iswitchb)
-;(iswitchb-default-keybindings)
 (require 'uniquify)
 
 ;; Starting with version 20 in both versions of emacs,
@@ -58,14 +56,13 @@
   (auto-compression-mode 1))
 
 ;; Cut and paste is way slow under Motif
-;;(when (boundp 'interprogram-cut-function)
-;;	      (setq interprogram-cut-function nil
-;;		    interprogram-paste-function nil))
 (when (boundp 'x-selecton-strict-motif-ownership)
   (setq x-selection-strict-motif-ownership nil))
 
 ;; XEmacs supports mic-paren without X.
-(when (or (featurep 'xemacs) window-system)
+(when (or
+       (featurep 'xemacs)
+       window-system)
   (require 'mic-paren)
   (setq paren-sexp-mode t)
   (set (if (boundp 'paren-face) 'paren-face 'paren-match-face) 'underline)
@@ -80,17 +77,17 @@
      (bbdb-initialize 'gnus 'message))
 
 ;; Load popper
-;(load "popper")
-;(setq popper-inhibit-warnings	t
-;      help-selects-help-window	nil
-;      window-min-height		2
-;      scroll-step		1
-;      scroll-on-clipped-lines	nil
-;      pop-up-frames		nil
-;      pop-up-windows		t
-;      temp-buffer-shrink-to-fit	t
-;      split-window-keep-point	nil)
-;(popper-install)
+(when (fboundp 'popper-install)
+  (setq popper-inhibit-warnings		t
+	help-selects-help-window	nil
+	window-min-height		2
+	scroll-step			1
+	scroll-on-clipped-lines		nil
+	pop-up-frames			nil
+	pop-up-windows			t
+	temp-buffer-shrink-to-fit	t
+	split-window-keep-point		nil)
+  (popper-install))
 
 ;; Load the electric buffer support
 (require 'ebuff-menu)
@@ -130,22 +127,6 @@ Goes backward if ARG is negative; error if CHAR not found."
 ;;
 ;; Utility functions
 ;;
-(defun emacs-term (program)
-  "Start a terminal-emulator in a new buffer.
-The buffer is in Term mode; see `term-mode' for the
-commands to use in that buffer.
-
-\\<term-raw-map>Type \\[switch-to-buffer] to switch to another buffer."
-  (interactive (list (read-from-minibuffer "Run program: "
-					   (or explicit-shell-file-name
-					       (getenv "ESHELL")
-					       (getenv "SHELL")
-					       "/bin/sh"))))
-  ;; Run the shell in login mode
-  (set-buffer (make-term "terminal" program nil "-l"))
-  (term-mode)
-  (term-char-mode)
-  (switch-to-buffer "*terminal*"))
 (defun match-paren (arg)
   "Go to the matching parenthesis if on parenthesis otherwise insert %."
   (interactive "p")
@@ -235,13 +216,13 @@ Extends the region if it exists."
 (define-key acs::keymap		"%"	'query-replace-regexp)
 (define-key acs::keymap		"4"	'tabs-4)
 (define-key acs::keymap		"8"	'tabs-8)
-; f2 capital B brings up a narrowed electric buffer list
+; f2 B brings up a narrowed electric buffer list
 (define-key acs::keymap		"B"	(function
 					 (lambda ()
 					   (interactive)
 					   (electric-buffer-list t))))
 (define-key acs::keymap		"a"	'auto-fill-mode)
-; f2 lower b brings up an electric buffer list
+; f2 b brings up an electric buffer list
 (define-key acs::keymap		"b"	'electric-buffer-list)
 (define-key acs::keymap		"f"	'font-lock-mode)
 (define-key acs::keymap		"g"	'grep)
@@ -250,8 +231,8 @@ Extends the region if it exists."
 (define-key acs::keymap		"t"	'toggle-tab-width)
 (define-key acs::keymap		"w"	'what-line)
 (define-key acs::keymap		"x"	'text-mode)
-(define-key global-map			  '[menu] 'electric-buffer-list)
-(define-key electric-buffer-menu-mode-map '[menu] 'Electric-buffer-menu-quit)
+;(define-key global-map			  '[menu] 'electric-buffer-list)
+;(define-key electric-buffer-menu-mode-map '[menu] 'Electric-buffer-menu-quit)
 
 (define-key electric-buffer-menu-mode-map [f2 b] 'Electric-buffer-menu-quit)
 
@@ -358,42 +339,8 @@ Extends the region if it exists."
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 (setq ediff-use-long-help-message nil)
 
-(setq explicit-zsh-args '("-l"))
 (setq html-helper-htmldtd-version
       "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n")
-(autoload 'cvs-update "pcl-cvs" nil t)
-
-; Configure term.el
-(setq term-buffer-maximum-size 0
-      ansi-term-color-vector
-      [nil "black" "red" "green" "yellow" "steel blue"
-	   "magenta" "cyan" "white"])
-(defun acs::term-mode-hook ()
-  "My hook for terminal mode"
-  (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *")
-  (make-local-variable 'mouse-yank-at-point)
-  (make-local-variable 'transient-mark-mode)
-  (setq mouse-yank-at-point t)
-  (setq transient-mark-mode nil)
-  (auto-fill-mode -1)
-  (setq tab-width 8)
-  ; Make '.', '-' and '/' part of words for mouse highlighting
-  (modify-syntax-entry ?. "w")
-  (modify-syntax-entry ?- "w")
-  (modify-syntax-entry ?/ "w"))
-(add-hook 'term-mode-hook 'acs::term-mode-hook)
-
-(when (string-match "win32" system-configuration)
-;  (setq shell-command-switch "-c")
-  (add-hook 'shell-mode-hook
-	    '(lambda () (setq comint-completion-addsuffix '("/" . " ")))))
-
-;; Allow grep to work with cmd.exe
-(if (string-match "cmd\.exe" shell-file-name)
-    (defadvice grep (around use-backslash)
-      "Remap directory-sep-char to backslash before calling grep"
-      (let ((directory-sep-char "\\"))
-	ad-do-it)))
 
 ;; XEmacs-specific stuff
 (cond ((featurep 'xemacs)
@@ -419,7 +366,7 @@ Extends the region if it exists."
 		    (lower-frame default-minibuffer-frame)))
 		(add-hook 'select-frame-hook 'autoraise-minibuffer-frame-hook)
 
-		(setq default-frame-plist 
+		(setq default-frame-plist
 		      (plist-put default-frame-plist 'minibuffer nil))))
 
 	 (require 'recent-files)
@@ -429,36 +376,7 @@ Extends the region if it exists."
 	       recent-files-permanent-submenu nil
 	       recent-files-permanent-first nil
 	       recent-files-dont-include '("\.newsrc" "Mail/archive"))
-	 (recent-files-initialize)
-
-	 ;; In pre-21.2 XEmacs, add rectangle functions to
-	 ;; the menubar under the 'Edit' menu.
-	 ;; purecopy-menubar went away in XEmacs 21.2.
-	 (cond ((fboundp 'purecopy-menubar)
-		(let ((entry-name "Search..."))
-		  (add-menu-button '("Edit")
-				   ["Rectangle Cut" kill-rectangle (mark)]
-				   entry-name)
-		  (add-menu-button '("Edit")
-				   ["Rectangle Paste" yank-rectangle t]
-				   entry-name)
-		  (add-menu-button '("Edit")
-				   ["Rectangle Open" open-rectangle (mark)]
-				   entry-name)
-		  (add-menu-button '("Edit")
-				   ["Rectangle Insert-String" string-rectangle (mark)]
-				   entry-name)
-		  (add-menu-button '("Edit")
-				   ["Mouse Rectangle" track-rectangle
-				    (not mouse-track-rectangle-p)]
-				   entry-name)
-		  (add-menu-button '("Edit")
-				   ["Mouse Rectangle Off" track-rectangle
-				    mouse-track-rectangle-p]
-				   entry-name)
-		  (add-menu-button '("Edit")
-				   "----"
-				   entry-name)))))
+	 (recent-files-initialize))
 
        ;; Emulate FSF emacs mouse bindings for extend and cut.
        ;; FSF emacs binds this to button 3, we'll bind it

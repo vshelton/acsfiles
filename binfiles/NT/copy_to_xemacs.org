@@ -18,14 +18,13 @@ function do_scp {
 # Default behavior is to copy both the most recent 21.4 and 21.4
 # setup kits and Readme files to ftp.xemacs.org
 
-both=
 zparseopts -D 4=stable 5=beta
-[[ -z $stable && -z $beta ]] && both=1
-if [[ -n $stable || -n $both ]]; then
+[[ -z $stable && -z $beta ]] && stable=1 && beta=1
+if [[ -n $stable ]]; then
   stable_exe=( XEmacs_Setup_21.4*.exe(om) )
   stable_readme=( ReadMe-21.4*(om) )
 fi
-if [[ -n $beta || -n $both ]]; then
+if [[ -n $beta ]]; then
   beta_exe=( XEmacs_Setup_21.5*.exe(om) )
   beta_readme=( ReadMe-21.5*(om) )
 fi

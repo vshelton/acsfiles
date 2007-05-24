@@ -6,7 +6,7 @@
 emulate -LR zsh
 progname=${0:t}
 
-: ${XEMACS_KIT_BUILD_DIR:=~/software/XEmacsWindowsKit}
+: ${XEMACS_KIT_BUILD_DIR:=/c/XEmacsBuild}
 : ${XEMACS_KIT_PKG_DIR:=$XEMACS_KIT_BUILD_DIR/packages}
 : ${XEMACS_INSTALL_ROOT:=/e/XEmacs}
 : ${SITE_PKG_INSTALL_DIR:=$XEMACS_INSTALL_ROOT/site-packages}

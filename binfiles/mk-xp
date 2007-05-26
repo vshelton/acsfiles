@@ -69,8 +69,8 @@ perl -p -e "
 " < Local.rules.template > Local.rules
 
 # Build with a non-default XEmacs if requested to
-if [[ -n $XEMACS ]]; then
-  perl -pi.orig -e "s@XEMACS_BINARY[\s]*=.*@XEMACS_BINARY = $XEMACS@;" Local.rules
+if [[ -n $XEMACS_BINARY ]]; then
+  perl -pi.orig -e "s@XEMACS_BINARY[\s]*=.*@XEMACS_BINARY = $XEMACS_BINARY@;" Local.rules
 fi
 
 [[ -n $verbose ]] && print "$progname: building all packages."

@@ -10,6 +10,7 @@
 umask 022
 
 # Editor and pager definitions
+export USE_EMACS_AS_DEFAULT_APPLICATION_CLASS=t
 export EXINIT=":set ai nows"
 export LESS="-e -i -s -C -j2 -n -r -R"
 export MORE="-s"

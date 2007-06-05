@@ -1,0 +1,210 @@
+#!/bin/bash
+
+# Install my basic environment on a fresh system
+
+function create_writable_dir {
+  mkdir -p $1 >& /dev/null
+  mkdir -p $1/dirtest.$$
+  res=$?
+  if [[ $res -ne 0 ]]; then
+    echo "Could not create or write into $1: $res." >&2
+    exit $res
+  fi
+  rmdir $1/dirtest.$$
+}
+
+# USRLOCAL points to an installation hierarchy, typically /usr/local or /opt
+: ${USRLOCAL:=/usr/local} ${SRCROOT:=$USRLOCAL/src}
+: ${BLDROOT:=$USRLOCAL/build} ${ZIPROOT:=$USRLOCAL/zip}
+echo "Creating a development hierarchy under $USRLOCAL."
+for d in $USRLOCAL $SRCROOT $BLDROOT $ZIPROOT $USRLOCAL/bin $USRLOCAL/include $USRLOCAL/info $USRLOCAL/lib $USRLOCAL/sbin $USRLOCAL/share; do
+  create_writable_dir $d
+done
+
+LOGFILE=/tmp/$(whoami)-$$.log
+
+# Make sure we're running in the home directory
+cd
+
+# Prompt for the name of the acsfiles tarball and unpack it
+def=$(ls -t acsfiles* | head -1)
+read -e -p "Enter the name of the acsfiles tarball [$def]: " ans
+[[ -z $ans ]] && ans=$def
+mkdir cvsroot >& /dev/null
+tar xf $ans -C cvsroot
+res=$?
+if [[ $res != 0 ]]; then
+  echo "Could not unpack the acsfiles tarball: $res." >&2
+  exit $res
+fi
+
+# Make the necessary directories and symlinks
+mkdir -p bin lib/lisp/fsf lib/lisp/xemacs lib/app-defaults lib/zsh-functions
+for f in emacs Xresources zshrc zshenv zlogin zlogout; do
+  ln -s cvsroot/acsfiles/rcfiles/$f .$f
+done
+ln -s cvsroot/acsfiles/rcfiles/AOA/linux/zlogin.AOA .zlogin.$(uname -n)
+ln -s cvsroot/acsfiles/rcfiles/AOA/linux/zshenv.AOA-post .zshenv.$(uname -n)-post
+ln -s cvsroot/acsfiles/rcfiles/AOA/linux/zshenv.AOA-pre .zshenv.$(uname -n)-pre
+
+cat <<EOF >> .cvsrc
+cvs -z3
+diff -u
+checkout -P
+update -Pd
+EOF
+
+pushd bin >/dev/null
+for f in all_dirs all_versions bld cfg cleanup-xemacs diffs find_install_root findpkg installed_packages latest link_latest linkup loop_while_filing mk-emacs mk-src mk-xemacs mk-xp mk-yodl mk-zsh new_default newer_than new_XEmacs now rm_versions symlink-tree sysprefix today tomorrow trim_extra_history unpack unpack_and_build update-emacs update-xemacs update-zsh xemacs-version yesterday ; do
+  ln -s ../cvsroot/acsfiles/binfiles/$f .
+done
+popd >/dev/null
+
+pushd lib/app-defaults >/dev/null
+ln -s ../../cvsroot/acsfiles/rcfiles/lib/app-defaults/*.ad .
+popd >/dev/null
+
+pushd lib/lisp >/dev/null
+ln -s ../../cvsroot/acsfiles/rcfiles/lib/lisp/emacs.el
+cd ./xemacs
+ln -s ../../../cvsroot/acsfiles/rcfiles/lib/lisp/xemacs/acs-custom.el .
+ln -s ../../../cvsroot/acsfiles/rcfiles/lib/lisp/xemacs/default.el .
+cd ../fsf
+ln -s ../../../cvsroot/acsfiles/rcfiles/lib/lisp/fsf/acs-custom.el .
+ln -s ../../../cvsroot/acsfiles/rcfiles/lib/lisp/fsf/default.el .
+ln -s ../../../cvsroot/acsfiles/rcfiles/lib/lisp/fsf/mic-paren.el .
+popd >/dev/null
+
+pushd lib/zsh-functions >/dev/null
+for f in abspath addpath check_zsh col dmalloc dx5 dz f loop_update loop_while_failing nfunc nohist pcx relative _rm_versions system_specific title update_and_build xdef xres; do
+  ln -s ../../cvsroot/acsfiles/rcfiles/lib/zsh-functions/$f .
+done
+ln -s dx5 dx4
+popd >/dev/null
+
+echo Finished building home directory.
+
+# Add the standard scripts and USRLOCAL bin directory to PATH
+PATH=$HOME/bin:$USRLOCAL/bin:$PATH
+
+# Build and install yodl; it's needed to make zsh documentation
+echo -n Building yodl...
+pushd $ZIPROOT >/dev/null
+wget -q http://downloads.sourceforge.net/yodl/yodl_2.11.orig.tar.gz
+cd $SRCROOT
+tar xfz $ZIPROOT/yodl_2.11.orig.tar.gz
+cd ./yodl-2.11
+(
+  STD_INCLUDE=$USRLOCAL/share/yodl
+  YODL_BIN=$USRLOCAL/bin
+  MAN_DIR=$USRLOCAL/man
+  export STD_INCLUDE YODL_BIN MAN_DIR
+  perl ./contrib/build.pl make-software
+  perl ./contrib/build.pl make-man
+  perl ./contrib/build.pl install-software
+  perl ./contrib/build.pl install-man
+) >& mk.out
+popd >/dev/null
+echo done.
+
+# Create zsh CVS hierarchy
+pushd cvsroot >/dev/null
+echo Log in to the zsh cvs server with a blank password
+cvs -d:pserver:anonymous@zsh.cvs.sourceforge.net:/cvsroot/zsh login
+cvs -d:pserver:anonymous@zsh.cvs.sourceforge.net:/cvsroot/zsh co -P zsh >>$LOGFILE 2>&1
+popd >/dev/null
+
+# Make and install zsh
+echo Making zsh from CVS sources.
+ZSH_VER=zsh-$(today)
+pushd $SRCROOT >/dev/null
+mkdir $ZSH_VER
+cd ./$ZSH_VER
+tar cf - -C ~/cvsroot/zsh --exclude CVS --dereference . | tar xf -
+./Util/preconfig
+res=$?
+if [[ $res -ne 0 ]]; then
+  echo "Could not run autoconf on zsh sources: $res." >&2
+  exit $res
+fi
+cd $BLDROOT
+mkdir $ZSH_VER
+cd ./$ZSH_VER
+$SRCROOT/$ZSH_VER/configure --prefix=$USRLOCAL/$ZSH_VER >& conf.out
+res=$?
+if [[ $res -ne 0 ]]; then
+  echo "Could not configure zsh: $res." >&2
+  exit $res
+fi
+(make && make install) >& mk.out
+res=$?
+if [[ $res -ne 0 ]]; then
+  echo "Could not build or install zsh: $res." >&2
+  exit $res
+fi
+popd >/dev/null
+pushd $USRLOCAL >/dev/null
+rm -f zsh
+ln -s $ZSH_VER zsh
+cd bin
+rm -f zsh
+ln -s ../zsh/bin/zsh
+popd >/dev/null
+echo Finished building and installing zsh.
+
+#
+# Now things get somewhat easier because I can use the standard build scripts.
+#
+
+# Create XEmacs-21.5 CVS hierarchy
+pushd cvsroot >/dev/null
+echo Log in to the XEmacs cvs server with the password of \'cvs\'
+cvs -d :pserver:cvs@cvs.xemacs.org:/pack/xemacscvs login
+cvs -d :pserver:cvs@cvs.xemacs.org:/pack/xemacscvs checkout -d xemacs-21.5 xemacs >>$LOGFILE 2>&1
+popd >/dev/null
+
+# Make and install XEmacs 21.5
+pushd $BLDROOT >/dev/null
+mk-xemacs -odm 21.5
+res=$?
+if [[ $res -ne 0 ]]; then
+  echo "Could not build XEmacs 21.5: $res." >&2
+  exit $res
+fi
+popd >/dev/null
+cp -p cvsroot/acsfiles/binfiles/xemacs-version $USRLOCAL/bin
+
+# Create XEmacs packages hierarchy
+pushd cvsroot >/dev/null
+cvs -d :pserver:cvs@cvs.xemacs.org:/pack/xemacscvs checkout packages >>$LOGFILE 2>&1
+mv packages xemacs-packages
+cd ./xemacs-packages
+cvs update >>$LOGFILE 2>&1
+popd >/dev/null
+
+# Make and install xemacs-packages (this requires an installed dired package)
+pushd $USRLOCAL >/dev/null
+mkdir -p xemacs-packages-bootstrap
+ln -s xemacs-packages-bootstrap xemacs-packages
+cd ./xemacs-packages
+pushd $ZIPROOT >/dev/null
+ftpsite="http://ftp.xemacs.org/pub/xemacs/packages"
+wget -q $ftpsite/package-index.LATEST.gpg
+dired_pkg=$(grep 'filename.*dired' package-index.LATEST.gpg | sed 's/.*filename.*\"\(.*\)\"/\1/')
+wget -q $ftpsite/$dired_pkg
+popd >/dev/null
+tar xf $ZIPROOT/$dired_pkg
+popd >/dev/null
+pushd $BLDROOT >/dev/null
+XEMACS_BINARY=$USRLOCAL/xemacs-21.5-$(today)-mule/bin/xemacs mk-xp -sv c-support calc cc-mode debug dired ediff edit-utils efs eshell eterm general-docs igrep ispell mail-lib os-utils pc pcl-cvs pcomplete perl-modes prog-modes sh-script texinfo text-modes vc xemacs-base xemacs-devel
+popd >/dev/null
+pushd $USRLOCAL >/dev/null
+rm -f xemacs-packages
+ln -s xemacs-packages-$(today) xemacs-packages
+popd >/dev/null
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

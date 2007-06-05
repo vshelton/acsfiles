@@ -1,7 +1,7 @@
 # Set non-default shell enviroment, post .zshenv (AOA PC version)
 
 # Override variables set in .zshenv
-path=($ZDOTDIR/bin $USRLOCAL/bin /usr/X11R6/bin /usr/bin /bin $(cygpath -S) $(cygpath -W))
+path=($ZDOTDIR/bin $USRLOCAL/bin /usr/bin /usr/X11R6/bin $(cygpath -S) $(cygpath -W))
 
 unset INCLUDE
 unset LIB

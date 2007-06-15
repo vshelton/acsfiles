@@ -21,7 +21,7 @@ progname=${0:t}
 
 function usage {
   print -u2 "\
-usage: $progname [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--without-debug] [--package-root dir] [--prefix dir] [--install] <21.4|21.5>
+usage: $progname [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--without-debug] [--package-root dir] [--prefix dir] [--install] [--intel] [--sdk] <21.4|21.5>
        -h|--help            print this help message and exit
        --with-mule          turn on MULE support
        --without-mule       turn off MULE support
@@ -30,6 +30,8 @@ usage: $progname [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--wi
        --package-root=dir   specify directory for root of installed packages
        --prefix=dir         specify installation directory
        --install            install the executable
+       --intel              use the intel compiler
+       --sdk                build with the Microsoft SDK
        21.4                 build a 21.4 XEmacs kit from CVS
        21.5                 build a 21.5 XEmacs kit from CVS"
 }
@@ -43,16 +45,22 @@ usage: $progname [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--wi
 # Visual Studio and Platform SDK root directories
 : ${VC_ROOT:="E:/Program Files/Microsoft Visual Studio"}
 : ${SDK_ROOT:="E:/Program Files/Microsoft Platform SDK"}
+: ${INTEL_ROOT:="C:/Program Files/Intel/Compiler/C++/10.0.025/IA32"}
 
-# Set up for the Visual Studio compiler
-. vcsetup || exit 1
-
-zparseopts -D h=help -help=help -with-mule=with_mule -without-mule=without_mule -with-debug=with_debug -without-debug=without_debug -package-root:=package_root -prefix:=prefix -install=install
+zparseopts -D h=help -help=help -with-mule=with_mule -without-mule=without_mule -with-debug=with_debug -without-debug=without_debug -package-root:=package_root -prefix:=prefix -install=install -sdk=with_sdk -intel=with_intel
 
 if [[ -n $help ]]; then
   usage
   exit 0
 fi
+
+# Set up for the Visual Studio compiler
+[[ -n $with_sdk ]] && with_sdk=SDK
+if [[ -n $with_intel ]]; then
+  export CC=icl
+  with_intel=intel
+fi
+. vcsetup $with_sdk $with_intel || exit 1
 
 # Strip out option strings and '='
 install_dir=${prefix[2]#=}
@@ -111,6 +119,9 @@ perl -pi -e 's@.*BUILD_FOR_SETUP_KIT.*@BUILD_FOR_SETUP_KIT=1@' config.inc
 
 # Configure MULE if requested (only for 21.5)
 [[ -n $mule ]] &&  perl -pi -e "s@^MULE=.*@MULE=$mule@" config.inc
+
+# Use the Intel C Compiler if requested
+[[ -n $with_intel ]] && perl -pi -e "s@^USE_INTEL_COMPILER=.*@USE_INTEL_COMPILER=1@" config.inc
 
 # Configure package path if requested
 if [[ -n $package_dir ]] &&  perl -pi -e "s@^#PACKAGE_PREFIX=.*@PACKAGE_PREFIX=$package_dir@" config.inc

@@ -1,0 +1,32 @@
+#!/usr/bin/env zsh
+
+# Summarize the zsh test results from the specified file
+
+emulate -LR zsh
+progname=${0:t}
+
+if ((ARGC != 1)); then
+  print -u2 "usage: $progname zsh_results_file";
+  exit 1
+fi
+
+outfile=$1
+if [[ ! -r $outfile ]]; then
+  print -u2 "$progname: could not read $outfile"
+  exit 2
+fi
+
+# Summarize results
+started=$(grep -c starting $outfile)
+passed=$(grep -c successful $outfile)
+skipped=$(grep -c skipped $outfile)
+printf "\
+Total tests:\t%2d
+Passing tests:\t%2d
+Skipped tests:\t%2d\n" $started $passed $skipped
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

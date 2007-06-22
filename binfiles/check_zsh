@@ -29,7 +29,7 @@ fi
 print "\n${PWD:t}"
 summarize_zsh_tests $outfile
 
-rm -f $outfile /tmp/zsh.ztst.*
+rm -f $outfile /tmp/zsh.ztst.*(N)
 
 # Local Variables:
 # mode: ksh

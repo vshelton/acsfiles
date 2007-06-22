@@ -89,7 +89,7 @@ function generate_compiler_flags {
         # Enable and specify the scope of Interprocedural (IP) Optimizations:
         # -ip     enable single-file IP optimizations (within files)
         [[ $arch == pentium3 ]] && archopt="-march=pentiumiii"
-        OPTIMIZE_FLAGS="-Os -ip $archopt"
+        OPTIMIZE_FLAGS="-Os -ip"
         ;;
       esac
       ;;

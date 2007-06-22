@@ -1,0 +1,37 @@
+#!/usr/bin/env zsh
+
+# Allow the user to select a cygwin mirror site
+# and print that selection on standard output
+
+emulate zsh
+
+# Get list of cygwin mirrors
+#mirrors=( $(wget -q -O - http://cygwin.com/mirrors.txt | grep rsync | cut -d';' -f1 | sed -e 's;\(rsync://[0-9a-z.-]*\).*;\1;') )
+mirrors=(
+  rsync://rsync.osuosl.org/cygwin/
+  rsync://mirror.rhsmith.umd.edu::cygwin/cygwin
+  rsync://mirrors.xmission.com/cygwin
+  rsync://mirrors.kernel.org/sourceware/cygwin/
+  rsync://ftp.twaren.net/Sourceware/cygwin/
+  rsync://ftp.kaist.ac.kr/cygwin
+  rsync://mirror.averse.net/cygwin
+  rsync://ftp.esat.net/mirrors/sources.redhat.com/pub/cygwin/
+  rsync://ftp.gwdg.de/pub/linux/sources.redhat.com/cygwin
+  rsync://ftp.inf.tu-dresden.de/cygwin
+)
+
+PS3="Select a cygwin mirror site: "
+select which_mirror in ${(O)mirrors}; do
+  break
+done
+
+# mirrors.kernel.org is the default mirror site
+[[ $which_mirror == "" ]] && which_mirror="rsync://rsync.mirrors.kernel.org/sourceware/cygwin"
+
+print $which_mirror
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

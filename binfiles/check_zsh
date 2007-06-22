@@ -1,0 +1,38 @@
+#!/usr/bin/env zsh
+
+# Run 'make check' on for the version of zsh currently running
+
+emulate -LR zsh
+progname=${0:t}
+
+: ${USRLOCAL:/usr/local}
+: ${BLDROOT:/usr/local/build}
+
+build_dir=$BLDROOT/${MODULE_PATH:h:h:h:t}
+cd $build_dir
+err=$?
+if (( err != 0 )); then
+  print -u2 "$progname: could not cd to $build_dir."
+  exit $err
+fi
+
+# Run tests
+outfile=/tmp/zsh_check$$.out
+make check |& tee $outfile
+err=$?
+if (( err != 0 )); then
+  print -u2 "$progname: make check failed.  See $outfile."
+  exit $err
+fi
+
+# Summarize the results
+print "\n${PWD:t}"
+summarize_zsh_tests $outfile
+
+rm -f $outfile /tmp/zsh.ztst.*
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

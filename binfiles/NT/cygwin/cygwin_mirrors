@@ -26,7 +26,7 @@ select which_mirror in ${(O)mirrors}; do
 done
 
 # mirrors.kernel.org is the default mirror site
-[[ $which_mirror == "" ]] && which_mirror="rsync://rsync.mirrors.kernel.org/sourceware/cygwin"
+[[ $which_mirror == "" ]] && which_mirror="rsync://rsync.mirrors.kernel.org/sourceware/cygwin/"
 
 print $which_mirror
 

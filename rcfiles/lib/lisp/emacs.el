@@ -77,17 +77,17 @@
      (bbdb-initialize 'gnus 'message))
 
 ;; Load popper
-(when (fboundp 'popper-install)
-  (setq popper-inhibit-warnings		t
-	help-selects-help-window	nil
-	window-min-height		2
-	scroll-step			1
-	scroll-on-clipped-lines		nil
-	pop-up-frames			nil
-	pop-up-windows			t
-	temp-buffer-shrink-to-fit	t
-	split-window-keep-point		nil)
-  (popper-install))
+;(when (fboundp 'popper-install)
+;  (setq popper-inhibit-warnings		t
+;	help-selects-help-window	nil
+;	window-min-height		2
+;	scroll-step			1
+;	scroll-on-clipped-lines		nil
+;	pop-up-frames			nil
+;	pop-up-windows			t
+;	temp-buffer-shrink-to-fit	t
+;	split-window-keep-point		nil)
+;  (popper-install))
 
 ;; Load the electric buffer support
 (require 'ebuff-menu)

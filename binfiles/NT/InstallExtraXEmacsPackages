@@ -30,7 +30,7 @@ done
 if [[ -n $download ]]; then
 : ${auctex_ver:=11.84}
 : ${riece_ver:=1.23}
-: ${vc_ver:=0.91}  # Experimental vc must be built locally
+: ${vc_ver:=0.93}  # Experimental vc must be built locally
   wget http://ftp.gnu.org/pub/gnu/auctex/auctex-${auctex_ver}-pkg.tar.gz{,.sig}
   gpg --verify auctex-${auctex_ver}-pkg.tar.gz.sig
 

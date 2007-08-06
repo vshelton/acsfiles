@@ -3,7 +3,7 @@
 emulate -LR zsh
 
 # If the repository is local, rsync from the master site before 'cvs update'
-local root=$(< ~/cvsroot/xemacs-21.4/CVS/Root)
+local root=$(< ~/cvsroot/xemacs-21.5/CVS/Root)
 case $root in
 (*:pserver:*)
   ;;

@@ -8,30 +8,27 @@
 emulate -LR zsh
 progname=${0:t}
 
-err=1
-if [[ $# -ne 1 ]]; then
+if (( $# != 1 )); then
   print -u2 "Usage: $progname <pkg>"
   print -u2 "\tpkg is a stripped package name, like \"gcc\" or \"make\"."
-  exit $err
+  exit 1
 fi
 pkgbase=$1
 
-((err=err+1))
-# Equivalent to: pkgname=$(ls -t $ZIPROOT/pkgbase* | head -1)
-pkgname=$(print $ZIPROOT/$pkgbase-*(om[1])) 2>/dev/null
+# Equivalent to: pkgname=$(ls -t $ZIPROOT/pkgbase*(gz|tgz|bz2) | head -1)
+pkgname=$(print $ZIPROOT/$pkgbase-*.(gz|tgz|bz2)(om[1])) 2>/dev/null
 if [[ ! -e $pkgname ]]; then
   # Try with no hyphen for tcl and tk
-  pkgname=$(print $ZIPROOT/$pkgbase*(om[1])) 2>/dev/null
+  pkgname=$(print $ZIPROOT/$pkgbase*.(gz|tgz|bz2)(om[1])) 2>/dev/null
   if [[ ! -e $pkgname ]]; then
-    print -u2 No files with the prefix of \"$pkgbase-\" or \"$pkgbase\" could be found in $ZIPROOT.
-    exit $err
+    print -u2 progname: no files with the prefix of \"$pkgbase-\" or \"$pkgbase\" could be found in $ZIPROOT.
+    exit 1
   fi
 fi
 
-((err=err+1))
 if [[ ! -r $pkgname ]]; then
-  print -u2 $pkgname is unreadable.
-  exit $err
+  print -u2 $progname: $pkgname is unreadable.
+  exit 1
 fi
 
 print $pkgname

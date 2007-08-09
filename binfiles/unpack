@@ -6,62 +6,43 @@
 
 emulate -LR zsh
 
+function cmdError {
+  cmd_status=$?
+  (( $cmd_status == 0 )) && return 1
+  return 0
+}
+
 progname=${0:t}
 
-err=1
-if [[ $# -ne 1 ]]; then
+if (( $# != 1 )); then
   print -u2 "Usage: $progname <pkg>"
   print -u2 "\tpkg is a stripped package name, like \"gcc\" or \"make\"."
-  exit $err
+  exit 1
 fi
 pkgbase=$1
 
-((err=err+1))
-if ! pushd $SRCROOT >& /dev/null; then
-  print -u2 The root of the source hierarchy, $SRCROOT, does not exist.
-  exit $err
+pushd $SRCROOT >& /dev/null
+if cmdError; then
+  print -u2 $progname: the root of the source hierarchy, $SRCROOT, does not exist.
+  exit $cmd_status
 fi
 
-((err=err+1))
-pkgname=$(findpkg $pkgbase)
-# Error already reported
-if [[ $? -ne 0 ]]; then
-  exit $err
+pkgfile=$(findpkg $pkgbase)
+if cmdError; then
+  # Error already reported
+  exit $cmd_status
 fi
 
-((err=err+1))
-uncompress=
-case $pkgname in
-(*.bz2)
-  uncompress=bunzip2
-  ;;
-
-(*.gz|*.tgz)
-  uncompress=gunzip
-  ;;
-
-(*)
-  case $(file $pkgname) in
-  (* bzip2 *)
-    uncompress=bunzip2
-    ;;
-
-  (* gzip *)
-    uncompress=gunzip
-    ;;
-  esac
-esac
-
-if [[ -z "$uncompress" ]]; then
-  print -u2 File type of $pkgname is unknown.
-  exit $err
+# This is much easier now that tar knows how to figure
+# out what uncompressor to use
+tar xf $pkgfile
+if cmdError; then
+  print -u2 $progname: error unpacking $pkgfile
+  exit $cmd_status
 fi
-
-$uncompress <$pkgname | tar xf -
 
 # Print the package name before leaving
-#print $PWD/${${${pkgname/*$pkgbase/$pkgbase}%.tar*}%.tgz}
-print $PWD/${${${pkgname:t}%.tar*}%.tgz}
+print $PWD/${${${pkgfile:t}%.tar*}%.tgz}
 
 # Local Variables:
 # mode: ksh

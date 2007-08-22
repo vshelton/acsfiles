@@ -21,7 +21,7 @@ fi
 # Capture that information now in case we're crossing midnight.
 export VERSION=$(today)
 
-: ${shortcut_dir:="$(cygpath $USERPROFILE)/Desktop/XEmacs Versions"}
+: ${shortcut_dir:="$(cygpath $USERPROFILE)/Application Data/Microsoft/Internet Explorer/Quick Launch/XEmacs Versions"}
 
 for ver in $*; do
   case $ver in

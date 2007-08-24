@@ -17,7 +17,7 @@ progname=${0:t}
                   ruby-modes semantic sh-script sounds-wav speedbar
                   text-modes time xemacs-devel"}
 : ${ZIPROOT:=~/software/zip}
-: ${SITE_PKGS:="auctex riece vc"}
+: ${SITE_PKGS:="auctex riece"}
 
 # Install packages included in kit, but not installed in the minimal install.
 # This allows me not to think and to install the smallest kit.
@@ -30,7 +30,7 @@ done
 if [[ -n $download ]]; then
 : ${auctex_ver:=11.84}
 : ${riece_ver:=1.23}
-: ${vc_ver:=0.93}  # Experimental vc must be built locally
+: ${vc_ver:=0.94}  # Experimental vc must be built locally
   wget http://ftp.gnu.org/pub/gnu/auctex/auctex-${auctex_ver}-pkg.tar.gz{,.sig}
   gpg --verify auctex-${auctex_ver}-pkg.tar.gz.sig
 

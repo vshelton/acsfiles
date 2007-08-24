@@ -13,9 +13,9 @@ progname=${0:t}
 : ${XEMACS_PKG_INSTALL_DIR:=$XEMACS_INSTALL_ROOT/xemacs-packages}
 : ${XEMACS_PKGS:="c-support calc cc-mode debug dired ecb ecrypto edebug
                   ediff eieio fsf-compat ibuffer igrep ispell mail-lib
-                  net-utils os-utils pc perl-modes prog-modes ps-print
-                  ruby-modes semantic sh-script sounds-wav speedbar
-                  text-modes time xemacs-devel"}
+                  net-utils os-utils pc pcl-cvs perl-modes prog-modes
+                  ps-print ruby-modes semantic sh-script sounds-wav
+                  speedbar text-modes time xemacs-devel"}
 : ${ZIPROOT:=~/software/zip}
 : ${SITE_PKGS:="auctex riece"}
 

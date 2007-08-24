@@ -17,10 +17,7 @@ for ver in 21.4 21.5; do
   update_and_build xemacs-$ver mk-xemacs -odm $ver $*
 done
 
-#update_and_build xemacs-21.4 mk-xemacs -odm $* 21.4
-#update_and_build xemacs-21.5 mk-xemacs-21.5 -odm $* 21.5
-
-update_and_build xemacs-packages mk-xp -sv $(installed_packages)
+update_and_build xemacs-packages mk-xp -v $(installed_packages)
 
 # Local Variables:
 # mode: ksh

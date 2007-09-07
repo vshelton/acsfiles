@@ -120,11 +120,9 @@ alias pp=popd
 alias rm_versions="noglob rm_versions"
 alias rmver="rm_versions -v"
 alias root="ZDOTDIR=$HOME/.root xterm -name root -e su root -c $USRLOCAL/bin/zsh"
-alias tfy='tar tv --use-compress-program=bzip2 -f'
-alias tfz='tar tvfz'
+alias tv='tar tv -f'
+alias xv='tar xv -f'
 alias ve=vared
-alias xfy='tar x --use-compress-program=bzip2 -f'
-alias xfz='tar xfz'
 
 unalias run-help
 autoload -U run-help
@@ -140,12 +138,12 @@ zstyle ':completion:history-words:*:history-words' stop yes
 zstyle ':completion:history-words:*:history-words' list no
 zstyle ':completion:history-words:*' remove-all-dups yes
 zstyle ':completion:history-words:*' menu yes
-#bindkey $(echoti kf5) _history-complete-older
-#shift_f5="kf17"
-#[[ $TERM == cygwin ]] && shift_f5="kf15"
-#bindkey $(echoti $shift_f5) _history-complete-newer
+# ^X^R and ^X^S to complete a word from the history
 bindkey '^X^R' _history-complete-older
 bindkey '^X^S' _history-complete-newer
+# PgUp and PgDown to complete a command from the history
+bindkey '^[[5~' history-beginning-search-backward
+bindkey '^[[6~' history-beginning-search-forward
 
 # Load completion after setting zstyles
 autoload -U compinit

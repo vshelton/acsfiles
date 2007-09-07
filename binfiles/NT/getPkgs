@@ -14,6 +14,7 @@ default_pkgs="auctex
               cc-mode
               debug
               dired
+              easypg
               ecb
               ecrypto
               edebug

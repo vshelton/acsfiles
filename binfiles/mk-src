@@ -41,7 +41,7 @@ cd "$SRCDIR"
 # De-reference symlinks when creating source trees.
 # I put this in because emacs now uses the source files
 # regex.c and regex.h from the gnulib project
-tar cf - -C "$CVSROOT" --exclude CVS --dereference . | tar xf -
+tar cf - -C "$CVSROOT" --exclude CVS --exclude .hg --dereference . | tar xf -
 
 # Local Variables:
 # mode: ksh

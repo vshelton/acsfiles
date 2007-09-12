@@ -19,6 +19,28 @@ emulate -LR zsh
 progname=${0:t}
 0=$progname                             # For error messages from builtins
 
+# Update to the latest version of the sources.
+# This started with just CVS, but now supports multiple SCM systesm.
+function update_sources {
+  # Change to the root of the local copy of the SCM tree
+  cd $CVS_BASE/xemacs-$XEMACS_VER
+  if (( $? != 0 )); then
+    print -u2 "$progname: source tree for XEmacs-$XEMACS_VER not found at $CVS_BASE/xemacs-$XEMACS_VER"
+    exit 1
+  fi
+  # First try CVS
+  if [[ -d CVS ]]; then
+    cvs -q update
+  # Next try mercurial
+  elif [[ -d .hg ]]; then
+    hg update
+  else
+    print -u2 "$progname: can\'t find a source code repository at $CVS_BASE/xemacs-$XEMACS_VER"
+    exit 2
+  fi
+  cd - >/dev/null
+}
+
 function usage {
   print -u2 "\
 usage: $progname [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--without-debug] [--package-root dir] [--prefix dir] [--install] [--intel] [--sdk] <21.4|21.5>
@@ -83,19 +105,13 @@ else
 fi
 
 # Update to latest CVS sources
-cd $CVS_BASE/xemacs-$XEMACS_VER
-if (( $? != 0 )); then
-  print -u2 "$progname: CVS tree for XEmacs-$XEMACS_VER not found at $CVS_BASE/xemacs-$XEMACS_VER"
-  exit 1
-fi
-cvs -q update
-cd - >/dev/null
+update_sources
 
 # Make a local copy of the source tree
 : ${VERSION:=$(date +'%Y-%m-%d')}
 mkdir xemacs-$XEMACS_VER-$VERSION
 cd xemacs-$XEMACS_VER-$VERSION
-tar cf - -C $CVS_BASE/xemacs-$XEMACS_VER --exclude CVS . | tar xf -
+tar cf - -C $CVS_BASE/xemacs-$XEMACS_VER --exclude={CVS,.hg} . | tar xf -
 
 # Configure the sources
 cd nt

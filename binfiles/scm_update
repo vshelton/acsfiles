@@ -1,0 +1,43 @@
+#!/usr/bin/env zsh
+
+# Update sources under SCM control in the $SCM_ROOT directory.
+# This script attempts to handle mercurial, svn and CVS archives.
+
+emulate -LR zsh
+progname=${0:t}
+
+if (( $# != 1 )); then
+  print -u2 "usage: $progname <project_name>"
+  exit 1
+fi
+
+: ${SCM_ROOT:=~/scmroot}
+project_scm_dir=$SCM_ROOT/$1
+
+if ! cd $project_scm_dir 2>/dev/null; then
+  print -u2 "$progname: there is no accessible SCM hierarchy at $project_scm_dir."
+  exit 1
+fi
+
+# Mercurial
+if [[ -d .hg ]]; then
+  hg update
+# Subversion
+elif [[ -d .svn ]]; then
+  svn update
+# CVS
+elif [[ -d CVS ]]; then
+  cvs -q update
+else
+  print -u2 "$progname: no mercurial, svn or CVS hierarchy could be found at $project_scm_dir."
+  exit 2
+fi
+
+# Return exit code from SCM update command, so we can use
+# loop_while_failing to retry.
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

@@ -4,8 +4,8 @@
 # Usage: MakeNativeXEmacs [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--without-debug] [--package-root=path] [--prefix=path] [--install] <21.4|21.5>
 #
 # Assumptions:
-#   1) There is a CVS hierarchy rooted at ~/cvsroot for whatever
-#      XEmacs version is specified.  (See CVS_BASE.)
+#   1) There is an SCM hierarchy rooted at $SCM_ROOT (defaults to ~/cvsroot
+#      for whatever XEmacs version is specified.
 #   2) Cygwin is installed on the build machine, including makeinfo, perl,
 #      cvs, tar and probably other stuff, too.
 #   3) Optional library sources are in /usr/local/src. (See LIB_DIR.)
@@ -22,23 +22,7 @@ progname=${0:t}
 # Update to the latest version of the sources.
 # This started with just CVS, but now supports multiple SCM systesm.
 function update_sources {
-  # Change to the root of the local copy of the SCM tree
-  cd $CVS_BASE/xemacs-$XEMACS_VER
-  if (( $? != 0 )); then
-    print -u2 "$progname: source tree for XEmacs-$XEMACS_VER not found at $CVS_BASE/xemacs-$XEMACS_VER"
-    exit 1
-  fi
-  # First try CVS
-  if [[ -d CVS ]]; then
-    cvs -q update
-  # Next try mercurial
-  elif [[ -d .hg ]]; then
-    hg update
-  else
-    print -u2 "$progname: can\'t find a source code repository at $CVS_BASE/xemacs-$XEMACS_VER"
-    exit 2
-  fi
-  cd - >/dev/null
+  scm_update xemacs-$XEMACS_VER
 }
 
 function usage {
@@ -54,12 +38,12 @@ usage: $progname [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--wi
        --install            install the executable
        --intel              use the intel compiler
        --sdk                build with the Microsoft SDK
-       21.4                 build a 21.4 XEmacs kit from CVS
-       21.5                 build a 21.5 XEmacs kit from CVS"
+       21.4                 build a 21.4 XEmacs kit from SCM
+       21.5                 build a 21.5 XEmacs kit from SCM"
 }
 
 # Things to customize
-: ${CVS_BASE:=~/cvsroot}
+: ${SCM_ROOT:=~/cvsroot}
 : ${LIB_DIR:=/usr/local/src}
 : ${ZLIB_VER:=zlib}
 : ${TIFF_VER:=tiff-3.7.3}
@@ -104,17 +88,15 @@ else
   exit 1
 fi
 
-# Update to latest CVS sources
+# Update to latest sources
 update_sources
 
 # Make a local copy of the source tree
-: ${VERSION:=$(date +'%Y-%m-%d')}
-mkdir xemacs-$XEMACS_VER-$VERSION
-cd xemacs-$XEMACS_VER-$VERSION
-tar cf - -C $CVS_BASE/xemacs-$XEMACS_VER --exclude={CVS,.hg} . | tar xf -
+: ${VERSION:=$(today)}
+SRCROOT=$PWD mk-src xemacs-$XEMACS_VER
 
 # Configure the sources
-cd nt
+cd xemacs-$XEMACS_VER-$VERSION/nt
 unset HOME              # Don't pick up my emacs customizations
 # Configure for optional packages
 perl -pi -e "s@^OPTIONAL_LIBRARY_DIR=.*@OPTIONAL_LIBRARY_DIR=$(cygpath --mixed /)$LIB_DIR@;

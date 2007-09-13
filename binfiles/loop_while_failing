@@ -14,7 +14,7 @@ do
   retcode=$?
   (( retcode == 0 )) && break
   sleep $sleep_period
-done 2>/dev/null
+done
 
 (( i == maxloops )) && print -u2 "$0: \'$*\' returned non-zero values $maxloops times"
 exit $retcode

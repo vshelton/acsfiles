@@ -6,8 +6,8 @@
 emulate -LR zsh
 progname=${0:t}
 
-# Extract latest sources from CVS
-CVSROOT=~/cvsroot/cygwin mk-src cygwin-setup
+# Extract latest sources from SCM
+SCM_ROOT=~/scmroot/cygwin mk-src cygwin-setup
 
 # Prepare sources
 target=cygwin-setup-$(today)

@@ -1,47 +1,42 @@
 #!/usr/bin/env zsh
 
-# Make a source tree from the CVS sources of the specified project.
+# Make a source tree from the SCM-based sources of the specified project.
 
 emulate -LR zsh
-
-set -e		# Exit at the first sign of trouble.
-
-cmdname="${0:t}"
+progname="${0:t}"
 
 case $# in
-  (1)	PROJECT="$1"
-	;;
-  (2)	PROJECT="$1"
-	VERSION="$2"
-	;;
-  (0|*)	print -u2 "Usage: $cmdname <project> [version]"
-	exit 1
-	;;
+(1)
+  project="$1"
+  ;;
+(2)
+  project="$1"
+  VERSION="$2"
+  ;;
+(*)
+  print -u2 "usage: $progname <project> [version]"
+  exit 1
+  ;;
 esac
 
 # If no other version name was supplied, the default
 # version stamp is based on the current date.
 : ${VERSION:=$(today)}
 
-TARGET="$PROJECT-$VERSION"
+: ${USRLOCAL:=/usr/local}
+: ${SRCROOT:=$USRLOCAL/src}
+target_dir=$SRCROOT/$project-$VERSION
 
-: ${USRLOCAL:=/usr/local} ${SRCROOT:=$USRLOCAL/src}
-SRCDIR="${SRCDIR:-$SRCROOT/$TARGET}"
-
-: ${CVSROOT:=$HOME/cvsroot}
-CVSROOT=$CVSROOT/$PROJECT
-if [[ ! -d "$CVSROOT" ]]; then
-  print -u2 "There is no CVS hierarchy at $CVSROOT."
+: ${SCM_ROOT:=~/scmroot}
+project_scm_dir=$SCM_ROOT/$project
+if [[ ! -d $project_scm_dir ]]; then
+  print -u2 "$progname: there is no accessible SCM hierarchy at $project_scm_dir."
   exit 2
 fi
 
-mkdir -p "$SRCDIR"
-cd "$SRCDIR"
+mkdir -p $target_dir
 
-# De-reference symlinks when creating source trees.
-# I put this in because emacs now uses the source files
-# regex.c and regex.h from the gnulib project
-tar cf - -C "$CVSROOT" --exclude CVS --exclude .hg --dereference . | tar xf -
+tar cf - -C $project_scm_dir --exclude={CVS,.hg,.svn} . | tar xf - -C $target_dir
 
 # Local Variables:
 # mode: ksh

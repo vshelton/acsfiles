@@ -16,7 +16,7 @@ set -x
 : ${SRCROOT:=$USRLOCAL/src}
 : ${VERSION:=$(today)}
 
-CVSROOT=~/cvsroot/cygwin/cygport mk-src cygport
+SCM_ROOT=~/scmroot/cygwin/cygport mk-src cygport
 cd $BLDROOT
 mkdir cygport-$VERSION
 cd ./cygport-$VERSION

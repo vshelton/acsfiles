@@ -55,6 +55,7 @@
  '(truncate-lines nil)
  '(user-full-name "Vin Shelton" t)
  '(user-mail-address "acs@xemacs.org")
+ '(vc-follow-symlinks t)
  '(zmacs-regions t))
 
 ;(message "Leaving acs-custom.el")

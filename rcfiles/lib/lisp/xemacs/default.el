@@ -87,7 +87,7 @@
     (progn
       (set-face-font 'default (format "%s:%s:%d::%s"
 				      family "Regular" size encoding))
-;     (set-face-background 'default "wheat")
+      (set-face-background 'default "wheat")
       ;; These resets are currently required if we're not using 10 point.
       (reset-face 'bold)
       (reset-face 'italic)

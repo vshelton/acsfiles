@@ -345,33 +345,21 @@ Extends the region if it exists."
 ;; XEmacs-specific stuff
 (cond ((featurep 'xemacs)
 
-       ;; Make shift tab insert a tab character
-       (define-key global-map	'iso-left-tab	(function
-						 (lambda ()
-						   (interactive)
-						   (insert "\011"))))
+       ;; Load and enable version control
+       (require 'vc)
+
+       ;; Preserve minibuffer history across sessions
+       (savehist-mode 1)
+
        ;; Use the mouse wheel
        (mwheel-install)
        (setq mwheel-follow-mouse t)
 
        ;; Menubar-specific functions
        (when (featurep 'menubar)
-	 (require 'detached-minibuf)
-	 (cond ((getenv "USE_DETACHED_MINIBUFFER")
-		(make-detached-minibuf)
-
-		(defun autoraise-minibuffer-frame-hook ()
-		  (if (frame-minibuffer-only-p (selected-frame))
-		      (raise-frame)
-		    (lower-frame default-minibuffer-frame)))
-		(add-hook 'select-frame-hook 'autoraise-minibuffer-frame-hook)
-
-		(setq default-frame-plist
-		      (plist-put default-frame-plist 'minibuffer nil))))
-
 	 (require 'recent-files)
 	 (setq recent-files-menu-path '("File")
-	       recent-files-add-menu-before "Open..."
+	       recent-files-add-menu-before "Hex Edit File..."
 	       recent-files-non-permanent-submenu nil
 	       recent-files-permanent-submenu nil
 	       recent-files-permanent-first nil

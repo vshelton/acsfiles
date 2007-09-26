@@ -43,7 +43,8 @@
 		   "/usr/bin"
 		   (call-cygpath "--sysdir")
 		   (call-cygpath "--windir")
-		   exec-directory)))
+		   exec-directory))
+  (setq efs-ftp-program-name "ftp"))
 
 ;; Under Windows, if cygpath can't be found, use the default exec-path
 (when (and (string-match "win32" system-configuration)
@@ -63,8 +64,7 @@
 
   ;; Set up a left margin
   (set-specifier left-margin-width 1)
-  (setq selection-sets-clipboard t
-	ispell-program-name (executable-find "aspell")
+  (setq ispell-program-name (executable-find "aspell")
 	nt-fake-unix-uid 1)
 
   ;; Add /usr/share/info to the info path

@@ -449,9 +449,10 @@ Extends the region if it exists."
 						'minibuffer nil)))
 	 (setq window-setup-hook 'acs::after-window-init))
 
-       ;; Load the server to allow remote editing
-       (require 'gnuserv)
-       (when (gnuserv-start)
+       ;; Load the server to allow remote editing.
+       ;; Under windows, this is handled by site-start.el.
+       (when (not (string-match "win32\\|cygwin" system-configuration))
+	 (gnuserv-start)
 	 (and (fboundp 'gnuserv-special-frame-function)
 	      (setq gnuserv-frame 'gnuserv-special-frame-function)))
 

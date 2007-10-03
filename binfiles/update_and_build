@@ -24,7 +24,7 @@ update_file="last_update"
 
 : ${SCM_ROOT:=~/scmroot}
 project_scm_dir=$SCM_ROOT/$project_name
-if ! cd $project_scm_dir; then
+if ! cd $project_scm_dir 2>/dev/null; then
   print -u2 "$progname: there is no accessible SCM hierarchy at $project_scm_dir."
   exit 1
 fi

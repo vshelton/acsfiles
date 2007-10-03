@@ -2,17 +2,6 @@
 
 emulate -LR zsh
 
-# If the repository is local, rsync from the master site before 'cvs update'
-local root=$(< ~/cvsroot/xemacs-21.5/CVS/Root)
-case $root in
-(*:pserver:*)
-  ;;
-(*)
-  #rsync -qavz --delete --exclude=CVSROOT/config sunsite.dk::xemacscvs $root
-  rsync-xemacs
-  ;;
-esac
-
 for ver in 21.4 21.5; do
   update_and_build xemacs-$ver mk-xemacs -odm $ver $*
 done

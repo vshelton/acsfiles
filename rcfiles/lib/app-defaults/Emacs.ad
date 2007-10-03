@@ -129,7 +129,9 @@ define(`EFRAME', `Emacs*EmacsFrame')
 Emacs.highlight-changes-delete-face.attributeBackground: navy
 Emacs.highlight-changes-delete-face.attributeForeground: red
        Emacs.highlight-changes-face.attributeBackground: navy
-			 EFRAME.info-node.attributeFont: BOLD_ITALIC
+			 EFRAME.info-node.attributeFont: NORMAL
+		   EFRAME.info-node.attributeForeground: blue
+		    EFRAME.info-node.attributeUnderline: true
 		      Emacs.isearch.attributeBackground: pale turquoise
 		      Emacs.isearch.attributeForeground: blue
 	    Emacs.isearch-secondary.attributeBackground: #CCBB77

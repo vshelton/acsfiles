@@ -17,7 +17,7 @@ fi
 # Set up the environment for a VC build
 export INCLUDE="$VC_ROOT/VC98/atl/include;$VC_ROOT/VC98/mfc/include;$VC_ROOT/VC98/include"
 export LIB="$VC_ROOT/VC98/mfc/lib;$VC_ROOT/VC98/lib"
-path=( /e/acs/bin /usr/local/bin "$cyg_VC_ROOT/Common/Tools/WinNT" "$cyg_VC_ROOT/Common/MSDev98/Bin" "$cyg_VC_ROOT/Common/Tools" "$cyg_VC_ROOT/VC98/bin" /bin /usr/bin /usr/X11R6/bin /etc /c/WINDOWS/system32 /c/WINDOWS )
+path=( /e/acs/bin /usr/local/bin "$cyg_VC_ROOT/Common/Tools/WinNT" "$cyg_VC_ROOT/Common/MSDev98/Bin" "$cyg_VC_ROOT/Common/Tools" "$cyg_VC_ROOT/VC98/bin" /e/LatestCygwinXEmacs/bin /usr/bin /usr/X11R6/bin /etc /c/WINDOWS/system32 /c/WINDOWS )
 
 # Add SDK paths only if requested by a command-line argument
 cyg_SDK_ROOT=$(cygpath $SDK_ROOT)

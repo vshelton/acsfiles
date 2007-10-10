@@ -1,5 +1,32 @@
-;; This is my home-specific initialization file
-;; (FSF-emacs version)
+;; FSF emacs-specific customizations.
+;; This file gets executed after acs-custom.el
+;(message "Entering default.el")
+
+;; Delete removes character under point
+(define-key global-map [delete]			'delete-char)
+
+;; Make shift tab insert a tab character
+(define-key global-map [(shift iso-lefttab)]	(function
+						 (lambda ()
+						   (interactive)
+						   (insert "\011"))))
+
+;; Use the nifty mouse tracking stuff
+(and (not window-system)
+     (equal (getenv "TERM") "xterm")
+     (xterm-mouse-mode 1))
+
+;; Use "active" regions
+(delete-selection-mode t)
+(transient-mark-mode t)
+
+(global-font-lock-mode t)
+(or
+ (and (fboundp 'jit-lock-mode)
+      (setq font-lock-support-mode 'jit-lock-mode))
+ (setq font-lock-support-mode 'lazy-lock-mode))
+
+(setq suggest-key-bindings 1)
 
 (defvar grep-command "egrep -n ")
 
@@ -49,3 +76,10 @@ commands to use in that buffer.
   (modify-syntax-entry ?- "w")
   (modify-syntax-entry ?/ "w"))
 (add-hook 'term-mode-hook 'acs::term-mode-hook)
+
+;(message "Leaving default.el")
+
+;; Local Variables:
+;; eval: (setq tab-width 8)
+;; eval: (setq indent-tabs-mode t)
+;; End:

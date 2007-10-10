@@ -1,15 +1,5 @@
 ;;
 ;; This initialization file is called for both FSF emacs and XEmacs.
-;; It assumes we're running some version of emacs 19.
-;; With the current versions (FSF 19.34 and XEmacs 19.16),
-;; this file must be compiled by XEmacs in order to be loaded in both.
-;;
-
-;; Currently this is only required in FSF emacs 19.34
-(when (not (fboundp 'custom-set-variables))
-  (pushnew (expand-file-name "~/lib/lisp/fsf/custom")
-	   load-path :test 'equal)
-  (load "custom"))
 
 ;; Load different customizations for XEmacs and FSF emacs.
 ;; Load the customizations here so they can affect the
@@ -22,9 +12,7 @@
 ;; after-init-hook is used to ensure that the custom file
 ;; is only loaded once.
 (setq custom-file nil
-      acs::custom-file (expand-file-name (concat "~/lib/lisp/"
-						 (emacs-type)
-						 "/acs-custom.el")))
+      acs::custom-file (locate-library "acs-custom.el"))
 (load acs::custom-file)
 (add-hook 'after-init-hook
 	  (lambda ()
@@ -75,19 +63,6 @@
 (and (fboundp 'bbdb-initialize)
      (require 'bbdb)
      (bbdb-initialize 'gnus 'message))
-
-;; Load popper
-;(when (fboundp 'popper-install)
-;  (setq popper-inhibit-warnings		t
-;	help-selects-help-window	nil
-;	window-min-height		2
-;	scroll-step			1
-;	scroll-on-clipped-lines		nil
-;	pop-up-frames			nil
-;	pop-up-windows			t
-;	temp-buffer-shrink-to-fit	t
-;	split-window-keep-point		nil)
-;  (popper-install))
 
 ;; Load the electric buffer support
 (require 'ebuff-menu)
@@ -342,165 +317,8 @@ Extends the region if it exists."
 (setq html-helper-htmldtd-version
       "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n")
 
-;; XEmacs-specific stuff
-(cond ((featurep 'xemacs)
-
-       ;; Load and enable version control
-       (require 'vc)
-
-       ;; Preserve minibuffer history across sessions
-       (savehist-mode 1)
-
-       ;; Use the mouse wheel
-       (mwheel-install)
-       (setq mwheel-follow-mouse t)
-
-       ;; Menubar-specific functions
-       (when (featurep 'menubar)
-	 (require 'recent-files)
-	 (setq recent-files-menu-path '("File")
-	       recent-files-add-menu-before "Hex Edit File..."
-	       recent-files-non-permanent-submenu nil
-	       recent-files-permanent-submenu nil
-	       recent-files-permanent-first nil
-	       recent-files-dont-include '("\.newsrc" "Mail/archive"))
-	 (recent-files-initialize))
-
-       ;; Emulate FSF emacs mouse bindings for extend and cut.
-       ;; FSF emacs binds this to button 3, we'll bind it
-       ;; to shift button 1
-       (defun define-mouse-cut (key nclicks)
-	 "Extend and cut a selection via a mouse key."
-	 (interactive)
-
-	 ;; Define the variables needed by the hook function
-	 (let* ((modifiers (if (listp key)
-			       (nreverse (copy-sequence key))
-			     (list key)))
-		(button (let
-			    ((k (car modifiers)))
-			  (cond ((equal k 'button1) 1)
-				((equal k 'button2) 2)
-				((equal k 'button3) 3)
-				((equal k 'button4) 4)
-				((equal k 'button5) 5)
-				((error "Illegal mouse button %s" k)))))
-		(modifiers (sort (cdr modifiers) 'string<)))
-
-	   ;; Now make sure the key is defined
-	   (define-key global-map key 'mouse-track-adjust)
-
-	   ;; Now add the hook function
-	   (add-hook 'mouse-track-click-hook
-		     `(lambda (ev cnt)
-			(and (= cnt ,nclicks)
-			     (= (event-button ev) ,button)
-			     (equal (sort (event-modifiers ev) 'string<)
-				    ',modifiers)
-
-			     ;; Since kill-region returns non-nil, this hook
-			     ;; will prevent following hooks from executing
-			     (kill-region (point) (mark)))))))
-
-       (define-mouse-cut '(shift button1) 2)
-
-       ;; This piece of advice forces the mouse adjustments to be relative
-       ;; to point (like FSF emacs), rather than relative to the previous
-       ;; mouse click.  This means that it's not possible to click with
-       ;; button 1 and then scroll down a page or more and define a region
-       ;; with shift button 1.
-       (defadvice mouse-track-adjust (before acs::mouse-adjust activate compile)
-	 "Force mouse tracking to use point rather than the previous mouse-click"
-	 (setq default-mouse-track-previous-point (point)))
-
-       ;; Use pending delete
-       (if (fboundp 'turn-on-pending-delete)
-	   (turn-on-pending-delete)
-	 (require 'pending-del)
-	 (pending-delete-on nil))
-       (and (boundp 'pending-delete-modeline-string)
-	    (setq pending-delete-modeline-string nil))
-       (add-spec-list-to-specifier modeline-shadow-thickness
-				   '((global (nil . 2))))
-
-       ;; Delete deletes the current character.
-       ;; Backspace deletes the previous character.
-       ;; Use spiffy new mechanism for XEmacs 20.
-       ;; Make M-Delete delete the previous word, because that's how zsh does it.
-       (if (boundp 'delete-key-deletes-forward)
-	   (progn
-	     (setq delete-key-deletes-forward t)
-	     (define-key global-map '(meta delete) 'backward-kill-word))
-
-	 ;; Less-spiffy XEmacs 19 version
-	 (keyboard-translate 'delete    'deletechar)
-	 (keyboard-translate 'backspace 'delete)
-	 (define-key global-map '(meta deletechar) 'backward-kill-word))
-
-       (define-key global-map '(shift button2)	'mouse-track-do-rectangle)
-
-       ;; Make the default frame smaller without a minibuffer
-       ;; This has to be done as late as possible, after the initial
-       ;; frame has been instantiated.
-       (when (and (getenv "ONE_MINIBUFFER")
-		  (console-on-window-system-p))
-	 (defun acs::after-window-init ()
-	   (setq default-frame-plist (plist-put default-frame-plist
-						'minibuffer nil)))
-	 (setq window-setup-hook 'acs::after-window-init))
-
-       ;; Load the server to allow remote editing.
-       ;; Under windows, this is handled by site-start.el.
-       (when (not (string-match "win32\\|cygwin" system-configuration))
-	 (gnuserv-start)
-	 (and (fboundp 'gnuserv-special-frame-function)
-	      (setq gnuserv-frame 'gnuserv-special-frame-function)))
-
-       ;; Specials for text mode
-       (require 'filladapt)
-       (add-hook 'text-mode-hook 'turn-on-filladapt-mode)
-
-       ;; These functions are automatically built into infodock
-       (when (not (boundp 'infodock-version))
-
-	 ;; Load func-menu to allow a display of a function menu
-	 (require 'func-menu)
-
-	 (setq fume-menubar-menu-location nil)
-	 (setq-default fume-auto-rescan-buffer-p nil)
-	 (add-hook 'find-file-hooks 'fume-add-menubar-entry)
-	 (define-key acs::keymap "j" 'fume-prompt-function-goto)
-	 (define-key acs::keymap "l" 'function-menu)
-	 (define-key global-map '(shift button3) 'mouse-function-menu)))
-
-      ;; FSF Emacs 19+
-      (t
-
-       ;; Delete removes character under point
-       (define-key global-map [delete]			'delete-char)
-
-       ;; Make shift tab insert a tab character
-       (define-key global-map [(shift iso-lefttab)]	(function
-							 (lambda ()
-							   (interactive)
-							   (insert "\011"))))
-
-       ;; Use the nifty mouse tracking stuff
-       (and (not window-system)
-	    (equal (getenv "TERM") "xterm")
-	    (xterm-mouse-mode 1))
-
-       ;; Use "active" regions
-       (delete-selection-mode t)
-       (transient-mark-mode t)
-
-       (global-font-lock-mode t)
-       (or
-	(and (fboundp 'jit-lock-mode)
-	     (setq font-lock-support-mode 'jit-lock-mode))
-	(setq font-lock-support-mode 'lazy-lock-mode))
-
-       (setq suggest-key-bindings 1)))
+;; Customizations specific to XEmacs or FSF Emacs are loaded in
+;; ~/lib/lisp/xemacs and ~/lib/lisp/fsf, respectively.
 
 ;; Local Variables:
 ;; eval: (setq tab-width 8)

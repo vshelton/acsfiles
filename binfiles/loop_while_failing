@@ -4,9 +4,11 @@
 # or until a maximum number of loops has expired.
 
 emulate -LR zsh
+progname=${0:t}
 
 : ${maxloops:=25}
 : ${sleep_period:=10}
+: ${errfile:=/tmp/acs-$progname.$$}
 
 for (( i=0; i < maxloops; i++ ))
 do
@@ -14,9 +16,10 @@ do
   retcode=$?
   (( retcode == 0 )) && break
   sleep $sleep_period
-done
+done >& $errfile
 
-(( i == maxloops )) && print -u2 "$0: \'$*\' returned non-zero values $maxloops times"
+(( i == maxloops )) && print -u2 "$progname: \'$*\' returned non-zero values $maxloops times;
+for details, see $errfile"
 exit $retcode
 
 # Local Variables:

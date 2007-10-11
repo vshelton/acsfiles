@@ -128,8 +128,8 @@ alias pp=popd
 alias rm_versions="noglob rm_versions"
 alias rmver="rm_versions -v"
 alias root="ZDOTDIR=$HOME/.root xterm -name root -e su root -c $USRLOCAL/bin/zsh"
-alias tv='tar tv -f'
-alias xv='tar xv -f'
+alias tvf='tar tv -f'
+alias xvf='tar xv -f'
 alias ve=vared
 
 unalias run-help

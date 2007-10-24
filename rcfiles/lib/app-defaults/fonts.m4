@@ -19,6 +19,10 @@ define(`DefaultProportionalFont', `microsoft-comic sans ms')
 ifdef(`VNDR_Hummingbird_Communications_Ltd_', `define(`USE_HELVETICA_FOR_PROPORTIONAL', 1)')
 ifdef(`VNDR_The_Cygwin_X_Project', `define(`USE_HELVETICA_FOR_PROPORTIONAL', 1)')
 ifdef(`USE_HELVETICA_FOR_PROPORTIONAL', `define(`DefaultProportionalFont', `adobe-helvetica')')
+ifdef(`USE_VERDANA_FOR_PROPORTIONAL', `define(`DefaultProportionalFont', `microsoft-verdana')')
+ifdef(`USE_GEORGIA_FOR_PROPORTIONAL', `define(`DefaultProportionalFont', `microsoft-georgia')')
+ifdef(`SRVR_samwise', `define(`USE_TREBUCHET_FOR_PROPORTIONAL', 1)')
+ifdef(`USE_TREBUCHET_FOR_PROPORTIONAL', `define(`DefaultProportionalFont', `microsoft-trebuchet ms')')
 
 dnl lucidatypewrite works well for XTerms because no italic font
 dnl is required, but it doesn't work for Emacs, where italics are used

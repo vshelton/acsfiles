@@ -2,12 +2,7 @@
 # zshrc file specific to AOA (PC version)
 
 # Match case-insensitively
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
-#setopt nocaseglob
-
-# Match cygdrive prefix
-drives="c e f x y z"
-zstyle ':completion:*' fake-files "/:$drives"
+setopt nocaseglob
 
 desktop="$(cygpath -D)"
 

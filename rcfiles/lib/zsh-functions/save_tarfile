@@ -8,9 +8,8 @@ do
     echo "$0: could not verify signature of $ff; exiting."
     return
   fi
-  rm $ff.sig
-  chmod a-w $ff
-  mv $ff $ZIPROOT
+  chmod a-w $ff $ff.sig
+  mv $ff $ff.sig $ZIPROOT
 done
 
 # Local Variables:

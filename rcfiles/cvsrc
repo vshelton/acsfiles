@@ -1,4 +1,4 @@
 cvs -z3
-diff -u
-checkout -P
+diff -Nau
 update -Pd
+checkout -ko -P

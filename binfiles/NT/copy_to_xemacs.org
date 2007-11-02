@@ -13,7 +13,8 @@ function do_scp {
     shift
     print scp $* $dest
   fi
-  scp -i ~/id/.ssh/identity -F ~/id/.ssh/config $* slb@$dest
+  #scp -i ~/id/.ssh/identity -F ~/id/.ssh/config $* slb@$dest
+  scp $* slb@$dest
 }
 
 # Default behavior is to copy both the most recent 21.4 and 21.4

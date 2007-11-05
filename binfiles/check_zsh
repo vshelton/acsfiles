@@ -8,13 +8,16 @@ progname=${0:t}
 : ${USRLOCAL:/usr/local}
 : ${BLDROOT:/usr/local/build}
 
-build_dir=$BLDROOT/${MODULE_PATH:h:h:h:t}
+version=${MODULE_PATH:h:h:h:t}
+build_dir=$BLDROOT/$version
 cd $build_dir
 err=$?
 if (( err != 0 )); then
   print -u2 "$progname: could not cd to $build_dir."
   exit $err
 fi
+[[ ! ${MODULE_PATH:h:h:h:t} == *$(today)* ]] &&
+  print -u2 "\n$progname: warning - testing a build that was not made today.\n"
 
 # Run tests
 outfile=/tmp/zsh_check$$.out

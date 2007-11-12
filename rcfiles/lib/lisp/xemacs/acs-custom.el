@@ -41,7 +41,7 @@
  '(modeline-click-swaps-buffers t)
  '(mouse-yank-at-point nil)
  '(next-line-add-newlines nil)
- '(patcher-projects (quote (("packages" "~/cvsroot/xemacs-packages") ("web" "~/cvsroot/xemacsweb") ("build" "~/cvsroot/xemacs-builds") ("21.1" "~/cvsroot/xemacs-21.1") ("21.4" "~/cvsroot/xemacs-21.4") ("21.5" "~/cvsroot/xemacs-21.5"))))
+ '(patcher-projects (quote (("packages" "~/scmroot/xemacs-packages") ("web" "~/scmroot/xemacsweb") ("build" "~/scmroot/xemacs-builds") ("21.1" "~/scmroot/xemacs-21.1") ("21.4" "~/scmroot/xemacs-21.4") ("21.5" "~/scmroot/xemacs-21.5"))))
  '(query-replace-highlight t)
  '(query-user-mail-address nil)
  '(require-final-newline t)

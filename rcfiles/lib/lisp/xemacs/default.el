@@ -149,6 +149,7 @@
       (set-face-font 'default (format "%s:%s:%d::%s"
 				      family "Regular" size encoding))
       (set-face-background 'default "wheat")
+      (setq Info-startup-hook 'acs::set-info-fonts)
       ;; These resets are currently required if we're not using 10 point.
       (reset-face 'bold)
       (reset-face 'italic)
@@ -172,6 +173,12 @@
 (setq tag-table-alist
       '(("\\.emacs$" . (xemacs-source-directory))
 	("/lisp" . (xemacs-source-directory))))
+
+(defun acs::set-info-fonts ()
+  "Remove the crappy italic font from info-nodes"
+  (interactive)
+  (make-face-unitalic 'info-node)
+  (set-face-foreground 'info-node "blue"))
 
 (defun xemacs-source-directory ()
   "Return the path to the root of the XEmacs source tree."

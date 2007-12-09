@@ -21,6 +21,7 @@ if [[ -n $help ]]; then
   exit 0
 fi
 
+# If no list of packages is supplied as arguments, supply a default set
 pkgs=( ${(z)*:-dired edit-utils efs prog-modes xemacs-base xemacs-devel} )
 
 # Copy the packages tree to a build directory
@@ -36,16 +37,7 @@ if ! cd $SRCROOT/xemacs-packages-$VERSION ; then
   exit 1
 fi
 
-# If we don't have tex, then we can't build auctex.
-# If we don't build auctex, then we can't build x-symbol.
-if [[ ! -e =tex ]]; then
-  perl -pi.orig -e "
-    s@auctex@@;
-    s@x-symbol@@;
-  " xemacs-packages/Makefile
-  #rm -rf xemacs-packages/auctex xemacs-packages/x-symbol
-fi
-
+# Set up the default staging area for tarballs in $HOME/tmp/staging
 : ${STAGING:=$HOME/tmp/staging}
 
 # Build experimental VC package that supports subversion
@@ -61,6 +53,10 @@ if [[ -n $svn ]]; then
   " xemacs-packages/vc/Makefile
 fi
 
+# Figure out some properties of the XEmacs binary being used to build the packages
+#mule=( $( ${XEMACS_BINARY:-xemacs} -batch -eval "(print (featurep 'mule))" ) )
+window_system=( $( ${XEMACS_BINARY:-xemacs} -batch -eval "(print (featurep 'window-system))" ) )
+
 # Make a local rules file
 perl -p -e "
     s@^XEMACS_21_5[\s]*=.*@XEMACS_21_5 =@;
@@ -71,6 +67,18 @@ perl -p -e "
 # Build with a non-default XEmacs if requested to
 if [[ -n $XEMACS_BINARY ]]; then
   perl -pi.orig -e "s@XEMACS_BINARY[\s]*=.*@XEMACS_BINARY = $XEMACS_BINARY@;" Local.rules
+fi
+
+# If we don't have tex, then we can't build auctex.
+# If we don't build auctex, then we can't build x-symbol.
+# x-symbol isn't happy without a windowing system,
+# so we'll add that to the list of requirements.
+if [[ ! -e =tex || $window_system != 't' ]]; then
+  perl -pi.orig -e "
+    s@auctex@@;
+    s@x-symbol@@;
+  " xemacs-packages/Makefile
+  #rm -rf xemacs-packages/auctex xemacs-packages/x-symbol
 fi
 
 [[ -n $verbose ]] && print "$progname: building all packages."

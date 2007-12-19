@@ -15,8 +15,6 @@ fc -nldf -$HISTSIZE | trim_extra_history >> $outfile
 chmod 400 $outfile
 [[ $UID = 0 ]] && chmod 440 $outfile
 
-sleep 2
-
 # Local Variables:
 # mode: ksh
 # sh-indentation: 2

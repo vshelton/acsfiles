@@ -92,13 +92,13 @@ print "done."
 
 # Run tests
 print -n "Running tests..."
-make check >& check.out
-err=$?
-if (( err != 0 )); then
-  print -u2 "$progname: make check failed.  See $build_dir/check.out."
-  exit $err
-fi
-print "done."
+make -k check >& check.out
+#err=$?
+#if (( err != 0 )); then
+#  print -u2 "$progname: make check failed.  See $build_dir/check.out."
+#  exit $err
+#fi
+#print "done."
 print -n "Total tests: "
 grep -c starting check.out
 print -n "  passing tests: "

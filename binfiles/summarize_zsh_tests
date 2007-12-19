@@ -18,7 +18,7 @@ fi
 
 # Summarize results
 started=$(grep -c starting $outfile)
-passed=$(grep -c successful $outfile)
+passed=$(grep -c 'successful\.' $outfile)
 skipped=$(grep -c skipped $outfile)
 printf "\
 Total tests:\t%2d

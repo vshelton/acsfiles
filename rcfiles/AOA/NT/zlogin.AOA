@@ -5,6 +5,9 @@ alias installed_packages="USRLOCAL=/e/XEmacs installed_packages"
 # Remove .. from the CDPATH to try to speed up completion
 cdpath[(r)..]=()
 
+# Start the ssh-agent (if necessary)
+#[[ -z $SSH_AGENT_PID ]] && eval $(ssh-agent -s)
+
 # Local Variables:
 # mode: ksh
 # sh-indentation: 2

@@ -27,7 +27,7 @@ function update_sources {
 
 function usage {
   print -u2 "\
-usage: $progname [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--without-debug] [--package-root dir] [--prefix dir] [--install] [--intel] [--sdk] <21.4|21.5>
+usage: $progname [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--without-debug] [--package-root dir] [--prefix dir] [--install] [--intel] [--sdk] <21.4|21.5|21.5-test>
        -h|--help            print this help message and exit
        --with-mule          turn on MULE support
        --without-mule       turn off MULE support
@@ -39,7 +39,8 @@ usage: $progname [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--wi
        --intel              use the intel compiler
        --sdk                build with the Microsoft SDK
        21.4                 build a 21.4 XEmacs kit from SCM
-       21.5                 build a 21.5 XEmacs kit from SCM"
+       21.5                 build a 21.5 XEmacs kit from SCM
+       21.5-test            build a 21.5 XEmacs kit from the latest SCM test sources"
 }
 
 # Things to customize
@@ -81,12 +82,17 @@ mule=
 [[ -n $without_mule ]] && mule=0
 
 XEMACS_VER=
-if [[ $1 == 21.4 || $1 == 21.5 ]]; then
+case $1 in
+(21.4|21.5|21.5-test)
   XEMACS_VER=$1
-else
-  print -u2 "$progname: Only XEmacs 21.4 and XEmacs 21.5 are currently supported"
+  shift
+  ;;
+(*)
+  print -u2 "$progname: Only XEmacs 21.4 and XEmacs 21.5 are currently supported."
+  usage
   exit 1
-fi
+  ;;
+esac
 
 # Update to latest sources
 update_sources

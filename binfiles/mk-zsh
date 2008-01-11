@@ -98,13 +98,8 @@ make -k check >& check.out
 #  print -u2 "$progname: make check failed.  See $build_dir/check.out."
 #  exit $err
 #fi
-#print "done."
-print -n "Total tests: "
-grep -c starting check.out
-print -n "  passing tests: "
-grep -c successful check.out
-print -n "  skipped tests: "
-grep -c skipped check.out
+print "done."
+summarize_zsh_tests check.out
 print "Installing package to $inst_prefix/$TARGET."
 make install install.info >& inst.out
 err=$?

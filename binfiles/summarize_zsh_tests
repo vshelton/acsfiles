@@ -17,13 +17,14 @@ if [[ ! -r $outfile ]]; then
 fi
 
 # Summarize results
-started=$(grep -c starting $outfile)
-passed=$(grep -c 'successful\.' $outfile)
-skipped=$(grep -c skipped $outfile)
-printf "\
-Total tests:\t%2d
-Passing tests:\t%2d
-Skipped tests:\t%2d\n" $started $passed $skipped
+grep 'test scripts' $outfile
+#started=$(grep -c starting $outfile)
+#passed=$(grep -c 'successful\.' $outfile)
+#skipped=$(grep -c skipped $outfile)
+#printf "\
+#Total tests:\t%2d
+#Passing tests:\t%2d
+#Skipped tests:\t%2d\n" $started $passed $skipped
 
 # Local Variables:
 # mode: ksh

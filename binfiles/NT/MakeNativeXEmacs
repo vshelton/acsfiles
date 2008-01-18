@@ -27,7 +27,7 @@ function update_sources {
 
 function usage {
   print -u2 "\
-usage: $progname [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--without-debug] [--package-root dir] [--prefix dir] [--install] [--intel] [--sdk] <21.4|21.5|21.5-test>
+usage: $progname [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--without-debug] [--package-root dir] [--prefix dir] [--install] [--intel] [--sdk] <21.4|21.5*>
        -h|--help            print this help message and exit
        --with-mule          turn on MULE support
        --without-mule       turn off MULE support
@@ -39,8 +39,7 @@ usage: $progname [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--wi
        --intel              use the intel compiler
        --sdk                build with the Microsoft SDK
        21.4                 build a 21.4 XEmacs kit from SCM
-       21.5                 build a 21.5 XEmacs kit from SCM
-       21.5-test            build a 21.5 XEmacs kit from the latest SCM test sources"
+       21.5*                build some type of 21.5 XEmacs kit from SCM"
 }
 
 # Things to customize
@@ -52,7 +51,7 @@ usage: $progname [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--wi
 # Visual Studio and Platform SDK root directories
 : ${VC_ROOT:="E:/Program Files/Microsoft Visual Studio"}
 : ${SDK_ROOT:="E:/Program Files/Microsoft Platform SDK"}
-: ${INTEL_ROOT:="C:/Program Files/Intel/Compiler/C++/10.0.025/IA32"}
+: ${INTEL_ROOT:="E:/Program Files/Intel/Compiler/C++/10.1.011/IA32"}
 
 zparseopts -D h=help -help=help -with-mule=with_mule -without-mule=without_mule -with-debug=with_debug -without-debug=without_debug -package-root:=package_root -prefix:=prefix -install=install -sdk=with_sdk -intel=with_intel
 
@@ -83,7 +82,7 @@ mule=
 
 XEMACS_VER=
 case $1 in
-(21.4|21.5|21.5-test)
+(21.4|21.5*)
   XEMACS_VER=$1
   shift
   ;;

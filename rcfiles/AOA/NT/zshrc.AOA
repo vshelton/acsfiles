@@ -21,6 +21,9 @@ alias excel='office EXCEL.EXE'
 alias powerpoint='office POWERPNT.EXE'
 alias word='office WINWORD.EXE'
 
+alias 7z='/e/Program\ Files/7-Zip/7z'
+alias less.sh='/e/Program\ Files/Vim/vim71/macros/less.sh'
+
 # Convert from cygwin path to a Windows path, like so: dir ~(e:cyg:)
 function cyg {
   reply=("$(cygpath -w $REPLY)")

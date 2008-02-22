@@ -1,0 +1,43 @@
+#!/usr/bin/env perl
+
+# Generate a list of 'touch' commands to change the date of files
+# checked out of svn to their change dates in the repository.
+#
+# Usage: svn list -v [-R] [files] | repo_date | sh -x
+
+use warnings;
+use strict;
+
+my ($day, $filename, $month, $year);
+
+while ( <> ) {
+
+    # A trailing slash means the item listed is a directory
+    # and no size field appears in the data.
+    ($month, $day, $year, $filename) =
+	m{
+	     \s*\S*		# revision
+	     \s*\S*		# who
+	     \s*(\S*)		# month
+	     \s*(\S*)		# day
+	     \s*(\S*)		# year
+	     \s*(.*)/$		# filename
+         }x
+    or
+
+    # Otherwise, the item listed is a normal filename and the
+    # listing includes the filesize.
+    ($month, $day, $year, $filename) =
+	m{
+	     \s*\S*		# revision
+	     \s*\S*		# who
+	     \s*\S*		# size
+	     \s*(\S*)		# month
+	     \s*(\S*)		# day
+	     \s*(\S*)		# year
+	     \s*(.*)		# filename
+	 }x;
+
+    # Some filenames have spaces, so filenames must be quoted.
+    -e "$filename" && print "touch --date=\"$month $day $year\" \"$filename\"\n";
+}

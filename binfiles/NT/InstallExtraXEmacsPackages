@@ -11,11 +11,15 @@ progname=${0:t}
 : ${XEMACS_INSTALL_ROOT:=/e/XEmacs}
 : ${SITE_PKG_INSTALL_DIR:=$XEMACS_INSTALL_ROOT/site-packages}
 : ${XEMACS_PKG_INSTALL_DIR:=$XEMACS_INSTALL_ROOT/xemacs-packages}
-: ${XEMACS_PKGS:="c-support calc cc-mode debug dired easypg ecb ecrypto edebug
-                  ediff eieio fsf-compat gnus ibuffer igrep ispell mail-lib
-                  net-utils os-utils pc pcl-cvs perl-modes prog-modes
-                  ps-print ruby-modes semantic sh-script sounds-wav
-                  speedbar text-modes time vc xemacs-devel"}
+: ${XEMACS_PKGS:="
+    c-support    calc         cc-mode      debug        dired
+    easypg       ecb          ecrypto      edebug       ediff
+    edit-utils   efs          eieio        fsf-compat   gnus
+    ibuffer      igrep        ispell       mail-lib     net-utils
+    os-utils     pc           pcl-cvs      perl-modes   prog-modes
+    ps-print     python-modes ruby-modes   semantic     sh-script
+    sounds-wav   speedbar     texinfo      text-modes   time
+    vc           xemacs-base  xemacs-devel"}
 : ${ZIPROOT:=~/software/zip}
 : ${SITE_PKGS:="auctex riece"}
 
@@ -28,7 +32,7 @@ done
 
 # Included here mostly for documentation purposes.
 if [[ -n $download ]]; then
-: ${auctex_ver:=11.84}
+: ${auctex_ver:=11.85}
 : ${riece_ver:=1.23}
   wget http://ftp.gnu.org/pub/gnu/auctex/auctex-${auctex_ver}-pkg.tar.gz{,.sig}
   gpg --verify auctex-${auctex_ver}-pkg.tar.gz.sig

@@ -36,7 +36,9 @@ usage: $progname [-v] [version]
        on the system.  This command updates the 'xemacs', 'xemacs-debug' and
        'xemacs-mule' commands.
        The option '-v' makes $progname operate verbosely.
-       Version must be either 21.4 or 21.5; it defaults to 21.4."
+       Version must be either 21.4 or 21.5; if a version is not specified
+       explicitly, the new link is created based on whatever version was
+       linked previously ."
 }
 
 zparseopts -D h=help v=verbose
@@ -46,13 +48,6 @@ if [[ -n $help ]]; then
   exit 0
 fi
 
-ver=21.4
-(( $# > 0 )) && ver=$1
-if [[ $ver != 21.[45] ]]; then
-  print -u2 "$progname: 21.4 and 21.5 are the only versions supported."
-  exit 1
-fi
-
 # Find the directory where the symlink to xemacs lives.
 ipath=$(find_install_root xemacs)
 if [[ ! -d $ipath ]]; then
@@ -60,6 +55,18 @@ if [[ ! -d $ipath ]]; then
   exit 2
 fi
 cd $ipath/.. || exit $?
+
+# Ascertain whether to link to the latest 21.4 or 21.5
+# based on what the previous link was
+ver=21.4
+[[ $ipath == *21.5* ]] && ver=21.5
+
+# Allow the user to specify 
+(( $# > 0 )) && ver=$1
+if [[ $ver != 21.[45] ]]; then
+  print -u2 "$progname: 21.4 and 21.5 are the only versions supported."
+  exit 1
+fi
 
 # 'xemacs' has a funky pattern because we need to exclude
 # both mule and debug versions

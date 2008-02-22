@@ -43,7 +43,7 @@ for ver in $*; do
   case $ver in
   (21.4*)
     branch=21.4
-    branch_options="--without-debug"
+    branch_options="--without-debug --intel"
     ;;
   (21.5*)
     branch=21.5
@@ -57,9 +57,9 @@ for ver in $*; do
   esac
 
   # Make and install the executables
-  MakeNativeXEmacs --install --prefix=$INSTALL_DIR $branch_options $branch
+  MakeNativeXEmacs --install --prefix=$INSTALL_DIR ${=branch_options} $branch
   if (( $? != 0 )); then
-    print -u2 "$progname: \"MakeNativeXEmacs --install --prefix=$INSTALL_DIR $branch_options $branch\" failed."
+    print -u2 "$progname: \"MakeNativeXEmacs --install --prefix=$INSTALL_DIR ${=branch_options} $branch\" failed."
     exit 1;
   fi
 

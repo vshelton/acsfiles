@@ -8,11 +8,29 @@
 emulate -LR zsh
 progname=${0:t}
 
-# Optional '-l' argument means to build the libraries
-if [[ $1 == -l ]]; then
-  mk-xemacs-support-libs
-  shift
+function usage {
+  print -u2 "\
+usage: $progname [-h|--help] [--intel] [--libs] <21.4|21.5*>
+       -h|--help            print this help message and exit
+       --intel              use the intel compiler
+       --libs               build the support libs (probably doesn't work)
+       21.4                 build a 21.4 XEmacs kit from SCM
+       21.5*                build some type of 21.5 XEmacs kit from SCM"
+}
+
+
+zparseopts -D h=help -help=help -intel=with_intel -libs=build_libs
+
+if [[ -n $help ]]; then
+  usage
+  exit 0
 fi
+
+# Optional '--libs' argument means to build the libraries.
+# This probably doesn't work.
+[[ -n $build_libs ]] && mk-xemacs-support-libs
+
+[[ -n $with_intel ]] && with_intel="--intel"
 
 # The default is to build both 21.4 and 21.5
 (( $# == 0 )) && set 21.4 21.5
@@ -21,7 +39,8 @@ fi
 # Capture that information now in case we're crossing midnight.
 export VERSION=$(today)
 
-: ${shortcut_dir:="$(cygpath $USERPROFILE)/Application Data/Microsoft/Internet Explorer/Quick Launch/XEmacs Versions"}
+#: ${shortcut_dir:="$(cygpath $USERPROFILE)/Application Data/Microsoft/Internet Explorer/Quick Launch/XEmacs Versions"}
+: ${shortcut_dir:="$(cygpath $USERPROFILE)/desktop/XEmacs"}
 
 for ver in $*; do
   case $ver in
@@ -30,7 +49,7 @@ for ver in $*; do
     # Make but don't install a native version.
     # We'll run it from the source directory.
     print "Building XEmacs $ver native"
-    MakeNativeXEmacs --without-debug --package-root=e:/XEmacs 21.4
+    MakeNativeXEmacs --without-debug --package-root=e:/XEmacs $with_intel 21.4
 
     # Make and install a cygwin version and make it the default.
     print "Building XEmacs $ver cygwin"
@@ -51,7 +70,7 @@ for ver in $*; do
     # Make but don't install a native version.
     # We'll run it from the source directory.
     print "Building XEmacs $ver native"
-    MakeNativeXEmacs --with-mule --package-root=e:/XEmacs $ver
+    MakeNativeXEmacs --with-mule --package-root=e:/XEmacs $with_intel $ver
 
     # Make and install a cygwin version
     print "Building XEmacs $ver cygwin"

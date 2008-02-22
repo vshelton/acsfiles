@@ -131,6 +131,7 @@ if [[ -n $package_dir ]] &&  perl -pi -e "s@^#PACKAGE_PREFIX=.*@PACKAGE_PREFIX=$
 
 # Build and install XEmacs
 nmake -f xemacs.mak
+nmake -f xemacs.mak check >& check.out
 [[ -n $install ]] && nmake -f xemacs.mak install
 
 # Local Variables:

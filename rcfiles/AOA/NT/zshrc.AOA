@@ -4,6 +4,11 @@
 # Match case-insensitively
 setopt nocaseglob
 
+# These proxies get us through the NGGN
+# No longer necessary because they are set in .wgetrc
+#export http_proxy=155.104.239.18:80
+#export ftp_proxy=$http_proxy
+
 desktop="$(cygpath -D)"
 
 # Create aliases for common MS Office programs

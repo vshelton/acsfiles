@@ -16,8 +16,14 @@
 emulate -LR zsh
 progname=${0:t}
 
-# Things to customize for your system
-: ${InnoSetup:="/e/Program Files/Inno Setup 5/iscc"}
+if [[ -z $InnoSetup ]]; then
+  ISKey='/HKLM/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall/Inno Setup 5_is1/Inno Setup: App Path'
+  InnoSetup=$(cygpath "$(regtool get $ISKey)")/iscc 2>/dev/null
+  if (( $? != 0 )); then
+    print -u2 "$progname: cannot find registry key for Inno Setup 5; set InnoSetup environment variable to the cygwin path to iscc."
+    exit 1
+  fi
+fi
 
 # Update all the packages (delete them first)
 PACKAGE_DIR=$(cygpath --mixed $PWD/packages)

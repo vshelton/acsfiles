@@ -12,8 +12,12 @@
 outfile=$HOME/.hist/$(date '+%Y-%m-%d-%H%M').${HOST%%.*}
 [[ -e $outfile ]] && chmod 600 $outfile
 fc -nldf -$HISTSIZE | trim_extra_history >> $outfile
-chmod 400 $outfile
-[[ $UID = 0 ]] && chmod 440 $outfile
+if [[ -s $outfile ]]; then
+  chmod 400 $outfile
+  [[ $UID = 0 ]] && chmod 440 $outfile
+else
+   rm -f $outfile
+fi
 
 # Local Variables:
 # mode: ksh

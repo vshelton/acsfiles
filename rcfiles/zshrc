@@ -78,19 +78,21 @@ fi
 
 # Use emacs bindings
 bindkey -me >& /dev/null
+
+# Use ^X as the prefix for my personal bindings
 bindkey -s '^X^E' "^Avared ^E^I^M"
 bindkey -s '^Xr' "su root -c \"\!\!\"^M"
 bindkey '^X#' pound-insert
 bindkey '^X\t' accept-and-menu-complete
 bindkey '\e\t' reverse-menu-complete
 
-# Make arrow keys work if they're defined
-if echoti cup >& /dev/null; then
-  bindkey $(echoti cup) up-line-or-search
-  bindkey $(echoti cud) down-line-or-search
-  bindkey $(echoti cuf) forward-char
-  bindkey $(echoti cub) backward-char
-fi
+# ^X^R and ^X^S to complete a word from the history
+bindkey '^X^R' _history-complete-older
+bindkey '^X^S' _history-complete-newer
+
+# Up and Down arrows complete a command from the history
+echoti kcuu1 > /dev/null && bindkey "$(echoti kcuu1)" history-beginning-search-backward
+echoti kcud1 > /dev/null && bindkey "$(echoti kcud1)" history-beginning-search-forward
 
 zmodload zsh/deltochar
 bindkey '\M-z' zap-to-char
@@ -143,12 +145,6 @@ zstyle ':completion:history-words:*:history-words' stop yes
 zstyle ':completion:history-words:*:history-words' list no
 zstyle ':completion:history-words:*' remove-all-dups yes
 zstyle ':completion:history-words:*' menu yes
-# ^X^R and ^X^S to complete a word from the history
-bindkey '^X^R' _history-complete-older
-bindkey '^X^S' _history-complete-newer
-# PgUp and PgDown to complete a command from the history
-bindkey '^[[5~' history-beginning-search-backward
-bindkey '^[[6~' history-beginning-search-forward
 
 # Load completion after setting zstyles
 autoload -U compinit

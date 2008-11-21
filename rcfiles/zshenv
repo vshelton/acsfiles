@@ -12,6 +12,15 @@ typeset -U cdpath fpath manpath path
 # we'll use ZDOTDIR instead of HOME from here on out.
 : ${ZDOTDIR:=~}
 
+# Optional tracing
+# TRACE_ZSH_TIME=t TRACE_ZSH=t TRACE_ZSH_FILE=$HOME/ztrace.out zsh
+[[ -n $TRACE_ZSH_TIME ]] && PS4='+[%D{%M:%S}]%N:%i> '
+if [[ -n $TRACE_ZSH ]]; then
+  [[ -n "$TRACE_ZSH_FILE" ]] && exec 2> "${TRACE_ZSH_FILE}"
+  setopt xtrace
+fi
+
+
 # Define utility functions; some are used interactively and some
 # are used within scripts, so it's best to define the whole lot here.
 setopt extendedglob

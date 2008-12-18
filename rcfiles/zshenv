@@ -27,7 +27,7 @@ setopt extendedglob
 f=$ZDOTDIR/lib/zsh-functions
 if [[ -d $f ]]; then
   fpath=($f $fpath)
-  autoload $(cd $f; ls *~*~)
+  autoload $(print $f/*~*~(:t))
 fi
 
 # Invoke system specific customizations

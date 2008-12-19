@@ -20,7 +20,6 @@ if [[ -n $TRACE_ZSH ]]; then
   setopt xtrace
 fi
 
-
 # Define utility functions; some are used interactively and some
 # are used within scripts, so it's best to define the whole lot here.
 setopt extendedglob

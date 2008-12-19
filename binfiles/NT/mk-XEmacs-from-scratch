@@ -39,6 +39,9 @@ fi
 # Capture that information now in case we're crossing midnight.
 export VERSION=$(today)
 
+# The location for the installed XEmacs.
+: ${XEMACS_INSTALLED_ROOT:=/XEmacs}
+
 #: ${shortcut_dir:="$(cygpath $USERPROFILE)/Application Data/Microsoft/Internet Explorer/Quick Launch/XEmacs Versions"}
 : ${shortcut_dir:="$(cygpath $USERPROFILE)/desktop/XEmacs"}
 
@@ -49,7 +52,7 @@ for ver in $*; do
     # Make but don't install a native version.
     # We'll run it from the source directory.
     print "Building XEmacs $ver native"
-    MakeNativeXEmacs --without-debug --package-root=e:/XEmacs $with_intel 21.4
+    MakeNativeXEmacs --without-debug --package-root="$(cygpath -m $XEMACS_INSTALLED_ROOT)" $with_intel 21.4
 
     # Make and install a cygwin version and make it the default.
     print "Building XEmacs $ver cygwin"
@@ -61,7 +64,7 @@ for ver in $*; do
     # Make shortcuts.
     pushd $shortcut_dir
     mkshortcut --desc="XEmacs $ver (native) $VERSION" --icon=/bin/run.exe --iconoffset=1 --name="XEmacs-$ver $VERSION (native)" --workingdir=$HOME $OLDPWD/xemacs-$ver-$VERSION/src/xemacs.exe
-    mkshortcut --desc="XEmacs $ver (cygwin) $VERSION" --icon=/bin/run.exe --iconoffset=1  --arguments="$(ls /usr/local/xemacs-$ver-$VERSION/bin/xemacs-*.exe)" --name="XEmacs-$ver $VERSION (cygwin)" --workingdir=$HOME /bin/run.exe
+    mkshortcut --desc="XEmacs $ver (cygwin) $VERSION" --icon=/bin/run.exe --iconoffset=1 --arguments="$(ls /usr/local/xemacs-$ver-$VERSION/bin/xemacs-*.exe)" --name="XEmacs-$ver $VERSION (cygwin)" --workingdir=$HOME /bin/run.exe
     popd
     ;;
 
@@ -70,7 +73,7 @@ for ver in $*; do
     # Make but don't install a native version.
     # We'll run it from the source directory.
     print "Building XEmacs $ver native"
-    MakeNativeXEmacs --with-mule --package-root=e:/XEmacs $with_intel $ver
+    MakeNativeXEmacs --with-mule --package-root="$(cygpath -m $XEMACS_INSTALLED_ROOT)" $with_intel $ver
 
     # Make and install a cygwin version
     print "Building XEmacs $ver cygwin"
@@ -82,7 +85,7 @@ for ver in $*; do
     # Make shortcuts.
     pushd $shortcut_dir
     mkshortcut --desc="XEmacs $ver (native, mule) $VERSION" --icon=/bin/run.exe --iconoffset=1 --name="XEmacs-$ver $VERSION (native)" --workingdir=$HOME $OLDPWD/xemacs-$ver-$VERSION/src/xemacs.exe
-    mkshortcut --desc="XEmacs $ver (cygwin, mule) $VERSION" --icon=/bin/run.exe --iconoffset=1  --arguments="$(ls /usr/local/xemacs-$ver-$VERSION-mule/bin/xemacs-*.exe)" --name="XEmacs-$ver $VERSION (cygwin)" --workingdir=$HOME /bin/run.exe
+    mkshortcut --desc="XEmacs $ver (cygwin, mule) $VERSION" --icon=/bin/run.exe --iconoffset=1 --arguments="$(ls /usr/local/xemacs-$ver-$VERSION-mule/bin/xemacs-*.exe)" --name="XEmacs-$ver $VERSION (cygwin)" --workingdir=$HOME /bin/run.exe
     popd
     ;;
 

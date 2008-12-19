@@ -39,6 +39,9 @@ function cyg {
 PROMPT="%2c %w %T%(#.#.); "
 prompt bart red cyan
 
+# If an exact path match exists, don't search needlessly
+zstyle ':completion:*' accept-exact-dirs true
+
 # Local Variables:
 # mode: ksh
 # sh-indentation: 2

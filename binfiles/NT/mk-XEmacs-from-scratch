@@ -3,7 +3,7 @@
 # Build XEmacs versions (21.4 and 21.5, both native and cygwin).
 # The native versions are not installed, but the cygwin versions
 # are installed to /usr/local/xemacs-21.x-$(today).
-# All kits reference packages installed under e:/XEmacs
+# All kits reference packages installed under the cygwin path /XEmacs.
 
 emulate -LR zsh
 progname=${0:t}

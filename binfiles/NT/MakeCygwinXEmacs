@@ -16,7 +16,10 @@ if [[ $# -lt 1 ]]; then
   exit 1
 fi
 
-: ${pkg_path:='/e/XEmacs/site-packages::/e/XEmacs/xemacs-packages'}
+: ${XEMACS_INSTALLED_ROOT:=/XEmacs}
+: ${pkg_path:="$XEMACS_INSTALLED_ROOT/site-packages::$XEMACS_INSTALLED_ROOT/xemacs-packages"}
+#: ${CC:=gcc-4}
+#export CC
 export INSTALL==install	# Hack around configure bug tickled by --with-infopath
 export CFLAGS='-Os -malign-double -pipe -ffast-math'
 
@@ -53,7 +56,7 @@ while (( $# > 0 )); do
   # should be installed as the default cygwin XEmacs on the system
   if [[ $1 == t ]]; then
     shift
-    latest=/e/LatestCygwinXEmacs
+    latest=$XEMACS_INSTALLED_ROOT/Cygwin
     rm -rf $latest
 
     # Ugh - we must know the algorithm mk-xemacs uses

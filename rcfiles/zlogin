@@ -17,7 +17,14 @@ manpath=()
 for p in $path
 do
   m=${p:s/bin/man/}
-  [[ $m != $p ]] && [[ -d $m ]] && manpath=( $manpath $m )
+  if [[ $m != $p ]]; then
+    # Include /usr/share/man in addition to /usr/man, if it's a different directory
+    m1=/usr/share/man
+    [[ $m == /usr/man ]] && [[ -d $m1 ]] && \
+      [[ $( cd $m; pwd -r ) != $( cd $m1; pwd -r ) ]] && manpath=( $manpath $m1 )
+
+    [[ -d $m ]] && manpath=( $manpath $m )
+  fi
 done
 
 if [[ ! -e ${ZDOTDIR:-$HOME}/.zlogin.${HOST%%.*} ]]; then

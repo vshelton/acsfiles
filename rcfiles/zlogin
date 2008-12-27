@@ -12,19 +12,20 @@ HISTFILE=~/.zhistory
 
 system_specific .zlogin
 
-# Set manpath based on path
-manpath=()
+# Set manpath based on path, but include /usr/share/man.
+manpath=(/usr/share/man)
 for p in $path
 do
   m=${p:s/bin/man/}
-  if [[ $m != $p ]]; then
-    # Include /usr/share/man in addition to /usr/man, if it's a different directory
-    m1=/usr/share/man
-    [[ $m == /usr/man ]] && [[ -d $m1 ]] && \
-      [[ $( cd $m; pwd -r ) != $( cd $m1; pwd -r ) ]] && manpath=( $manpath $m1 )
+  [[ $m != $p ]] && [[ -d $m ]] && manpath=( $manpath $m )
+done
 
-    [[ -d $m ]] && manpath=( $manpath $m )
-  fi
+# Clean up manpath: remove trailing slashes and non-existant directories
+# and resolve symbolic links
+manpath=($^manpath(N))
+manpath=(${^manpath%%/##})
+for (( i=1; i < $#manpath+1; i++ )); do
+  [[ -L $manpath[$i] ]] && path[$i]=$(abspath $path[$i])
 done
 
 if [[ ! -e ${ZDOTDIR:-$HOME}/.zlogin.${HOST%%.*} ]]; then

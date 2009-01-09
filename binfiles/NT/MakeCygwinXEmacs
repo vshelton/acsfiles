@@ -56,7 +56,7 @@ while (( $# > 0 )); do
   # should be installed as the default cygwin XEmacs on the system
   if [[ $1 == t ]]; then
     shift
-    latest=$XEMACS_INSTALLED_ROOT/Cygwin
+    latest=$XEMACS_INSTALLED_ROOT/cygwin
     rm -rf $latest
 
     # Ugh - we must know the algorithm mk-xemacs uses

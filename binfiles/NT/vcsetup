@@ -1,47 +1,89 @@
 
 # Set up for running Visual C++ under Cygwin
-# This script must be sourced.
+# This script must be sourced under zsh.
 
-# Visual Studio and SDK roots which can be over-ridden.
-# The Visual Studio root must exist, but the SDK root is optional.
-: ${VC_ROOT:="E:/Program Files/Microsoft Visual Studio"}
-: ${SDK_ROOT:="E:/Program Files/Microsoft Platform SDK"}
-: ${INTEL_ROOT:="E:/Program Files/Intel/Compiler/C++/10.1.011/IA32"}
+function computeIntelRoot {
+  local iroot ver
+  ver=$(regtool list /HKLM/SOFTWARE/Intel/Compilers/C++/)
+  iroot=$(regtool get -e /HKLM/SOFTWARE/Intel/Compilers/C++/${ver}/iA32/ProductDir)
+  iroot=$(cygpath -m $iroot)
+  [[ -d $iroot ]] || iroot="C:/Program Files/Intel/Compiler/C++/10.1.011/IA32"
+  print $iroot
+}
+
+function computeSDKRoot {
+  local sdkroot v vers
+  vers=( $(regtool list /HKLM/SOFTWARE/Microsoft/MicrosoftSDK/InstalledSDKs) )
+  for v in $vers ; do
+    if sdkroot=$(regtool get -e "/HKLM/SOFTWARE/Microsoft/MicrosoftSDK/InstalledSDKs/${v}/Install Dir" 2>/dev/null); then
+      sdkroot=$(cygpath -m $sdkroot)
+      [[ -d $sdkroot ]] && print $sdkroot
+      return 0
+    fi
+  done
+  print "C:/Program Files/Microsoft Platform SDK/"
+}
+
+function computeVCRoot {
+  local vers v vsroot
+  vers=( $(regtool list /HKLM/SOFTWARE/Microsoft/VisualStudio | sort -rn) )
+  for v in $vers ; do
+    if vsroot=$(regtool get -e "/HKLM/SOFTWARE/Microsoft/VisualStudio/${v}/Setup/Microsoft Visual Studio/ProductDir" 2>/dev/null); then
+      vsroot=$(cygpath -m $vsroot)
+      [[ -d $vsroot ]] && print $vsroot
+      return 0
+    fi
+  done
+  print "C:/Program Files/Microsoft Visual Studio"
+}
+
+# Visual Studio, SDK and Intel roots which can be over-ridden.
+# The Visual Studio root must exist, but the SDK and Intel roots are optional.
+: ${VC_ROOT:=$(computeVCRoot)}
 
 cyg_VC_ROOT=$(cygpath $VC_ROOT)
 if [[ ! -d $cyg_VC_ROOT ]]; then
-  print -u2 "The root of the Visual C++ install, \"$cyg_VC_ROOT\", does not exist.  Set the environment variable VC_ROOT."
+  print -R -u2 "The root of the Visual C++ install, \"$VC_ROOT\", does not exist.  Set the environment variable VC_ROOT."
   return 1
 fi
 
 # Set up the environment for a VC build
 export INCLUDE="$VC_ROOT/VC98/atl/include;$VC_ROOT/VC98/mfc/include;$VC_ROOT/VC98/include"
 export LIB="$VC_ROOT/VC98/mfc/lib;$VC_ROOT/VC98/lib"
-path=( /e/acs/bin /usr/local/bin "$cyg_VC_ROOT/Common/Tools/WinNT" "$cyg_VC_ROOT/Common/MSDev98/Bin" "$cyg_VC_ROOT/Common/Tools" "$cyg_VC_ROOT/VC98/bin" /e/LatestCygwinXEmacs/bin /usr/bin /usr/X11R6/bin /etc /c/WINDOWS/system32 /c/WINDOWS )
+# Insert extra directories after /usr/local/bin
+path[(r)/usr/local/bin]=( /usr/local/bin "$cyg_VC_ROOT/Common/Tools/WinNT" "$cyg_VC_ROOT/Common/MSDev98/Bin" "$cyg_VC_ROOT/Common/Tools" "$cyg_VC_ROOT/VC98/bin" )
 
 # Add SDK paths only if requested by a command-line argument
-cyg_SDK_ROOT=$(cygpath $SDK_ROOT)
-if [[ $* == *SDK* && -d $cyg_SDK_ROOT ]]; then
+if [[ $* == *SDK* ]]; then
+: ${SDK_ROOT:=$(computeSDKRoot)}
+  cyg_SDK_ROOT=$(cygpath $SDK_ROOT)
+  if [[ ! -d $cyg_SDK_ROOT ]]; then
+    print -R -u2 "The SDK root directory, \"$SDK_ROOT\", does not exist.  Set the environment variable SDK_ROOT."
+    return 2
+  fi
   INCLUDE="$SDK_ROOT/Include;$INCLUDE"
   LIB="$SDK_ROOT/Lib;$LIB"
-  path[2]=( /usr/local/bin "$cyg_SDK_ROOT/Bin" "$cyg_SDK_ROOT/Bin/WinNT" )
+  path[(r)/usr/local/bin]=( /usr/local/bin "$cyg_SDK_ROOT/Bin" "$cyg_SDK_ROOT/Bin/WinNT" )
 fi
 
 # Add Intel paths only if requested by a command-line argument
-cyg_INTEL_ROOT=$(cygpath $INTEL_ROOT)
-if [[ $* == *intel* && -d $cyg_INTEL_ROOT ]]; then
-#  INCLUDE="$INTEL_ROOT/Include;$INCLUDE"
-INCLUDE="$INTEL_ROOT/;$INCLUDE"
-#INCLUDE='C:\Program Files\Intel\Compiler\C++\10.0.025\Ia32\Include;E:\PROGRA~1\MICROS~2\VC98\ATL\INCLUDE;E:\PROGRA~1\MICROS~2\VC98\INCLUDE;E:\PROGRA~1\MICROS~2\VC98\MFC\INCLUDE;E:\Program Files\Microsoft Visual Studio\VC98\atl\include;E:\Program Files\Microsoft Visual Studio\VC98\mfc\include;E:\Program Files\Microsoft Visual Studio\VC98\include'
-#  LIB="$INTEL_ROOT/Lib;$LIB"
-LIB="$INTEL_ROOT/Lib;$LIB"
-#LIB='C:\Program Files\Intel\Compiler\C++\10.0.025\Ia32\Lib;E:\PROGRA~1\MICROS~2\VC98\LIB;E:\PROGRA~1\MICROS~2\VC98\MFC\LIB;E:\Program Files\Microsoft Visual Studio\VC98\mfc\lib;E:\Program Files\Microsoft Visual Studio\VC98\lib'
-  path[2]=( /usr/local/bin "$cyg_INTEL_ROOT/Bin" )
+if [[ $* == *intel* ]]; then
+: ${INTEL_ROOT:=$(computeIntelRoot)}
+  cyg_INTEL_ROOT=$(cygpath $INTEL_ROOT)
+  if [[ ! -d $cyg_INTEL_ROOT ]]; then
+    print -R -u2 "The intel root directory, \"$INTEL_ROOT\" does not exist.  Set the environment variable INTEL_ROOT."
+    return 3
+  fi
+  INCLUDE="$INTEL_ROOT/;$INCLUDE"
+  LIB="$INTEL_ROOT/Lib;$LIB"
+  path[(r)/usr/local/bin]=( /usr/local/bin "$cyg_INTEL_ROOT/Bin" )
 fi
 
 #print -R INCLUDE=\"$INCLUDE\"
 #print -R LIB=\"$LIB\"
 #print -R path=\"$path\"
+
+return 0
 
 # Local Variables:
 # mode: ksh

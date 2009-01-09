@@ -4,26 +4,17 @@
 # Usage: MakeNativeXEmacs [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--without-debug] [--package-root=path] [--prefix=path] [--install] <21.4|21.5>
 #
 # Assumptions:
-#   1) There is an SCM hierarchy rooted at $SCM_ROOT (defaults to ~/cvsroot
-#      for whatever XEmacs version is specified.
-#   2) Cygwin is installed on the build machine, including makeinfo, perl,
+#   1) Cygwin is installed on the build machine, including makeinfo, perl,
 #      cvs, tar and probably other stuff, too.
-#   3) Optional library sources are in /usr/local/src. (See LIB_DIR.)
-#   4) zlib is in /usr/local/src/zlib (See ZLIB_VER.)
-#   5) tiff is installed in /usr/local/src/tiff-3.7.3 (See TIFF_VER.)
-#   6) Visual Studio is installed in E:/Program Files/Microsoft Visual Studio
-#      (See VC_ROOT.)
+#   2) Optional library sources are in /usr/local/src (see LIB_DIR).
+#   3) zlib is in /usr/local/src/zlib (see ZLIB_VER).
+#   4) tiff is installed in /usr/local/src/tiff-3.7.3 (see TIFF_VER).
+#   5) Visual Studio is installed (see the sourced script vcsetup).
 
 # Set up a vanilla zsh environment
 emulate -LR zsh
 progname=${0:t}
 0=$progname                             # For error messages from builtins
-
-# Update to the latest version of the sources.
-# This started with just CVS, but now supports multiple SCM systesm.
-function update_sources {
-  scm_update xemacs-$XEMACS_VER
-}
 
 function usage {
   print -u2 "\
@@ -43,15 +34,9 @@ usage: $progname [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--wi
 }
 
 # Things to customize
-: ${SCM_ROOT:=~/cvsroot}
 : ${LIB_DIR:=/usr/local/src}
 : ${ZLIB_VER:=zlib}
 : ${TIFF_VER:=tiff-3.7.3}
-
-# Visual Studio and Platform SDK root directories
-: ${VC_ROOT:="E:/Program Files/Microsoft Visual Studio"}
-: ${SDK_ROOT:="E:/Program Files/Microsoft Platform SDK"}
-: ${INTEL_ROOT:="E:/Program Files/Intel/Compiler/C++/10.1.011/IA32"}
 
 zparseopts -D h=help -help=help -with-mule=with_mule -without-mule=without_mule -with-debug=with_debug -without-debug=without_debug -package-root:=package_root -prefix:=prefix -install=install -sdk=with_sdk -intel=with_intel
 
@@ -66,7 +51,7 @@ if [[ -n $with_intel ]]; then
   export CC=icl
   with_intel=intel
 fi
-. vcsetup $with_sdk $with_intel || exit 1
+. vcsetup $with_sdk $with_intel || exit $?
 
 # Strip out option strings and '='
 install_dir=${prefix[2]#=}
@@ -82,7 +67,7 @@ mule=
 
 XEMACS_VER=
 case $1 in
-(21.4|21.5*)
+(21.4*|21.5*)
   XEMACS_VER=$1
   shift
   ;;
@@ -93,15 +78,14 @@ case $1 in
   ;;
 esac
 
-# Update to latest sources
-update_sources
-
 # Make a local copy of the source tree
-: ${VERSION:=$(today)}
-SRCROOT=$PWD mk-src xemacs-$XEMACS_VER
+if ! srcdir=$(GetSource --src=$PWD xemacs-$XEMACS_VER) ; then
+  print -u2 "$progname: could not get retrieve sources for xemacs-$XEMACS_VER."
+  exit 2
+fi
 
 # Configure the sources
-cd xemacs-$XEMACS_VER-$VERSION/nt
+cd $srcdir/nt
 unset HOME              # Don't pick up my emacs customizations
 # Configure for optional packages
 perl -pi -e "s@^OPTIONAL_LIBRARY_DIR=.*@OPTIONAL_LIBRARY_DIR=$(cygpath --mixed /)$LIB_DIR@;
@@ -111,7 +95,12 @@ perl -pi -e "s@^OPTIONAL_LIBRARY_DIR=.*@OPTIONAL_LIBRARY_DIR=$(cygpath --mixed /
              s@^MAKEINFO=.*@MAKEINFO=${(q)$(cygpath --windows =makeinfo.exe)}@" < config.inc.samp >config.inc
 
 # Change installation directory if requested
-[[ -n $install_dir ]] && perl -pi -e "s@^INSTALL_DIR=.*@INSTALL_DIR=$install_dir/XEmacs-\\\$(XEMACS_VERSION_STRING)@" config.inc
+if [[ -n $install_dir ]]; then
+  # Use the source directory to generate the installation directory
+  # name; e.g. XEmacs-21.4.22 or XEmacs-21.4-2009-01-05.
+  version_string=XEmacs${$(basename $srcdir)#xemacs}
+  perl -pi -e "s@^INSTALL_DIR=.*@INSTALL_DIR=$install_dir/$version_string@" config.inc
+fi
 
 # Configure debugging if requested
 [[ -n $debug ]] && perl -pi -e "s@^DEBUG_XEMACS=.*@DEBUG_XEMACS=$debug@" config.inc

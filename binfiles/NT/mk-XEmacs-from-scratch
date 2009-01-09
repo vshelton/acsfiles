@@ -18,6 +18,39 @@ usage: $progname [-h|--help] [--intel] [--libs] <21.4|21.5*>
        21.5*                build some type of 21.5 XEmacs kit from SCM"
 }
 
+function make_shortcut {
+  local args desc target xemacs_ver xemacs_date xemacs_type
+
+  if ! cd $1 ; then
+    print -u2 "$progname: could not open directory $1 to create a shortcut."
+    return 1
+  fi
+
+  xemacs_ver=$2                # version (21.4 or 21.5-test, etc)
+  xemacs_date=$3               # version date yyyy-mm-dd
+  xemacs_type=$4               # type: "native", "cygwin", etc
+
+  # In case you're wondering: yes, the handling of the target filename is bogus.
+  case $xemacs_type in
+  (*native*)
+    target="$OLDPWD/xemacs-$xemacs_ver-$xemacs_date/src/xemacs.exe"
+    args=
+    ;;
+  (*cygwin*)
+    target="/bin/run.exe"
+    if ! args="$(ls $USRLOCAL/xemacs-${xemacs_ver}-${xemacs_date}*/bin/xemacs-*.exe)" 2>/dev/null ; then
+      print -u2 "$progname: could not find XEmacs target for link."
+      cd -
+      return 1
+    fi
+    args="--arguments=$args"
+    ;;
+  esac
+
+  desc="XEmacs $xemacs_ver $xemacs_date ($xemacs_type)"
+  mkshortcut --desc="$desc" --icon=/bin/run.exe --iconoffset=1 --name="$desc" --workingdir=$HOME $args $target
+  cd -
+}
 
 zparseopts -D h=help -help=help -intel=with_intel -libs=build_libs
 
@@ -37,62 +70,49 @@ fi
 
 # The version is based on the date.
 # Capture that information now in case we're crossing midnight.
-export VERSION=$(today)
+VERSION=$(today)
 
 # The location for the installed XEmacs.
 : ${XEMACS_INSTALLED_ROOT:=/XEmacs}
 
-#: ${shortcut_dir:="$(cygpath $USERPROFILE)/Application Data/Microsoft/Internet Explorer/Quick Launch/XEmacs Versions"}
-: ${shortcut_dir:="$(cygpath $USERPROFILE)/desktop/XEmacs"}
+# The directory where shortcuts are created.
+: ${shortcut_dir:="$XEMACS_INSTALLED_ROOT/shortcuts"}
 
 for ver in $*; do
+
+  build_opts=
+  install_default=
   case $ver in
-  (21.4)
-
-    # Make but don't install a native version.
-    # We'll run it from the source directory.
-    print "Building XEmacs $ver native"
-    MakeNativeXEmacs --without-debug --package-root="$(cygpath -m $XEMACS_INSTALLED_ROOT)" $with_intel 21.4
-
-    # Make and install a cygwin version and make it the default.
-    print "Building XEmacs $ver cygwin"
-    mkdir ../build >& /dev/null
-    pushd ../build
-    MakeCygwinXEmacs xemacs-$ver-$VERSION t
-    popd
-
-    # Make shortcuts.
-    pushd $shortcut_dir
-    mkshortcut --desc="XEmacs $ver (native) $VERSION" --icon=/bin/run.exe --iconoffset=1 --name="XEmacs-$ver $VERSION (native)" --workingdir=$HOME $OLDPWD/xemacs-$ver-$VERSION/src/xemacs.exe
-    mkshortcut --desc="XEmacs $ver (cygwin) $VERSION" --icon=/bin/run.exe --iconoffset=1 --arguments="$(ls /usr/local/xemacs-$ver-$VERSION/bin/xemacs-*.exe)" --name="XEmacs-$ver $VERSION (cygwin)" --workingdir=$HOME /bin/run.exe
-    popd
+  (21.4*)
+    build_opts="--without-debug"
+    install_default="t"
     ;;
-
   (21.5*)
-
-    # Make but don't install a native version.
-    # We'll run it from the source directory.
-    print "Building XEmacs $ver native"
-    MakeNativeXEmacs --with-mule --package-root="$(cygpath -m $XEMACS_INSTALLED_ROOT)" $with_intel $ver
-
-    # Make and install a cygwin version
-    print "Building XEmacs $ver cygwin"
-    mkdir ../build >& /dev/null
-    pushd ../build
-    MakeCygwinXEmacs xemacs-$ver-$VERSION
-    popd
-
-    # Make shortcuts.
-    pushd $shortcut_dir
-    mkshortcut --desc="XEmacs $ver (native, mule) $VERSION" --icon=/bin/run.exe --iconoffset=1 --name="XEmacs-$ver $VERSION (native)" --workingdir=$HOME $OLDPWD/xemacs-$ver-$VERSION/src/xemacs.exe
-    mkshortcut --desc="XEmacs $ver (cygwin, mule) $VERSION" --icon=/bin/run.exe --iconoffset=1 --arguments="$(ls /usr/local/xemacs-$ver-$VERSION-mule/bin/xemacs-*.exe)" --name="XEmacs-$ver $VERSION (cygwin)" --workingdir=$HOME /bin/run.exe
-    popd
+    build_opts="--with-mule"
     ;;
-
-  (*)
-      print -u2 "$progname: illegal version \"$ver\" specified."
-      ;;
   esac
+
+  # Update to the latest SCM sources.
+  scm_update xemacs-$ver
+
+  # Make but don't install a native version.
+  # We'll run it from the source directory.
+  print "Building XEmacs $ver native"
+  # Note that MakeNativeXEmacs requires the leading '-' in VERSION
+  # because it uses GetSource to handle both tarballs and SCM versions.
+  if VERSION="-$VERSION" MakeNativeXEmacs $build_opts --package-root="$(cygpath -m $XEMACS_INSTALLED_ROOT)" $with_intel $ver ; then
+    make_shortcut $shortcut_dir $ver $VERSION "native"
+  fi
+
+  # Make and install a cygwin version and make it the default.
+  print "Building XEmacs $ver cygwin"
+  mkdir ../build >& /dev/null
+  pushd ../build
+
+  if MakeCygwinXEmacs xemacs-$ver-$VERSION $install_default ; then
+    make_shortcut $shortcut_dir $ver $VERSION "cygwin"
+  fi
+  popd
 done
 
 # Local Variables:

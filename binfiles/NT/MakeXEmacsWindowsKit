@@ -1,0 +1,106 @@
+#!/usr/bin/env zsh
+
+# Build native setup kits for XEmacs under Windows.
+# usage: MakeXEmacsWindowsKit [-h|--help] [-p] [21.4[.NN]] [21.5[.NN]]
+
+# Assumptions:
+# 1. I do not expect that this script will work for you right out of the box,
+#    but perhaps with a small amount of tuning it will function in your setup.
+# 2. Cygwin is installed on the build system.
+# 3. InnoSetup is installed along with its pre-processor.
+#    (See http://www.jrsoftware.org/isdl.php#qsp for more details and
+#    http://files.jrsoftware.org/ispack/ispack-5.1.6.exe for the setup kit).
+
+# Set up a vanilla zsh environment
+emulate -LR zsh
+progname=${0:t}
+
+function usage {
+  print -u2 "\
+usage: $progname [-h|--help] [-p] [21.4.NN] [21.5-bNN] [21.4] [21.5*]
+       -h|--help            print this help message and exit
+       -p                   download a new set of packages
+       21.4.NN              build a 21.4.NN kit from a tarball
+       21.4                 build a 21.4 XEmacs kit from SCM
+       21.5.NN              build a 21.5.NN kit from a tarball
+       21.5*                build some type of 21.5 XEmacs kit from SCM"
+}
+
+zparseopts -D h=help -help=help p=new_packages
+
+if [[ -n $help ]]; then
+  usage
+  exit 0
+fi
+
+if [[ -z $InnoSetup ]]; then
+  ISKey='/HKLM/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall/Inno Setup 5_is1/Inno Setup: App Path'
+  InnoSetup=$(cygpath "$(regtool get $ISKey)")/iscc 2>/dev/null
+  if (( $? != 0 )); then
+    print -u2 "$progname: cannot find registry key for Inno Setup 5; set InnoSetup environment variable to the cygwin path to iscc."
+    exit 1
+  fi
+fi
+
+# Update all the packages (delete them first)
+PACKAGE_DIR=$(cygpath --mixed $PWD/packages)
+if [[ -n $new_packages ]]; then
+  rm -rf $PACKAGE_DIR
+  mkdir $PACKAGE_DIR
+  cd $PACKAGE_DIR
+  ../GetXEmacsPackages
+  cd -
+fi
+
+# If no arguments were supplied, build latest versions of 21.4 and 21.5 from SCM.
+(( $# == 0 )) && set 21.4 21.5
+
+# Get date here so if multiple kits are specified they all have the same date.
+TODAY=$(date '+%Y-%m-%d')
+
+# Loop over the versions specified on the command line
+for ver in $*; do
+  # Usually the kit name is based on the date, but if a release
+  # is specified, use that for the kit name.
+  case $ver in
+  (21.4.??)
+    branch_options=( "--without-debug" "--intel" )
+    kit_options=( "/dXEmacsVersion=$ver" "/dReadMe=ReadMe-$ver" "/dKitFile=XEmacs_Setup_$ver" )
+    ;;
+  (21.4*)
+    branch_options=( "--without-debug" "--intel" )
+    kit_options=( "/dXEmacsVersion=$ver-$TODAY" "/dReadMe=ReadMe-21.4" "/dKitFile=XEmacs_Setup_$ver-$TODAY" )
+    ;;
+  (21.5.??)
+    branch_options=( "--with-mule" "--intel" )
+    kit_options=( "/dMULE" "/dXEmacsVersion=$ver" "/dReadMe=ReadMe-$ver" "/dKitFile=XEmacs_Setup_$ver" )
+    ;;
+  (21.5*)
+    readme="ReadMe-21.5"
+    [[ -r ReadMe-$ver ]] && readme="ReadMe-$ver"
+    branch_options=( "--with-mule" "--intel" )
+    kit_options=( "/dMULE" "/dXEmacsVersion=$ver-$TODAY" "/dReadMe=$readme" "/dKitFile=XEmacs_Setup_$ver-$TODAY" )
+    ;;
+  (*)
+    print -u2 "$progname: unknown version specified: \"$ver\"."
+    continue
+    ;;
+  esac
+
+  # Make and install the executables
+  install_dir="$(cygpath --mixed $PWD/installed)"
+  if ! MakeNativeXEmacs --install --prefix=$install_dir $branch_options $ver ; then
+    print -u2 "$progname: \"MakeNativeXEmacs --install --prefix=$install_dir $branch_options $ver\" failed."
+    exit 1;
+  fi
+
+  # Run the Inno Setup compiler to make the kit
+  $InnoSetup XEmacs.iss /dExecSrc=$install_dir /dPkgSrc=$PACKAGE_DIR /dXEmacsVersion=$ver $kit_options
+
+done
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

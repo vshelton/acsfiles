@@ -1,0 +1,144 @@
+#!/usr/bin/env zsh
+
+# Unpack a source tree, either from:
+#   1. A local tarball cache
+#   2. A remote tarball repository
+#   3. A local SCM hierarchy
+#   4. A remote SCM hierarchy (not yet implemented)
+
+emulate -LR zsh
+progname="${0:t}"
+
+function usage {
+  print -u2 "\
+usage: $progname [-h|--help] --cache=<dir> --force --remote --scm=<dir> --src=<dir> --ver=<version_string> <project>
+       -h|--help            Print this help message and exit
+       --cache=<dir>        Specify the location of the local tarball cache
+       --force              Force overwriting of local tarballs
+       --remote             Use wget to retrieve the file
+       --scm=<dir>          Specify the location of software configuration
+                            management directory
+       --src=<dir>          Use the specifed directory as the root for the
+                            destination source tree
+       --ver=<string>       When retrieving sources from scm, use the
+                            specified version string as a suffix.  If this
+                            is not specified, the default version string
+                            is \"-YYYY-MM-DD\"
+
+       project              The name of the archive or URL, or the name of
+                            the project under the scm directory."
+}
+
+function extract_local_tarball {
+  local archive_name archive_path
+
+  # First check for an exact match
+  if [[ -r $ZIPROOT/$1 ]]; then
+    archive_name=${${1%%.tar*}%%.tgz}
+    archive_path=$ZIPROOT/$1
+  else
+    archive_name=$1
+    archive_path=$(find_local_tarball $archive_name)
+  fi
+
+  if (( $? == 0 )); then
+    #print -u2 archive_path = \"$archive_path\"
+    cd $SRCROOT
+    if tar xfp $archive_path ; then
+      print $PWD/$archive_name
+    else
+      print -u2 "$progname: tar error when extracting from $archive_path: $?"
+      return 2
+    fi
+    return 0
+  fi
+
+  # No match found
+  return 1
+}
+
+function find_local_tarball {
+  local suffix
+  for suffix in $suffix_list; do
+    if [[ -r $ZIPROOT/${1}${suffix} ]]; then
+      print $ZIPROOT/${1}${suffix}
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+zparseopts -D h=help -help=help -cache:=cache_root -force=force -remote=remote -scm:=scm_root -src:=src_root -ver:=version
+
+if [[ -n $help ]]; then
+  usage
+  exit 0
+fi
+
+# ZIPROOT, SRCROOT, SCMROOT and VERSION are preserved for historical reasons.
+: ${ZIPROOT:=.}
+[[ -n $cache_root ]] && ZIPROOT=${cache_root[2]#=}
+: ${SRCROOT:=.}
+[[ -n $src_root ]] && SRCROOT=${src_root[2]#=}
+: ${SCMROOT:=.}
+[[ -n $scm_root ]] && SCMROOT=${scm_root[2]#=}
+: ${VERSION:="-$(date +'%Y-%m-%d')"}
+[[ -n $version ]] && VERSION=${version[2]#=}
+
+# This is the list of currently known suffixes for tarballs.
+suffix_list=( .tar .tar.bz2 .tar.gz .tar.lzma .tgz )
+
+# Remote file name, so retrieve the file to $ZIPROOT and unpack it from there.
+if [[ -n $remote ]] || [[ $1 =~ ftp://*\|http://* ]]; then
+
+  # Unless the --force option was specified, a local copy of the
+  # tarball supercedes the need to fetch the remote tarball.
+  archive_name=$(basename $1)
+  package=${${archive_name%.tar*}%.tgz}
+  if [[ -z $force ]] && extract_local_tarball $package ; then
+    exit 0
+  fi
+  (
+    cd $ZIPROOT
+    mv -f ${archive_name} ${archive_name}.old >& /dev/null
+    if ! wget -q $1 ; then
+      print -u2 "$progname wget error when retrieving $1: $?."
+      exit 1
+    fi
+  )
+
+  if ! extract_local_tarball $(basename $1) ; then
+    print -u2 "$progname: extracting files from the retrieved tarball failed."
+    exit 1
+  fi
+  exit 0
+fi
+
+# Unpack a tarball from the local cache, if possible.
+extract_local_tarball $1 && exit 0
+
+# Try to extract the named project from SCM.
+project_scm_dir=$SCMROOT/$1
+if [[ -d $project_scm_dir ]]; then
+
+  target_dir=$SRCROOT/${1}${VERSION}
+  mkdir -p $target_dir
+  cd $target_dir
+  if ! tar cf - -C $SCMROOT/$1 --exclude-vcs --dereference . | tar xfp - ; then
+    print -u2 "$progname: tar error copying from $SCMROOT/$1 to $target_dir."
+    exit 1
+  fi
+  print $target_dir
+  exit 0
+fi
+
+# No luck.
+print -u2 "$progname: No local file, remote file or SCM archive matched $1."
+exit 2
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

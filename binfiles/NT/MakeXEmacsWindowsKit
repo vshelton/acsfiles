@@ -17,8 +17,9 @@ progname=${0:t}
 
 function usage {
   print -u2 "\
-usage: $progname [-h|--help] [-p] [21.4.NN] [21.5-bNN] [21.4] [21.5*]
+usage: $progname [-h|--help] [-i|--intel] [-p] [21.4.NN] [21.5-bNN] [21.4] [21.5*]
        -h|--help            print this help message and exit
+       -i|--intel           build with the Intel compiler
        -p                   download a new set of packages
        21.4.NN              build a 21.4.NN kit from a tarball
        21.4                 build a 21.4 XEmacs kit from SCM
@@ -26,7 +27,7 @@ usage: $progname [-h|--help] [-p] [21.4.NN] [21.5-bNN] [21.4] [21.5*]
        21.5*                build some type of 21.5 XEmacs kit from SCM"
 }
 
-zparseopts -D h=help -help=help p=new_packages
+zparseopts -D h=help -help=help i=intel -intel=intel p=new_packages
 
 if [[ -n $help ]]; then
   usage
@@ -64,22 +65,30 @@ for ver in $*; do
   # is specified, use that for the kit name.
   case $ver in
   (21.4.??)
-    branch_options=( "--without-debug" "--intel" )
-    kit_options=( "/dXEmacsVersion=$ver" "/dReadMe=ReadMe-$ver" "/dKitFile=XEmacs_Setup_$ver" )
+    branch_options=( "--without-debug" )
+    [[ -n "$intel" ]] && branch_options=( $branch_options "--intel" )
+    version_string=$ver
+    kit_options=( "/dReadMe=ReadMe-$ver" )
     ;;
   (21.4*)
-    branch_options=( "--without-debug" "--intel" )
-    kit_options=( "/dXEmacsVersion=$ver-$TODAY" "/dReadMe=ReadMe-21.4" "/dKitFile=XEmacs_Setup_$ver-$TODAY" )
+    branch_options=( "--without-debug" )
+    [[ -n "$intel" ]] && branch_options=( $branch_options "--intel" )
+    version_string=$ver-$TODAY
+    kit_options=( "/dReadMe=ReadMe-21.4" )
     ;;
   (21.5.??)
-    branch_options=( "--with-mule" "--intel" )
-    kit_options=( "/dMULE" "/dXEmacsVersion=$ver" "/dReadMe=ReadMe-$ver" "/dKitFile=XEmacs_Setup_$ver" )
+    branch_options=( "--with-mule" )
+    [[ -n "$intel" ]] && branch_options=( $branch_options "--intel" )
+    version_string=$ver
+    kit_options=( "/dMULE" "/dReadMe=ReadMe-$ver" )
     ;;
   (21.5*)
     readme="ReadMe-21.5"
     [[ -r ReadMe-$ver ]] && readme="ReadMe-$ver"
-    branch_options=( "--with-mule" "--intel" )
-    kit_options=( "/dMULE" "/dXEmacsVersion=$ver-$TODAY" "/dReadMe=$readme" "/dKitFile=XEmacs_Setup_$ver-$TODAY" )
+    branch_options=( "--with-mule" )
+    [[ -n "$intel" ]] && branch_options=( $branch_options "--intel" )
+    version_string=$ver-$TODAY
+    kit_options=( "/dMULE"  "/dReadMe=$readme" )
     ;;
   (*)
     print -u2 "$progname: unknown version specified: \"$ver\"."
@@ -87,12 +96,18 @@ for ver in $*; do
     ;;
   esac
 
+  # Add options common to all kits
+  kit_options=( $kit_options "/dXEmacsVersion=$version_string" "/dKitFile=XEmacs_Setup_$version_string" )
+
   # Make and install the executables
   install_dir="$(cygpath --mixed $PWD/installed)"
   if ! MakeNativeXEmacs --install --prefix=$install_dir $branch_options $ver ; then
     print -u2 "$progname: \"MakeNativeXEmacs --install --prefix=$install_dir $branch_options $ver\" failed."
     exit 1;
   fi
+
+  # Copy required DLLs to the target directory
+  cp -p DLLs/*.dll $install_dir/XEmacs-$version_string/i586-pc-win32
 
   # Run the Inno Setup compiler to make the kit
   $InnoSetup XEmacs.iss /dExecSrc=$install_dir /dPkgSrc=$PACKAGE_DIR /dXEmacsVersion=$ver $kit_options

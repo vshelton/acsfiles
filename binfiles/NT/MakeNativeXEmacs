@@ -92,6 +92,7 @@ perl -pi -e "s@^OPTIONAL_LIBRARY_DIR=.*@OPTIONAL_LIBRARY_DIR=$(cygpath --mixed /
              s@^ZLIB_DIR=.*@ZLIB_DIR=\\\$(OPTIONAL_LIBRARY_DIR)/$ZLIB_VER@;
              s@^TIFF_DIR=.*@TIFF_DIR=\\\$(OPTIONAL_LIBRARY_DIR)/$TIFF_VER@;
              s@^HAVE_XFACE=.*@HAVE_XFACE=0@;
+             s@^USE_KKCC=.*@USE_KKCC=0@;
              s@^MAKEINFO=.*@MAKEINFO=${(q)$(cygpath --windows =makeinfo.exe)}@" < config.inc.samp >config.inc
 
 # Change installation directory if requested
@@ -119,9 +120,9 @@ perl -pi -e 's@.*BUILD_FOR_SETUP_KIT.*@BUILD_FOR_SETUP_KIT=1@' config.inc
 if [[ -n $package_dir ]] &&  perl -pi -e "s@^#PACKAGE_PREFIX=.*@PACKAGE_PREFIX=$package_dir@" config.inc
 
 # Build and install XEmacs
-nmake -f xemacs.mak
-nmake -f xemacs.mak check >& check.out
-[[ -n $install ]] && nmake -f xemacs.mak install
+nmake -f xemacs.mak || exit $?
+nmake -f xemacs.mak check >& check.out || exit $?
+[[ -n $install ]] && nmake -f xemacs.mak install || exit $?
 
 # Local Variables:
 # mode: ksh

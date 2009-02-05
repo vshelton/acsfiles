@@ -25,14 +25,20 @@ function computeSDKRoot {
 }
 
 function computeVCRoot {
-  local vers v vsroot
+  local prod vers v vsroot
   vers=( $(regtool list /HKLM/SOFTWARE/Microsoft/VisualStudio | sort -rn) )
+  # Under VS 6.0 the key is apparently:
+  #  HKLM/SOFTWARE/Microsoft/VisualStudio/6.0/Setup/Microsoft Visual Studio/ProductDir
+  # Under VS 8.0, the key is apparently:
+  #  HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/VisualStudio/8.0/Setup/VS/ProductDir
   for v in $vers ; do
-    if vsroot=$(regtool get -e "/HKLM/SOFTWARE/Microsoft/VisualStudio/${v}/Setup/Microsoft Visual Studio/ProductDir" 2>/dev/null); then
-      vsroot=$(cygpath -m $vsroot)
-      [[ -d $vsroot ]] && print $vsroot
-      return 0
-    fi
+    for prod in "VS" "Microsoft Visual Studio" ; do
+      if vsroot=$(regtool get -e "/HKLM/SOFTWARE/Microsoft/VisualStudio/${v}/Setup/$prod/ProductDir" 2>/dev/null) 2>/dev/null; then
+        vsroot=$(cygpath -m $vsroot)
+        [[ -d $vsroot ]] && print $vsroot
+        return 0
+      fi
+    done
   done
   print "C:/Program Files/Microsoft Visual Studio"
 }
@@ -50,8 +56,8 @@ fi
 # Set up the environment for a VC build
 export INCLUDE="$VC_ROOT/VC98/atl/include;$VC_ROOT/VC98/mfc/include;$VC_ROOT/VC98/include"
 export LIB="$VC_ROOT/VC98/mfc/lib;$VC_ROOT/VC98/lib"
-# Insert extra directories after /usr/local/bin
-path[(r)/usr/local/bin]=( /usr/local/bin "$cyg_VC_ROOT/Common/Tools/WinNT" "$cyg_VC_ROOT/Common/MSDev98/Bin" "$cyg_VC_ROOT/Common/Tools" "$cyg_VC_ROOT/VC98/bin" )
+# Insert extra directories after $USRLOCAL/bin
+path[(r)$USRLOCAL/bin]=( $USRLOCAL/bin "$cyg_VC_ROOT/Common/Tools/WinNT" "$cyg_VC_ROOT/Common/MSDev98/Bin" "$cyg_VC_ROOT/Common/Tools" "$cyg_VC_ROOT/VC98/bin" )
 
 # Add SDK paths only if requested by a command-line argument
 if [[ $* == *SDK* ]]; then
@@ -63,25 +69,37 @@ if [[ $* == *SDK* ]]; then
   fi
   INCLUDE="$SDK_ROOT/Include;$INCLUDE"
   LIB="$SDK_ROOT/Lib;$LIB"
-  path[(r)/usr/local/bin]=( /usr/local/bin "$cyg_SDK_ROOT/Bin" "$cyg_SDK_ROOT/Bin/WinNT" )
+  path[(r)$USRLOCAL/bin]=( $USRLOCAL/bin "$cyg_SDK_ROOT/Bin" "$cyg_SDK_ROOT/Bin/WinNT" )
 fi
 
 # Add Intel paths only if requested by a command-line argument
 if [[ $* == *intel* ]]; then
-: ${INTEL_ROOT:=$(computeIntelRoot)}
+  : ${INTEL_ROOT:=$(computeIntelRoot)}
   cyg_INTEL_ROOT=$(cygpath $INTEL_ROOT)
   if [[ ! -d $cyg_INTEL_ROOT ]]; then
     print -R -u2 "The intel root directory, \"$INTEL_ROOT\" does not exist.  Set the environment variable INTEL_ROOT."
     return 3
   fi
-  INCLUDE="$INTEL_ROOT/;$INCLUDE"
-  LIB="$INTEL_ROOT/Lib;$LIB"
-  path[(r)/usr/local/bin]=( /usr/local/bin "$cyg_INTEL_ROOT/Bin" )
+  iinc="$cyg_INTEL_ROOT/include/"
+  if [[ -d "$iinc" ]] ; then
+    INCLUDE="$(cygpath -m $iinc);$INCLUDE"
+  else
+    INCLUDE="$INTEL_ROOT;$INCLUDE"
+  fi
+  ilib="$cyg_INTEL_ROOT/lib/ia32"
+  if [[ -d "$ilib" ]] ; then
+    LIB="$(cygpath -m $ilib);$LIB"
+  else
+    LIB="$INTEL_ROOT;$LIB"
+  fi
+  ibin="$cyg_INTEL_ROOT/bin/ia32"
+  [[ -d "$ibin" ]] || ibin="$cyg_INTEL_ROOT/bin"
+  path[(r)$USRLOCAL/bin]=( $USRLOCAL/bin "$ibin" )
 fi
-
-#print -R INCLUDE=\"$INCLUDE\"
-#print -R LIB=\"$LIB\"
-#print -R path=\"$path\"
+set +x
+print -u2 -R INCLUDE=\"$INCLUDE\"
+print -u2 -R LIB=\"$LIB\"
+print -u2 -R path=\"$path\"
 
 return 0
 

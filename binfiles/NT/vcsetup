@@ -1,4 +1,3 @@
-
 # Set up for running Visual C++ under Cygwin
 # This script must be sourced under zsh.
 
@@ -27,9 +26,9 @@ function computeSDKRoot {
 function computeVCRoot {
   local prod vers v vsroot
   vers=( $(regtool list /HKLM/SOFTWARE/Microsoft/VisualStudio | sort -rn) )
-  # Under VS 6.0 the key is apparently:
+  # Under Visual Studio 6.0 the key is apparently:
   #  HKLM/SOFTWARE/Microsoft/VisualStudio/6.0/Setup/Microsoft Visual Studio/ProductDir
-  # Under VS 8.0, the key is apparently:
+  # Under Visual Studio 8.0, the key is apparently:
   #  HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/VisualStudio/8.0/Setup/VS/ProductDir
   for v in $vers ; do
     for prod in "VS" "Microsoft Visual Studio" ; do
@@ -49,57 +48,89 @@ function computeVCRoot {
 
 cyg_VC_ROOT=$(cygpath $VC_ROOT)
 if [[ ! -d $cyg_VC_ROOT ]]; then
-  print -R -u2 "The root of the Visual C++ install, \"$VC_ROOT\", does not exist.  Set the environment variable VC_ROOT."
+  print -u2 -R "The root of the Visual C++ install, \"$VC_ROOT\", does not exist.  Set the environment variable VC_ROOT."
   return 1
 fi
 
-# Set up the environment for a VC build
-export INCLUDE="$VC_ROOT/VC98/atl/include;$VC_ROOT/VC98/mfc/include;$VC_ROOT/VC98/include"
-export LIB="$VC_ROOT/VC98/mfc/lib;$VC_ROOT/VC98/lib"
-# Insert extra directories after $USRLOCAL/bin
-path[(r)$USRLOCAL/bin]=( $USRLOCAL/bin "$cyg_VC_ROOT/Common/Tools/WinNT" "$cyg_VC_ROOT/Common/MSDev98/Bin" "$cyg_VC_ROOT/Common/Tools" "$cyg_VC_ROOT/VC98/bin" )
+# Find vcvars32.bat, which sets up the Visual Studio environment.
+cyg_VS_INIT=$(find $cyg_VC_ROOT -iname 'vcvars32.bat' | sed 1q)
+if [[ ! -e $cyg_VS_INIT ]]; then
+  print -u2 -R "Could not find vcvars32.bat to initialize the Visual Studio environment"
+  return 1
+fi
+EFILE=$$.tmp
+VS_INIT="$(cygpath -w $cyg_VS_INIT)"
+# This is a little bit gross, because we're exporting the
+# entire environment when all we want are the variables set by
+# the vcvars32.bat file.  However, a more surgical alternative:
+#env - PATH=$PATH cmd >&/dev/null <<EOF
+#...
+#EOF
+# fails, because vcvars32 depends on the environment variable
+# VSnnCOMNTOOLS, where nn is the version number.  In order to use
+# this approach, we'd have to know the names of all such variables
+# to include in the environment, so the command would look like this:
+#env - PATH=$PATH VS80COMNTOOLS=$VS80COMNTOOLS VS90COMNTOOLS=$VS90COMNTOOLS ...
+# Once you add in the same potential problems with the SDK and Intel
+# compiler, I currently think this is a better approach.
+cmd >&/dev/null <<EOF
+  "$VS_INIT"
+  env >$EFILE
+EOF
 
-# Add SDK paths only if requested by a command-line argument
+# Add SDK paths only if requested by a command-line argument.
 if [[ $* == *SDK* ]]; then
 : ${SDK_ROOT:=$(computeSDKRoot)}
   cyg_SDK_ROOT=$(cygpath $SDK_ROOT)
   if [[ ! -d $cyg_SDK_ROOT ]]; then
-    print -R -u2 "The SDK root directory, \"$SDK_ROOT\", does not exist.  Set the environment variable SDK_ROOT."
+    print -u2 -R "The SDK root directory, \"$SDK_ROOT\", does not exist.  Set the environment variable SDK_ROOT."
+    rm $EFILE
     return 2
   fi
-  INCLUDE="$SDK_ROOT/Include;$INCLUDE"
-  LIB="$SDK_ROOT/Lib;$LIB"
-  path[(r)$USRLOCAL/bin]=( $USRLOCAL/bin "$cyg_SDK_ROOT/Bin" "$cyg_SDK_ROOT/Bin/WinNT" )
+  cyg_SDK_INIT=$(find $cyg_SDK_ROOT -iname 'SetEnv.cmd' | sed 1q)
+  if [[ ! -e $cyg_SDK_INIT ]]; then
+    print -u2 -R "Could not find SetEnv.cmd to initialize the platform SDK environment"
+    rm $EFILE
+    return 2
+  fi
+  SDK_INIT="$(cygpath -w $cyg_SDK_INIT)"
+  cmd >&/dev/null <<EOF
+    "$SDK_INIT"
+    env >>$EFILE
+EOF
 fi
 
-# Add Intel paths only if requested by a command-line argument
+# Add Intel paths only if requested by a command-line argument.
 if [[ $* == *intel* ]]; then
-  : ${INTEL_ROOT:=$(computeIntelRoot)}
+: ${INTEL_ROOT:=$(computeIntelRoot)}
   cyg_INTEL_ROOT=$(cygpath $INTEL_ROOT)
   if [[ ! -d $cyg_INTEL_ROOT ]]; then
-    print -R -u2 "The intel root directory, \"$INTEL_ROOT\" does not exist.  Set the environment variable INTEL_ROOT."
+    print -u2 -R "The intel root directory, \"$INTEL_ROOT\" does not exist.  Set the environment variable INTEL_ROOT."
+    rm $EFILE
     return 3
   fi
-  iinc="$cyg_INTEL_ROOT/include/"
-  if [[ -d "$iinc" ]] ; then
-    INCLUDE="$(cygpath -m $iinc);$INCLUDE"
-  else
-    INCLUDE="$INTEL_ROOT;$INCLUDE"
+  cyg_ICL_INIT=$(find $cyg_INTEL_ROOT -iname 'iclvars.bat' | sed 1q)
+  if [[ ! -e $cyg_ICL_INIT ]]; then
+    print -u2 -R "Could not find vcvars32.bat to initialize the Intel C Compiler environment"
+    rm $EFILE
+    return 2
   fi
-  ilib="$cyg_INTEL_ROOT/lib/ia32"
-  if [[ -d "$ilib" ]] ; then
-    LIB="$(cygpath -m $ilib);$LIB"
-  else
-    LIB="$INTEL_ROOT;$LIB"
-  fi
-  ibin="$cyg_INTEL_ROOT/bin/ia32"
-  [[ -d "$ibin" ]] || ibin="$cyg_INTEL_ROOT/bin"
-  path[(r)$USRLOCAL/bin]=( $USRLOCAL/bin "$ibin" )
+  ICL_INIT="$(cygpath -w $cyg_ICL_INIT)"
+  cmd >&/dev/null <<EOF
+    "$ICL_INIT" ia32
+    env >>$EFILE
+EOF
 fi
-set +x
-print -u2 -R INCLUDE=\"$INCLUDE\"
-print -u2 -R LIB=\"$LIB\"
-print -u2 -R path=\"$path\"
+
+# Read in the environment file and export all the variables listed there.
+for e in "${(f)$(<$EFILE)}"; do
+  eval export "$(print -R '$e')"
+done >&/dev/null
+rm $EFILE
+
+#print -u2 -R INCLUDE=\"$INCLUDE\"
+#print -u2 -R LIB=\"$LIB\"
+#print -u2 -R path=\"$path\"
 
 return 0
 

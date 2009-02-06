@@ -1,11 +1,13 @@
 @echo off
 
-zsh -c "echo -n set CYGWIN_SITE=;/e/acs/bin/cygwin_mirrors" > x.bat
+if not exist e:\ goto drive_not_found
 
-call x.bat
-del /f x.bat
+zsh -c "echo -n set CYGWIN_SITE=;/c/acs/bin/cygwin_mirrors" > %TEMP%\x.bat
 
-f:
+call %TEMP%\x.bat
+del /f %TEMP%\x.bat
+
+e:
 cd \cygwin\cygwin_repo
 
 rsync -vaz --exclude mail-archives %CYGWIN_SITE% .
@@ -15,4 +17,10 @@ rem but that caused the rsync window to disappear, so instead, I specify
 rem my locally-built latest copy of setup from /usr/local/bin.
 rem .\setup --local-install --local-package-dir f:/cygwin/cygwin_repo --no-shortcuts
 rem "%HOMEDRIVE%%HOMEPATH%\Desktop\Cygwin Setup.lnk"
-e:\cygwin\usr\local\bin\cygwin-setup --local-install --local-package-dir f:/cygwin/cygwin_repo --no-shortcuts
+e:\cygwin\cygwin_repo\setup-1.7 --local-install --local-package-dir e:/cygwin/cygwin_repo --no-shortcuts
+exit
+
+:drive_not_found
+echo drive e: not found
+pause
+

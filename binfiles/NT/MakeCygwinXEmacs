@@ -16,6 +16,8 @@ if [[ $# -lt 1 ]]; then
   exit 1
 fi
 
+: ${USRLOCAL:=/usr/local}
+: ${BLDROOT:=$USRLOCAL/build}
 : ${XEMACS_INSTALLED_ROOT:=/XEmacs}
 : ${pkg_path:="$XEMACS_INSTALLED_ROOT/site-packages::$XEMACS_INSTALLED_ROOT/xemacs-packages"}
 #: ${CC:=gcc-4}
@@ -59,10 +61,10 @@ while (( $# > 0 )); do
     latest=$XEMACS_INSTALLED_ROOT/cygwin
     rm -rf $latest
 
-    # Ugh - we must know the algorithm mk-xemacs uses
-    # to build the version info
+    # Kind of a hack - cd to the most recent XEmacs build directory.
     (
-      cd $branch >& /dev/null || cd xemacs-$branch-${VERSION:-$(today)}
+      setopt NULLGLOB
+      cd $(ls -dt $BLDROOT/xemacs-${branch}* $BLDROOT/${branch}* 2>/dev/null | sed 1q)
       make install prefix=$latest >& inst-latest.out
     )
 

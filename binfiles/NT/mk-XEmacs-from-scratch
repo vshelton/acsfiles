@@ -85,10 +85,10 @@ for ver in $*; do
   case $ver in
   (21.4*)
     build_opts="--without-debug"
-    install_default="t"
     ;;
   (21.5*)
     build_opts="--with-mule"
+    install_default="t"
     ;;
   esac
 

@@ -10,7 +10,7 @@
 	    (substring p 0 -1)
 	  p)))
 
-;; Setup some convenience variables
+;; Set up some convenience variables
 (setq acs::win32 (string-match "win32" system-configuration)
       acs::cygwin (string-match "cygwin" system-configuration)
       acs::windows-platform (or acs::win32 acs::cygwin))
@@ -29,8 +29,14 @@
 
 ((and acs::win32 (executable-find "cygpath"))
  (setq exec-path (list
-		  (expand-file-name "~/bin")
-		  (call-cygpath "--mixed /usr/local/bin")
+; In my usual configuration, /usr/local/bin/zsh is a symlink
+; to /usr/local/zsh-yyyy-mm-dd/bin/zsh.  Since cygwin symlinks
+; don't work outside of cygwin, and since executable-find will
+; find /usr/local/bin/zsh as an executable, a windows native XEmacs
+; will get very confused when it tries to execute a shell command.
+; Work around this by commenting out the problematic directories.
+;		  (expand-file-name "~/bin")
+;		  (call-cygpath "--mixed /usr/local/bin")
 		  (call-cygpath "--mixed /bin")
 		  (call-cygpath "--mixed --sysdir")
 		  (call-cygpath "--mixed --windir")
@@ -46,6 +52,11 @@
 (when (string-match "cmd" shell-file-name)
   (setq directory-sep-char ?\\
 	shell-command-switch "/c"))
+
+;; Work around a specifier bug in modeline under Windows.
+;; See http://article.gmane.org/gmane.emacs.xemacs.beta/27406
+;(and (or acs::win32 acs::cygwin)
+;     (set-face-background 'modeline (face-background-instance 'modeline)))
 
 ;; Load and enable version control
 (require 'vc)

@@ -20,8 +20,8 @@ fi
 : ${BLDROOT:=$USRLOCAL/build}
 : ${XEMACS_INSTALLED_ROOT:=/XEmacs}
 : ${pkg_path:="$XEMACS_INSTALLED_ROOT/site-packages::$XEMACS_INSTALLED_ROOT/xemacs-packages"}
-#: ${CC:=gcc-4}
-#export CC
+: ${CC:=gcc-4}
+export CC
 export INSTALL==install	# Hack around configure bug tickled by --with-infopath
 export CFLAGS='-Os -malign-double -pipe -ffast-math'
 
@@ -71,6 +71,9 @@ while (( $# > 0 )); do
     # Rename the executable to xemacs.exe so winclient will find it
     # and the SendTo menu will work
     mv $latest/bin/xemacs*.exe $latest/bin/xemacs.exe
+
+    # Remove the 'xemacs' symbolic link that now points nowhere
+    rm $latest/bin/xemacs
   fi
 
 done

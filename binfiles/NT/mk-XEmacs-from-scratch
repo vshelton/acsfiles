@@ -34,11 +34,19 @@ function make_shortcut {
   case $xemacs_type in
   (*native*)
     target="$OLDPWD/xemacs-$xemacs_ver-$xemacs_date/src/xemacs.exe"
+    [[ ! -e $target ]] && target="$OLDPWD/xemacs-$xemacs_ver.$xemacs_date/src/xemacs.exe"
+    if [[ ! -e $target ]]; then
+      print -u2 "$progname: could not find XEmacs target for link."
+      cd -
+      return 1
+    fi
     args=
     ;;
   (*cygwin*)
     target="/bin/run.exe"
-    if ! args="$(ls $USRLOCAL/xemacs-${xemacs_ver}-${xemacs_date}*/bin/xemacs-*.exe)" 2>/dev/null ; then
+    args="$(ls $USRLOCAL/xemacs-${xemacs_ver}-${xemacs_date}*/bin/xemacs-*.exe)" 2>/dev/null
+    [[ ! -e $args ]] && args="$(ls $USRLOCAL/xemacs-${xemacs_ver}.${xemacs_date}*/bin/xemacs-*.exe)" 2>/dev/null
+    if [[ ! -e $args ]]; then
       print -u2 "$progname: could not find XEmacs target for link."
       cd -
       return 1
@@ -65,12 +73,8 @@ fi
 
 [[ -n $with_intel ]] && with_intel="--intel"
 
-# The default is to build both 21.4 and 21.5
+# The default is to build both 21.4 and 21.5 from source code control
 (( $# == 0 )) && set 21.4 21.5
-
-# The version is based on the date.
-# Capture that information now in case we're crossing midnight.
-VERSION=$(today)
 
 # The location for the installed XEmacs.
 : ${XEMACS_INSTALLED_ROOT:=/XEmacs}
@@ -80,28 +84,116 @@ VERSION=$(today)
 
 for ver in $*; do
 
+# Parse the version string.
+# The legal version strings are:
+#
+#   xemacs-21.[45].??
+#   xemacs-21.[45]*-yyyy-mm-dd || xemacs-21.[45]*-yyyy-mm-dd-hhmm
+#        These version names assume that the named directory already
+#        exists and is an XEmacs source directory.
+#
+#   xemacs-21.[45]*
+#        These version names assume that there is an SCM hierarchy
+#        of the given name that exists as a sub-directory of $SCMROOT.
+#        The resulting source directory will be named, e.g.
+#        xemacs-21.4-2009-09-30 or xemacs-21.5-test-2009-09-30.
+#
+#   As a backward-compatible shortcut, any of the above patterns
+#   can be specified without the leading "xemacs-", i.e. "21.4".
+
+  case $ver in
+
+  (xemacs-21.[45].??)
+    srcdir=$ver
+    # If the source directory doesn't yet exist, unpack it here.
+    if [[ ! -e $srcdir ]]; then
+      if ! GetSource --src=. $srcdir >& /dev/null ; then
+        print -u2 "$progname: could not retrieve sources for $ver."
+        exit 2
+      fi
+    fi
+    datespec=${ver#xemacs-}
+    branch=${datespec%.??}
+    datespec=${datespec#$branch.}
+    ;;
+
+  (21.[45].??)
+    srcdir=xemacs-$ver
+    # If the source directory doesn't yet exist, unpack it here.
+    if [[ ! -e $srcdir ]]; then
+      if ! GetSource --src=. $srcdir >& /dev/null ; then
+        print -u2 "$progname: could not retrieve sources for $ver."
+        exit 2
+      fi
+    fi
+    branch=${ver%.??}
+    datespec=${ver#$branch.}
+    ;;
+
+  (xemacs-21.[45]*????-??-??-????)
+    srcdir=$ver
+    datespec=${ver#xemacs-}
+    branch=${datespec%-????-??-??-????}
+    datespec=${datespec#$branch-}
+    ;;
+
+  (21.[45]*????-??-??-????)
+    srcdir=xemacs-$ver
+    branch=${ver%-????-??-??-????}
+    datespec=${ver#$branch-}
+    ;;
+
+  (xemacs-21.[45]*????-??-??)
+    srcdir=$ver
+    datespec=${ver#xemacs-}
+    branch=${datespec%-????-??-??}
+    datespec=${datespec#$branch-}
+    ;;
+
+  (21.[45]*????-??-??)
+    srcdir=xemacs-$ver
+    branch=${ver%-????-??-??}
+    datespec=${ver#$branch-}
+    ;;
+
+  # By default, the version is based on the date
+  # and the sources are retrieved from SCM.
+  (*)
+    [[ $ver == 21* ]] && ver=xemacs-$ver
+    if ! scm_update $ver ; then
+      print -u2 "$progname: could not update $ver. \
+Is there an SCM hierarchy at $SCMROOT?"
+      exit 2
+    fi
+
+    # Make a local copy of the source tree
+    if ! srcdir=$(GetSource --src=. $ver) ; then
+       print -u2 "$progname: could not retrieve sources for $ver."
+       exit 2
+    fi
+    srcdir=${srcdir#./}
+    branch=${ver#xemacs-}
+    datespec=${srcdir#xemacs-$branch-}
+    ;;
+  esac
+
   build_opts=
   install_default=
   case $ver in
-  (21.4*)
+  (*21.4*)
     build_opts="--without-debug"
     ;;
-  (21.5*)
+  (*21.5*)
     build_opts="--with-mule"
     install_default="t"
     ;;
   esac
 
-  # Update to the latest SCM sources.
-  scm_update xemacs-$ver
-
   # Make but don't install a native version.
   # We'll run it from the source directory.
-  print "Building XEmacs $ver native"
-  # Note that MakeNativeXEmacs requires the leading '-' in VERSION
-  # because it uses GetSource to handle both tarballs and SCM versions.
-  if VERSION="-$VERSION" MakeNativeXEmacs $build_opts --package-root="$(cygpath -m $XEMACS_INSTALLED_ROOT)" $with_intel $ver ; then
-    make_shortcut $shortcut_dir $ver $VERSION "native"
+  print "Building XEmacs $branch native"
+  if MakeNativeXEmacs $build_opts --package-root="$(cygpath -m $XEMACS_INSTALLED_ROOT)" $with_intel $srcdir ; then
+    make_shortcut $shortcut_dir $branch $datespec "native"
   fi
 
   # Make and install a cygwin version and make it the default.
@@ -109,8 +201,8 @@ for ver in $*; do
   mkdir ../build >& /dev/null
   pushd ../build
 
-  if MakeCygwinXEmacs xemacs-$ver-$VERSION $install_default ; then
-    make_shortcut $shortcut_dir $ver $VERSION "cygwin"
+  if MakeCygwinXEmacs $srcdir $install_default ; then
+    make_shortcut $shortcut_dir $branch $datespec "cygwin"
   fi
   popd
 done

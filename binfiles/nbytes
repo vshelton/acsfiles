@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+#!/usr/bin/perl
 
 # Report the total number of bytes of all the files listed
 $total = 0;

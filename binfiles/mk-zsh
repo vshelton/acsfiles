@@ -27,6 +27,8 @@ if [[ $# = 0 ]] || [[ "$1" == -* ]]; then
 
   # Generate a configure script
   pushd $SRCDIR || exit 1
+  # On cygwin, move the process substitution test aside
+  [[ $(uname) =~ CYGWIN* ]] && mv Test/D03procsubst{.ztst,}
   ./Util/preconfig
   err=$?
   if (( err != 0 )); then

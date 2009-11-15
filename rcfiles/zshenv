@@ -43,9 +43,9 @@ system_specific .zshenv -pre
 : ${BLDROOT:=$USRLOCAL/build} ${ZIPROOT:=$USRLOCAL/zip}
 export USRLOCAL SRCROOT BLDROOT ZIPROOT
 
-export LC_COLLATE=C
-unset LANG
-unset LC_TIME
+#export LC_COLLATE=C
+#unset LANG
+#unset LC_TIME
 
 path=($ZDOTDIR/bin $USRLOCAL/bin /usr/X11R6/bin /usr/bin /bin /etc)
 

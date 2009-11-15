@@ -19,11 +19,6 @@ export PAGER="$(whence less)"
 export FCEDIT=gnuclient
 export EDITOR=$FCEDIT VISUAL=$FCEDIT
 alias e="gnuclient -q"
-case $(uname -s) in
-(CYGWIN*)
-  alias e=winclient
-  ;;
-esac
 
 # The default port for gnuserv/gnuclient is 21490 + uid (see gnuserv.h).
 # We'll override it with something more memorable

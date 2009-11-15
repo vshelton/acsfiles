@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 # Build a Windows-native version of XEmacs.
-# Usage: MakeNativeXEmacs [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--without-debug] [--package-root=path] [--prefix=path] [--install] <21.4|21.5>
+# Usage: MakeNativeXEmacs [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--without-debug] [--package-root=path] [--prefix=path] [--install] dirname
 #
 # Assumptions:
 #   1) Cygwin is installed on the build machine, including makeinfo, perl,
@@ -18,7 +18,7 @@ progname=${0:t}
 
 function usage {
   print -u2 "\
-usage: $progname [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--without-debug] [--package-root dir] [--prefix dir] [--install] [--intel] [--sdk] <21.4|21.5*>
+usage: $progname [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--without-debug] [--package-root dir] [--prefix dir] [--install] [--intel] [--sdk] dirname
        -h|--help            print this help message and exit
        --with-mule          turn on MULE support
        --without-mule       turn off MULE support
@@ -29,14 +29,15 @@ usage: $progname [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--wi
        --install            install the executable
        --intel              use the intel compiler
        --sdk                build with the Microsoft SDK
-       21.4                 build a 21.4 XEmacs kit from SCM
-       21.5*                build some type of 21.5 XEmacs kit from SCM"
+       dirname              path to the source directory"
 }
 
 # Things to customize
+: ${GIFLIB_VER:=giflib-4.1.6}
 : ${LIB_DIR:=/usr/local/src}
-: ${ZLIB_VER:=zlib}
+: ${PNG_VER:=libpng-1.2.40}
 : ${TIFF_VER:=tiff-3.7.3}
+: ${ZLIB_VER:=zlib}
 
 zparseopts -D h=help -help=help -with-mule=with_mule -without-mule=without_mule -with-debug=with_debug -without-debug=without_debug -package-root:=package_root -prefix:=prefix -install=install -sdk=with_sdk -intel=with_intel
 
@@ -46,6 +47,7 @@ if [[ -n $help ]]; then
 fi
 
 # Set up for the Visual Studio compiler
+unset CC                # Don't allow gcc settings to affect us
 [[ -n $with_sdk ]] && with_sdk=SDK
 if [[ -n $with_intel ]]; then
   export CC=icl
@@ -65,11 +67,8 @@ mule=
 [[ -n $with_mule ]] && mule=1
 [[ -n $without_mule ]] && mule=0
 
-XEMACS_VER=
 case $1 in
-(21.4*|21.5*)
-  XEMACS_VER=$1
-  shift
+(*21.4*|*21.5*)
   ;;
 (*)
   print -u2 "$progname: Only XEmacs 21.4 and XEmacs 21.5 are currently supported."
@@ -78,17 +77,19 @@ case $1 in
   ;;
 esac
 
-# Make a local copy of the source tree
-if ! srcdir=$(GetSource --src=$PWD xemacs-$XEMACS_VER) ; then
-  print -u2 "$progname: could not get retrieve sources for xemacs-$XEMACS_VER."
-  exit 2
+# Configure the sources
+srcdir=$1
+if [[ ! -e $srcdir ]]; then
+  print -u2 $srcdir does not exist.
+  exit 1
 fi
 
-# Configure the sources
 cd $srcdir/nt
 unset HOME              # Don't pick up my emacs customizations
 # Configure for optional packages
 perl -pi -e "s@^OPTIONAL_LIBRARY_DIR=.*@OPTIONAL_LIBRARY_DIR=$(cygpath --mixed /)$LIB_DIR@;
+             s@^PNG_DIR=.*@PNG_DIR=\\\$(OPTIONAL_LIBRARY_DIR)/$PNG_VER@;
+             s@^GIF_DIR=.*@GIF_DIR=\\\$(OPTIONAL_LIBRARY_DIR)/$GIFLIB_VER@;
              s@^ZLIB_DIR=.*@ZLIB_DIR=\\\$(OPTIONAL_LIBRARY_DIR)/$ZLIB_VER@;
              s@^TIFF_DIR=.*@TIFF_DIR=\\\$(OPTIONAL_LIBRARY_DIR)/$TIFF_VER@;
              s@^HAVE_XFACE=.*@HAVE_XFACE=0@;
@@ -117,7 +118,7 @@ perl -pi -e 's@.*BUILD_FOR_SETUP_KIT.*@BUILD_FOR_SETUP_KIT=1@' config.inc
 [[ -n $with_intel ]] && perl -pi -e "s@^USE_INTEL_COMPILER=.*@USE_INTEL_COMPILER=1@" config.inc
 
 # Configure package path if requested
-if [[ -n $package_dir ]] &&  perl -pi -e "s@^#PACKAGE_PREFIX=.*@PACKAGE_PREFIX=$package_dir@" config.inc
+[[ -n $package_dir ]] &&  perl -pi -e "s@^#PACKAGE_PREFIX=.*@PACKAGE_PREFIX=$package_dir@" config.inc
 
 # Build and install XEmacs
 nmake -f xemacs.mak || exit $?

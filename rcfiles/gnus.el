@@ -8,6 +8,8 @@
       gnus-interactive-exit nil
       gnus-thread-sort-functions '(gnus-thread-sort-by-number
 				   gnus-thread-sort-by-date)
+      ;gnus-select-method '(nntp "news.isp.giganews.com")
+;      gnus-select-method '(nntp "news.rcn.com")
       gnus-select-method '(nntp "news")
       gnus-check-new-newsgroups nil
       gnus-read-active-file 'some

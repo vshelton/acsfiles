@@ -11,8 +11,8 @@ progname=${0:t}
 typeset -A backup_list
 backup_list=(
 #   source          destination
-    /e/acs/         /f/backups/acs
-    /usr/local/     /f/backups/usr-local
+    /c/acs/         /e/backups/acs
+#    /usr/local/     /e/backups/usr-local
 )
 
 function usage {

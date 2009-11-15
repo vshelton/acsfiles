@@ -4,34 +4,34 @@
 # matching the specified package name
 #
 # Usage: findpkg generic_package_name
+# i.e. "findpkg xemacs" ==> "/c/acs/software/zip/xemacs-21.4.22.tar.bz2"
 
 emulate -LR zsh
+setopt no_case_glob
 progname=${0:t}
 
 if (( $# != 1 )); then
   print -u2 "Usage: $progname <pkg>"
-  print -u2 "\tpkg is a stripped package name, like \"gcc\" or \"make\"."
+  print -u2 "       pkg is a stripped package name, like \"gcc\" or \"make\"."
   exit 1
 fi
+
 pkgbase=$1
 
-# Equivalent to: pkgname=$(ls -t $ZIPROOT/pkgbase*(gz|tgz|bz2) | head -1)
-pkgname=$(print $ZIPROOT/$pkgbase-*.(gz|tgz|bz2)(om[1])) 2>/dev/null
-if [[ ! -e $pkgname ]]; then
-  # Try with no hyphen for tcl and tk
-  pkgname=$(print $ZIPROOT/$pkgbase*.(gz|tgz|bz2)(om[1])) 2>/dev/null
-  if [[ ! -e $pkgname ]]; then
-    print -u2 progname: no files with the prefix of \"$pkgbase-\" or \"$pkgbase\" could be found in $ZIPROOT.
-    exit 1
-  fi
-fi
-
-if [[ ! -r $pkgname ]]; then
-  print -u2 $progname: $pkgname is unreadable.
+# Most unix-like package names have a dash separating the package name
+# from the version, but tcl and tk do not, so support those, too.
+pkgs=( $ZIPROOT/$pkgbase{-,}*.(gz|tgz|bz2|xz|lzma|tar)(Nom) )
+if [[ ! -e $pkgs[1] ]]; then
+  print -u2 progname: no files with the prefix of \"$pkgbase\" could be found in $ZIPROOT.
   exit 1
 fi
 
-print $pkgname
+if [[ ! -r $pkgs[1] ]]; then
+  print -u2 $progname: $pkgs[1] is unreadable.
+  exit 1
+fi
+
+print $pkgs[1]
 
 # Local Variables:
 # mode: ksh

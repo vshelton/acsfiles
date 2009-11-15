@@ -99,10 +99,35 @@ for ver in $*; do
   # Add options common to all kits
   kit_options=( $kit_options "/dXEmacsVersion=$version_string" "/dKitFile=XEmacs_Setup_$version_string" )
 
+  # Extract the sources either from a tarball or from SCM
+  case $ver in
+  (21.[45].??)
+    srcdir=xemacs-$ver
+    if ! GetSource --src=. $srcdir >& /dev/null ; then
+      print -u2 "$progname: could not retrieve sources for $srcdir."
+      exit 2
+    fi
+    ;;
+  (*)
+    if ! scm_update xemacs-$ver ; then
+      print -u2 "$progname: could not update xemacs-$ver. \
+Is there an SCM hierarchy at $SCMROOT?"
+      exit 2
+    fi
+
+    # Make a local copy of the source tree
+    if ! srcdir=$(GetSource --src=. xemacs-$ver) ; then
+       print -u2 "$progname: could not retrieve sources for xemacs-$ver."
+       exit 2
+    fi
+    srcdir=${srcdir#./}
+    ;;
+  esac
+
   # Make and install the executables
   install_dir="$(cygpath --mixed $PWD/installed)"
-  if ! MakeNativeXEmacs --install --prefix=$install_dir $branch_options $ver ; then
-    print -u2 "$progname: \"MakeNativeXEmacs --install --prefix=$install_dir $branch_options $ver\" failed."
+  if ! MakeNativeXEmacs --install --prefix=$install_dir $branch_options $srcdir ; then
+    print -u2 "$progname: \"MakeNativeXEmacs --install --prefix=$install_dir $branch_options $srcdir\" failed."
     exit 1;
   fi
 

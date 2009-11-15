@@ -197,6 +197,9 @@
      (or (gethash 'top_srcdir (config-value-hash-table))
 	 (gethash 'blddir (config-value-hash-table))))))
 
+; Fix a bug with emacs-internal face in current ediff
+(setq ediff-coding-system-for-write 'escape-quoted)
+
 ;(message "Leaving default.el")
 
 ;; Local Variables:

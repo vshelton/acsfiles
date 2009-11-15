@@ -4,30 +4,28 @@
 # Match case-insensitively
 setopt nocaseglob
 
-# These proxies get us through the NGGN
-# No longer necessary because they are set in .wgetrc
-#export http_proxy=155.104.239.18:80
-#export ftp_proxy=$http_proxy
-
 desktop="$(cygpath -D)"
 
 # Create aliases for common MS Office programs
-office_ver="11.0"
-office_root=$(cygpath "$(regtool get /HKEY_LOCAL_MACHINE/Software/Microsoft/Office/$office_ver/Common/InstallRoot/Path)" )
-function office {                                 
-  cmd=$office_root/$1
-  office_args=()
-  for ((i=2; i <= $ARGC; ++i )) {
-    office_args[$i]=$(cygpath -w $argv[$i])
-  }
-  $cmd $office_args &
-}     
-alias excel='office EXCEL.EXE'
-alias powerpoint='office POWERPNT.EXE'
-alias word='office WINWORD.EXE'
+alias excel=cygstart
+alias powerpoint=cygstart
+alias word=cygstart
 
-alias 7z='/e/Program\ Files/7-Zip/7z'
-alias less.sh='/e/Program\ Files/Vim/vim71/macros/less.sh'
+alias 7z="'$(cygpath $PROGRAMFILES)'/7-Zip/7z"
+alias less.sh="'$(cygpath $PROGRAMFILES)'/Vim/vim72/macros/less.sh"
+
+if [[ ${OSTYPE} == cygwin ]]; then
+  ## commands that auto-complete with and without .exe suffix are annoying
+  #hash -f
+  #unhash -m '*.exe' '*.dll'
+  zstyle ':completion:*:-command-:*' ignored-patterns '(#i)*.exe' '(#i)*.dll'
+  zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+
+  function winC {
+    winclient ${~*}(e:'REPLY="$( cygpath -m $REPLY )"':)
+  }
+  alias e='noglob winC'
+fi
 
 # Convert from cygwin path to a Windows path, like so: dir ~(e:cyg:)
 function cyg {

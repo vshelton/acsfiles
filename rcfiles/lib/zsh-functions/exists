@@ -1,0 +1,3 @@
+local -a array
+array=( ${^~*}(N) )
+(( $#array ))

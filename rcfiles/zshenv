@@ -39,9 +39,12 @@ system_specific .zshenv -pre
 # SRCROOT is the root of source hierarchy for locally-built packages.
 # BLDROOT is the root of the build hierarchy for locally-built packages.
 # ZIPROOT is the directory where tarfiles live.
-: ${USRLOCAL:=/opt} ${SRCROOT:=$USRLOCAL/src}
-: ${BLDROOT:=$USRLOCAL/build} ${ZIPROOT:=$USRLOCAL/zip}
-export USRLOCAL SRCROOT BLDROOT ZIPROOT
+: ${USRLOCAL:=/opt}
+: ${SRCROOT:=$USRLOCAL/src}
+: ${BLDROOT:=$USRLOCAL/build}
+: ${ZIPROOT:=$USRLOCAL/zip}
+: ${SCMROOT=~/scmroot}
+export USRLOCAL SRCROOT BLDROOT ZIPROOT SCMROOT
 
 #export LC_COLLATE=C
 #unset LANG

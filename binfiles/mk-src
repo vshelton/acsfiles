@@ -27,8 +27,8 @@ esac
 : ${SRCROOT:=$USRLOCAL/src}
 target_dir=$SRCROOT/$project-$VERSION
 
-: ${SCM_ROOT:=~/scmroot}
-project_scm_dir=$SCM_ROOT/$project
+: ${SCMROOT:=~/scmroot}
+project_scm_dir=$SCMROOT/$project
 if [[ ! -d $project_scm_dir ]]; then
   print -u2 "$progname: there is no accessible SCM hierarchy at $project_scm_dir."
   exit 2

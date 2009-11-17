@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Update sources under SCM control in the $SCM_ROOT directory.
+# Update sources under SCM control in the $SCMROOT directory.
 # This script attempts to handle mercurial, svn and CVS archives.
 
 emulate -LR zsh
@@ -11,8 +11,8 @@ if (( $# != 1 )); then
   exit 1
 fi
 
-: ${SCM_ROOT:=~/scmroot}
-project_scm_dir=$SCM_ROOT/$1
+: ${SCMROOT:=~/scmroot}
+project_scm_dir=$SCMROOT/$1
 
 if ! cd $project_scm_dir 2>/dev/null; then
   print -u2 "$progname: there is no accessible SCM hierarchy at $project_scm_dir."

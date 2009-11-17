@@ -5,7 +5,7 @@
 # Syntax: update_and_build <project_name> <build_script> [build_options]
 # Assumptions:
 #   1. An SCM tree for the specified project exists at
-#      $SCM_ROOT/<project_name>
+#      $SCMROOT/<project_name>
 #   2. A build tree exists at $BLDROOT
 
 emulate -LR zsh
@@ -22,8 +22,8 @@ project_name=$1; shift
 build_script=$1; shift
 update_file="last_update"
 
-: ${SCM_ROOT:=~/scmroot}
-project_scm_dir=$SCM_ROOT/$project_name
+: ${SCMROOT:=~/scmroot}
+project_scm_dir=$SCMROOT/$project_name
 if ! cd $project_scm_dir 2>/dev/null; then
   print -u2 "$progname: there is no accessible SCM hierarchy at $project_scm_dir."
   exit 1

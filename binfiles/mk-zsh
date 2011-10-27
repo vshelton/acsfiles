@@ -49,6 +49,7 @@ with_tcsetpgrp="--with-tcsetpgrp"
 # Enable zsh memory debugging everywhere except cygwin
 enable_zsh_mem="--enable-zsh-mem"
 [[ $(uname -s) == CYGWIN* ]] && enable_zsh_mem=
+enable_pcre="--enable-pcre"
 
 # Support options to configure
 while [[ $# -gt 0 ]]
@@ -60,6 +61,9 @@ do
   (--*able-zsh-mem*)
     enable_zsh_mem=$1
     ;;
+  (--*able-pcre*)
+    enable_pcre=$1
+    ;;
   (--*)
     generic_cfg_opts=($generic_cfg_opts $1)
     ;;
@@ -68,7 +72,7 @@ do
 done
 
 # Configure zsh
-cfg -s -o conf.out $SRCDIR --datadir=$USRLOCAL/share --enable-etcdir=$USRLOCAL/etc $with_tcsetpgrp $enable_zsh_mem ${=generic_cfg_opts}
+cfg -s -o conf.out $SRCDIR --datadir=$USRLOCAL/share --enable-etcdir=$USRLOCAL/etc $with_tcsetpgrp $enable_zsh_mem $enable_pcre ${=generic_cfg_opts}
 err=$?
 if (( err != 0 )); then
   print -u2 "$progname: could not configure $PROJECT."

@@ -16,7 +16,7 @@ progname=${0:t}
 # or if the next argument is a configuration option,
 # copy a source snapshot from CVS to the source tree
 if [[ $# = 0 ]] || [[ $1 == -* ]]; then
-  mk-src $PROJECT $VERSION
+  mk-src $PROJECT $VERSION || exit $?
 
   TARGET=$PROJECT-$VERSION
   if ! cd $SRCROOT/$TARGET >&/dev/null; then

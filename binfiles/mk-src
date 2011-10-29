@@ -5,11 +5,19 @@
 emulate -LR zsh
 progname="${0:t}"
 
+: ${USRLOCAL:=/usr/local}
+: ${SRCROOT:=$USRLOCAL/src}
+: ${SCMROOT:=~/scmroot}
+
+# If no other version name was supplied, the default
+# version stamp is based on the current date.
+: ${VERSION:=$(today)}
+
 case $# in
-(1)
+(1)     # e.g. mk-src zsh
   project="$1"
   ;;
-(2)
+(2)     # e.g. mk-src zsh vin-save ==> /opt/src/zsh-vin-save
   project="$1"
   VERSION="$2"
   ;;
@@ -19,24 +27,19 @@ case $# in
   ;;
 esac
 
-# If no other version name was supplied, the default
-# version stamp is based on the current date.
-: ${VERSION:=$(today)}
-
-: ${USRLOCAL:=/usr/local}
-: ${SRCROOT:=$USRLOCAL/src}
-target_dir=$SRCROOT/$project-$VERSION
-
-: ${SCMROOT:=~/scmroot}
-project_scm_dir=$SCMROOT/$project
-if [[ ! -d $project_scm_dir ]]; then
-  print -u2 "$progname: there is no accessible SCM hierarchy at $project_scm_dir."
+if ! cd $SCMROOT/$project >&/dev/null; then
+  print -u2 "$progname: could not cd to $SCMROOT/$project."
   exit 2
 fi
 
-mkdir -p $target_dir
+target_dir=$SRCROOT/$project-$VERSION
+if [[ -d $target_dir ]]; then
+  print -u2 "$progname: $target_dir already exists."
+  exit 3
+fi
 
-tar cf - -C $project_scm_dir --exclude={CVS,.hg,.svn} . | tar xf - -C $target_dir
+mkdir -p $target_dir
+tar cf - --exclude={CVS,.hg,.svn} . | tar xf - -C $target_dir
 
 # Local Variables:
 # mode: ksh

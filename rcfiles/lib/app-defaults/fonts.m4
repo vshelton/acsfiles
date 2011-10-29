@@ -28,6 +28,7 @@ dnl lucidatypewrite works well for XTerms because no italic font
 dnl is required, but it doesn't work for Emacs, where italics are used
 define(`DefaultFixedNotItalicFont', `b&h-lucidatypewriter')
 
+dnl define(`GetCharset', `iso8859-2')
 define(`GetCharset', `iso8859-1')
 
 define(`GetFamily',
@@ -36,10 +37,10 @@ define(`GetFamily',
 		$1, `FixedNotItalic', DefaultFixedNotItalicFont, `bogus')')
 
 define(`GetSize',
-	`ifelse($2, `Tiny', 10,
-		$2, `Small', 12,
-		$2, `Medium', 14,
-		$2, `Large', 18, `bogus')')
+	`ifelse($2, `Tiny', 11,
+		$2, `Small', 14,
+		$2, `Medium', 17,
+		$2, `Large', 20, `bogus')')
 
 dnl Use oblique, not italic font for adobe-courier
 define(`GetSlant',

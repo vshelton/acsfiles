@@ -29,6 +29,9 @@ elif [[ -d .svn ]]; then
 # CVS
 elif [[ -d CVS ]]; then
   cvs -q update
+# bzr
+elif [[ -d .bzr ]]; then
+  bzr update
 else
   print -u2 "$progname: no mercurial, svn or CVS hierarchy could be found at $project_scm_dir."
   exit 2

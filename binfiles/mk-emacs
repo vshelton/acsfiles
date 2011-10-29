@@ -62,7 +62,7 @@ export LDFLAGS=${LDFLAGS:-"-L$prefix/lib -R$prefix/lib"}
 
 # Default options to configure.
 datadir="--datadir=$share/share"
-nls="--disable-nls"
+#nls="--disable-nls"
 scroll_bars="--without-toolkit-scroll-bars"
 generic_cfg_opts=
 

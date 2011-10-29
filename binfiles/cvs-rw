@@ -2,4 +2,5 @@
 # Override ssh by passing in CVS_RSH, if necessary
 : ${CVS_RSH:=ssh}
 export CVS_RSH
-cvs -w -z3 -d:ext:xemacs@cvs.xemacs.org:/pack/xemacscvs ${1+"$@"}
+#cvs -w -z3 -d:ext:xemacs@cvs.xemacs.org:/pack/xemacscvs ${1+"$@"}
+cvs -w -z3 -d:ext:acs-xemacs-guest@cvs.alioth.debian.org:/cvsroot/xemacs ${1+"$@"}

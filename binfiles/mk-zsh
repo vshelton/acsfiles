@@ -7,46 +7,54 @@ emulate -LR zsh
 progname=${0:t}
 
 # User-visible and user-overridable variables are all caps
-: ${USRLOCAL:=/usr/local} ${SRCROOT:=$USRLOCAL/src}
-: ${VERSION:=$(today)} ${PROJECT:=zsh} ${TARGET:=$PROJECT-$VERSION}
-
-# We need to remember how SRCDIR got set
-src_override=1          # Assume SRCDIR was set before script started
-if [[ -z $SRCDIR ]]; then
-  src_override=0
-  : ${SRCDIR:=$SRCROOT/$TARGET}
-fi
-
-inst_prefix=$USRLOCAL
+: ${PROJECT:=zsh}
+: ${USRLOCAL:=/usr/local}
+: ${SRCROOT:=$USRLOCAL/src}
+: ${VERSION:=$(today)}
 
 # If either there are no more remaining arguments,
 # or if the next argument is a configuration option,
 # copy a source snapshot from CVS to the source tree
-if [[ $# = 0 ]] || [[ "$1" == -* ]]; then
-  mk-src $PROJECT
+if [[ $# = 0 ]] || [[ $1 == -* ]]; then
+  mk-src $PROJECT $VERSION
+
+  TARGET=$PROJECT-$VERSION
+  if ! cd $SRCROOT/$TARGET >&/dev/null; then
+    print -u2 "$progname: could not cd to $SRCROOT/$TARGET."
+    exit 1
+  fi
 
   # Generate a configure script
-  pushd $SRCDIR || exit 1
-  # On cygwin, move the process substitution test aside
-  [[ $(uname) =~ CYGWIN* ]] && mv Test/D03procsubst{.ztst,}
-  ./Util/preconfig
-  err=$?
-  if (( err != 0 )); then
-    print -u2 "$progname: preconfig failure on $PROJECT."
-    exit $err
+  if ! ./Util/preconfig; then
+    print -u2 "$progname: preconfig failure."
+    exit 2
   fi
-  popd
+
+  # On cygwin, move the process substitution test aside
+  [[ $(uname) =~ CYGWIN* ]] && mv Test/D03procsubst{.ztst,-NOT}
 
 # Otherwise, $1 is the name of the already-unpacked source directory
 else
   TARGET=$1
-  (( src_override == 0 )) && SRCDIR=$SRCROOT/$TARGET
   shift
+  if ! cd $SRCROOT/$TARGET 2>/dev/null; then
+    print -u2 "$progname: could not cd to $SRCROOT/$TARGET."
+    exit 1
+  fi
 fi
 
+# We've changed into the source directory.  Return to the
+# starting directory, but remember the source directory in SRCDIR.
+SRCDIR=$PWD
+cd $OLDPWD
+
 generic_cfg_opts=()
+
+# Default to:
+#  --with-tcsetpgrp
+#  --enable-zsh-mem everywhere except cygwin
+#  --enable-pcre
 with_tcsetpgrp="--with-tcsetpgrp"
-# Enable zsh memory debugging everywhere except cygwin
 enable_zsh_mem="--enable-zsh-mem"
 [[ $(uname -s) == CYGWIN* ]] && enable_zsh_mem=
 enable_pcre="--enable-pcre"
@@ -71,7 +79,6 @@ do
   shift
 done
 
-# Configure zsh
 cfg -s -o conf.out $SRCDIR --datadir=$USRLOCAL/share --enable-etcdir=$USRLOCAL/etc $with_tcsetpgrp $enable_zsh_mem $enable_pcre ${=generic_cfg_opts}
 err=$?
 if (( err != 0 )); then
@@ -79,39 +86,27 @@ if (( err != 0 )); then
   exit $err
 fi
 
-build_dir=$TARGET
-cd $build_dir
-err=$?
-if (( err != 0 )); then
-  print -u2 "$progname: couldn't cd to $build_dir."
-  exit $err
+if ! cd $TARGET >&/dev/null; then
+  print -u2 "$progname: couldn't cd to $TARGET."
+  exit 3
 fi
 
 print -n "Building zsh..."
-make >& mk.out
-err=$?
-if (( err != 0 )); then
-  print -u2 "$progname: make failed.  See $build_dir/mk.out."
-  exit $err
+if ! make >& mk.out; then
+  print -u2 "$progname: make failed.  See $TARGET/mk.out."
+  exit 4
 fi
 print "done."
 
 # Run tests
 print -n "Running tests..."
 make -k check >& check.out
-#err=$?
-#if (( err != 0 )); then
-#  print -u2 "$progname: make check failed.  See $build_dir/check.out."
-#  exit $err
-#fi
 print "done."
 summarize_zsh_tests check.out
-print "Installing package to $inst_prefix/$TARGET."
-make install install.info >& inst.out
-err=$?
-if (( err != 0 )); then
-  print -u2 "$progname: make install failed.  See $build_dir/inst.out."
-  exit $err
+print "Installing package to $USRLOCAL/$TARGET."
+if ! make install install.info >& inst.out; then
+  print -u2 "$progname: make install failed.  See $TARGET/inst.out."
+  exit 5
 fi
 
 # Local Variables:

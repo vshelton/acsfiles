@@ -1,4 +1,3 @@
-#set -x
 
 #case $TTY in
 #(/dev/tty1|/dev/vc/1|/dev/conin)
@@ -11,7 +10,8 @@
 # Save a record of this session
 outfile=$HOME/.hist/$(date '+%Y-%m-%d-%H%M').${HOST%%.*}
 [[ -e $outfile ]] && chmod 600 $outfile
-fc -nldf -$HISTSIZE | trim_extra_history >> $outfile
+#fc -nldf -$HISTSIZE | trim_extra_history >> $outfile
+fc -lin -$HISTSIZE | trim_extra_history >> $outfile
 if [[ -s $outfile ]]; then
   chmod 400 $outfile
   [[ $UID = 0 ]] && chmod 440 $outfile

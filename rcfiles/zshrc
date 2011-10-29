@@ -85,9 +85,10 @@ bindkey '\e\t' reverse-menu-complete
 bindkey '^X^R' _history-complete-older
 bindkey '^X^S' _history-complete-newer
 
-# Up and Down arrows complete a command from the history
-echoti kcuu1 > /dev/null && bindkey "$(echoti kcuu1)" history-beginning-search-backward
-echoti kcud1 > /dev/null && bindkey "$(echoti kcud1)" history-beginning-search-forward
+# ^X^P and ^X^N complete a command from history
+# which starts with the text already typed
+bindkey '^X^N' history-beginning-search-forward
+bindkey '^X^P' history-beginning-search-backward
 
 zmodload zsh/deltochar
 bindkey '\M-z' zap-to-char

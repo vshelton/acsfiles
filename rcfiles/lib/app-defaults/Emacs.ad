@@ -65,6 +65,7 @@ define(`EFRAME', `Emacs*EmacsFrame')
 
 !       EFRAME.font-lock-builtin-face.attributeForeground: LightSteelBlue
 ! 	    EFRAME.font-lock-comment-face.attributeFont: BOLD_ITALIC
+ 	    EFRAME.font-lock-comment-face.attributeFont: BOLD
 !       EFRAME.font-lock-comment-face.attributeForeground: grey66
 !      EFRAME.font-lock-constant-face.attributeForeground: indian red
 !    EFRAME.font-lock-doc-string-face.attributeForeground: DarkOrange

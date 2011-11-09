@@ -95,8 +95,8 @@ bindkey '\M-z' zap-to-char
 bindkey '\ez' zap-to-char
 
 # coreutils now supports NOT dereferencing symlinks to directories!
-ls --dereference-command-line-symlink-to-dir /dev/null >& /dev/null
-(( $? == 0 )) && alias ls="ls --dereference-command-line-symlink-to-dir"
+ls --dereference-command-line-symlink-to-dir /dev/null >& /dev/null \
+  && alias ls="ls --dereference-command-line-symlink-to-dir"
 alias l='ls -F'
 alias la='ls -A'
 alias ll='ls -l'

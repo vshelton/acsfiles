@@ -1,5 +1,11 @@
 ;; XEmacs-specific customizations.
-;; This file gets executed after acs-custom.el
+;; Load different customizations for XEmacs and FSF emacs.
+;; Load the customizations here so they can affect the
+;; remainder of this file.  Here's the execution order:
+;;	1. .emacs
+;;	2. lib/lisp/[emacs-type]/acs-custom.el
+;;	3. lib/lisp/emacs.el
+;;	4. lib/lisp/[emacs-type]/default.el
 ;(message "Entering default.el")
 
 (defun call-cygpath (&optional args)
@@ -71,11 +77,8 @@
 ;; Menubar-specific functions
 (when (featurep 'menubar)
   (require 'recent-files)
-  (setq recent-files-menu-path '("File")
-	recent-files-add-menu-before "Hex Edit File..."
-	recent-files-non-permanent-submenu nil
-	recent-files-permanent-submenu nil
-	recent-files-permanent-first nil
+  (setq recent-files-add-menu-before "Edit"
+	recent-files-menu-title "Recent"
 	recent-files-dont-include '("\.newsrc" "Mail/archive"))
   (recent-files-initialize))
 
@@ -120,17 +123,14 @@
   (and (fboundp 'gnuserv-special-frame-function)
        (setq gnuserv-frame 'gnuserv-special-frame-function)))
 
-;; These functions are automatically built into infodock
-(when (not (boundp 'infodock-version))
+;; Load func-menu to allow a display of a function menu
+(require 'func-menu)
 
-  ;; Load func-menu to allow a display of a function menu
-  (require 'func-menu)
-
-  (setq fume-menubar-menu-location nil)
-  (setq-default fume-auto-rescan-buffer-p nil)
-  (add-hook 'find-file-hooks 'fume-add-menubar-entry)
-  (define-key acs::keymap "j" 'fume-prompt-function-goto)
-  (define-key acs::keymap "l" 'function-menu))
+(setq fume-menubar-menu-location nil)
+(setq-default fume-auto-rescan-buffer-p nil)
+(add-hook 'find-file-hooks 'fume-add-menubar-entry)
+(define-key acs::keymap "j" 'fume-prompt-function-goto)
+(define-key acs::keymap "l" 'function-menu)
 
 (when acs::windows-platform
 

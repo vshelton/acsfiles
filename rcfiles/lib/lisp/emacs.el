@@ -3,12 +3,11 @@
 
 ;; Load different customizations for XEmacs and FSF emacs.
 ;; Load the customizations here so they can affect the
-;; remainder of this file.
+;; remainder of this file.  Here's the execution order:
 ;;	1. .emacs
-;;	2. first part of lib/lisp/emacs.el
-;;	3. lib/lisp/[emacs-type]/acs-custom.el
-;;	4. remainder of lib/lisp/emacs.el
-;;	5. lib/lisp/[emacs-type]/default.el
+;;	2. lib/lisp/[emacs-type]/acs-custom.el
+;;	3. lib/lisp/emacs.el
+;;	4. lib/lisp/[emacs-type]/default.el
 ;; after-init-hook is used to ensure that the custom file
 ;; is only loaded once.
 (setq custom-file nil
@@ -17,6 +16,27 @@
 (add-hook 'after-init-hook
 	  (lambda ()
 	    (setq custom-file acs::custom-file)))
+
+;; We start out unmapped so we can set the faces, fonts and colors
+;; consistently for all the frames.  We will instantiate a frame
+;; at the end of this file.
+
+;; Set faces and colors
+(set-face-font 'default "-*-dejavu sans mono-medium-r-normal--12-*-*-*-m-*-iso8859-1")
+(set-face-foreground 'default "LightYellow")
+(set-face-background 'default "Black")
+
+;; Currently being set via customize-face in default.el.
+;;(set-face-background 'modeline "light salmon")
+;;(set-face-foreground 'modeline "Black")
+;;(set-face-font 'modeline "-*-comic sans ms-medium-r-normal--11-*-*-*-p-*-iso8859-1")
+
+(require 'hyper-apropos)
+(set-face-foreground 'hyper-apropos-hyperlink "DodgerBlue1")
+
+(require 'info)
+(make-face-unitalic 'info-node)
+(set-face-foreground 'info-node "DodgerBlue3")
 
 (put 'narrow-to-region 'disabled nil)
 (put 'eval-expression 'disabled nil)
@@ -59,24 +79,8 @@
 ;; Simplify yes-no questions
 (fset 'yes-or-no-p 'y-or-n-p)
 
-;; Big brother database
-(and (fboundp 'bbdb-initialize)
-     (require 'bbdb)
-     (bbdb-initialize 'gnus 'message))
-
 ;; Load the electric buffer support
 (require 'ebuff-menu)
-
-;; Stolen from XEmacs 21.0; used for M-z
-(when (not (fboundp 'zap-up-to-char))
-  (defun zap-up-to-char (arg char)
-    "Kill up to ARG'th occurrence of CHAR.
-Goes backward if ARG is negative; error if CHAR not found."
-    (interactive "*p\ncZap up to char: ")
-    (kill-region (point) (progn
-			   (search-forward (char-to-string char) nil nil arg)
-			   (goto-char (if (> arg 0) (1- (point)) (1+ (point))))
-			   (point)))))
 
 ;;; Buffer tabs only on Windows
 (defmacro when-specifierp (specifier &rest form)
@@ -168,9 +172,6 @@ Extends the region if it exists."
   "Toggles the state of the mouse-track-rectangle-p"
   (interactive)
   (setq mouse-track-rectangle-p (not mouse-track-rectangle-p)))
-
-(when (boundp 'focus-follows-mouse)			; new in 19.15
-  (setq focus-follows-mouse t))
 
 ;;
 ;; Key bindings
@@ -292,7 +293,7 @@ Extends the region if it exists."
 ;;
 ;; Load font-lock to make source code look nice
 ;;
-(setq-default font-lock-auto-fontify nil
+(setq-default font-lock-auto-fontify t
 	      font-lock-use-fonts '(or (mono) (grayscale))
 	      font-lock-use-colors '(color)
 	      font-lock-maximum-decoration '((c++-mode . 2) (c-mode . 2) (t . 1))
@@ -300,13 +301,6 @@ Extends the region if it exists."
 	      font-lock-mode-enable-list nil
 	      font-lock-mode-disable-list '(makefile-mode compilation-mode))
 (require 'font-lock)
-
-;; Specify on-demand fontifying
-(when (load "lazy-shot" t)
-  (add-hook 'font-lock-mode-hook 'turn-on-lazy-shot)
-  (setq-default font-lock-auto-fontify t
-		lazy-shot-verbose nil
-		lazy-shot-stealth-verbose nil))
 
 ;; Turn on auto-fill-mode in text mode
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
@@ -317,8 +311,8 @@ Extends the region if it exists."
 (setq html-helper-htmldtd-version
       "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n")
 
-;; Customizations specific to XEmacs or FSF Emacs are loaded in
-;; ~/lib/lisp/xemacs and ~/lib/lisp/fsf, respectively.
+;; Create an initial frame just before leaving.
+(and initial-frame-unmapped-p (make-frame))
 
 ;; Local Variables:
 ;; eval: (setq tab-width 8)

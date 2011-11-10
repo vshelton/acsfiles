@@ -17,7 +17,23 @@
 	  (lambda ()
 	    (setq custom-file acs::custom-file)))
 
-;; We start out unmapped so we can set the faces, fonts and colors
+;; I am using a dark background:
+;;   (set-face-background 'default "Black")
+;;   (set-face-foreground 'default "LightYellow")
+;; Unfortunately, changing from a light to dark background does not
+;; update the frame properties for the current frame, resulting
+;; in different (i.e. wrong) font-lock font colors for the current frame;
+;; subsequent frames get the right colors.  Here are the possible workarounds:
+;;   1. Start XEmacs with the -unmapped option and instantiate the frame
+;;      after the background color has been set.  This has the disadvantage
+;;      of eliminating the possibility of actually running unmapped.
+;;   2. Start XEmacs with a dark background specified either on the
+;;      command line or through X resources.
+;;   3. Start XEmacs with this option:
+;;      -eval "(setq frame-background-mode 'dark)"
+;;   4. Update the frame properties to reflect the dark background
+;;      after setting the background.
+;; Currently, we start out unmapped so we can set the faces, fonts and colors
 ;; consistently for all the frames.  We will instantiate a frame
 ;; at the end of this file.
 
@@ -25,6 +41,10 @@
 (set-face-font 'default "-*-dejavu sans mono-medium-r-normal--12-*-*-*-m-*-iso8859-1")
 (set-face-foreground 'default "LightYellow")
 (set-face-background 'default "Black")
+
+;; Workaround #4
+(setq initial-frame-plist '(custom-properties (class color background dark)))
+(frame-notice-user-settings)
 
 ;; Currently being set via customize-face in default.el.
 ;;(set-face-background 'modeline "light salmon")
@@ -293,13 +313,10 @@ Extends the region if it exists."
 ;;
 ;; Load font-lock to make source code look nice
 ;;
-(setq-default font-lock-auto-fontify t
-	      font-lock-use-fonts '(or (mono) (grayscale))
-	      font-lock-use-colors '(color)
-	      font-lock-maximum-decoration '((c++-mode . 2) (c-mode . 2) (t . 1))
-	      font-lock-maximum-size 256000
-	      font-lock-mode-enable-list nil
-	      font-lock-mode-disable-list '(makefile-mode compilation-mode))
+(setq font-lock-auto-fontify t
+      font-lock-maximum-decoration '((c++-mode . 2) (c-mode . 2) (t . 1))
+      font-lock-mode-enable-list nil
+      font-lock-mode-disable-list '(makefile-mode compilation-mode))
 (require 'font-lock)
 
 ;; Turn on auto-fill-mode in text mode
@@ -310,9 +327,6 @@ Extends the region if it exists."
 
 (setq html-helper-htmldtd-version
       "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n")
-
-;; Create an initial frame just before leaving.
-(and initial-frame-unmapped-p (make-frame))
 
 ;; Local Variables:
 ;; eval: (setq tab-width 8)

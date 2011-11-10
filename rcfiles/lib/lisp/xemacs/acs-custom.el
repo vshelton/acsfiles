@@ -38,12 +38,7 @@
  '(modeline-click-swaps-buffers t)
  '(mouse-yank-at-point nil)
  '(next-line-add-newlines nil)
- '(patcher-projects
-   (quote (("packages" "~/scmroot/xemacs-packages")
-	   ("web" "~/scmroot/xemacsweb")
-	   ("build" "~/scmroot/xemacs-builds")
-	   ("21.4" "~/scmroot/xemacs-21.4")
-	   ("21.5" "~/scmroot/xemacs-21.5"))))
+ '(patcher-projects (quote (("packages" "~/scmroot/xemacs-packages") ("web" "~/scmroot/xemacsweb") ("build" "~/scmroot/xemacs-builds") ("21.4" "~/scmroot/xemacs-21.4") ("21.5" "~/scmroot/xemacs-21.5"))))
  '(query-replace-highlight t)
  '(query-user-mail-address nil)
  '(require-final-newline t)
@@ -63,5 +58,6 @@
 ;(message "Leaving acs-custom.el")
 (custom-set-faces
  '(font-lock-comment-face ((((class color) (background dark)) (:foreground "DodgerBlue1"))))
- '(modeline ((t (:foreground "Black" :background "light salmon" :size "11px" :family "comic sans ms"))))
- '(isearch-secondary ((t (:background "gray47"))) t))
+ '(zmacs-region ((t (:foreground "LightYellow" :background "gray47"))) t)
+ '(isearch-secondary ((t (:background "gray47"))) t)
+ '(modeline ((t (:foreground "Black" :background "light salmon" :size "11px" :family "comic sans ms"))) t))

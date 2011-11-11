@@ -34,7 +34,7 @@
 
 (and (fboundp 'set-scroll-bar-mode) (set-scroll-bar-mode 'right))
 
-(and (fboundp 'fringe-mode) (fringe-mode 0))
+(and (fboundp 'fringe-mode) (fringe-mode '(1 . 1)))
 
 (defun emacs-term (program)
   "Start a terminal-emulator in a new buffer.

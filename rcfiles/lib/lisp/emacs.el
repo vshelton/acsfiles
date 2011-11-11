@@ -38,21 +38,14 @@
 ;; at the end of this file.
 
 ;; Set faces and colors
-(set-face-font 'default "-*-dejavu sans mono-medium-r-normal--12-*-*-*-m-*-iso8859-1")
+(and (equal (emacs-type) "xemacs")
+     (set-face-font 'default "-*-dejavu sans mono-medium-r-normal--12-*-*-*-m-*-iso8859-1"))
 (set-face-foreground 'default "LightYellow")
 (set-face-background 'default "Black")
 
 ;; Workaround #4
 (setq initial-frame-plist '(custom-properties (class color background dark)))
 (frame-notice-user-settings)
-
-;; Currently being set via customize-face in default.el.
-;;(set-face-background 'modeline "light salmon")
-;;(set-face-foreground 'modeline "Black")
-;;(set-face-font 'modeline "-*-comic sans ms-medium-r-normal--11-*-*-*-p-*-iso8859-1")
-
-(require 'hyper-apropos)
-(set-face-foreground 'hyper-apropos-hyperlink "DodgerBlue1")
 
 (require 'info)
 (make-face-unitalic 'info-node)

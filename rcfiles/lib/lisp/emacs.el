@@ -39,9 +39,9 @@
 
 ;; Set faces and colors
 (and (equal (emacs-type) "xemacs")
-     (set-face-font 'default "-*-dejavu sans mono-medium-r-normal--12-*-*-*-m-*-iso8859-1"))
-(set-face-foreground 'default "LightYellow")
-(set-face-background 'default "Black")
+     (set-face-font 'default "-*-dejavu sans mono-medium-r-normal--12-*-*-*-m-*-iso8859-1")
+     (set-face-foreground 'default "LightYellow")
+     (set-face-background 'default "Black"))
 
 ;; Workaround #4
 (setq initial-frame-plist '(custom-properties (class color background dark)))

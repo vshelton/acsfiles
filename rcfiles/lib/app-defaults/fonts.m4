@@ -8,7 +8,8 @@ dnl also support lucidatypewriter (using adobe-courier for italic)
 dnl and monotype-courier-new (although underline doesn't work
 dnl properly on XFree-4.3 server under Linux)
 dnl Default fixed font at work under the exceed serve is dt-application
-define(`DefaultFixedFont', `adobe-courier')
+dnl define(`DefaultFixedFont', `adobe-courier')
+define(`DefaultFixedFont', `monotype-andale mono')
 ifdef(`VNDR_Hummingbird_Communications_Ltd_', `define(`DefaultFixedFont', `dt-application')')
 ifdef(`USE_LUCIDA_FOR_FIXED', `define(`DefaultFixedFont', `b&h-lucidatypewriter')')
 ifdef(`USE_MONOTYPE_FOR_FIXED', `define(`DefaultFixedFont', `monotype-courier new')')
@@ -53,8 +54,9 @@ define(`GetSpacing',
 	`ifelse($1, `Fixed', m, $1, `FixedNotItalic', m, p)')
 
 define(`GetWeight',
-	`ifelse($2, `Bold', bold,
-		$2, `Normal', medium, `bogus')')
+	`ifelse($2, `Bold', ifelse($1, `monotype-courier new', demibold, bold),
+		$2, `Normal', ifelse($1, `monotype-courier new', semilight, medium),
+		`bogus')')
 
 dnl $1  Fixed, Proportional or FixedNotItalilc
 dnl $2 - Bold or Normal

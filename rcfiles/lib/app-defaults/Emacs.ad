@@ -125,7 +125,8 @@ define(`EFRAME', `Emacs*EmacsFrame')
 !       Emacs.widget-single-line-field-face.attributeBackground: dim gray
 
 ! Miscellaneous
-		       Emacs.fringe.attributeBackground: #305050
+!		       Emacs.fringe.attributeBackground: #305050
+		       Emacs.fringe.attributeBackground: PapayaWhip
 		    Emacs.highlight.attributeBackground: #226644
 Emacs.highlight-changes-delete-face.attributeBackground: navy
 Emacs.highlight-changes-delete-face.attributeForeground: red

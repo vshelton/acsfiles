@@ -8,18 +8,20 @@
       gnus-interactive-exit nil
       gnus-thread-sort-functions '(gnus-thread-sort-by-number
 				   gnus-thread-sort-by-date)
-      ;gnus-select-method '(nntp "news.isp.giganews.com")
+      gnus-select-method '(nntp "news.gmane.org")
+;      gnus-select-method '(nntp "news.isp.giganews.com")
 ;      gnus-select-method '(nntp "news.rcn.com")
-      gnus-select-method '(nntp "news")
+;      gnus-select-method '(nntp "news")
       gnus-check-new-newsgroups nil
       gnus-read-active-file 'some
       gnus-save-killed-list nil
 ;      browse-url-browser-function 'browse-url-galeon
-      browse-url-browser-function 'browse-url-mozilla
-      browse-url-mozilla-program "firefox"
-      browse-url-new-window-flag t
+      browse-url-browser-function 'browse-url-generic
+;      browse-url-generic-program "/opt/google/chrome/google-chrome"
+      browse-url-generic-program "/usr/bin/chromium-browser"
+;      browse-url-mozilla-program "/opt/google/chrome/google-chrome"
+;      browse-url-new-window-flag t
 ;      browse-url-galeon-new-window-is-tab t
-      browse-url-mozilla-new-window-is-tab t
       gnus-options-not-subscribe "^de\..*|^uiuc\..*|^fi\..*"
       gnus-group-default-list-level 3
       gnus-auto-select-first nil
@@ -71,7 +73,11 @@
 	("ding"		"^To:.*ding@gnus.org")
 	("ding"		"^cc:.*ding@gnus.org")
 	("CCW"		"^From:.*pjmayher")
-	("CCW"		"^From:.*zecco")
+	("CCW"		"^From:.*saunders")
+	("CCW"		"^From:.*skuhr*")
+	("CCW"		"^From:.*turner*")
+	("CCW"		"^From:.*gunderson*")
+	("CCW"		"^From:.*dickie*")
 	("CCW"		"^To:.*schendel")
 	("CCW"		"^cc:.*schendel")
 	("inbox"	""))
@@ -119,22 +125,19 @@
 (define-key gnus-summary-mode-map "d" 'gnus-summary-mark-as-expirable)
 
 ;; Set up a gnus configuration for a wide screen
-;; if we have a dedicated frame
-;; (cond ((equal (plist-get (frame-properties) 'name) "gnus")
-;; ;       (make-variable-buffer-local 'frame-title-format)
-;;        (setq gnus-use-trees t
-;; 	     gnus-generate-tree-function 'gnus-generate-horizontal-tree
-;; 	     gnus-tree-minimize-window nil)
-;; ;	     frame-title-format "%S")
-;;        (gnus-add-configuration
-;; 	'(article
-;; 	  (horizontal 1.0
-;; 		      (vertical 0.50
-;; 				(tree 0.20)
-;; 				(summary 1.0 point))
-;; 		      (article 1.0))))))
+(make-variable-buffer-local 'frame-title-format)
+(setq gnus-use-trees t
+      gnus-generate-tree-function 'gnus-generate-horizontal-tree
+      gnus-tree-minimize-window nil)
+(gnus-add-configuration
+ '(article
+   (horizontal 1.0
+	       (vertical 0.50
+			 (tree 0.20)
+			 (summary 1.0 point))
+	       (article 1.0))))
 
 
 ;; Display text instead of html
-(add-to-list 'mm-discouraged-alternatives "text/html")
-(setq mm-automatic-display (remove "text/html" mm-automatic-display))
+(add-to-list 'mm-discouraged-alternatives "text/html" "text/richtext")
+;(setq mm-automatic-display (remove "text/html" mm-automatic-display))

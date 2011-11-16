@@ -17,39 +17,11 @@
 	  (lambda ()
 	    (setq custom-file acs::custom-file)))
 
-;; I am using a dark background:
-;;   (set-face-background 'default "Black")
-;;   (set-face-foreground 'default "LightYellow")
-;; Unfortunately, changing from a light to dark background does not
-;; update the frame properties for the current frame, resulting
-;; in different (i.e. wrong) font-lock font colors for the current frame;
-;; subsequent frames get the right colors.  Here are the possible workarounds:
-;;   1. Start XEmacs with the -unmapped option and instantiate the frame
-;;      after the background color has been set.  This has the disadvantage
-;;      of eliminating the possibility of actually running unmapped.
-;;   2. Start XEmacs with a dark background specified either on the
-;;      command line or through X resources.
-;;   3. Start XEmacs with this option:
-;;      -eval "(setq frame-background-mode 'dark)"
-;;   4. Update the frame properties to reflect the dark background
-;;      after setting the background.
-;; Currently, we start out unmapped so we can set the faces, fonts and colors
-;; consistently for all the frames.  We will instantiate a frame
-;; at the end of this file.
-
 ;; Set faces and colors
-(and (equal (emacs-type) "xemacs")
+(and (featurep 'xemacs)
      (set-face-font 'default "-*-dejavu sans mono-medium-r-normal--12-*-*-*-m-*-iso8859-1")
      (set-face-foreground 'default "LightYellow")
      (set-face-background 'default "Black"))
-
-;; Workaround #4
-(setq initial-frame-plist '(custom-properties (class color background dark)))
-(frame-notice-user-settings)
-
-(require 'info)
-(make-face-unitalic 'info-node)
-(set-face-foreground 'info-node "DodgerBlue3")
 
 (put 'narrow-to-region 'disabled nil)
 (put 'eval-expression 'disabled nil)
@@ -320,6 +292,29 @@ Extends the region if it exists."
 
 (setq html-helper-htmldtd-version
       "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n")
+
+;; Customize patcher
+(and (fboundp 'patcher-version)
+     (setq patcher-default-mail-method 'fake
+	   patcher-projects
+	   '(("21.4"
+	      "~/scmroot/xemacs-21.4"
+	      :to-address "xemacs-patches@xemacs.org"
+	      :themes (mercurial)
+	      :diff-command "hg diff"
+	      :change-logs-updating manual)
+	     ("21.5"
+	      "~/scmroot/xemacs-21.5"
+	      :to-address "xemacs-patches@xemacs.org"
+	      :themes (mercurial)
+	      :diff-command "hg diff"
+	      :change-logs-updating manual)
+	     ("packages"
+	      "~/scmroot/xemacs-packages"
+	      :to-address "xemacs-patches@xemacs.org"
+	      :themes (mercurial)
+	      :diff-command "hg diff"
+	      :change-logs-updating manual))))
 
 ;; Local Variables:
 ;; eval: (setq tab-width 8)

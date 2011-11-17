@@ -18,6 +18,14 @@
 	    (setq custom-file acs::custom-file)))
 
 ;; Set faces and colors
+;; I'm using set-face-font here rather than customize-face because:
+;; (set-face-font 'default "-*-dejavu sans mono-medium-r-normal--12-*-*-*-m-*-iso8859-1")
+;;   ==> -misc-dejavu sans mono-medium-r-normal--12-87-100-100-m-0-iso8859-1
+;; customize-face 'default "dejavu sans mono" "12px"
+;;   ==> -*-dejavu sans mono-medium-r-*-*-*-90-*-*-*-*-iso8859-*
+;; customize-face 'default "dejavu sans mono" "11.9px"
+;;   ==> -*-dejavu sans mono-medium-r-*-*-*-80-*-*-*-*-iso8859-*
+;; I don't know any way to get the -87- font using customize.
 (and (featurep 'xemacs)
      (set-face-font 'default "-*-dejavu sans mono-medium-r-normal--12-*-*-*-m-*-iso8859-1")
      (set-face-foreground 'default "LightYellow")
@@ -305,16 +313,10 @@ Extends the region if it exists."
 	      :change-logs-updating manual)
 	     ("21.5"
 	      "~/scmroot/xemacs-21.5"
-	      :to-address "xemacs-patches@xemacs.org"
-	      :themes (mercurial)
-	      :diff-command "hg diff"
-	      :change-logs-updating manual)
+	      :inheritance "21.4")
 	     ("packages"
 	      "~/scmroot/xemacs-packages"
-	      :to-address "xemacs-patches@xemacs.org"
-	      :themes (mercurial)
-	      :diff-command "hg diff"
-	      :change-logs-updating manual))))
+	      :inheritance "21.4"))))
 
 ;; Local Variables:
 ;; eval: (setq tab-width 8)

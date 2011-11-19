@@ -202,7 +202,7 @@
 	 (gethash 'blddir (config-value-hash-table))))))
 
 ; Fix a bug with emacs-internal face in current ediff
-(setq ediff-coding-system-for-write 'escape-quoted)
+(setq ediff-coding-system-for-write 'raw-text)
 
 ;(message "Leaving default.el")
 

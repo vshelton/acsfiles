@@ -14,7 +14,7 @@
 # Set up a vanilla zsh environment
 emulate -LR zsh
 progname=${0:t}
-0=$progname                             # For error messages from builtins
+#0=$progname                             # For error messages from builtins
 
 function usage {
   print -u2 "\
@@ -35,8 +35,8 @@ usage: $progname [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--wi
 # Things to customize
 : ${GIFLIB_VER:=giflib-4.1.6}
 : ${LIB_DIR:=/usr/local/src}
-: ${PNG_VER:=libpng-1.2.40}
-: ${TIFF_VER:=tiff-3.7.3}
+: ${PNG_VER:=libpng-1.2.46}
+: ${TIFF_VER:=tiff-3.9.5}
 : ${ZLIB_VER:=zlib}
 
 zparseopts -D h=help -help=help -with-mule=with_mule -without-mule=without_mule -with-debug=with_debug -without-debug=without_debug -package-root:=package_root -prefix:=prefix -install=install -sdk=with_sdk -intel=with_intel
@@ -87,7 +87,7 @@ fi
 cd $srcdir/nt
 unset HOME              # Don't pick up my emacs customizations
 # Configure for optional packages
-perl -pi -e "s@^OPTIONAL_LIBRARY_DIR=.*@OPTIONAL_LIBRARY_DIR=$(cygpath --mixed /)$LIB_DIR@;
+perl -pi -e "s@^OPTIONAL_LIBRARY_DIR=.*@OPTIONAL_LIBRARY_DIR=$(cygpath --mixed $LIB_DIR)@;
              s@^PNG_DIR=.*@PNG_DIR=\\\$(OPTIONAL_LIBRARY_DIR)/$PNG_VER@;
              s@^GIF_DIR=.*@GIF_DIR=\\\$(OPTIONAL_LIBRARY_DIR)/$GIFLIB_VER@;
              s@^ZLIB_DIR=.*@ZLIB_DIR=\\\$(OPTIONAL_LIBRARY_DIR)/$ZLIB_VER@;

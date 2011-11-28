@@ -2,10 +2,10 @@
 
 ;; Set these variables via custom
 (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(*try-oblique-before-italic-fonts* t)
  '(auto-save-timeout 960)
  '(balloon-help-background "LightYellow")
@@ -39,14 +39,15 @@
  '(require-final-newline nil)
  '(resize-minibuffer-frame-exactly t)
  '(scroll-bar-mode (quote right))
+ '(send-mail-function (quote sendmail-send-it))
  '(shell-multiple-shells t)
  '(show-paren-mode t)
  '(truncate-lines nil)
  '(user-full-name "Vin Shelton")
  '(user-mail-address "acs@xemacs.org"))
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :background "PapayaWhip" :foreground "black" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 97 :width normal :foundry "unknown" :family "DejaVu Sans Mono")))))

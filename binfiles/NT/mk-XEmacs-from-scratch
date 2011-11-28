@@ -191,9 +191,11 @@ Is there an SCM hierarchy at $SCMROOT?"
 
   # Make but don't install a native version.
   # We'll run it from the source directory.
-  print "Building XEmacs $branch native"
+  print "Building XEmacs $ver native"
   if MakeNativeXEmacs $build_opts --package-root="$(cygpath -m $XEMACS_INSTALLED_ROOT)" $with_intel $srcdir ; then
     make_shortcut $shortcut_dir $branch $datespec "native"
+  else
+    print -u2 "$progname: MakeNativeXEmacs failed!"
   fi
 
   # Make and install a cygwin version and make it the default.

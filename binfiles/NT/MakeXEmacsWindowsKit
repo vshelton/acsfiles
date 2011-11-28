@@ -103,7 +103,7 @@ for ver in $*; do
   case $ver in
   (21.[45].??)
     srcdir=xemacs-$ver
-    if ! GetSource --src=. $srcdir >& /dev/null ; then
+    if ! [[ -d $srcdir ]] && ! GetSource --src=. $srcdir >& /dev/null ; then
       print -u2 "$progname: could not retrieve sources for $srcdir."
       exit 2
     fi

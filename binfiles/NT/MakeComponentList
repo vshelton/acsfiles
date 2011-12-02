@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-my $file = "/tmp/tst/package-index.LATEST.gpg";
+my $file = "package-index.LATEST.gpg";
 my $fh;
 
 my %categories;

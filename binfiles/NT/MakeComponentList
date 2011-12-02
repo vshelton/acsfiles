@@ -1,0 +1,109 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+my $file = "/tmp/tst/package-index.LATEST.gpg";
+my $fh;
+
+my %categories;
+my %descriptions;
+my %filenames;
+
+# Define the special packages
+my %fixed = ( "efs", "Y", "xemacs-base", "Y" );
+my %minimal = ( "edit-utils", "Y", "efs", "Y", "texinfo", "Y", "xemacs-base", "Y" );
+my %recommended = ( "c-support", "Y", "cc-mode", "Y", "debug", "Y", "dired", "Y",
+		    "ecb", "Y", "edebug", "Y", "ediff", "Y", "edit-utils", "Y",
+		    "efs", "Y", "eieio", "Y", "fsf-compat", "Y",
+		    "latin-euro-standards", "Y", "latin-unity", "Y",
+		    "locale", "Y", "lookup", "Y", "mail-lib", "Y", "mule-base", "Y",
+		    "net-utils", "Y", "os-utils", "Y", "pc", "Y", "perl-modes", "Y",
+		    "prog-modes", "Y", "semantic", "Y", "sh-script", "Y",
+		    "sounds-wav", "Y", "speedbar", "Y", "texinfo", "Y",
+		    "text-modes", "Y", "time", "Y", "xemacs-base", "Y",
+		    "xemacs-devel", "Y" );
+
+open $fh, '<', $file or die "unable to open file '$file' for reading : $!";
+while (<$fh>) {
+    # New package description
+    if ( /^\(package-get-update-base-entry/ ) {
+	$_ = <$fh>;
+	die "unexpected EOF on $file" if !defined $_;
+	chop;
+	s@^\(@@;
+	my $pkg = $_;
+	#print "pkg = ", $pkg, "\n";
+	my $pkg_category = "";
+	my $pkg_description = "";
+	my $pkg_filename = "";
+	while ( $pkg_category eq "" || $pkg_description eq "" || $pkg_filename eq "" ) {
+	    $_ = <$fh>;
+	    die "unexpected EOF on $file" if !defined $_;
+	    if ( /^\s*category\s+"(.*)"/ ) {
+		$pkg_category = $1;
+		#print "category = ", $pkg_category, "\n";
+	    }
+	    elsif ( /^\s*description\s+"(.*)"/ ) {
+		$pkg_description = $1;
+		#print "description = ", $pkg_description, "\n";
+	    }
+	    elsif ( /^\s*filename\s+"(.*)"/ ) {
+		$pkg_filename = $1;
+		#print "filename = ", $pkg_filename, "\n";
+	    }
+	}
+	#print "pkg = ", $pkg, "\n";
+	#print "    category = ", $pkg_category, "\n";
+	#print "    description = ", $pkg_description, "\n";
+	#print "    filename = ", $pkg_filename, "\n";
+
+	# Work around an oddity in InnoSetup
+	$pkg_description =~ s/{/{{/g;
+
+	$categories{$pkg} = $pkg_category;
+	$descriptions{$pkg} = $pkg_description;
+	$filenames{$pkg} = $pkg_filename;
+    }
+}
+close $fh;
+
+#foreach my $key (sort (keys %categories)) {
+#    print "package = ", $key, "\n";
+#    print "    category = ", $categories{$key}, "\n";
+#    print "    description = ", $descriptions{$key}, "\n";
+#    print "    filename = ", $filenames{$key}, "\n";
+#}
+
+# Print out the source section
+foreach my $key (sort (keys %categories)) {
+    my $component = $key;
+    $component =~ s/-/_/g;
+    if ( $categories{$key} eq "mule" ) {
+	print "#ifdef MULE\n";
+	print "Source: \"{#PkgSrc}\\", $key, "-*-pkg.tar\"; DestDir: \"{app}\\mule-packages\"; Components: ", $component, "; Flags: ignoreversion\n";
+	print "#endif\n";
+    }
+    else {
+	print "Source: \"{#PkgSrc}\\", $key, "-*-pkg.tar\"; DestDir: \"{app}\\xemacs-packages\"; Components: ", $component, "; Flags: ignoreversion\n";
+    }
+}
+
+# Print out the component section
+print "
+
+[Components]
+Name: \"base\"; Description: \"XEmacs {#XEmacsVersion} executable and essential support files\"; Types: complete minimal recommended custom; Flags: fixed\n";
+foreach my $key (sort (keys %categories)) {
+    my $component = $key;
+    $component =~ s/-/_/g;
+
+    my $typ = "Types: complete custom";
+    $typ = $typ . " recommended" if $recommended{$key};
+    $typ = $typ . " minimal" if $minimal{$key};
+    $typ = $typ . "; Flags: fixed" if $fixed{$key};
+
+    print "#ifdef MULE\n" if $categories{$key} eq "mule";
+    print "Name: \"", $component, "\"; Description: \"", $key, ": ", $descriptions{$key}, "\"; ", $typ, "\n";
+    print "#endif\n" if $categories{$key} eq "mule";
+}

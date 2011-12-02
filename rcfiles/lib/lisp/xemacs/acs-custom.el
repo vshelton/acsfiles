@@ -58,7 +58,7 @@
  '(font-lock-comment-face ((((class color) (background dark)) (:foreground "DodgerBlue1"))))
  '(info-node ((t (:foreground "DodgerBlue3" :bold t))))
  '(isearch-secondary ((t (:background "gray47"))) t)
- '(modeline ((t (:foreground "Black" :background "light salmon" :size "11px" :family "comic sans ms"))) t)
+ '(modeline ((t (:foreground "Black" :background "light salmon" :size "9pt" :family "comic sans ms"))) t)
  '(zmacs-region ((t (:foreground "LightYellow" :background "gray47"))) t))
 
 ;(message "Leaving acs-custom.el")

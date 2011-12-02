@@ -1,87 +1,43 @@
 #!/usr/bin/env zsh
 
-# Download all the packages needed for the XEmacs setup kits
+# Download all the packages needed for the XEmacs setup kits.
 
 emulate -LR zsh
 progname=${0:t}
 
 : ${ftpsite:=http://ftp.xemacs.org/pub/xemacs/packages}
 : ${expsite:=http://ftp.xemacs.org/pub/xemacs/beta/experimental/packages}
-default_pkgs="auctex
-              bbdb
-              c-support
-              calc
-              cc-mode
-              debug
-              dired
-              easypg
-              ecb
-              ecrypto
-              edebug
-              ediff
-              edit-utils
-              efs
-              eieio
-              elib
-              emerge
-              eshell
-              footnote
-              fortran-modes
-              fsf-compat
-              gnus
-              hm--html-menus
-              ibuffer
-              igrep
-              ispell
-              jde
-              latin-euro-standards
-              latin-unity
-              locale
-              lookup
-              mail-lib
-              mailcrypt
-              mh-e
-              mmm-mode
-              mule-base
-              net-utils
-              os-utils
-              pc
-              pcl-cvs
-              pcomplete
-              perl-modes
-              prog-modes
-              ps-print
-              psgml
-              python-modes
-              re-builder
-              reftex
-              ruby-modes
-              sasl
-              scheme
-              semantic
-              sgml
-              sh-script
-              sieve
-              sounds-wav
-              speedbar
-              supercite
-              texinfo
-              text-modes
-              textools
-              time
-              tramp
-              vc
-              vhdl
-              viper
-              vm
-              w3
-              x-symbol
-              xemacs-base
-              xemacs-devel
-              xetla
-              xslide
-              xslt-process"
-: ${pkglist:=$default_pkgs}
+# We used to use this package list, but now we just get all packages.
+default_pkgs=(
+    auctex bbdb c-support calc cc-mode debug dired easypg ecb ecrypto
+    edebug ediff edit-utils efs eieio elib emerge eshell footnote
+    fortran-modes fsf-compat gnus hm--html-menus ibuffer igrep ispell
+    jde latin-euro-standards latin-unity locale lookup mail-lib
+    mailcrypt mh-e mmm-mode mule-base net-utils os-utils pc pcl-cvs
+    pcomplete perl-modes prog-modes ps-print psgml python-modes
+    re-builder reftex ruby-modes sasl scheme semantic sgml sh-script
+    sieve sounds-wav speedbar supercite texinfo text-modes textools
+    time tramp vc vhdl viper vm w3 x-symbol xemacs-base xemacs-devel
+    xetla xslide xslt-process)
+#[[ -z $pkglist ]] && pkglist=( $all_pkgs )
+all_pkgs=(
+    Sun ada apel auctex bbdb build c-support calc calendar cc-mode
+    cedet-common clearcase cogre cookie crisp debug dictionary dired
+    docbookide easypg ecb ecrypto ede edebug edict ediff edit-utils
+    edt efs egg-its eieio elib emerge erc escreen eshell eterm eudc
+    footnote forms fortran-modes frame-icon fsf-compat games
+    general-docs gnats gnus guided-tour haskell-mode hm--html-menus
+    hyperbole ibuffer idlwave igrep ilisp ispell jde
+    latin-euro-standards latin-unity leim locale lookup mail-lib
+    mailcrypt mew mh-e mine misc-games mmm-mode mule-base mule-ucs
+    net-utils ocaml oo-browser os-utils pc pcl-cvs pcomplete
+    perl-modes pgg prog-modes ps-print psgml psgml-dtds python-modes
+    re-builder reftex riece rmail ruby-modes sasl scheme semantic sgml
+    sh-script sieve skk slider sml-mode sounds-au sounds-wav speedbar
+    strokes supercite texinfo text-modes textools time tm tooltalk tpu
+    tramp vc vc-cc vhdl view-process viper vm w3 x-symbol xemacs-base
+    xemacs-devel xetla xlib xslide xslt-process xwem zenirc)
+[[ -z $pkglist ]] && pkglist=( $all_pkgs )
 
 function getPackageFile {
   local file
@@ -100,7 +56,7 @@ if [[ ! -f package-index.LATEST.gpg ]]; then
 fi
 
 # Find the right version of each package and fetch it
-for f in ${=pkglist}; do
+for f in ${pkglist}; do
   grep "filename \"$f-[0-9]" package-index.LATEST.gpg | read fn pkg
   pkg=${pkg:s/\"//:s/\"//}
   getPackageFile $pkg
@@ -108,7 +64,7 @@ for f in ${=pkglist}; do
 done
 
 # Uncompress the compressed tar files (they will be compressed
-# in the setup kit.
+# in the setup kit).
 gunzip *.tar.gz
 
 # Local Variables:

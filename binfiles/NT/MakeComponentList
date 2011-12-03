@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-my $file = "package-index.LATEST.gpg";
+my $file = $ARGV[0];
 my $fh;
 
 my %categories;
@@ -11,18 +11,17 @@ my %descriptions;
 my %filenames;
 
 # Define the special packages
-my %fixed = ( "efs", "Y", "xemacs-base", "Y" );
-my %minimal = ( "edit-utils", "Y", "efs", "Y", "texinfo", "Y", "xemacs-base", "Y" );
-my %recommended = ( "c-support", "Y", "cc-mode", "Y", "debug", "Y", "dired", "Y",
-		    "ecb", "Y", "edebug", "Y", "ediff", "Y", "edit-utils", "Y",
-		    "efs", "Y", "eieio", "Y", "fsf-compat", "Y",
-		    "latin-euro-standards", "Y", "latin-unity", "Y",
-		    "locale", "Y", "lookup", "Y", "mail-lib", "Y", "mule-base", "Y",
-		    "net-utils", "Y", "os-utils", "Y", "pc", "Y", "perl-modes", "Y",
-		    "prog-modes", "Y", "semantic", "Y", "sh-script", "Y",
-		    "sounds-wav", "Y", "speedbar", "Y", "texinfo", "Y",
-		    "text-modes", "Y", "time", "Y", "xemacs-base", "Y",
-		    "xemacs-devel", "Y" );
+my @fixed = ( "efs", "xemacs-base" );
+my @minimal = ( "edit-utils", "efs", "texinfo", "xemacs-base" );
+my @recommended = ( "c-support", "cc-mode", "debug", "dired", "ecb",
+		    "edebug", "ediff", "edit-utils", "efs", "eieio",
+		    "fsf-compat", "latin-euro-standards",
+		    "latin-unity", "locale", "lookup", "mail-lib",
+		    "mule-base", "net-utils", "os-utils", "pc",
+		    "perl-modes", "prog-modes", "semantic",
+		    "sh-script", "sounds-wav", "speedbar", "texinfo",
+		    "text-modes", "time", "xemacs-base",
+		    "xemacs-devel" );
 
 open $fh, '<', $file or die "unable to open file '$file' for reading : $!";
 while (<$fh>) {
@@ -33,7 +32,6 @@ while (<$fh>) {
 	chop;
 	s@^\(@@;
 	my $pkg = $_;
-	#print "pkg = ", $pkg, "\n";
 	my $pkg_category = "";
 	my $pkg_description = "";
 	my $pkg_filename = "";
@@ -42,15 +40,12 @@ while (<$fh>) {
 	    die "unexpected EOF on $file" if !defined $_;
 	    if ( /^\s*category\s+"(.*)"/ ) {
 		$pkg_category = $1;
-		#print "category = ", $pkg_category, "\n";
 	    }
 	    elsif ( /^\s*description\s+"(.*)"/ ) {
 		$pkg_description = $1;
-		#print "description = ", $pkg_description, "\n";
 	    }
 	    elsif ( /^\s*filename\s+"(.*)"/ ) {
 		$pkg_filename = $1;
-		#print "filename = ", $pkg_filename, "\n";
 	    }
 	}
 	#print "pkg = ", $pkg, "\n";
@@ -92,6 +87,12 @@ foreach my $key (sort (keys %categories)) {
 # Print out the component section
 print "
 
+[Types]
+Name: \"recommended\"; Description: \"Recommended installation\"
+Name: \"complete\"; Description: \"Install XEmacs {#XEmacsVersion} and all packages\"
+Name: \"minimal\"; Description: \"Minimalist installation\"
+Name: \"custom\"; Description: \"Custom installation\"; Flags: iscustom
+
 [Components]
 Name: \"base\"; Description: \"XEmacs {#XEmacsVersion} executable and essential support files\"; Types: complete minimal recommended custom; Flags: fixed\n";
 foreach my $key (sort (keys %categories)) {
@@ -99,9 +100,9 @@ foreach my $key (sort (keys %categories)) {
     $component =~ s/-/_/g;
 
     my $typ = "Types: complete custom";
-    $typ = $typ . " recommended" if $recommended{$key};
-    $typ = $typ . " minimal" if $minimal{$key};
-    $typ = $typ . "; Flags: fixed" if $fixed{$key};
+    $typ = $typ . " recommended" if grep(/^$key$/, @recommended);
+    $typ = $typ . " minimal" if grep(/^$key$/, @minimal);
+    $typ = $typ . "; Flags: fixed" if grep(/^$key$/, @fixed);
 
     print "#ifdef MULE\n" if $categories{$key} eq "mule";
     print "Name: \"", $component, "\"; Description: \"", $key, ": ", $descriptions{$key}, "\"; ", $typ, "\n";

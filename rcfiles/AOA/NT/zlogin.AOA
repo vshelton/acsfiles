@@ -11,6 +11,20 @@ cdpath[(r)..]=()
 # Start the ssh-agent (if necessary)
 #[[ -z $SSH_AGENT_PID ]] && eval $(ssh-agent -s)
 
+# Make sure .emacs and lib/lisp/xemacs files are up-to-date.
+# These should be symbolic links, but native windows doesn't
+# grok cygwin symlinks.
+(
+  typeset -AA rcfiles
+  rcfiles=(.emacs scmroot/rcfiles/emacs
+           lib/lisp/xemacs/acs-custom.el scmroot/rcfiles/lib/lisp/xemacs/acs-custom.el
+           lib/lisp/xemacs/default.el scmroot/rcfiles/lib/lisp/xemacs/default.el )
+  cd
+  for f in ${(k)rcfiles}; do
+    diff $f $rcfiles[$f] || cp $rcfiles[$k] $f
+  done
+)
+
 # Local Variables:
 # mode: ksh
 # sh-indentation: 2

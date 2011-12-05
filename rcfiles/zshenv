@@ -46,7 +46,7 @@ system_specific .zshenv -pre
 : ${SCMROOT=~/scmroot}
 export USRLOCAL SRCROOT BLDROOT ZIPROOT SCMROOT
 
-#export LC_COLLATE=C
+export LC_COLLATE=C
 #unset LANG
 #unset LC_TIME
 

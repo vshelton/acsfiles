@@ -22,6 +22,7 @@
  '(ediff-window-setup-function (quote ediff-setup-windows-plain) t)
  '(enable-local-eval t)
  '(find-file-compare-truenames t)
+ '(find-file-use-truenames t)
  '(font-menu-ignore-scaled-fonts t t)
  '(font-menu-this-frame-only-p t t)
  '(gnus-expert-user t)

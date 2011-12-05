@@ -15,13 +15,9 @@ cdpath[(r)..]=()
 # These should be symbolic links, but native windows doesn't
 # grok cygwin symlinks.
 (
-  typeset -AA rcfiles
-  rcfiles=(.emacs scmroot/rcfiles/emacs
-           lib/lisp/xemacs/acs-custom.el scmroot/rcfiles/lib/lisp/xemacs/acs-custom.el
-           lib/lisp/xemacs/default.el scmroot/rcfiles/lib/lisp/xemacs/default.el )
   cd
-  for f in ${(k)rcfiles}; do
-    diff $f $rcfiles[$f] || cp $rcfiles[$k] $f
+  for f in .emacs lib/lisp/xemacs/acs-custom.el lib/lisp/xemacs/default.el; do
+    diff $f $rc_map[$f] || cp $rc_map[$k] $f
   done
 )
 

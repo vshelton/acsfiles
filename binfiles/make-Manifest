@@ -1,0 +1,39 @@
+#!/usr/bin/env zsh
+
+emulate -LR zsh
+progname=${0:t}
+
+# Choose a disk for which to create a manifest
+PS3="Choose a disk to create a manifest for: "
+select disk_uuid in $(ls /dev/disk/by-uuid); do
+  break
+done
+
+# Figure out where that disk is mounted
+if ! mount | grep $(findfs UUID=$disk_uuid) | read mount_device on mount_point junk; then
+  print -u2 $progname: $disk_uuid is not mounted
+  exit 1
+fi
+
+if ! cd $mount_point; then
+  print -u2 $progname: could not cd to $mount_point
+  exit 2
+fi
+
+manifest_file=/tmp/Manifest.$disk_uuid-$(date +'%Y-%m-%d')
+echo "Printing manifest in $manifest_file"
+exec >$manifest_file
+
+df -h .
+echo
+tune2fs -l $mount_device
+echo
+ls -alR
+echo
+find . -type f -print0 | xargs -0 md5sum
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

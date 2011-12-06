@@ -59,8 +59,8 @@ system_specific .zshenv -post
 # and resolve symbolic links
 path=($^path(N))
 path=(${^path%%/##})
-for (( i=1; i < $#path+1; i++ )); do
-  [[ -L $path[$i] ]] && path[$i]=$(cd $path[$i]; pwd -r)
+foreach p in $path; do
+  [[ -L $p ]] && path[(r)$p]=$(cd $p; pwd -r)
 done
 
 # Local Variables:

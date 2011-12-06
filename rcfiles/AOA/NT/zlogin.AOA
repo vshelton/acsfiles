@@ -1,6 +1,6 @@
 
 # Fix bogus path setting from /etc/zprofile
-path=($ZDOTDIR/bin /XEmacs/cygwin/bin $USRLOCAL/bin /bin /usr/sbin $(cygpath -S) $(cygpath -W))
+path=($ZDOTDIR/bin /XEmacs/cygwin/bin $USRLOCAL/bin /usr/bin /usr/sbin $(cygpath -S) $(cygpath -W))
 
 # Since /XEmacs is the root of the XEmacs package tree, refer to it
 alias installed_packages="USRLOCAL=/XEmacs installed_packages"
@@ -17,7 +17,7 @@ cdpath[(r)..]=()
 (
   cd
   for f in .emacs lib/lisp/xemacs/acs-custom.el lib/lisp/xemacs/default.el; do
-    diff $f $rc_map[$f] || cp $rc_map[$k] $f
+    diff -q $f $rc_map[$f] || cp $rc_map[$f] $f
   done
 )
 

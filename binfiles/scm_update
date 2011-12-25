@@ -21,8 +21,11 @@ fi
 
 # Mercurial
 if [[ -d .hg ]]; then
-  hg pull
-  hg -v update
+  if [[ -e .hgsub ]]; then
+    hg onsub "hg pull -u"
+  else
+    hg pull -u
+  fi
 # Subversion
 elif [[ -d .svn ]]; then
   svn update

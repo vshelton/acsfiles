@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Update CVS sources for a specified project and
+# Update the local sources for a specified project and
 # if any new files are found, run a full build.
 # Syntax: update_and_build <project_name> <build_script> [build_options]
 # Assumptions:
@@ -18,33 +18,24 @@ case $# in
   ;;
 esac
 
+: ${SCMROOT:=~/scmroot}
+
 project_name=$1; shift
 build_script=$1; shift
 update_file="last_update"
 
-: ${SCMROOT:=~/scmroot}
-project_scm_dir=$SCMROOT/$project_name
-if ! cd $project_scm_dir 2>/dev/null; then
-  print -u2 "$progname: there is no accessible SCM hierarchy at $project_scm_dir."
-  exit 1
-fi
-print "\n$project_name"
-loop_while_failing scm_update $project_name
+if scm_update $project_name ; then
+  cd $SCMROOT/$project_name
 
-# Horrible hack to work around constantly updating version.sh
-# file in XEmacs 21.5
-if [[ $project_name = xemacs-21.5 ]]; then
-  touch --reference=$update_file version.sh
-fi
-
-if [[ $(newer_than $update_file) -gt 0 ]]; then
-  (
-    cd $BLDROOT
-    print "\nBuilding $project_name"
-    $build_script $*
-  )
-  # touch update_file if build script succeeded
-  (( $? == 0 )) && touch $update_file
+  if (( $(newer_than $update_file) > 0 )); then
+    (
+      cd $BLDROOT
+      print "\nBuilding $project_name"
+      $build_script $*
+    )
+    # touch update_file if build script succeeded
+    (( $? == 0 )) && touch $update_file
+  fi
 fi
 
 # Local Variables:

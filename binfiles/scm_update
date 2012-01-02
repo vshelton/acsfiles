@@ -3,45 +3,67 @@
 # Update sources under SCM control in the $SCMROOT directory.
 # This script attempts to handle mercurial, svn and CVS archives.
 
+# This script uses the find_newer function.
+
 emulate -LR zsh
 progname=${0:t}
 
-if (( $# != 1 )); then
-  print -u2 "usage: $progname <project_name>"
+if (( $# == 0 )); then
+  print -u2 "usage: $progname project_name [project_name2 [project_name3...]]"
   exit 1
 fi
 
 : ${SCMROOT:=~/scmroot}
-project_scm_dir=$SCMROOT/$1
+retval=0
+start_time=$(mktemp)
 
-if ! cd $project_scm_dir 2>/dev/null; then
-  print -u2 "$progname: there is no accessible SCM hierarchy at $project_scm_dir."
-  exit 1
-fi
+# Return exit code from SCM update command
+trap "rm $start_time; exit \$retval" INT EXIT
 
-# Mercurial
-if [[ -d .hg ]]; then
-  if [[ -e .hgsub ]]; then
-    hg onsub "hg pull -u"
-  else
-    hg pull -u
+for d; do
+  pdir=$SCMROOT/$d
+
+  if ! cd $pdir 2>/dev/null; then
+    retval=1
+    print -u2 "$progname: there is no source code hierarchy at $pdir."
+    continue
   fi
-# Subversion
-elif [[ -d .svn ]]; then
-  svn update
-# CVS
-elif [[ -d CVS ]]; then
-  cvs -q update
-# bzr
-elif [[ -d .bzr ]]; then
-  bzr update
-else
-  print -u2 "$progname: no mercurial, svn or CVS hierarchy could be found at $project_scm_dir."
-  exit 2
-fi
 
-# Return exit code from SCM update command, so we can use
-# loop_while_failing to retry.
+  # Mercurial
+  if [[ -d .hg ]]; then
+    print "\n$d"
+    if [[ -e .hgsub ]]; then
+      hg onsub "hg -q pull -u"
+    else
+      hg -q pull -u
+    fi
+    retval=$?
+    find_newer $start_time
+
+  # Subversion
+  elif [[ -d .svn ]]; then
+    print "\n$d"
+    svn update
+    retval=$?
+
+  # CVS
+  elif [[ -d CVS ]]; then
+    print "\n$d"
+    cvs -q update
+    retval=$?
+
+  # bzr
+  elif [[ -d .bzr ]]; then
+    print "\n$d"
+    bzr update
+    retval=$?
+
+  else
+    retval=1
+    print -u2 "$progname: no mercurial, svn or cvs hierarchy could be found at $pdir."
+    continue
+  fi
+done
 
 # Local Variables:
 # mode: ksh

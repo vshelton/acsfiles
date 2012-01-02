@@ -1,0 +1,18 @@
+# Print the names of all the files in the current hierarchy
+# newer than the specified file, omitting source code repository
+# maintenance files.
+
+local progname=${0:t}
+
+if (( $# != 1 )); then
+  print -u2 "usage: $progname reference_file"
+  return 1
+fi
+
+find . -type f -not -path '*/CVS/*' -not -path '*/.hg/*' -newer $1 -print 2>/dev/null
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

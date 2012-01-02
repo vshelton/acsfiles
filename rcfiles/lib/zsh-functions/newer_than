@@ -1,5 +1,13 @@
 # Print the number of files under the current directory
-# newer than the specified file
-new_files=($(find . -type f -not -path '*/CVS/*' -not -path '*/.hg/*' -newer $1)) 2>/dev/null
+# newer than the specified file, omitting source code repository
+# maintenance files.
+
+local -a new_files
+new_files=( $(find_newer $1) )
 print ${#new_files}
 
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

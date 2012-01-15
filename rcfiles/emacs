@@ -46,6 +46,7 @@
 ;; I don't know any way to get the -87- font using customize.
 (and (featurep 'xemacs)
      (set-face-font 'default "-*-dejavu sans mono-medium-r-normal--12-*-*-*-m-*-iso8859-1")
+     (set-face-font 'bold "-*-dejavu sans mono-bold-r-normal--12-*-*-*-m-*-iso8859-1")
      (set-face-foreground 'default "LightYellow")
      (set-face-background 'default "Black"))
 

@@ -1,0 +1,74 @@
+#!/usr/bin/env zsh
+
+set -x
+
+SCMROOT=$1
+my_host=$(uname -n)
+: ${basis:=AOA}
+
+ln -s $SCMROOT/rcfiles/zlogin .zlogin
+ln -s $SCMROOT/rcfiles/$basis/linux/zlogin.$basis .zlogin.debian
+ln -s $SCMROOT/rcfiles/zlogout .zlogout
+ln -s $SCMROOT/rcfiles/zprofile .zprofile
+ln -s $SCMROOT/rcfiles/zshenv .zshenv
+ln -s $SCMROOT/rcfiles/$basis/linux/zshenv.$basis-post .zshenv.debian-post
+ln -s $SCMROOT/rcfiles/$basis/linux/zshenv.$basis-pre .zshenv.debian-pre
+ln -s $SCMROOT/rcfiles/zshrc .zshrc
+
+ln -s $SCMROOT/rcfiles/emacs .emacs
+
+mkdir .hist >& /dev/null
+
+binlinks=(
+GetXEmacsPackages           diff_xemacs_build_results  new_default
+InstallExtraXEmacsPackages  diffs                      newer_than
+MakeComponentList           find_install_root          now
+MakeCygwinXEmacs            findpkg                    scm_update
+MakeNativeXEmacs            installed_packages         summarize_zsh_tests
+MakeXEmacsWindowsKit        latest                     symlink-tree
+all_dirs                    link_latest                sysprefix
+all_versions                loop_while_failing         today
+bld                         make-Manifest              tomorrow
+cfg                         mk-XEmacs-from-scratch     trim_extra_history
+check_cfg                   mk-src                     update-emacs
+check_versions              mk-xemacs                  update-xemacs
+check_zsh                   mk-xemacs-21.5             update-zsh
+cleanup-xemacs              mk-xemacs-min              update_and_build
+copy_to_xemacs.org          mk-xp                      update_screenenv
+diff-xemacs-tests           mk-zsh
+diff_output_files           mk_default                 yesterday)
+
+mkdir bin
+cd bin
+for l in $binlinks; do
+  ln -s $SCMROOT/binfiles/$l
+done
+
+cd -
+mkdir -p lib/lisp/fsf lib/lisp/xemacs
+cd lib/lisp
+ln -s $SCMROOT/rcfiles/lib/lisp/detached-minibuf.el
+cd -
+
+cd lib/lisp/fsf
+for l in acs-custom.el default.el mic-paren.el; do
+  ln -s $SCMROOT/rcfiles/lib/lisp/fsf/$l
+done
+cd -
+
+cd lib/lisp/xemacs
+for l in acs-custom.el default.el; do
+  ln -s $SCMROOT/rcfiles/lib/lisp/xemacs/$l
+done
+cd -
+
+mkdir -p lib/zsh-functions
+cd lib/zsh-functions
+zfuncs=( _rm_versions abspath addpath all_dirs all_versions check_versions
+	check_zsh col dx4 dx5 exists f find_newer link-latest loop_update
+	loop_while_failing new_XEmacs new_default newer_than nfunc
+	nohist relative rm_versions system_specific title xdef xres)
+for l in $zfuncs; do
+  ln -s $SCMROOT/rcfiles/lib/zsh-functions/$l
+done
+cd -

@@ -1,0 +1,26 @@
+#!/usr/bin/env zsh
+
+emulate -LR zsh
+
+progname=${0:t}
+
+cde=$HOME/abcde-new/abcde
+broot=$HOME/MediaBackups/Ripped-2011-12
+mroot=$HOME/Music
+
+export CDDBCOPYLOCAL=y EDITOR=vi
+
+set -e
+set -x
+
+cd $broot
+$cde -L -1 -o flac -a default,cue -x -n
+
+cd $mroot
+CDDBLOCALMATCH=none CDDBLOCALRECURSIVE=n $cde -L -o flac -n -d $broot/*/*.flac(om[1])
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

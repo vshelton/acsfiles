@@ -340,6 +340,7 @@ Extends the region if it exists."
 	      :inheritance "21.4"))))
 
 ;; Local Variables:
+;; mode: lisp
 ;; eval: (setq tab-width 8)
 ;; eval: (setq indent-tabs-mode t)
 ;; End:

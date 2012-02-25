@@ -2,10 +2,10 @@
 
 ;; Set these variables via custom
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
  '(*try-oblique-before-italic-fonts* t)
  '(auto-save-timeout 960)
  '(balloon-help-background "LightYellow")
@@ -18,10 +18,13 @@
  '(compilation-error-regexp-systems-list (quote (gnu comma)))
  '(compilation-mouse-motion-initiate-parsing t)
  '(delete-selection-mode nil)
+ '(desktop-save-mode t)
  '(enable-local-eval t)
+ '(enable-local-variables :safe)
  '(eshell-modules-list (quote (eshell-alias eshell-banner eshell-basic eshell-cmpl eshell-dirs eshell-glob eshell-hist eshell-ls eshell-pred eshell-prompt eshell-rebind eshell-script eshell-term eshell-unix)))
  '(explicit-shell-file-name shell-file-name)
  '(find-file-compare-truenames t)
+ '(find-file-visit-truename t)
  '(gnus-expert-user t)
  '(gnus-novice-user nil)
  '(gnus-suppress-duplicates t)
@@ -36,6 +39,7 @@
  '(next-line-add-newlines nil)
  '(query-replace-highlight t)
  '(query-user-mail-address nil)
+ '(recentf-mode t)
  '(require-final-newline nil)
  '(resize-minibuffer-frame-exactly t)
  '(scroll-bar-mode (quote right))
@@ -46,8 +50,8 @@
  '(user-full-name "Vin Shelton")
  '(user-mail-address "acs@xemacs.org"))
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :background "PapayaWhip" :foreground "black" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 97 :width normal :foundry "unknown" :family "DejaVu Sans Mono")))))

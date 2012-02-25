@@ -460,7 +460,7 @@ if [[ -n "$debug" ]]; then
 fi
 
 # Local Variables:
-# mode: ksh
+# mode: sh
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

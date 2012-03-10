@@ -1,0 +1,81 @@
+#!/usr/bin/env zsh
+
+# Build and optionally install and upload XEmacs setup kits
+
+emulate -LR zsh
+setopt extendedglob
+
+progname=${0:t}
+
+# Variables which can be over-ridden
+: ${XEMACS_KIT_BUILD_DIR:=/XEmacsBuild}
+: ${LIB_DIR:=$XEMACS_KIT_BUILD_DIR/lib}
+: ${XEMACS_INSTALL_ROOT:=/XEmacs}
+export LIB_DIR XEMACS_KIT_BUILD_DIR XEMACS_INSTALL_ROOT
+
+usage() {
+  print -u2 "usage: $progname [-45u]
+Build Windows native installation kits for XEmacs.
+Options:
+         -4 - build XEmacs 21.4
+         -5 - build XEmacs 21.5
+         -h - print this help message
+         -u - upload kits to xemacs.org
+
+If neither -4 nor -5 is specified, the default action is
+to generate setup kits for both 21.4 and 21.5."
+}
+
+zparseopts -D 4=stable 5=beta h=help u=upload
+
+# Build both 21.4 and 21.5 by default
+[[ -n $stable ]] && stable="21.4"
+[[ -n $beta ]] && beta="21.5"
+[[ -z $stable ]] && [[ -z $beta ]] && stable="21.4" && beta="21.5"
+
+if [[ -n $help || $# != 0 ]]; then
+  usage
+  exit 1
+fi
+
+eval $(ssh-agent -s)
+ssh-add
+
+if [[ -n $stable ]] && [[ -n $beta ]]; then
+  kits="$stable and $beta setup kits"
+elif [[ -n $stable ]]; then
+  kits="$stable setup kit"
+else
+  kits="$beta setup kit"
+fi
+print "$progname: building $kits in $XEMACS_KIT_BUILD_DIR."
+cd $XEMACS_KIT_BUILD_DIR
+if ! MakeXEmacsWindowsKit -p $stable $beta >& kits-$(today).out ; then
+  print -u2 "$progname: MakeXEmacsWindowsKit failure: $?."
+  tail -n 15 kits-$(today).out
+  exit 2
+fi
+
+if [[ -n $upload ]]; then
+  [[ -n $stable ]] && ./copy_to_xemacs.org 4
+  [[ -n $beta ]] && ./copy_to_xemacs.org 5
+fi
+
+if [[ -n $beta ]]; then
+  print "$progname: installing new $beta native setup kit into $XEMACS_INSTALL_ROOT."
+  rm -rf $XEMACS_INSTALL_ROOT
+  mkdir -p $XEMACS_INSTALL_ROOT/{cygwin,shortcuts}
+  ./InstallLatest
+
+  print "$progname: building and installing cygwin version of $beta into $XEMACS_INSTALL_ROOT."
+  cd $SRCROOT
+  mk-XEmacs-from-scratch $beta >& xemacs-$beta-$(today)-mk.out
+fi
+
+ssh-agent -k
+
+# Local Variables:
+# mode: ksh
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

@@ -17,6 +17,7 @@
  '(column-number-mode t)
  '(compilation-error-regexp-systems-list (quote (gnu comma)))
  '(compilation-mouse-motion-initiate-parsing t)
+ '(compilation-scroll-output t)
  '(delete-selection-mode nil)
  '(desktop-save-mode t)
  '(enable-local-eval t)

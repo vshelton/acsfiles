@@ -227,9 +227,10 @@ Extends the region if it exists."
 (define-key global-map	[(meta down)]	'scroll-one-line-down)
 (define-key global-map	[end]		'end-key)
 (define-key global-map	[home]		'home-key)
-(define-key global-map	[(meta z)]	'zap-up-to-char)
 (define-key global-map	[(shift prior)]	'scroll-other-window-down)
 (define-key global-map	[(shift next)]	'scroll-other-window)
+(and (fboundp 'zap-up-to-char)
+     (define-key global-map	[(meta z)]	'zap-up-to-char))
 
 ;; Build my own prefix and attach it to f2
 (setq acs::keymap (make-sparse-keymap))

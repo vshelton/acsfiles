@@ -73,7 +73,7 @@ ver=21.4
 [[ -n $mule || -n $all ]] && compare_files $ver "-mule" $first $second
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

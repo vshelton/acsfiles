@@ -39,7 +39,7 @@ if scm_update $project_name ; then
 fi
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

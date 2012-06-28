@@ -33,7 +33,7 @@ echo
 find . -type f -print0 | xargs -0 md5sum
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

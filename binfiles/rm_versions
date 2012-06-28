@@ -48,7 +48,7 @@ if [[ -z $printonly ]]; then
 fi
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

@@ -22,7 +22,7 @@ cd $mroot
 CDDBLOCALMATCH=none CDDBLOCALRECURSIVE=n $cde -L -o flac -n -d $broot/*/*.flac(om[1])
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

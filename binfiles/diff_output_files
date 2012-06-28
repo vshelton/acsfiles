@@ -49,7 +49,7 @@ suffix=
 diffs -s/$date1/$date2/g $BLDROOT/${prefix}{$date1,$date2}${suffix}/$filename
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

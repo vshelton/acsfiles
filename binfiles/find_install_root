@@ -10,8 +10,7 @@ emulate -LR zsh
 progname=${0:t}
 
 if (( $# != 1 )); then
-  print -u2 "\
-usage: $progname command
+  print -u2 "usage: $progname command
        eg: $progname zsh would print /usr/local"
   exit 1
 fi
@@ -36,7 +35,7 @@ fi
 print $ipath
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

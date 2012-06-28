@@ -27,7 +27,7 @@ grep 'test scripts' $outfile
 #Skipped tests:\t%2d\n" $started $passed $skipped
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

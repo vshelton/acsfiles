@@ -46,7 +46,7 @@ for project in emacs xemacs-21.4 xemacs-21.5 zsh; do
 done
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

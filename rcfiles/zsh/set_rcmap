@@ -1,0 +1,111 @@
+# Define the map of symlinks to my customization files from
+# my source code repository.  Note that this map does not
+# currently include zsh startup files.
+typeset -gA rc_map
+rc_map=(
+  .Xresources                           $SCMROOT/rcfiles/Xresources
+  .emacs                                $SCMROOT/rcfiles/emacs
+  BuildXEmacsKits                       $SCMROOT/binfiles/NT/BuildXEmacsKits
+  GetXEmacsPackages                     $SCMROOT/binfiles/NT/GetXEmacsPackages
+  InstallExtraXEmacsPackages            $SCMROOT/binfiles/NT/InstallExtraXEmacsPackages
+  MakeCygwinXEmacs                      $SCMROOT/binfiles/NT/MakeCygwinXEmacs
+  MakeNativeXEmacs                      $SCMROOT/binfiles/NT/MakeNativeXEmacs
+  MakeXEmacsWindowsKit                  $SCMROOT/binfiles/NT/MakeXEmacsWindowsKit
+  bin/MakeLinuxLinks                    $SCMROOT/binfiles/MakeLinuxLinks
+  bin/Rip.acs                           $SCMROOT/binfiles/Rip.acs
+  bin/all_dirs                          $SCMROOT/binfiles/all_dirs
+  bin/all_versions                      $SCMROOT/binfiles/all_versions
+  bin/bld                               $SCMROOT/binfiles/bld
+  bin/cfg                               $SCMROOT/binfiles/cfg
+  bin/check_cfg                         $SCMROOT/binfiles/check_cfg
+  bin/check_versions                    $SCMROOT/binfiles/check_versions
+  bin/check_zsh                         $SCMROOT/binfiles/check_zsh
+  bin/cleanup-xemacs                    $SCMROOT/binfiles/cleanup-xemacs
+  bin/diff-xemacs-tests                 $SCMROOT/binfiles/diff-xemacs-tests
+  bin/diff_output_files                 $SCMROOT/binfiles/diff_output_files
+  bin/diff_xemacs_build_results         $SCMROOT/binfiles/diff_xemacs_build_results
+  bin/diffs                             $SCMROOT/binfiles/diffs
+  bin/find_install_root                 $SCMROOT/binfiles/find_install_root
+  bin/findpkg                           $SCMROOT/binfiles/findpkg
+  bin/installed_packages                $SCMROOT/binfiles/installed_packages
+  bin/latest                            $SCMROOT/binfiles/latest
+  bin/link_latest                       $SCMROOT/binfiles/link_latest
+  bin/loop_while_failing                $SCMROOT/binfiles/loop_while_failing
+  bin/make-Manifest                     $SCMROOT/binfiles/make-Manifest
+  bin/mk-src                            $SCMROOT/binfiles/mk-src
+  bin/mk-xemacs                         $SCMROOT/binfiles/mk-xemacs
+  bin/mk-xemacs-21.5                    $SCMROOT/binfiles/mk-xemacs-21.5
+  bin/mk-xemacs-min                     $SCMROOT/binfiles/mk-xemacs-min
+  bin/mk-xp                             $SCMROOT/binfiles/mk-xp
+  bin/mk-zsh                            $SCMROOT/binfiles/mk-zsh
+  bin/mk_default                        $SCMROOT/binfiles/mk_default
+  bin/new_default                       $SCMROOT/binfiles/new_default
+  bin/newer_than                        $SCMROOT/binfiles/newer_than
+  bin/now                               $SCMROOT/binfiles/now
+  bin/scm_update                        $SCMROOT/binfiles/scm_update
+  bin/summarize_zsh_tests               $SCMROOT/binfiles/summarize_zsh_tests
+  bin/symlink-tree                      $SCMROOT/binfiles/symlink-tree
+  bin/sysprefix                         $SCMROOT/binfiles/sysprefix
+  bin/today                             $SCMROOT/binfiles/today
+  bin/tomorrow                          $SCMROOT/binfiles/tomorrow
+  bin/trim_extra_history                $SCMROOT/binfiles/trim_extra_history
+  bin/update-emacs                      $SCMROOT/binfiles/update-emacs
+  bin/update-xemacs                     $SCMROOT/binfiles/update-xemacs
+  bin/update-zsh                        $SCMROOT/binfiles/update-zsh
+  bin/update_and_build                  $SCMROOT/binfiles/update_and_build
+  bin/update_screenenv                  $SCMROOT/binfiles/update_screenenv
+  bin/yesterday                         $SCMROOT/binfiles/yesterday
+  lib/app-defaults/Emacs.ad             $SCMROOT/rcfiles/lib/app-defaults/Emacs.ad
+  lib/app-defaults/XEmacs.ad            $SCMROOT/rcfiles/lib/app-defaults/XEmacs.ad
+  lib/app-defaults/XTerm.ad             $SCMROOT/rcfiles/lib/app-defaults/XTerm.ad
+  lib/app-defaults/fonts.m4             $SCMROOT/rcfiles/lib/app-defaults/fonts.m4
+  lib/lisp/detached-minibuf.el          $SCMROOT/rcfiles/lib/lisp/detached-minibuf.el
+  lib/lisp/emacs.el                     $SCMROOT/rcfiles/lib/lisp/emacs.el
+  lib/lisp/fsf/acs-custom.el            $SCMROOT/rcfiles/lib/lisp/fsf/acs-custom.el
+  lib/lisp/fsf/default.el               $SCMROOT/rcfiles/lib/lisp/fsf/default.el
+  lib/lisp/fsf/mic-paren.el             $SCMROOT/rcfiles/lib/lisp/fsf/mic-paren.el
+  lib/lisp/xemacs/acs-custom.el         $SCMROOT/rcfiles/lib/lisp/xemacs/acs-custom.el
+  lib/lisp/xemacs/default.el            $SCMROOT/rcfiles/lib/lisp/xemacs/default.el
+  lib/zsh-functions/_rm_versions        $SCMROOT/rcfiles/lib/zsh-functions/_rm_versions
+  lib/zsh-functions/abspath             $SCMROOT/rcfiles/lib/zsh-functions/abspath
+  lib/zsh-functions/addpath             $SCMROOT/rcfiles/lib/zsh-functions/addpath
+  lib/zsh-functions/all_dirs            $SCMROOT/rcfiles/lib/zsh-functions/all_dirs
+  lib/zsh-functions/all_versions        $SCMROOT/rcfiles/lib/zsh-functions/all_versions
+  lib/zsh-functions/check_versions      $SCMROOT/rcfiles/lib/zsh-functions/check_versions
+  lib/zsh-functions/check_zsh           $SCMROOT/rcfiles/lib/zsh-functions/check_zsh
+  lib/zsh-functions/col                 $SCMROOT/rcfiles/lib/zsh-functions/col
+  lib/zsh-functions/dx4                 $SCMROOT/binfiles/dx5
+  lib/zsh-functions/dx5                 $SCMROOT/rcfiles/lib/zsh-functions/dx5
+  lib/zsh-functions/exists              $SCMROOT/rcfiles/lib/zsh-functions/exists
+  lib/zsh-functions/f                   $SCMROOT/rcfiles/lib/zsh-functions/f
+  lib/zsh-functions/find_newer          $SCMROOT/rcfiles/lib/zsh-functions/find_newer
+  lib/zsh-functions/link-latest         $SCMROOT/rcfiles/lib/zsh-functions/link-latest
+  lib/zsh-functions/loop_update         $SCMROOT/rcfiles/lib/zsh-functions/loop_update
+  lib/zsh-functions/loop_while_failing  $SCMROOT/rcfiles/lib/zsh-functions/loop_while_failing
+  lib/zsh-functions/new_XEmacs          $SCMROOT/rcfiles/lib/zsh-functions/new_XEmacs
+  lib/zsh-functions/nfunc               $SCMROOT/rcfiles/lib/zsh-functions/nfunc
+  lib/zsh-functions/nohist              $SCMROOT/rcfiles/lib/zsh-functions/nohist
+  lib/zsh-functions/relative            $SCMROOT/rcfiles/lib/zsh-functions/relative
+  lib/zsh-functions/rm_versions         $SCMROOT/rcfiles/lib/zsh-functions/rm_versions
+  lib/zsh-functions/system_specific     $SCMROOT/rcfiles/lib/zsh-functions/system_specific
+  lib/zsh-functions/title               $SCMROOT/rcfiles/lib/zsh-functions/title
+  lib/zsh-functions/xdef                $SCMROOT/rcfiles/lib/zsh-functions/xdef
+  lib/zsh-functions/xres                $SCMROOT/rcfiles/lib/zsh-functions/xres
+  mk-XEmacs-from-scratch                $SCMROOT/binfiles/NT/mk-XEmacs-from-scratch
+  vcsetup                               $SCMROOT/binfiles/NT/vcsetup
+)
+
+# To re-generate all the links -
+#pushd ~
+#foreach l in ${(k)rc_map}; do
+#  mkdir -p $(dirname $l)
+#  cd $(dirname $l)
+#  ln -s $(relative $rc_map[$l]) $l
+#done
+#popd
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

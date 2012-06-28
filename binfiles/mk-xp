@@ -108,7 +108,7 @@ cd $USRLOCAL/xemacs-packages-$VERSION/lisp
 rm */*.el~*/_pkg.el
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

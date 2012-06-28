@@ -1,0 +1,77 @@
+#!/bin/bash
+
+# Link my startup files.
+
+# This script is brittle; the lists of scripts, zsh functions and
+# emacs initializations are static and therefore prone to bit-rot.
+
+: ${progname:=$(basename $0)}
+
+if (( $# < 1 )); then
+  echo "usage: $progname <source_code_directory>" >&2
+  exit 1
+fi
+SCMROOT=$1
+
+: ${client:=$(uname -n)}
+: ${basis:=AOA}
+
+for f in emacs zlogin zlogout zprofile zshenv zshrc; do
+  ln -s $SCMROOT/rcfiles/$f .$f
+done
+
+ln -s $HOSTHOME/scmroot/rcfiles/$basis/linux/zlogin.$basis .zlogin.$client
+ln -s $HOSTHOME/scmroot/rcfiles/$basis/linux/zshenv.$basis-pre  .zshenv.$client-pre
+ln -s $HOSTHOME/scmroot/rcfiles/$basis/linux/zshenv.$basis-post  .zshenv.$client-post
+
+mkdir -p .hist bin lib/lisp/fsf lib/lisp/xemacs lib/zsh-functions
+
+(
+  cd bin
+  for l in MakeLinuxLinks all_dirs all_versions bld cfg check_cfg \
+      check_versions check_zsh cleanup-xemacs diff-xemacsa-tests \
+      diff_output_files diff_xemacs_build_results diffs \
+      find_install_root findpkg installed_packates latest link_latest \
+      loop_while_failing make-Manifest mk-xemacs mk-xp mk-zsh \
+      mk_default new_default newer_than now scm_update summarize_zsh_tests \
+      symlink-tree sysprefix today tomorrow trim_extra_history \
+      update-emacs update-xemas update-zsh update_and_build yesterday; do
+    ln -s $SCMROOT/binfiles/$l
+  done
+)
+
+(
+  cd lib/lisp
+  ln -s $SCMROOT/rcfiles/lib/lisp/detached-minibuf.el
+)
+
+(
+  cd lib/lisp/fsf
+  for l in acs-custom.el default.el mic-paren.el; do
+    ln -s $SCMROOT/rcfiles/lib/lisp/fsf/$l
+  done
+)
+
+(
+  cd lib/lisp/xemacs
+  for l in acs-custom.el default.el; do
+    ln -s $SCMROOT/rcfiles/lib/lisp/xemacs/$l
+  done
+)
+
+(
+  cd lib/zsh-functions
+  for l in _rm_versions abspath addpath all_dirs all_versions \
+      check_versions check_zsh col dx4 dx5 exists f find_newer \
+      link-latest loop_update loop_while_failing new_XEmacs \
+      new_default newer_than nfunc nohist relative \
+      rm_versions system_specific title xdef xres; do
+    ln -s $SCMROOT/rcfiles/lib/zsh-functions/$l
+  done
+)
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

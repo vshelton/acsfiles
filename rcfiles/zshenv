@@ -50,7 +50,7 @@ export LC_COLLATE=C
 #unset LANG
 #unset LC_TIME
 
-path=($ZDOTDIR/bin $USRLOCAL/bin /usr/X11R6/bin /usr/bin /bin /etc)
+path=($ZDOTDIR/bin $USRLOCAL/bin /usr/bin /bin /etc)
 
 # Invoke system specific customizations
 system_specific .zshenv -post
@@ -64,7 +64,7 @@ foreach p in $path; do
 done
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

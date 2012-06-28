@@ -88,7 +88,7 @@ print "Configuring $build_dir for installation prefix $prefix."
 configure --prefix=$prefix $@
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

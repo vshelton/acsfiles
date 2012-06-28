@@ -76,7 +76,7 @@ newlink xemacs-${ver}*-debug(oc[1]) xemacs-debug
 newlink xemacs-${ver}*-mule(oc[1]) xemacs-mule
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

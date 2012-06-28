@@ -29,7 +29,7 @@ update-zsh
 CC=cc CFLAGS='-xO2 -xspace' update-xemacs
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

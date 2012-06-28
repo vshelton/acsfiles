@@ -1,0 +1,33 @@
+# Set up the search path for executables.
+# This script is typically sourced from zshenv.
+
+first=$ZDOTDIR/bin
+[[ -d $first ]] || first=$HOME/bin
+
+# Use a temporary variable because reconfiguring path is potentially
+# expensive and we want to do it as few times as possible.
+tmp=( $first $USRLOCAL/bin /usr/bin /bin /usr/sbin /sbin /etc )
+
+[[ $OSTYPE == cygwin ]] &&
+  tmp=( $first /XEmacs/cygwin/bin $USRLOCAL/bin /usr/bin /usr/sbin $(cygpath -S) $(cygpath -W) )
+
+# Remove trailing slashes and non-existent directories
+# and resolve symbolic links.
+tmp=( $^tmp(N) )
+tmp=( ${^tmp%%/##} )
+for (( i=1; i < $#tmp+1; i++ )); do
+  [[ -L $tmp[$i] ]] && tmp[$i]=$(abspath $tmp[$i])
+done
+
+# Now set the path.  Note the "-g", necessary because this script
+# is being sourced from a function.
+typeset -gU path
+path=( $tmp )
+
+unset first tmp
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

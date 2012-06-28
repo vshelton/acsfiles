@@ -1,0 +1,47 @@
+# .zshenv is sourced by all shells unless -f is specified.
+
+# Optional tracing
+# TRACE_ZSH_TIME=t TRACE_ZSH=t TRACE_ZSH_FILE=$HOME/ztrace.out zsh
+[[ -n $TRACE_ZSH_TIME ]] && PS4='+[%D{%M:%S}]%N:%i> '
+if [[ -n $TRACE_ZSH ]]; then
+  [[ -n "$TRACE_ZSH_FILE" ]] && exec 2> "$TRACE_ZSH_FILE"
+  setopt xtrace
+fi
+
+umask 022
+
+zdirs=( $HOME/zsh/$OSTYPE/$(uname -n) $HOME/zsh/$OSTYPE $HOME/zsh $HOME )
+
+desire() {
+  for zd in $zdirs; do
+    if [[ -O $zd/$1 ]]; then
+      #print -u2 "Sourcing $zd/$1..."
+      source $zd/$1
+      #print -u2 "Done with sourcing $zd/$1."
+      break
+    fi
+  done
+}
+
+# Use ZDOTDIR instead of HOME in the remainder of the startup scripts.
+if [[ -z $ZDOTDIR ]]; then
+  foreach ZDOTDIR in $zdirs; do
+    [[ -d $ZDOTDIR ]] && break
+  done
+fi
+
+# Can't source this very script again if we're using $HOME.
+if [[ $ZDOTDIR == $HOME ]]; then
+  unset ZDOTDIR
+  print -u2 "Using \$HOME instead of \$ZDOTDIR; to correct this,
+put system customizations into ${zdirs[1]}."
+
+else
+  desire .zshenv
+fi
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

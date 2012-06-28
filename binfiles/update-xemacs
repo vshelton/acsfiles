@@ -9,7 +9,7 @@ done
 update_and_build xemacs-packages mk-xp -v $(installed_packages)
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

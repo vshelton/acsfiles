@@ -1,0 +1,17 @@
+# Set up shell completion for interactive shells.
+
+# dabbrev for zsh
+zstyle ':completion:history-words:*:history-words' stop yes
+zstyle ':completion:history-words:*:history-words' list no
+zstyle ':completion:history-words:*' remove-all-dups yes
+zstyle ':completion:history-words:*' menu yes
+
+# Load completion after setting zstyles
+autoload -U compinit
+compinit -u
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

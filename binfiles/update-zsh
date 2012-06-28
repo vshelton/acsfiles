@@ -7,7 +7,7 @@ emulate -LR zsh
 update_and_build zsh mk-zsh $*
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

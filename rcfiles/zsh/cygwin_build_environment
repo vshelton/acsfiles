@@ -1,0 +1,13 @@
+# Set up the software build environment for cygwin.
+# Set USRLOCAL and ZIPROOT here so they won't be
+# overridden in the build_environment script.
+# USRLOCAL is the destination hierarchy for locally-built packages.
+# ZIPROOT is the directory where tarfiles live.
+export USRLOCAL=${USRLOCAL:-/usr/local}
+export ZIPROOT=${ZIPROOT:-~/software/zip}
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

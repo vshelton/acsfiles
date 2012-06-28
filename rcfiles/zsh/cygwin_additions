@@ -1,0 +1,65 @@
+# Cygwin-specific additions to the zsh startup scripts.
+
+# Remove .. from the CDPATH to try to speed up completion.
+cdpath[(r)..]=()
+ 
+# Match case-insensitively.
+setopt nocaseglob
+
+# These environment variables are used by Visual Studio,
+# but they can confuse the gcc toolchain.
+unset INCLUDE
+unset LIB
+
+typeset -g desktop="$(cygpath -D)"
+
+# Create aliases for common MS Office programs.
+alias excel=cygstart
+alias powerpoint=cygstart
+alias word=cygstart
+
+alias 7z="'$(cygpath $PROGRAMFILES)'/7-Zip/7z"
+alias less.sh="'$(cygpath $PROGRAMFILES)'/Vim/vim72/macros/less.sh"
+
+# Since /XEmacs is the root of the XEmacs package tree, refer to it
+alias installed_packages="USRLOCAL=/XEmacs installed_packages"
+
+function winC {
+  winclient ${~*}(e:'REPLY="$( cygpath -m $REPLY )"':)
+}
+alias e='noglob winC'
+
+# Convert from cygwin path to a Windows path, like so: dir ~(e:cyg:)
+function cyg {
+  reply=("$(cygpath -w $REPLY)")
+}
+
+# I now use the windows default black background,
+# so modify the default bart prompt colors
+PROMPT="%2c %w %T%(#.#.); "
+prompt bart red cyan
+
+# Make sure .emacs and lib/lisp/xemacs files are up-to-date.
+# These should be symbolic links, but native windows doesn't
+# grok cygwin symlinks.
+(
+  cd
+  for f in .emacs lib/lisp/xemacs/acs-custom.el lib/lisp/xemacs/default.el; do
+    diff -q $f $rc_map[$f] || cp $rc_map[$f] $f
+  done
+)
+
+# Commands that auto-complete with and without .exe suffix are annoying.
+#hash -f
+#unhash -m '*.exe' '*.dll'
+zstyle ':completion:*:-command-:*' ignored-patterns '(#i)*.exe' '(#i)*.dll'
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+
+# If an exact path match exists, don't search needlessly
+zstyle ':completion:*' accept-exact-dirs true
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

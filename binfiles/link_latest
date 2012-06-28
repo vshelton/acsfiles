@@ -17,7 +17,7 @@ rm $package || exit $?
 ln -s ${package}*(oc[1]) $package
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

@@ -14,7 +14,7 @@ for var in SSH_AUTH_SOCK SSH_AGENT_PID DISPLAY WINDOWID SSH_TTY SSH_CLIENT SSH_C
 done >~/.screenenv
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

@@ -1,0 +1,46 @@
+# Set up aliases for interactive shells.
+
+# coreutils now supports NOT dereferencing symlinks to directories!
+ls --dereference-command-line-symlink-to-dir /dev/null >& /dev/null \
+  && alias ls="ls --dereference-command-line-symlink-to-dir"
+alias l='ls -F'
+alias la='ls -A'
+alias ll='ls -l'
+alias lr='ls -R'
+
+alias -- +w="chmod u+w"
+alias -- -w="chmod a-w"
+alias -- +x="chmod u+x"
+alias -- -x="chmod a-x"
+alias all_versions="noglob all_versions"
+alias aver=all_versions
+alias b=unpack_and_build
+alias beep='echo '
+alias d='dirs -v'
+alias eterm="$USRLOCAL/bin/emacs*(om[1]) --unibyte -name EmacsTerm -xrm \"EmacsTerm.iconName: ${HOST%%.*}\" -xrm \"EmacsTerm.title: ${HOST%%.*}\" --geometry 120x40 -eval '(emacs-term \"zsh\")'"
+alias grep='command grep --extended-regexp --text'
+alias h=history
+alias m=$PAGER
+alias new_xp='new_default -v xemacs-packages $USRLOCAL'
+alias new_zsh='new_default -v zsh'
+alias patch='command patch --version-control=numbered --backup'
+alias pd=pushd
+alias pp=popd
+alias rm_versions="noglob rm_versions"
+alias rmver="rm_versions -v"
+alias root="ZDOTDIR=$HOME/.root xterm -name root -e su root -c $USRLOCAL/bin/zsh"
+alias tvf='tar tv -f'
+alias xvf='tar xv -f'
+alias ve=vared
+
+unalias run-help >&/dev/null
+autoload -U run-help
+
+# Use tkman where appropriate
+[[ -n $DISPLAY ]] && whence tkmanclient >/dev/null && alias man=tkmanclient
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

@@ -1,0 +1,23 @@
+# Set up environment variables for interactive shells.
+
+# Editor and pager definitions
+export USE_EMACS_AS_DEFAULT_APPLICATION_CLASS=t
+export EXINIT=":set ai nows"
+export LESS="-e -i -s -C -j2 -n -r -R"
+export MORE="-s"
+export PAGER="$(whence less)"
+[[ -z "$PAGER" ]] && PAGER=more
+export FCEDIT=gnuclient
+export EDITOR=$FCEDIT VISUAL=$FCEDIT
+alias e="gnuclient -q"
+
+# The default port for gnuserv/gnuclient is 21490 + uid (see gnuserv.h).
+# We'll override it with something more memorable
+# ((GNU_PORT = $UID + 21490))
+export GNU_PORT=22222
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

@@ -8,7 +8,7 @@ new_files=( $(find . -type f \( -not -path '*/CVS/*' \) -and \( -not -path '*/.h
 print ${#new_files}
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

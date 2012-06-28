@@ -25,7 +25,7 @@ link_latest $1
 command ls -ld $1
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

@@ -138,7 +138,7 @@ print -u2 "$progname: No local file, remote file or SCM archive matched $1."
 exit 2
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

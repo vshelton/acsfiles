@@ -39,7 +39,7 @@ summarize_zsh_tests $outfile
 rm -f $outfile /tmp/zsh.ztst.*(N)
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

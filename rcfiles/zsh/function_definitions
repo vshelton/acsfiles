@@ -1,0 +1,15 @@
+# Define utility shell functions for all shells.
+
+setopt extendedglob
+f=$ZDOTDIR/lib/zsh-functions
+[[ -d $f ]] || f=$HOME/lib/zsh-functions
+if [[ -d $f ]]; then
+  fpath=($f $fpath)
+  autoload $(print $f/*~*~(:t))
+fi
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

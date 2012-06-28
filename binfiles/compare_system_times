@@ -32,7 +32,7 @@ print $date2
 (( cleanup != 0 )) && rm $tempfile
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

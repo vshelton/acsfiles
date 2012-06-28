@@ -291,7 +291,7 @@ LDFLAGS="-L$USRLOCAL/gcc/lib -R$USRLOCAL/gcc/lib" bld -ck $(relative $pkgsrc) $N
 #bld -ck $(relative $pkgsrc) $NLS ${=general_cfg_opts}
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

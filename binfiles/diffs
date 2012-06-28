@@ -71,7 +71,7 @@ done
 diff --unified=0 --label ${(j:/:)split1[i,-1]} $diff1 --label ${(j:/:)split2[i,-1]} $diff2
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

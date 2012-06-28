@@ -42,7 +42,7 @@ mkdir -p $target_dir
 tar cf - --exclude={CVS,.hg,.svn} . | tar xf - -C $target_dir
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

@@ -1,0 +1,44 @@
+						June 26, 2012
+
+This file describes the current state of my zsh start-up scripts.
+
+First, I move aside all the distribution's system-wide start-up
+scripts.  On Fedora 17, this meant:
+
+sudo mv /etc/zsh /etc/zsh-dist
+
+Here is the order of execution for zsh startup scripts:
+  .zshenv - always, unless -f is specified
+  .zprofile - only for login shells
+  .zshrc - only for interactive shells
+  .zlogin - only for login shells.
+
+~/.zshenv is small.  It sets umask, defines a function "desire" which
+sources the specified script if it exists and then finds an
+appropriate value for ZDOTDIRS, searching the following sequence until
+it finds a directory:
+  $HOME/zsh/$OSTYPE/$(uname -n)
+  $HOME/zsh/$OSTYPE
+  $HOME/zsh
+
+If none of those directories exists, .zshenv unsets ZDOTDIR so zsh can
+use the basic configuration files in $HOME.
+
+In the system-specific directory, "$HOME/zsh/$OSTYPE/$(uname -n)",
+here's what happens in the zsh startup files:
+
+.zshenv - set up a standard environment for all shells:
+  function_definitions
+  cygwin_build_environment
+  build_environment
+  set_path
+  language_definitions
+
+.zshrc - set up a user environment for intereactiv shells:
+  environment_variables
+  shell_behaviors
+  key_bindings
+  shell_aliases
+  set_rcmap
+  cygwin_additions
+  completion_definitions

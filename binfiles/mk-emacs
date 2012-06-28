@@ -135,7 +135,7 @@ rm -f $emacs_name
 ln -s ../$TARGET/bin/$emacs_name
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

@@ -1,0 +1,29 @@
+# Set up key bindings for interactive shells.
+
+# Use emacs bindings
+bindkey -me >& /dev/null
+
+# Use ^X as the prefix for my personal bindings
+bindkey -s '^X^E' "^Avared ^E^I^M"
+bindkey '^X#' pound-insert
+bindkey '^X\t' accept-and-menu-complete
+bindkey '\e\t' reverse-menu-complete
+
+# ^X^R and ^X^S to complete a word from the history
+bindkey '^X^R' _history-complete-older
+bindkey '^X^S' _history-complete-newer
+
+# ^X^P and ^X^N complete a command from history
+# which starts with the text already typed
+bindkey '^X^N' history-beginning-search-forward
+bindkey '^X^P' history-beginning-search-backward
+
+zmodload zsh/deltochar
+bindkey '\M-z' zap-to-char
+bindkey '\ez' zap-to-char
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

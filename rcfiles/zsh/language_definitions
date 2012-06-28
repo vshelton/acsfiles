@@ -1,0 +1,11 @@
+# Define the language environment for all shells.
+
+export LC_COLLATE=C
+#unset LANG
+#unset LC_TIME
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

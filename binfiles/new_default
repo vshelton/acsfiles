@@ -40,7 +40,7 @@ link_latest $1
 [[ -n $verbose ]] && command ls -ld $PWD/$1
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

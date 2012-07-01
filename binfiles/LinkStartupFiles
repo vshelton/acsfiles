@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Link my startup files.
+
+: ${progname:=$(basename $0)}
+
+OSTYPE=linux
+[[ $OSTYPE == *ygwin* ]] && OSTYPE=NT
+
+while read linkname src targetOS
+do
+  #echo "linkname = $linkname; src = $src; OS = $targetOS"
+  if [[ $targetOS == *$OSTYPE* ]]; then
+    mkdir -p $(dirname $linkname)
+    (
+      src=$(eval echo $src)
+      ln -s $src $linkname
+    )
+  fi
+done < $SCMROOT/rcfiles/ListOfLinks
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

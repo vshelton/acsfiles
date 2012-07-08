@@ -5,10 +5,41 @@
 # 3. .zshrc - Only for interactive shells
 # 4. .zlogin - Only if login shell
 
+# Set up a common environment; typically this will
+# be common for all the nodes within a network.
+# USRLOCAL is the destination hierarchy for locally-built packages,
+# i.e. /usr/local or /opt.
+# SRCROOT is the root of source hierarchy for locally-built packages.
+# BLDROOT is the root of the build hierarchy for locally-built packages.
+# ZIPROOT is the directory where tarfiles live.
+: ${USRLOCAL:=/opt}
+: ${SRCROOT:=$USRLOCAL/src}
+: ${BLDROOT:=$USRLOCAL/build}
+: ${ZIPROOT:=$USRLOCAL/zip}
+: ${SCMROOT=~/scmroot}
+export USRLOCAL SRCROOT BLDROOT ZIPROOT SCMROOT
+
+export LC_COLLATE=C
+#unset LANG
+#unset LC_TIME
+
 cdpath=($BLDROOT $SRCROOT ${BLDROOT:h} ${SRCROOT:h} $USRLOCAL ~ ..)
 
 SAVEHIST=$HISTSIZE
 HISTFILE=~/.zhistory
+
+path=($ZDOTDIR/bin $USRLOCAL/bin /usr/bin /bin /sbin /usr/sbin /etc)
+
+# Invoke system specific customizations
+system_specific .zshenv -post
+
+# Clean up path: remove trailing slashes and non-existant directories
+# and resolve symbolic links
+path=($^path(N))
+path=(${^path%%/##})
+foreach p in $path; do
+  [[ -L $p ]] && path[(r)$p]=$(cd $p; pwd -r)
+done
 
 system_specific .zlogin
 

@@ -28,9 +28,10 @@ alias pd=pushd
 alias pp=popd
 alias rm_versions="noglob rm_versions"
 alias rmver="rm_versions -v"
-alias root="ZDOTDIR=$HOME/.root xterm -name root -e su root -c $USRLOCAL/bin/zsh"
-alias tvf='tar tv -f'
-alias xvf='tar xv -f'
+alias tt='tar t -f'
+alias ttv='tar tv -f'
+alias tx='tar x -f'
+alias txv='tar xv -f'
 alias ve=vared
 
 unalias run-help >&/dev/null

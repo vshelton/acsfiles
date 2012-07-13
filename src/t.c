@@ -11,8 +11,7 @@
 #define debug_ptr(p, fmt)       printf(#p " = %p; *" #p " = %" #fmt "\n", p, *p)
 #define debug_ptr2(p, f1, f2)   printf(#p " = %p; *" #p " = %" #f1 " (%" #f2 ")\n", p, *p, *p)
 
-#define debug_sizeof(typ)       printf("sizeof(" #typ ") = %lu\n", \
-                                       (unsigned long)sizeof(typ))
+#define debug_sizeof(typ)       printf("sizeof(" #typ ") = %lu\n", (unsigned long)sizeof(typ))
 
 
 typedef int foo;

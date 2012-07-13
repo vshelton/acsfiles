@@ -7,6 +7,7 @@
 #define N_ELEMS(array)          (sizeof(array) / sizeof(array[0]))
 
 #define debug_var(v, fmt)       printf(#v " = %" #fmt "\n", v)
+#define debug_var2(v, f1, f2)   printf(#v " = %" #f1 " (%" #f2 ")\n", v, v)
 #define debug_ptr(p, fmt)       printf(#p " = %p; *" #p " = %" #fmt "\n", p, *p)
 
 #define debug_sizeof(typ)       printf("sizeof(" #typ ") = %lu\n", \
@@ -65,12 +66,10 @@ int main()
     }
 
 #if defined(PATH_MAX)
-    debug_var(PATH_MAX, d);
-    debug_var(PATH_MAX, #x);
+    debug_var2(PATH_MAX, d, #x);
 #endif
 #if defined(__WORDSIZE)
-    debug_var(__WORDSIZE, d);
-    debug_var(__WORDSIZE, #x);
+    debug_var2(__WORDSIZE, d, #x);
 #endif
     debug_sizeof(int);
     debug_sizeof(long);

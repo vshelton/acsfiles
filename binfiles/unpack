@@ -16,15 +16,18 @@ progname=${0:t}
 
 if (( $# != 1 )); then
   print -u2 "Usage: $progname <pkg>"
-  print -u2 "\tpkg is a stripped package name, like \"gcc\" or \"make\"."
+  print -u2 "       pkg is a stripped package name, like \"gcc\" or \"make\"."
   exit 1
 fi
 pkgbase=$1
 
-pushd $SRCROOT >& /dev/null
-if cmdError; then
-  print -u2 $progname: the root of the source hierarchy, $SRCROOT, does not exist.
-  exit $cmd_status
+if [[ -z $SRCROOT ]]; then
+  print -u2 "$progname: \$SRCROOT is not set, unpacking in current directory."
+elif [[ ! -d $SRCROOT ]]; then
+  print -u2 "$progname: \$SRCROOT does not exist, unpacking in current directory."
+else
+  cd $SRCROOT >& /dev/null ||
+    print -u2 "$progname: could not cd to \$SRCROOT; unpacking in current directory."
 fi
 
 pkgfile=$(findpkg $pkgbase)
@@ -37,7 +40,7 @@ fi
 # out what uncompressor to use
 tar xf $pkgfile
 if cmdError; then
-  print -u2 $progname: error unpacking $pkgfile
+  print -u2 "$progname: error unpacking $pkgfile."
   exit $cmd_status
 fi
 

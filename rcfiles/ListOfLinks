@@ -30,6 +30,7 @@ bin/link_latest                         $SCMROOT/binfiles/link_latest           
 bin/loop_while_failing                  $SCMROOT/binfiles/loop_while_failing                    linux,NT
 bin/make-Manifest                       $SCMROOT/binfiles/make-Manifest                         linux,NT
 bin/mk-XEmacs-from-scratch              $SCMROOT/binfiles/NT/mk-XEmacs-from-scratch             NT
+bin/mk-emacs                            $SCMROOT/binfiles/mk-emacs                              linux
 bin/mk-src                              $SCMROOT/binfiles/mk-src                                linux,NT
 bin/mk-xemacs                           $SCMROOT/binfiles/mk-xemacs                             linux,NT
 bin/mk-xemacs-21.5                      $SCMROOT/binfiles/mk-xemacs-21.5                        linux,NT
@@ -46,8 +47,9 @@ bin/symlink-tree                        $SCMROOT/binfiles/symlink-tree          
 bin/sysprefix                           $SCMROOT/binfiles/sysprefix                             linux,NT
 bin/today                               $SCMROOT/binfiles/today                                 linux,NT
 bin/tomorrow                            $SCMROOT/binfiles/tomorrow                              linux,NT
-bin/trim_extra_history                  $SCMROOT/binfiles/trim_extra_history                    neither
-bin/update-emacs                        $SCMROOT/binfiles/update-emacs                          linux,NT
+bin/unpack                              $SCMROOT/binfiles/unpack                                linux,NT
+bin/unpack_and_build                    $SCMROOT/binfiles/unpack_and_build                      linux,NT
+bin/update-emacs                        $SCMROOT/binfiles/update-emacs                          linux
 bin/update-xemacs                       $SCMROOT/binfiles/update-xemacs                         linux,NT
 bin/update-zsh                          $SCMROOT/binfiles/update-zsh                            linux,NT
 bin/update_and_build                    $SCMROOT/binfiles/update_and_build                      linux,NT

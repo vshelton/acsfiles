@@ -4,8 +4,9 @@
 # matching the specified package name
 #
 # Usage: findpkg generic_package_name
-# i.e. "findpkg xemacs" ==> "/c/acs/software/zip/xemacs-21.4.22.tar.bz2"
-
+# e.g.:
+#   findpkg xemacs ==> /opt/zip/xemacs-21.5.31.tar.gz
+#   findpkg xemacs-21.4 ==> /opt/zip/xemacs-21.4.22.tar.bz2
 emulate -LR zsh
 setopt no_case_glob
 progname=${0:t}
@@ -22,12 +23,12 @@ pkgbase=$1
 # from the version, but tcl and tk do not, so support those, too.
 pkgs=( $ZIPROOT/$pkgbase{-,}*.(gz|tgz|bz2|xz|lzma|tar)(Nom) )
 if [[ ! -e $pkgs[1] ]]; then
-  print -u2 progname: no files with the prefix of \"$pkgbase\" could be found in $ZIPROOT.
+  print -u2 "$progname: no files with the prefix of \"$pkgbase\" could be found in $ZIPROOT."
   exit 1
 fi
 
 if [[ ! -r $pkgs[1] ]]; then
-  print -u2 $progname: $pkgs[1] is unreadable.
+  print -u2 "$progname: $pkgs[1] is unreadable."
   exit 1
 fi
 

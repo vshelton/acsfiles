@@ -9,6 +9,7 @@
 #define debug_var(v, fmt)       printf(#v " = %" #fmt "\n", v)
 #define debug_var2(v, f1, f2)   printf(#v " = %" #f1 " (%" #f2 ")\n", v, v)
 #define debug_ptr(p, fmt)       printf(#p " = %p; *" #p " = %" #fmt "\n", p, *p)
+#define debug_ptr2(p, f1, f2)   printf(#p " = %p; *" #p " = %" #f1 " (%" #f2 ")\n", p, *p, *p)
 
 #define debug_sizeof(typ)       printf("sizeof(" #typ ") = %lu\n", \
                                        (unsigned long)sizeof(typ))
@@ -52,7 +53,7 @@ int main()
     short *sp;
     int i;
     for ( sp = sarr, i = N_ELEMS(sarr); i > 0; ++sp, --i ) {
-        debug_ptr(sp, d);
+        debug_ptr2(sp, d, #x);
     }
 
     int iarr[2];
@@ -62,7 +63,7 @@ int main()
                             // Detected by clang, not by gcc.
     int *ip;
     for ( ip = iarr, i = N_ELEMS(iarr); i > 0; ++ip, --i ) {
-        debug_ptr(ip, d);
+        debug_ptr2(ip, d, #x);
     }
 
 #if defined(PATH_MAX)

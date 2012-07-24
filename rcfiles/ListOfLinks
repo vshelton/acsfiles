@@ -92,7 +92,7 @@ lib/zsh-functions/system_specific       $SCMROOT/rcfiles/lib/zsh-functions/syste
 lib/zsh-functions/title                 $SCMROOT/rcfiles/lib/zsh-functions/title                linux,NT
 lib/zsh-functions/xdef                  $SCMROOT/rcfiles/lib/zsh-functions/xdef                 linux,NT
 lib/zsh-functions/xres                  $SCMROOT/rcfiles/lib/zsh-functions/xres                 linux,NT
-zsh/,zshrc                              $SCMROOT/rcfiles/zsh/.zshrc                             linux,NT
+zsh/.zshrc                              $SCMROOT/rcfiles/zsh/.zshrc                             linux,NT
 zsh/.zlogout                            $SCMROOT/rcfiles/zsh/.zlogout                           linux,NT
 zsh/.zshenv                             $SCMROOT/rcfiles/zsh/.zshenv                            linux,NT
 zsh/README                              $SCMROOT/rcfiles/zsh/README                             linux,NT
@@ -106,4 +106,4 @@ zsh/key_bindings                        $SCMROOT/rcfiles/zsh/key_bindings       
 zsh/set_path                            $SCMROOT/rcfiles/zsh/set_path                           linux,NT
 zsh/set_rcmap                           $SCMROOT/rcfiles/zsh/set_rcmap                          linux,NT
 zsh/shell_aliases                       $SCMROOT/rcfiles/zsh/shell_aliases                      linux,NT
-zsh/shell_behavior                      $SCMROOT/rcfiles/zsh/shell_behavior                     linux,NT
+zsh/shell_behaviors                     $SCMROOT/rcfiles/zsh/shell_behaviors                    linux,NT

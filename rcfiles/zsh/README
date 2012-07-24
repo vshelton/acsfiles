@@ -34,7 +34,7 @@ here's what happens in the zsh startup files:
   set_path
   language_definitions
 
-.zshrc - set up a user environment for intereactiv shells:
+.zshrc - set up a user environment for interactive shells:
   environment_variables
   shell_behaviors
   key_bindings

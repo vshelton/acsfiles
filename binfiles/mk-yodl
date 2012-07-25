@@ -1,3 +1,4 @@
+#!/usr/bin/env zsh
 
 # Get, build and install yodl.
 
@@ -12,8 +13,7 @@
 # get_tarball project version
 # Download tarball from sourceforge.
 # Print name of tarball, remove the tarball if wget fails.
-function get_tarball()
-{
+function get_tarball {
   proj=$1
   ver=$2
   tarball=${proj}_${ver}.orig.tar.gz

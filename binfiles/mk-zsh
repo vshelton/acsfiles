@@ -60,8 +60,7 @@ enable_zsh_mem="--enable-zsh-mem"
 enable_pcre="--enable-pcre"
 
 # Support options to configure
-while [[ $# -gt 0 ]]
-do
+while [[ $# -gt 0 ]]; do
   case $1 in
   (--with-tcsetpgrp*)
     with_tcsetpgrp=$1
@@ -73,18 +72,23 @@ do
     enable_pcre=$1
     ;;
   (--*)
-    generic_cfg_opts=($generic_cfg_opts $1)
+    generic_cfg_opts[$#generic_cfg_opts+1]=$1
     ;;
   esac
   shift
 done
 
-cfg -s -o conf.out $SRCDIR --datadir=$USRLOCAL/share --enable-etcdir=$USRLOCAL/etc $with_tcsetpgrp $enable_zsh_mem $enable_pcre ${=generic_cfg_opts}
-err=$?
-if (( err != 0 )); then
+cfg -s -o conf.out $SRCDIR        \
+    --datadir=$USRLOCAL/share     \
+    --enable-etcdir=$USRLOCAL/etc \
+    $with_tcsetpgrp               \
+    $enable_zsh_mem               \
+    $enable_pcre                  \
+    $generic_cfg_opts || {
+  err=$?
   print -u2 "$progname: could not configure $PROJECT."
   exit $err
-fi
+}
 
 if ! cd $TARGET >&/dev/null; then
   print -u2 "$progname: couldn't cd to $TARGET."

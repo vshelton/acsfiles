@@ -7,25 +7,43 @@
 : ${SRCROOT:=/$PREFIX/src}
 
 : ${ICMAKE_VER:=7.16.00}
-: ${ICMAKE_TARBALL:=icmake_${ICMAKE_VER}.orig.tar.gz}
 : ${YODL_VER:=3.00.0}
-: ${YODL_TARBALL:=yodl_${YODL_VER}.orig.tar.gz}
+
+# get_tarball project version
+# Download tarball from sourceforge.
+# Print name of tarball, remove the tarball if wget fails.
+function get_tarball()
+{
+  proj=$1
+  ver=$2
+  tarball=${proj}_${ver}.orig.tar.gz
+  echo $tarball
+  wget -q -O $tarball http://sourceforge.net/projects/$proj/files/$proj/$ver/$tarball/download 
+
+  # This hack is necessary because wget does not detect an error when
+  # the file doesn't exist due to the sourceforge mirror capability.
+  if [[ $(file $tarball) != *gzip* ]]; then
+    echo $tarball not found on sourceforge.net >&2
+    rm $tarball
+    return 1
+  fi
+}
 
 # Get, build and install icmake, a prerequisite for yodl.
-cd ${SRCROOT}
-wget -q -O ${ICMAKE_TARBALL} http://sourceforge.net/projects/icmake/files/icmake/${ICMAKE_VER}/${ICMAKE_TARBALL}/download
-tar xf ${ICMAKE_TARBALL}
-cd ./icmake-${ICMAKE_VER}
+cd $SRCROOT
+tarball=$(get_tarball icmake $ICMAKE_VER) || exit 1
+tar xf $tarball
+cd ./icmake-$ICMAKE_VER
 perl -pi.orig -e "s@usr/@${PREFIX}/@;s@etc/icmake@${PREFIX}/etc/icmake@" INSTALL.im
 perl -pi.orig -e 's@etc/icmake@\${CONFDIR}@' icm_install
 ./icm_bootstrap /
 ./icm_install all
 
 # Get, build and install yodl.
-cd ${SRCROOT}
-wget -q -O ${YODL_TARBALL} http://sourceforge.net/projects/yodl/files/yodl/${YODL_VER}/${YODL_TARBALL}/download    
-tar xf ${YODL_TARBALL}
-cd ./yodl-${YODL_VER}
+cd $SRCROOT
+tarball=$(get_tarball yodl $YODL_VER) || exit 1
+tar xf $tarball
+cd ./yodl-$YODL_VER
 perl -pi.orig -e "s@/usr/bin/icmake@/${PREFIX}/bin/icmake@" build
 perl -pi.orig -e "s@\"/usr\"\;@\"/${PREFIX}\"\;@" INSTALL.im
 ./build programs

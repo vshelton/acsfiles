@@ -38,20 +38,18 @@ if [[ -n $help ]]; then
   exit 0
 fi
 
-cfg $cfg $@
-err=$?
-if (( $err != 0 )); then
+if ! cfg $cfg $@; then
+  err=$?
   print -u2 "cfg failed."
   exit $err
 fi
 
 # Change to the directory created by cfg
 setopt extendedglob
-srcdir="${1%%/##}"		# Trim trailing slashes (for :t modifier)
+srcdir="${1%%/##}"      # Trim trailing slashes (for :t modifier)
 project=${srcdir:t}
-cd $project
-err=$?
-if (( $err != 0 )); then
+if ! cd $project; then
+  err=$?
   print -u2 "$progname: couldn't cd to $project\n"
   exit $err
 fi
@@ -83,9 +81,8 @@ fi
 
 # Make install if requested
 if [[ -n $inst ]]; then
-  make $kontinue install
-  err=$?
-  if (( $err != 0 )); then
+  if ! make $kontinue install; then
+    err=$?
     print -u2 "$progname: make install failed"
     exit $err
   fi

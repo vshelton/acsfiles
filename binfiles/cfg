@@ -25,10 +25,9 @@ usage()
 
 zparseopts -D h=help l=symlink o:=output p:=prefix s=snapshot
 
-if [[ -n $help || $# == 0 ]]; then
-  usage
-  [[ -n $help ]] && exit 0 || exit 1
-fi
+[[ -n $help || $# == 0 ]] && usage
+[[ -n $help ]] && exit 0
+[[ $# == 0 ]] && exit 1
 
 if [[ ! -x $1/configure ]]; then
   print -u2 "$progname: No configure script exists in directory $1"
@@ -41,7 +40,7 @@ export CC CXX
 
 # Create a sub-directory for building the package
 setopt extendedglob
-src=${1%%/##}		# Trim trailing slashes (for :t modifier)
+src=${1%%/##}           # Trim trailing slashes (for :t modifier)
 shift
 build_dir=${src:t}
 if [[ -d $build_dir ]]; then

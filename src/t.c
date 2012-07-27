@@ -37,7 +37,8 @@ pwd(void)
     return 0;
 }
 
-int main()
+int
+main()
 {
     blurfl zap;
     zap.a = 1;
@@ -49,9 +50,8 @@ int main()
     }
 
     short sarr[] = { 1, 2, 3 };
-    short *sp;
     int i;
-    for ( sp = sarr, i = N_ELEMS(sarr); i > 0; ++sp, --i ) {
+    for ( short *sp = sarr, i = N_ELEMS(sarr); i > 0; ++sp, --i ) {
         debug_ptr2(sp, d, #x);
     }
 
@@ -60,8 +60,8 @@ int main()
     iarr[1] = 5;
     iarr[2] = 6;            // Runs off the end of the array.
                             // Detected by clang, not by gcc.
-    int *ip;
-    for ( ip = iarr, i = N_ELEMS(iarr); i > 0; ++ip, --i ) {
+
+    for ( int *ip = iarr, i = N_ELEMS(iarr); i > 0; ++ip, --i ) {
         debug_ptr2(ip, d, #x);
     }
 

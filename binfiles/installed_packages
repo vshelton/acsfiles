@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# List all the XEmacs packages currently installed in the system
+# List all the XEmacs packages currently installed in the system.
 
 emulate -LR zsh
 progname=$0:t
@@ -12,13 +12,12 @@ progname=$0:t
 pkgdir=$USRLOCAL/xemacs-packages
 [[ ! -d $pkgdir/pkginfo ]] && pkgdir=$pkgdir/xemacs-packages
 
-if [[ ! -d $pkgdir/pkginfo ]]
-then
-  print -u2 $progname: No package directory found at $USRLOCAL/xemacs-packages.
+if [[ ! -d $pkgdir/pkginfo ]]; then
+  print -u2 $progname: No package directory found at $USRLOCAL/xemacs-packages or $pkgdir.
   exit 1
 fi
 
-pkgs=(${:-$pkgdir/pkginfo/*(N)})
+pkgs=( ${:-$pkgdir/pkginfo/*(N)} )
 print ${~pkgs:t:s/MANIFEST.//}
 
 # Local Variables:

@@ -9,12 +9,18 @@
 #define debug_array(v)                                                  \
     do {                                                                \
         for ( int i = 0; i < N_ELEMS(v); ++i ) {                        \
-            printf(#v "[%d] (%p) = %d (%#x)\n", i, &v[i], v[i], v[i]);  \
+            printf("%p  " #v "[%d] = %d (%#x)\n", &v[i], i, v[i], v[i]);\
         }                                                               \
     } while (0)
 #define debug_ptr(p, fmt)       printf(#p " = %p; *" #p " = %" #fmt "\n", p, *p)
 #define debug_ptr2(p, f1, f2)   printf(#p " = %p; *" #p " = %" #f1 " (%" #f2 ")\n", p, *p, *p)
 #define debug_sizeof(typ)       printf("sizeof(" #typ ") = %lu\n", (unsigned long)sizeof(typ))
+#define debug_string(s)                                                 \
+    do {                                                                \
+        for ( int i = 0; s[i]; ++i ) {                                  \
+            printf("%p  " #s "[%d] = %c (%#x)\n", &s[i], i, s[i], s[i]);\
+        }                                                               \
+    } while (0)
 #define debug_var(v, fmt)       printf(#v " = %" #fmt "\n", v)
 #define debug_var2(v, f1, f2)   printf(#v " = %" #f1 " (%" #f2 ")\n", v, v)
 
@@ -34,10 +40,11 @@ pwd(void)
     // debug_var(maxpathlen, ld);
     // char pathbuf[maxpathlen];
     char pathbuf[PATH_MAX];
-    (void)getcwd(pathbuf, (size_t)PATH_MAX);
 
+    if ( getcwd(pathbuf, (size_t)PATH_MAX) == NULL )
+        return -1;
+    
     printf("Current directory is: %s\n", pathbuf);
-
     return 0;
 }
 
@@ -48,10 +55,7 @@ main()
     zap.a = 1;
     zap.b = 2;
     char *p = "Test";
-    while ( *p ) {
-        debug_ptr2(p, c, #x);
-        ++p;
-    }
+    debug_string(p);
 
     short sarr[] = { 101, 202, 303 };
     debug_array(sarr);
@@ -69,18 +73,25 @@ main()
 #if defined(__WORDSIZE)
     debug_var2(__WORDSIZE, d, #x);
 #endif
-    debug_sizeof(int);
-    debug_sizeof(long);
-    debug_sizeof(size_t);
 
+    debug_sizeof(char);
     debug_sizeof(__s8);
     debug_sizeof(__u8);
+    debug_sizeof(short);
     debug_sizeof(__s16);
     debug_sizeof(__u16);
+    debug_sizeof(int);
     debug_sizeof(__s32);
     debug_sizeof(__u32);
+    debug_sizeof(long);
     debug_sizeof(__s64);
     debug_sizeof(__u64);
+    debug_sizeof(size_t);
+    debug_sizeof(char *);
+    debug_sizeof(short *);
+    debug_sizeof(int *);
+    debug_sizeof(long * );
+    debug_sizeof(size_t *);
 
 #if defined(__int64)
     debug_sizeof(__int64);

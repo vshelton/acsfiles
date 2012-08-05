@@ -1,8 +1,12 @@
 CC = clang
-CFLAGS = -v
+# Build a 32-bit executable
+CFLAGS = -v -m32
 
 t: t.c
 	$(LINK.c) $^ $(LOADLIBES) $(LDLIBS) -o $@
-	(echo; ls -l $@; echo)
+	ls -l $@
+	file $@
+	./$@
 
-.PHONY: t.c
+# Force a rebuild every time
+.PHONY: t.c info-t

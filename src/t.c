@@ -8,7 +8,8 @@
 
 #define debug_array(v)                                                  \
     do {                                                                \
-        for ( int i = 0; i < N_ELEMS(v); ++i ) {                        \
+        int i;                                                          \
+        for ( i = 0; i < N_ELEMS(v); ++i ) {                            \
             printf("%p  " #v "[%d] = %d (%#x)\n", &v[i], i, v[i], v[i]);\
         }                                                               \
     } while (0)
@@ -17,7 +18,8 @@
 #define debug_sizeof(typ)       printf("sizeof(" #typ ") = %lu\n", (unsigned long)sizeof(typ))
 #define debug_string(s)                                                 \
     do {                                                                \
-        for ( int i = 0; s[i]; ++i ) {                                  \
+        int i;                                                          \
+        for ( i = 0; s[i]; ++i ) {                                      \
             printf("%p  " #s "[%d] = %c (%#x)\n", &s[i], i, s[i], s[i]);\
         }                                                               \
     } while (0)

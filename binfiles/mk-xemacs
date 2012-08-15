@@ -196,10 +196,9 @@ function cfg_and_build {
 
 zparseopts -D c=checkonly d=debug h=help m=mule n=normal o=optimized
 
-if [[ -n $help || $# == 0 ]]; then
-  usage
-  [[ -n $help ]] && exit 0 || exit 1
-fi
+[[ -n $help || $# == 0 ]] && usage
+[[ -n $help ]] && exit 0
+[[ $# == 0 ]] && exit 1
 
 # At this point, the version of XEmacs is the first argument.
 # This can either be a version number, like '21.5', in which case
@@ -460,7 +459,7 @@ if [[ -n "$debug" ]]; then
 fi
 
 # Local Variables:
-# mode: sh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

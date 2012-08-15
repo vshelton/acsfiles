@@ -20,7 +20,7 @@ if ! cd $mount_point; then
   exit 2
 fi
 
-manifest_file=/tmp/Manifest.$disk_uuid-$(date +'%Y-%m-%d')
+manifest_file=$HOME/Disks/Manifest.$disk_uuid-$(date +'%Y-%m-%d')
 echo "Printing manifest in $manifest_file"
 exec >$manifest_file
 
@@ -28,9 +28,10 @@ df -h .
 echo
 tune2fs -l $mount_device
 echo
-ls -alR
-echo
-find . -type f -print0 | xargs -0 md5sum
+#ls -alR
+#echo
+#find . -type f -print0 | xargs -0 md5sum
+obnam ls
 
 # Local Variables:
 # mode: shell-script

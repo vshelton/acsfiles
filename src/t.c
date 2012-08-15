@@ -6,10 +6,11 @@
 
 #define N_ELEMS(array)          (sizeof(array) / sizeof(array[0]))
 
-#define debug_array(v)                                                  \
+#define debug_array(v)          debug_array_segment(v, 0, N_ELEMS(v)-1)
+#define debug_array_segment(v, lo, hi)                                  \
     do {                                                                \
         int i;                                                          \
-        for ( i = 0; i < N_ELEMS(v); ++i ) {                            \
+        for ( i = lo; i <= hi; ++i ) {                                  \
             printf("%p  " #v "[%d] = %d (%#x)\n", &v[i], i, v[i], v[i]);\
         }                                                               \
     } while (0)
@@ -51,16 +52,25 @@ pwd(void)
 }
 
 int
-main()
+main(int argc, char *argv[])
 {
     blurfl zap;
     zap.a = 1;
     zap.b = 2;
+    debug_var(zap.a, d);
+    debug_var(zap.b, d);
     char *p = "Test";
     debug_string(p);
 
     short sarr[] = { 101, 202, 303 };
     debug_array(sarr);
+    if ( argc > 1 ) {
+        int sarr_index = atoi(argv[1]);
+        debug_var(sarr_index, d);
+        sarr[sarr_index] = 0xff;
+        debug_array_segment(sarr, 0, sarr_index);
+        debug_var(sarr_index, d);
+    }
 
     int iarr[2];
     iarr[0] = 404;

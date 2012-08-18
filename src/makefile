@@ -7,6 +7,8 @@ t: t.c
 	ls -l $@
 	file $@
 	./$@
+	./$@ 3
+	./$@ 10
 
 # Force a rebuild every time
 .PHONY: t.c info-t

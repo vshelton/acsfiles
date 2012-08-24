@@ -103,6 +103,7 @@ zsh/cygwin/cygwin_build_environment     $SCMROOT/rcfiles/zsh/cygwin/cygwin_build
 zsh/environment_variables               $SCMROOT/rcfiles/zsh/environment_variables              linux,NT
 zsh/function_definitions                $SCMROOT/rcfiles/zsh/function_definitions               linux,NT
 zsh/key_bindings                        $SCMROOT/rcfiles/zsh/key_bindings                       linux,NT
+zsh/language_definitions                $SCMROOT/rcfiles/zsh/language_definitions               linux,NT
 zsh/set_path                            $SCMROOT/rcfiles/zsh/set_path                           linux,NT
 zsh/set_rcmap                           $SCMROOT/rcfiles/zsh/set_rcmap                          linux,NT
 zsh/shell_aliases                       $SCMROOT/rcfiles/zsh/shell_aliases                      linux,NT

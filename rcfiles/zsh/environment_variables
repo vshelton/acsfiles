@@ -10,7 +10,7 @@ export PAGER="$(whence less)"
 
 [[ $(uname -n) != legolas ]] && USE_EMACS_NOT_XEMACS=t
 export FCEDIT=gnuclient
-[[ -z $USE_EMACS_NOT_XEMACS ]] && export FCEDIT=emacsclient
+[[ -n $USE_EMACS_NOT_XEMACS ]] && export FCEDIT=emacsclient
 export EDITOR=$FCEDIT VISUAL=$FCEDIT
 
 # The default port for gnuserv/gnuclient is 21490 + uid (see gnuserv.h).

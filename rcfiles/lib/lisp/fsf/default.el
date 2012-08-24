@@ -2,6 +2,9 @@
 ;; This file gets executed after acs-custom.el
 ;(message "Entering default.el")
 
+;; Start up the emacsclient server
+(server-start)
+
 ;; Delete removes character under point
 (define-key global-map [delete]			'delete-char)
 

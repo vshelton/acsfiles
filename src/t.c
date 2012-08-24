@@ -68,7 +68,8 @@ main(int argc, char *argv[])
         int sarr_index = atoi(argv[1]);
         debug_var(sarr_index, d);
         if ( sarr_index >= N_ELEMS(sarr) )
-            printf("Index specified exceeds upper bound of sarr: %d\n", N_ELEMS(sarr)-1);
+            printf("Index specified (%d) exceeds upper bound of sarr: %d\n",
+                   sarr_index, N_ELEMS(sarr)-1);
         sarr[sarr_index] = 0xff;
         debug_array_segment(sarr, 0, sarr_index);
         debug_var(sarr_index, d);

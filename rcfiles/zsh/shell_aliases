@@ -16,9 +16,6 @@ alias all_versions="noglob all_versions"
 alias aver=all_versions
 alias b=unpack_and_build
 alias d='dirs -v'
-# FCEDIT is either gnuclient for XEmacs, or emacsclient for FSF emacs
-alias e="$FCEDIT -q"
-[[ $FCEDIT == emacsclient ]] && alias e="$FCEDIT -n"
 alias eterm="$USRLOCAL/bin/emacs*(om[1]) --unibyte -name EmacsTerm -xrm \"EmacsTerm.iconName: ${HOST%%.*}\" -xrm \"EmacsTerm.title: ${HOST%%.*}\" --geometry 120x40 -eval '(emacs-term \"zsh\")'"
 alias grep='command grep --extended-regexp --text'
 alias h=history

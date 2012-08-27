@@ -22,6 +22,7 @@ bin/diff-xemacs-tests                   $SCMROOT/binfiles/diff-xemacs-tests     
 bin/diff_output_files                   $SCMROOT/binfiles/diff_output_files                     linux,NT
 bin/diff_xemacs_build_results           $SCMROOT/binfiles/diff_xemacs_build_results             linux,NT
 bin/diffs                               $SCMROOT/binfiles/diffs                                 linux,NT
+bin/e                                   $SCMROOT/binfiles/e                                     linux,NT
 bin/find_install_root                   $SCMROOT/binfiles/find_install_root                     linux,NT
 bin/findpkg                             $SCMROOT/binfiles/findpkg                               linux,NT
 bin/installed_packages                  $SCMROOT/binfiles/installed_packages                    linux,NT

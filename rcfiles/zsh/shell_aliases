@@ -17,6 +17,7 @@ alias aver=all_versions
 alias b=unpack_and_build
 alias d='dirs -v'
 alias eterm="$USRLOCAL/bin/emacs*(om[1]) --unibyte -name EmacsTerm -xrm \"EmacsTerm.iconName: ${HOST%%.*}\" -xrm \"EmacsTerm.title: ${HOST%%.*}\" --geometry 120x40 -eval '(emacs-term \"zsh\")'"
+alias e='fcedit -q'
 alias grep='command grep --extended-regexp --text'
 alias h=history
 alias m=$PAGER

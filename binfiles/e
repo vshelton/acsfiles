@@ -1,0 +1,21 @@
+#!/usr/bin/env zsh
+
+# Use XEmacs or FSF emacs to edit a file
+
+emulate -LR zsh
+
+# Assume FSF emacs, but if a gnuserv process is running, use XEmacs
+edit=emacsclient
+pgrep gnuserv >/dev/null && edit=gnuclient
+
+# Support either emacsclient's -n or gnuclient's -q option
+[[ $1 == "-q" && $edit == emacsclient ]] && argv[1]="-n"
+[[ $1 == "-n" && $edit == gnuclient ]] && argv[1]="-q"
+
+$edit "$@"
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

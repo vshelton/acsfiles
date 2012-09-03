@@ -48,6 +48,9 @@
 (set-face-font 'bold "-*-dejavu sans mono-bold-r-normal--12-*-*-*-m-*-iso8859-1")
 (set-face-foreground 'default "LightYellow")
 (set-face-background 'default "Black")
+(set-face-font 'modeline "-microsoft-comic sans ms-medium-r-normal-*-12-*-*-*-*-*-iso8859-*")
+(set-face-foreground 'modeline "Black")
+(set-face-background 'modeline "light salmon")
 
 ;; Set titlebar title
 (setq frame-title-format

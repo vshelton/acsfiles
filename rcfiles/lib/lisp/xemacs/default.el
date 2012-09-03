@@ -170,7 +170,7 @@
 				     family "Italic" size encoding))
       (set-face-font 'bold-italic (format "%s:%s:%d::%s"
 					  family "Bold Italic"
-					  size encoding)))))
+					  size encoding))))
 
   (let* ((family "Bodoni MT")
 	 (size 9)
@@ -178,7 +178,7 @@
 	 (spec (format "%s:%s:%d::%s" family "Regular" size encoding)))
     (progn
       (set-face-font 'buffers-tab spec)
-      (set-face-font 'modeline spec)))
+      (set-face-font 'modeline spec))))
 
 (setq tag-table-alist
       '(("\\.emacs$" . (xemacs-source-directory))

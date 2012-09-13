@@ -73,7 +73,6 @@ lib/zsh-functions/abspath               $SCMROOT/rcfiles/lib/zsh-functions/abspa
 lib/zsh-functions/addpath               $SCMROOT/rcfiles/lib/zsh-functions/addpath              linux,NT
 lib/zsh-functions/all_dirs              $SCMROOT/rcfiles/lib/zsh-functions/all_dirs             linux,NT
 lib/zsh-functions/all_versions          $SCMROOT/rcfiles/lib/zsh-functions/all_versions         linux,NT
-lib/zsh-functions/check_versions        $SCMROOT/rcfiles/lib/zsh-functions/check_versions       linux,NT
 lib/zsh-functions/col                   $SCMROOT/rcfiles/lib/zsh-functions/col                  linux,NT
 lib/zsh-functions/dx4                   $SCMROOT/rcfiles/lib/zsh-functions/dx5                  linux,NT
 lib/zsh-functions/dx5                   $SCMROOT/rcfiles/lib/zsh-functions/dx5                  linux,NT

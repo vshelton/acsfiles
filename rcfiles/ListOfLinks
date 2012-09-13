@@ -15,7 +15,6 @@ bin/all_versions                        $SCMROOT/binfiles/all_versions          
 bin/bld                                 $SCMROOT/binfiles/bld                                   linux,NT
 bin/cfg                                 $SCMROOT/binfiles/cfg                                   linux,NT
 bin/check_cfg                           $SCMROOT/binfiles/check_cfg                             linux,NT
-bin/check_versions                      $SCMROOT/binfiles/check_versions                        linux,NT
 bin/check_zsh                           $SCMROOT/binfiles/check_zsh                             linux,NT
 bin/cleanup-xemacs                      $SCMROOT/binfiles/cleanup-xemacs                        linux,NT
 bin/diff-xemacs-tests                   $SCMROOT/binfiles/diff-xemacs-tests                     linux,NT

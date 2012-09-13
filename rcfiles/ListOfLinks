@@ -4,7 +4,7 @@
 bin/BuildXEmacsKits                     $SCMROOT/binfiles/NT/BuildXEmacsKits                    NT
 bin/GetXEmacsPackages                   $SCMROOT/binfiles/NT/GetXEmacsPackages                  NT
 bin/InstallExtraXEmacsPackages          $SCMROOT/binfiles/NT/InstallExtraXEmacsPackages         NT
-bin/LinkStartupFiles                    $SCMROOT/binfiles/LinkStartupFiles                   linux,NT
+bin/LinkStartupFiles                    $SCMROOT/binfiles/LinkStartupFiles                      linux,NT
 bin/MakeCygwinXEmacs                    $SCMROOT/binfiles/NT/MakeCygwinXEmacs                   NT
 bin/MakeLinuxLinks                      $SCMROOT/binfiles/MakeLinuxLinks                        neither
 bin/MakeNativeXEmacs                    $SCMROOT/binfiles/NT/MakeNativeXEmacs                   NT
@@ -15,6 +15,7 @@ bin/all_versions                        $SCMROOT/binfiles/all_versions          
 bin/bld                                 $SCMROOT/binfiles/bld                                   linux,NT
 bin/cfg                                 $SCMROOT/binfiles/cfg                                   linux,NT
 bin/check_cfg                           $SCMROOT/binfiles/check_cfg                             linux,NT
+bin/check_versions                      $SCMROOT/binfiles/check_versions                        linux,NT
 bin/check_zsh                           $SCMROOT/binfiles/check_zsh                             linux,NT
 bin/cleanup-xemacs                      $SCMROOT/binfiles/cleanup-xemacs                        linux,NT
 bin/diff-xemacs-tests                   $SCMROOT/binfiles/diff-xemacs-tests                     linux,NT
@@ -72,6 +73,7 @@ lib/zsh-functions/abspath               $SCMROOT/rcfiles/lib/zsh-functions/abspa
 lib/zsh-functions/addpath               $SCMROOT/rcfiles/lib/zsh-functions/addpath              linux,NT
 lib/zsh-functions/all_dirs              $SCMROOT/rcfiles/lib/zsh-functions/all_dirs             linux,NT
 lib/zsh-functions/all_versions          $SCMROOT/rcfiles/lib/zsh-functions/all_versions         linux,NT
+lib/zsh-functions/check_versions        $SCMROOT/rcfiles/lib/zsh-functions/check_versions       linux,NT
 lib/zsh-functions/col                   $SCMROOT/rcfiles/lib/zsh-functions/col                  linux,NT
 lib/zsh-functions/dx4                   $SCMROOT/rcfiles/lib/zsh-functions/dx5                  linux,NT
 lib/zsh-functions/dx5                   $SCMROOT/rcfiles/lib/zsh-functions/dx5                  linux,NT

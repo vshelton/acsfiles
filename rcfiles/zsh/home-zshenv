@@ -26,7 +26,7 @@ desire() {
 # Use ZDOTDIR instead of HOME in the remainder of the startup scripts.
 if [[ -z $ZDOTDIR ]]; then
   foreach ZDOTDIR in $zdirs; do
-    [[ -d $ZDOTDIR ]] && break
+    [[ -O $ZDOTDIR/.zshrc ]] && break
   done
 fi
 

@@ -4,7 +4,7 @@
 
 : ${progname:=$(basename $0)}
 
-OSTYPE=linux
+OSTYPE=${OSTYPE:-linux}
 [[ $OSTYPE == *ygwin* ]] && OSTYPE=NT
 
 while read linkname src targetOS

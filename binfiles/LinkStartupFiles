@@ -4,7 +4,7 @@
 
 : ${progname:=$(basename $0)}
 
-OSTYPE=linux
+[[ -z $OSTYPE ]] && OSTYPE=linux
 [[ $OSTYPE == *ygwin* ]] && OSTYPE=NT
 
 while read linkname src targetOS
@@ -18,6 +18,16 @@ do
     )
   fi
 done < $SCMROOT/rcfiles/ListOfLinks
+
+# On a Windoze box, the native XEmacs and FSF emacs applications
+# cannot read cygwin symbolic links, so hard-copy the files.
+if [[ $OSTYPE == NT ]]; then
+  for f in .emacs lib/lisp/{fsf,xemacs}/{acs-custom,default}.el lib/lisp/detached-minibuf.el lib/lisp/fsf/mic-paren.el; do
+    t=$(readlink $f)
+    rm $f
+    cp $t $f
+  done
+fi
 
 # Local Variables:
 # mode: shell-script

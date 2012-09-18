@@ -97,8 +97,8 @@ zsh/.zshenv                             $SCMROOT/rcfiles/zsh/.zshenv            
 zsh/README                              $SCMROOT/rcfiles/zsh/README                             linux,NT
 zsh/build_environment                   $SCMROOT/rcfiles/zsh/build_environment                  linux,NT
 zsh/completion_definitions              $SCMROOT/rcfiles/zsh/completion_definitions             linux,NT
-zsh/cygwin/cygwin_additions             $SCMROOT/rcfiles/zsh/cygwin/cygwin_additions            NT
-zsh/cygwin/cygwin_build_environment     $SCMROOT/rcfiles/zsh/cygwin/cygwin_build_environment    NT
+zsh/cygwin/cygwin_additions             $SCMROOT/rcfiles/zsh/cygwin_additions                   NT
+zsh/cygwin/cygwin_build_environment     $SCMROOT/rcfiles/zsh/cygwin_build_environment           NT
 zsh/environment_variables               $SCMROOT/rcfiles/zsh/environment_variables              linux,NT
 zsh/function_definitions                $SCMROOT/rcfiles/zsh/function_definitions               linux,NT
 zsh/key_bindings                        $SCMROOT/rcfiles/zsh/key_bindings                       linux,NT

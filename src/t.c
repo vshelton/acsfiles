@@ -46,7 +46,7 @@ pwd(void)
 
     if ( getcwd(pathbuf, (size_t)PATH_MAX) == NULL )
         return -1;
-    
+
     printf("Current directory is: %s\n", pathbuf);
     return 0;
 }

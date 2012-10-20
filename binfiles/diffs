@@ -21,64 +21,65 @@ if [[ $1 == "-h" ]]; then
   exit 0
 fi
 
+# createFile destFile [-s/regex1/regex2/[g]] srcFile
+# returns $srcFile $shiftCount
+#
+# Create a possibly modified file
+createFile()
+{
+  local destFile=$1     # Hack: this variable is not included in shiftCount
+  shift                 #       nor checked in the argument list
+
+  local pat=
+  srcFile=              # Return value with external scope
+  shiftCount=1          # Return value with external scope
+                        # Default value of 1 assumes srcFile is specified
+
+  # Grab optional substitution pattern and name of source file
+  if [[ $1 == -s* ]]; then
+    pat=${1#-}
+    shift
+    (( ++shiftCount ))
+  fi
+  if (( $# < 1 )); then
+    usage
+    exit 1
+  fi
+  srcFile=$1
+  if [[ ! -e $srcFile ]]; then
+    print -u2 "$progname: $srcFile does not exist".
+    exit 2
+  fi
+
+  # Create (potentially modified) file
+  if [[ -n $pat ]]; then
+    perl -p -e $pat <$srcFile >$destFile
+  else
+    cp $srcFile $destFile
+  fi
+}
+
 # Erase temporary files on interruption or exit
 diff1=$(mktemp)
 diff2=$(mktemp)
 trap 'trap -; rm -f $diff1 $diff2' EXIT INT
 
-# Grab optional substitution pattern and name of first file
-if [[ $1 == -s* ]]; then
-  pat=${1#-}
-  shift
-fi
-if (( $# < 1 )); then
-  usage
-  exit 1
-fi
-file1=$1
-shift
-if [[ ! -e $file1 ]]; then
-  print -u2 "$progname: $file1 does not exist".
-  exit 2
-fi
+integer shiftCount=0
+srcFile=
 
-# Create (potentially modified) first file
-if [[ -n $pat ]]; then
-  perl -p -e $pat <$file1 >$diff1
-else
-  cp $file1 $diff1
-fi
+createFile $diff1 "$@"
+shift $shiftCount
+split1=( ${(s:/:)srcFile} )     # Split source path into components
 
-# Grab substitution pattern and name of second file
-if [[ $1 == -s* ]]; then
-  pat=${1#-}
-  shift
-fi
-if (( $# < 1 )); then
-  usage
-  exit 1
-fi
-file2=$1
-shift
-if [[ ! -e $file2 ]]; then
-  print -u2 "$progname: $file2 does not exist".
-  exit 2
-fi
-
-# Create (potentially modified) second file
-if [[ -n $pat ]]; then
-  perl -p -e $pat <$file2 >$diff2
-else
-  cp $file2 $diff2
-fi
+createFile $diff2 "$@"
+shift $shiftCount
+split2=( ${(s:/:)srcFile} )     # Split source path into components
 
 # Remove common prefixes from file labels
-split1=(${(s:/:)file1})
-split2=(${(s:/:)file2})
 integer i=1
 while [[ i -le $#split2 && $split2[i] == $split1[i] ]]
 do
-    ((++i > $#split1)) && break
+  (( ++i > $#split1 )) && break
 done
 
 diff --unified=0 --label ${(j:/:)split1[i,-1]} $diff1 --label ${(j:/:)split2[i,-1]} $diff2

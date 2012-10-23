@@ -16,11 +16,6 @@ usage: $progname [-h] [-s/regex1/regex2/[g]] file1 [-s/regex3/regex4/[g]] file2
        -s - Run perl substitition on file before comparing"
 }
 
-if [[ $1 == "-h" ]]; then
-  usage
-  exit 0
-fi
-
 # createFile destFile [-s/regex1/regex2/[g]] srcFile
 # returns $srcFile $shiftCount
 #
@@ -58,6 +53,11 @@ createFile()
     cp $srcFile $destFile
   fi
 }
+
+if [[ $1 == "-h" ]]; then
+  usage
+  exit 0
+fi
 
 # Erase temporary files on interruption or exit
 diff1=$(mktemp)

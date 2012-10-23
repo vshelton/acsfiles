@@ -28,7 +28,7 @@ ver="21.5"
 [[ -n $mule || -n $all ]] && compare_files $ver "-s-mule" $1 $2
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 # Compare the two files, optionally making substitions to each file first.
-# Usage: diff-subst [-h] [-s/regex1/regex2/[g]] file1 [-s/regex3/regex4/[g]] file2
+# Usage: diffs [-h] [-s/regex1/regex2/[g]] file1 [-s/regex3/regex4/[g]] file2
 #        -h - Print this help message
 #        -s - Run perl substitition on file before comparing"
 
@@ -30,7 +30,7 @@ createFile()
   shiftCount=1          # Return value with external scope
                         # Default value of 1 assumes srcFile is specified
 
-  # Grab optional substitution pattern and name of source file
+  # Get optional substitution pattern
   if [[ $1 == -s* ]]; then
     pat=${1#-}
     shift
@@ -40,6 +40,8 @@ createFile()
     usage
     exit 1
   fi
+
+  # Get the name of the source file
   srcFile=$1
   if [[ ! -e $srcFile ]]; then
     print -u2 "$progname: $srcFile does not exist".
@@ -64,25 +66,38 @@ diff1=$(mktemp)
 diff2=$(mktemp)
 trap 'trap -; rm -f $diff1 $diff2' EXIT INT
 
-integer shiftCount=0
 srcFile=
+integer shiftCount=0
 
 createFile $diff1 "$@"
+file1=$srcFile
 shift $shiftCount
-split1=( ${(s:/:)srcFile} )     # Split source path into components
 
 createFile $diff2 "$@"
+file2=$srcFile
 shift $shiftCount
-split2=( ${(s:/:)srcFile} )     # Split source path into components
 
-# Remove common prefixes from file labels
-integer i=1
-while [[ i -le $#split2 && $split2[i] == $split1[i] ]]
-do
-  (( ++i > $#split1 )) && break
-done
+# Test whether or not both paths are absolute
+if [[ ${file1[1]} != ${file2[1]} ]]; then
+  label1=$file1
+  label2=$file2
+else
+  # Split source paths into components
+  split1=( ${(s:/:)file1} )
+  split2=( ${(s:/:)file2} )
 
-diff --unified=0 --label ${(j:/:)split1[i,-1]} $diff1 --label ${(j:/:)split2[i,-1]} $diff2
+  # Remove common prefixes from file labels
+  integer i=1
+  while [[ i -le $#split2 && $split2[i] == $split1[i] ]]
+  do
+    (( ++i > $#split1 )) && break
+  done
+
+  label1=${(j:/:)split1[i,-1]}
+  label2=${(j:/:)split2[i,-1]}
+fi
+
+diff --unified=0 --label $label1 $diff1 --label $label2 $diff2
 
 # Local Variables:
 # mode: shell-script

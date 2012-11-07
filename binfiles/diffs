@@ -48,7 +48,7 @@ createFile()
     exit 2
   fi
 
-  # Create (potentially modified) file
+  # Create the (potentially modified) output file
   if [[ -n $pat ]]; then
     perl -p -e $pat <$srcFile >$destFile
   else
@@ -64,7 +64,7 @@ fi
 # Erase temporary files on interruption or exit
 diff1=$(mktemp)
 diff2=$(mktemp)
-trap 'trap -; rm -f $diff1 $diff2' EXIT INT
+trap 'trap -; rm -f $diff1 $diff2' EXIT INT HUP TERM
 
 srcFile=
 integer shiftCount=0

@@ -38,7 +38,11 @@ if [[ -d $target_dir ]]; then
   exit 3
 fi
 
-mkdir -p $target_dir
+if ! mkdir -p $target_dir >&/dev/null; then
+  print -u2 "$progname: could not mkdir $target_dir."
+  exit 4
+fi
+print $target_dir
 tar cf - --exclude={CVS,.hg,.svn} . | tar xf - -C $target_dir
 
 # Local Variables:

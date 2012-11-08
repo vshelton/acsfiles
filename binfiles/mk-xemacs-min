@@ -1,32 +1,41 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 
-# Make a minimal XEmacs suitable for debugging from 21.4 sources.
+# Make a minimal XEmacs suitable for debugging
  
-# Execute this script under the Z shell
-[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
-
+emulate -LR zsh
 progname=${0:t}
 
-export VERSION=$(now)
-mk-src xemacs-21.4
-cd $SRCROOT
-xemacs_name=xemacs-21.4-${VERSION%-????}-minimal
-rm -rf $xemacs_name
-mv xemacs-21.4-$VERSION $xemacs_name
-cd $xemacs_name
+: ${CC:=gcc}
+: ${VERSION:=min}
+export CC VERSION
 
-export CC=${CC:-icc}
-export CFLAGS=${CFLAGS:-"-g -O"}
+: ${XEMACS:=xemacs-21.5}
+CFG_OPTS="--without-x --with-sound=no --with-database=no --without-ldap --without-gpm"
+[[ $XEMACS != *21.4* ]] && CFG_OPTS="$CFG_OPTS --disable-kkcc"
 
-# Configure and build in the source directory.
-# Don't worry about the installation prefix, because we're not going to install.
-./configure --site-includes=$USRLOCAL/include --site-libraries=$USRLOCAL/lib --infopath=$USRLOCAL/info --package-path=$USRLOCAL/site-packages::$USRLOCAL/xemacs-packages --pdump --error-checking=malloc --with-debug-malloc --with-{dialogs,jpeg,modules,mule,png,postgresql,site-modules,sound,tiff,widgets,x11,xpm}=no >& conf.out
-make >& mk.out
-
-err=$?
-if [[ $err -ne 0 ]]; then
-  print -u2 "$progname: make failed.  See $SRCROOT/$xemacs_name/mk.out."
-  exit $err
+source_dir=$(mk-src $XEMACS)
+if (( $? != 0 )); then
+  print -u2 "mk-src $XEMACS failed"
+  exit 1
 fi
 
-print "$progname: XEmacs built in $SRCROOT/$xemacs_name"
+cd $source_dir
+./configure ${=CFG_OPTS} >& conf.out
+if (( $? != 0 )); then
+  print -u2 "configure failed; see $PWD/conf.out"
+  exit 1
+fi
+
+make >& mk.out
+if (( $? != 0 )); then
+  print -u2 "make failed; see $PWD/mk.out"
+  exit 1
+fi
+
+make check >& check.out
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

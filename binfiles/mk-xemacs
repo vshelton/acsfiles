@@ -223,7 +223,7 @@ case $1 in
   PROJECT=${PROJECT:-xemacs-$1}
   VERSION=${VERSION:-$(today)}
   TARGET=${TARGET:-$PROJECT-$VERSION}
-  mk-src $PROJECT
+  mk-src $PROJECT >/dev/null
   ;;
 
 # Non-CVS versions of 21.x.

@@ -11,16 +11,6 @@ progname=${0:t}
 : ${VERSION:=min}
 export CC CFLAGS VERSION
 
-# CFG_OPTS=()
-# while (( $# > 0 )); do
-#   if [[ $1 == --* ]]; then
-#     CFG_OPTS[$#CFG_OPTS+1]=$1
-#     shift
-#   else
-#     break
-#   fi
-# done
-
 CFG_OPTS=( $argv )
 for (( i=$#CFG_OPTS; i > 0; --i )); do
   [[ ${CFG_OPTS[$i]} != --* ]] && CFG_OPTS[$i]=()
@@ -43,8 +33,7 @@ if (( $#CFG_OPTS == 0 )); then
   CFG_OPTS=( --${^CFG_OPTS} )
 fi
 
-echo TARGET= $XEMACS CFG_OPTS = $CFG_OPTS
-#exit 0
+#echo TARGET= $XEMACS CFG_OPTS = $CFG_OPTS
 
 source_dir=$(mk-src $XEMACS)
 if (( $? != 0 )); then

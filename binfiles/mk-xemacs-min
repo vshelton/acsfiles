@@ -3,15 +3,48 @@
 # Make a minimal XEmacs suitable for debugging
  
 emulate -LR zsh
+setopt shwordsplit              # For CFLAGS
 progname=${0:t}
 
 : ${CC:=gcc}
+: ${CFLAGS:="-g -O"}
 : ${VERSION:=min}
-export CC VERSION
+export CC CFLAGS VERSION
+
+# CFG_OPTS=()
+# while (( $# > 0 )); do
+#   if [[ $1 == --* ]]; then
+#     CFG_OPTS[$#CFG_OPTS+1]=$1
+#     shift
+#   else
+#     break
+#   fi
+# done
+
+CFG_OPTS=( $argv )
+for (( i=$#CFG_OPTS; i > 0; --i )); do
+  [[ ${CFG_OPTS[$i]} != --* ]] && CFG_OPTS[$i]=()
+done
+shift $#CFG_OPTS
 
 : ${XEMACS:=xemacs-21.5}
-CFG_OPTS="--without-x --with-sound=no --with-database=no --without-ldap --without-gpm"
-[[ $XEMACS != *21.4* ]] && CFG_OPTS="$CFG_OPTS --disable-kkcc"
+XEMACS=${1:-$XEMACS}
+
+if (( $#CFG_OPTS == 0 )); then
+  CFG_OPTS=( without-x with-sound=no with-database=no without-ldap without-gpm )
+  case $XEMACS in
+  (*21.4*)
+    ;;
+  (*)
+    CFG_OPTS[$#CFG_OPTS+1]="disable-kkcc"
+    CFG_OPTS[$#CFG_OPTS+1]="with-mule"
+    ;;
+  esac
+  CFG_OPTS=( --${^CFG_OPTS} )
+fi
+
+echo TARGET= $XEMACS CFG_OPTS = $CFG_OPTS
+#exit 0
 
 source_dir=$(mk-src $XEMACS)
 if (( $? != 0 )); then
@@ -20,7 +53,7 @@ if (( $? != 0 )); then
 fi
 
 cd $source_dir
-./configure ${=CFG_OPTS} >& conf.out
+./configure $CFG_OPTS >& conf.out
 if (( $? != 0 )); then
   print -u2 "configure failed; see $PWD/conf.out"
   exit 1

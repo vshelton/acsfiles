@@ -1,0 +1,16 @@
+#!/usr/bin/perl -i.blanks
+
+# Remove trailing whitespace from the specified files
+
+# The default arguments are all C++ source files in the current directory
+if ($#ARGV == -1) {
+  opendir(DIR, ".");
+  @ARGV = grep(/\.cc$|\.hh$/, readdir(DIR));
+  closedir(DIR);
+}
+
+while (<ARGV>) {
+  s/[ 	]*$//;
+  print;
+}
+

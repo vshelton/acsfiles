@@ -13,7 +13,7 @@ export CC CFLAGS VERSION
 
 CFG_OPTS=( $argv )
 for (( i=$#CFG_OPTS; i > 0; --i )); do
-  [[ ${CFG_OPTS[$i]} != --* ]] && CFG_OPTS[$i]=()
+  [[ ${CFG_OPTS[$i]} != --* ]] && CFG_OPTS[$i]=() || break
 done
 shift $#CFG_OPTS
 

@@ -61,6 +61,9 @@ function generate_compiler_flags {
         ;;
       esac
       ;;
+    (*x86_64*)
+      OPTIMIZE_FLAGS="-Os -m64 -msse4.2"
+      ;;
     (*i?86*)
       arch=$(perl -e '
         $arch="unknown";

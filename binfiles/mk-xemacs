@@ -62,27 +62,12 @@ function generate_compiler_flags {
       esac
       ;;
     (*x86_64*)
-      OPTIMIZE_FLAGS="-Os -m64 -msse4.2"
+      OPTIMIZE_FLAGS="-Os -m64 -msse4.2 -ffast-math -fno-exceptions"
       ;;
     (*i?86*)
-      arch=$(perl -e '
-        $arch="unknown";
-        open(CPUINFO, "< /proc/cpuinfo");
-
-        while (<CPUINFO>) {
-          if ( /model name/ ) {
-            $arch="pentium$1" if ( /pentium\(r\) (.)/i );
-            $arch="pentium3" if ( /pentium III/i );
-            last;       # Break as soon as a match is found
-          }
-        }
-        print "$arch\n";')
-
-      archopt=
-      [[ $arch == pentium* ]] && archopt="-march=$arch"
       case $CC in
       (*gcc*)
-        OPTIMIZE_FLAGS="-Os -malign-double -pipe -ffast-math $archopt -fno-exceptions"
+        OPTIMIZE_FLAGS="-Os -malign-double -pipe -ffast-math -fno-exceptions"
         ;;
       # Intel C Compiler?
       (*)
@@ -91,7 +76,6 @@ function generate_compiler_flags {
         # -march=<cpu>  generate code excusively for a given <cpu>
         # Enable and specify the scope of Interprocedural (IP) Optimizations:
         # -ip     enable single-file IP optimizations (within files)
-        [[ $arch == pentium3 ]] && archopt="-march=pentiumiii"
         OPTIMIZE_FLAGS="-Os -ip"
         ;;
       esac

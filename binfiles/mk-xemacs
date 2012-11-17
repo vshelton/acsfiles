@@ -1,10 +1,10 @@
 #!/usr/bin/env zsh
 
-# Make XEmacs, either from CVS or from a tarball.
+# Make XEmacs, either from source control or from a tarball.
 # Usage: mk-xemacs [odmn] version [cfg_opts],
-# where version is either '21.1', '21.4' or '21.5' to refer to CVS,
-# and anything else is assumed to be an already-unpacked
-# source distribution.
+# where version is either '21.1', '21.4' or '21.5' to extract source
+# code from source control and anything else is assumed to be an
+# already-unpacked source distribution.
 # Options:
 #   -c Build and check, but don't install
 #   -d Build a debug version
@@ -20,7 +20,8 @@ setopt extendedglob
 progname=${0:t}
 
 function usage() {
-  print -u2 "usage: $progname [-cdhmno] xemacs-version [configure_options]
+  print -u2 "\
+usage: $progname [-cdhmno] xemacs-version [configure_options]
          -c - build XEmacs and run \'make check\', but do not install
          -d - build and install a debug version
          -h - print this help message
@@ -50,17 +51,6 @@ function generate_compiler_flags {
 
     # Set compiler optimization flags based on OS version and compiler type
     case $(uname -a) in
-    (SunOS*)
-      case $CC in
-      (*gcc*)
-        OPTIMIZE_FLAGS="-O2 -pipe -ffast-math -fno-exceptions"
-        ;;
-      # SunPro C Compiler?
-      (*)
-        OPTIMIZE_FLAGS="-xO2 -xspace"
-        ;;
-      esac
-      ;;
     (*x86_64*)
       OPTIMIZE_FLAGS="-Os -m64 -msse4.2 -ffast-math -fno-exceptions"
       ;;
@@ -94,15 +84,12 @@ function cfg_and_build {
   # Either optimized or debug.  Debug wins if both are specified
   [[ $2 == *optimized*  ]] && build_options="$cfg_debug_off"
   [[ $2 == *debug* ]] && build_options="$cfg_debug_on"
-  if [[ $2 == *mule* ]]; then
-    build_options="$build_options $cfg_mule_on"
-  else
-    build_options="$build_options $cfg_mule_off"
-  fi
+  build_options="$build_options $cfg_mule_off"
+  [[ $2 == *mule* ]] && build_options="$build_options $cfg_mule_on"
 
   generate_compiler_flags $2
 
-  cfg -s -o conf.out $(relative $SRCROOT/$TARGET) $with_gcc $with_cflags="$DEBUG_FLAGS $OPTIMIZE_FLAGS" ${=with_site_prefixes} $with_infopath $enable_dialogs $enable_widgets $enable_sound $with_package_path $enable_pdump $enable_bignum $with_default_eol_detection $with_libs ${=build_options} ${=generic_cfg_opts} ${=debug_options}
+  cfg -s -o conf.out $(relative $SRCROOT/$TARGET) $with_gcc $with_cflags="$DEBUG_FLAGS $OPTIMIZE_FLAGS" ${=with_site_prefixes} $with_infopath $enable_dialogs $enable_widgets $enable_sound $with_package_path $enable_pdump $enable_bignum $with_default_eol_detection ${=build_options} ${=generic_cfg_opts} ${=debug_options}
   if [[ $? -ne 0 ]]; then
     print -u2 "\n$progname: could not configure $TARGET.\n"
     return 1
@@ -115,19 +102,8 @@ function cfg_and_build {
     return 1
   fi
 
-  # There is a bug in SunOS such that the following construct does
-  # not work in /bin/sh:
-  #   if ! test -f foo; then
-  #     echo no foo
-  #   fi
-  # Unfortunately, this defect is triggered in the pdump generation
-  # code up until approximately 2005-02.  The workaround is to use
-  # /usr/xpg4/bin/sh as the build shell.
-  makeopts=
-  [[ $(uname -a) == SunOS* ]] && makeopts="SHELL=/usr/xpg4/bin/sh -e"
-
   print -n "Building XEmacs..."
-  make $lib_gcc $makeopts >& mk.out
+  make >& mk.out
   if [[ $? -ne 0 ]]; then
     print -u2 "\n$progname: make failed.  See $build_dir/mk.out:"
     _POSIX2_VERSION=199209 tail mk.out >&2
@@ -189,23 +165,22 @@ zparseopts -D c=checkonly d=debug h=help m=mule n=normal o=optimized
 
 # At this point, the version of XEmacs is the first argument.
 # This can either be a version number, like '21.5', in which case
-# the version is fetched from CVS, or a directory name, which must
-# be a directory under $SRCROOT.
+# the version is fetched from source control, or a directory name,
+# which must be a directory under $SRCROOT.
 
 # Trim trailing slashes in case the argument is a directory name.
 argv[1]=${1%%/##}
 
 # Set up version-specific options.
-# If the version is to be extracted from CVS,
+# If the version is to be extracted from source control,
 # make a copy of the sources now.
 case $1 in
-# 19.16 does not currently work under SunOS-5.8.
 (*19.16*|*20.*)
   PROJECT=$1
   TARGET=$PROJECT
   ;;
 
-# CVS versions of 21.x
+# Source-controlled versions of 21.x
 (21.*)  # Spell out PROJECT and VERSION to allow flexibility in over-riding.
   PROJECT=${PROJECT:-xemacs-$1}
   VERSION=${VERSION:-$(today)}
@@ -213,7 +188,7 @@ case $1 in
   mk-src $PROJECT >/dev/null
   ;;
 
-# Non-CVS versions of 21.x.
+# Non-source-controlled versions of 21.x.
 (*21*)
   TARGET=$1
   PROJECT=${1%-????-??-??}
@@ -247,14 +222,6 @@ with_default_eol_detection="--with-default-eol-detection"
 with_infopath="--with-infopath=$USRLOCAL/info"
 with_package_path="--with-package-path=$shared_root/site-packages::$shared_root/xemacs-packages"
 with_site_prefixes="--with-site-prefixes=$USRLOCAL"
-
-# For some reason the need for -lw is not detected on SunOS-5.5.
-# with_libs and lib_gcc are 2 different ways to accomplish the
-# same task: to link against -lw on SunOS-5.5.
-# with_libs is only supported under autoconf 2.5
-with_libs=
-[[ $(uname -a) == SunOS*5.5* ]] && with_libs="--with-libs=-lw"
-lib_gcc=
 
 # Need a way to enable/disable mule for different builds
 cfg_mule_off="--disable-mule"
@@ -305,12 +272,6 @@ if [[ -z $autoconf2_5 ]]; then
   # Here's how to turn debugging on or off at build time.
   cfg_debug_off="--debug=no --error-checking=none"
   cfg_debug_on="--debug --error-checking=all"
-
-  # This hack is necessary because under SunOS-5.5 the need for
-  # -lw is not properly detected.  This workaround is not necessary
-  # with autoconf 2.5, where --with-libs serves the same purpose.
-  [[ $(uname -a) == SunOS*5.5* ]] && lib_gcc="lib_gcc=-lw"
-  with_libs=
 
   case $TARGET in
   (xemacs-19*)
@@ -400,9 +361,6 @@ do
     ;;
   (--*widgets*)
     enable_widgets=$1
-    ;;
-  (--with*-libs*)
-    with_libs=$1
     ;;
   (*eol-detection*)
     with_default_eol_detection=$1

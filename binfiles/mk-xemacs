@@ -38,12 +38,12 @@ function generate_compiler_flags {
 
   # CFLAGS has the highest priority,
   # except -g will ALWAYS be specified for debugging
-  OPTIMIZE_FLAGS=$CFLAGS
+  OPTIMIZE_FLAGS=( ${=CFLAGS} )
 
-  DEBUG_FLAGS=
+  DEBUG_FLAGS=()
   if [[ $1 == *debug* ]]; then
-    DEBUG_FLAGS="$DEBUG_FLAGS -g"
-    OPTIMIZE_FLAGS=${OPTIMIZE_FLAGS:-"-O"}
+    DEBUG_FLAGS=( -g )
+    [[ -z $OPTIMIZE_FLAGS ]] && OPTIMIZE_FLAGS=( -O )
     return 0
   fi
 
@@ -52,12 +52,12 @@ function generate_compiler_flags {
     # Set compiler optimization flags based on OS version and compiler type
     case $(uname -a) in
     (*x86_64*)
-      OPTIMIZE_FLAGS="-Os -m64 -msse4.2 -ffast-math -fno-exceptions"
+      OPTIMIZE_FLAGS=( -Os -m64 -msse4.2 -ffast-math -fno-exceptions )
       ;;
     (*i?86*)
       case $CC in
       (*gcc*)
-        OPTIMIZE_FLAGS="-Os -malign-double -pipe -ffast-math -fno-exceptions"
+        OPTIMIZE_FLAGS=( -Os -malign-double -pipe -ffast-math -fno-exceptions )
         ;;
       # Intel C Compiler?
       (*)
@@ -66,7 +66,7 @@ function generate_compiler_flags {
         # -march=<cpu>  generate code excusively for a given <cpu>
         # Enable and specify the scope of Interprocedural (IP) Optimizations:
         # -ip     enable single-file IP optimizations (within files)
-        OPTIMIZE_FLAGS="-Os -ip"
+        OPTIMIZE_FLAGS=( -Os -ip )
         ;;
       esac
       ;;
@@ -89,22 +89,19 @@ function cfg_and_build {
 
   generate_compiler_flags $2
 
-  cfg -s -o conf.out $(relative $SRCROOT/$TARGET) $with_gcc $with_cflags="$DEBUG_FLAGS $OPTIMIZE_FLAGS" ${=with_site_prefixes} $with_infopath $enable_dialogs $enable_widgets $enable_sound $with_package_path $enable_pdump $enable_bignum $with_default_eol_detection ${=build_options} ${=generic_cfg_opts} ${=debug_options}
-  if [[ $? -ne 0 ]]; then
+  if ! cfg -s -o conf.out $(relative $SRCROOT/$TARGET) $with_gcc $with_cflags="$DEBUG_FLAGS $OPTIMIZE_FLAGS" ${=with_site_prefixes} $with_infopath $enable_dialogs $enable_widgets $enable_sound $with_package_path $enable_pdump $enable_bignum $with_default_eol_detection ${=build_options} $generic_cfg_opts; then
     print -u2 "\n$progname: could not configure $TARGET.\n"
     return 1
   fi
 
   build_dir=$TARGET
-  cd $build_dir
-  if [[ $? -ne 0 ]]; then
+  if ! cd $build_dir; then
     print -u2 "\n$progname: couldn't cd to $build_dir.\n"
     return 1
   fi
 
   print -n "Building XEmacs..."
-  make >& mk.out
-  if [[ $? -ne 0 ]]; then
+  if ! make >& mk.out; then
     print -u2 "\n$progname: make failed.  See $build_dir/mk.out:"
     _POSIX2_VERSION=199209 tail mk.out >&2
     print -u2 "\n"
@@ -122,8 +119,7 @@ function cfg_and_build {
   fi
 
   print "Installing package to $prefix/$TARGET."
-  make TAGS install >& inst.out
-  if [[ $? -ne 0 ]]; then
+  if ! make TAGS install >& inst.out; then
     print -u2 "\n$progname: make install failed.  See $build_dir/inst.out:"
     _POSIX2_VERSION=199209 tail inst.out >&2
     print -u2 "\n"
@@ -228,8 +224,8 @@ cfg_mule_off="--disable-mule"
 cfg_mule_on="--enable-mule --without-xim"
 
 # Need a way to turn optimization and debugging on or off for different builds.
-cfg_debug_off="--with-optimization --disable-debug --disable-assertions --disable-error-checking --with-cflags-warning= --with-cflags-optimization= --with-cflags-debugging= "
-cfg_debug_on="--enable-debug --enable-assertions --enable-memory-usage-stats --with-cflags-optimization= --with-cflags-debugging= "
+cfg_debug_off=( --with-optimization --disable-debug --disable-assertions --disable-error-checking --with-cflags-warning= --with-cflags-optimization= --with-cflags-debugging= )
+cfg_debug_on=( --enable-debug --enable-assertions --enable-memory-usage-stats --with-cflags-optimization= --with-cflags-debugging= )
 
 # Verify that the source directory exists and that there's an
 # executable configure script there.
@@ -270,8 +266,8 @@ if [[ -z $autoconf2_5 ]]; then
   cfg_mule_on="--with-mule  --without-xim"
 
   # Here's how to turn debugging on or off at build time.
-  cfg_debug_off="--debug=no --error-checking=none"
-  cfg_debug_on="--debug --error-checking=all"
+  cfg_debug_off=( --debug=no --error-checking=none )
+  cfg_debug_on=( --debug --error-checking=all )
 
   case $TARGET in
   (xemacs-19*)
@@ -295,7 +291,7 @@ fi
 
 # This is the catchall for all configuration options that follow
 # the version name and are not directly understood by this script.
-generic_cfg_opts=
+generic_cfg_opts=()
 
 # Any remaining arguments are options to be passed to the
 # XEmacs configure command.
@@ -369,7 +365,7 @@ do
     with_default_eol_detection=$1
   ;;
   (--*)
-    generic_cfg_opts="$generic_cfg_opts $1"
+    generic_cfg_opts[$#generic_cfg_opts+1]=$1
     ;;
   esac
   shift

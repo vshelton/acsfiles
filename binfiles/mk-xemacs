@@ -1,16 +1,18 @@
 #!/usr/bin/env zsh
 
 # Make XEmacs, either from source control or from a tarball.
-# Usage: mk-xemacs [odmn] version [cfg_opts],
+# Usage: mk-xemacs [-[odmn]] version [cfg_opts],
 # where version is either '21.1', '21.4' or '21.5' to extract source
 # code from source control and anything else is assumed to be an
 # already-unpacked source distribution.
 # Options:
 #   -c Build and check, but don't install
-#   -d Build a debug version
-#   -o Build an optimized version
-#   -m Build a mule version
+#   -d Build a debug version with default mule settings
+#   -e Build a debug mule version
+#   -m Build a mule version with default optimization
 #   -n Build a normal (non-optimized, non-debug) version
+#   -o Build an optimized version with default mule settings
+#   -u Build an optimized mule version
 # cfg_opts refers to XEmacs-specific configuration options, like
 # --with-sound=native or --with-dialogs=motif
 
@@ -23,17 +25,19 @@ function usage() {
   print -u2 "\
 usage: $progname [-cdhmno] xemacs-version [configure_options]
          -c - build XEmacs and run \'make check\', but do not install
-         -d - build and install a debug version
+         -d - build and install a debug version with default mule settings
+         -e - build and install a debug version with mule
          -h - print this help message
          -m - build and install a mule version
          -n - build and install a normal (non-optimized, non-debug) version
-         -o - build and install an optimized version
+         -o - build and install an optimized version with default mule settings
+         -u - build and install an optimized mule version
          [configure_options] are options to pass to the XEmacs configure
                              command, e.g. \'--with-dialogs=motif\'"
 }
 
 # Generate compiler flags
-# $1 = "debug" or "optimized"
+# $1 - Debug [0 or 1]
 function generate_compiler_flags {
 
   # CFLAGS has the highest priority,
@@ -41,7 +45,7 @@ function generate_compiler_flags {
   OPTIMIZE_FLAGS=( ${=CFLAGS} )
 
   DEBUG_FLAGS=()
-  if [[ $1 == *debug* ]]; then
+  if [[ -n $1 && $1 != 0 ]] then
     DEBUG_FLAGS=( -g )
     [[ -z $OPTIMIZE_FLAGS ]] && OPTIMIZE_FLAGS=( -O )
     return 0
@@ -76,25 +80,38 @@ function generate_compiler_flags {
 
 # Configure and build XEmacs
 # $1 = Name of target directory
-# $2 = "debug" or "optimize" and/or "mule"
+# $2 = Optimize [0 or 1]
+# $3 = Debug [0 or 1]
+# $4 = Mule [0 or 1]
 function cfg_and_build {
-  local TARGET=$1
-  local build_options=
+  build_target=$1
+  build_options=()
+  typeset -i build_debug
+  typeset -i build_mule
+  typeset -i build_optimized
 
-  # Either optimized or debug.  Debug wins if both are specified
-  [[ $2 == *optimized*  ]] && build_options="$cfg_debug_off"
-  [[ $2 == *debug* ]] && build_options="$cfg_debug_on"
-  build_options="$build_options $cfg_mule_off"
-  [[ $2 == *mule* ]] && build_options="$build_options $cfg_mule_on"
+  build_optimized=1
+  [[ -z $2 || $2 == 0 ]] && build_optimized=0
 
-  generate_compiler_flags $2
+  build_debug=1
+  [[ -z $3 || $3 == 0 ]] && build_debug=0
 
-  if ! cfg -s -o conf.out $(relative $SRCROOT/$TARGET) $with_gcc $with_cflags="$DEBUG_FLAGS $OPTIMIZE_FLAGS" ${=with_site_prefixes} $with_infopath $enable_dialogs $enable_widgets $enable_sound $with_package_path $enable_pdump $enable_bignum $with_default_eol_detection ${=build_options} $generic_cfg_opts; then
-    print -u2 "\n$progname: could not configure $TARGET.\n"
+  build_mule=1
+  [[ -z $4 || $4 == 0 ]] && build_mule=0
+
+  # Notice that build_debug overrides build_optimized
+  (( $build_optimized != 0 )) && build_options=( $cfg_debug_off )
+  (( $build_debug != 0 )) && build_options=( $cfg_debug_on )
+  (( $build_mule != 0 )) && build_options[$#build_options+1]=( $cfg_mule_on )
+
+  generate_compiler_flags $build_debug
+
+  if ! cfg -s -o conf.out $(relative $SRCROOT/$build_target) $with_gcc $with_cflags="$DEBUG_FLAGS $OPTIMIZE_FLAGS" $with_site_prefixes $with_infopath $enable_dialogs $enable_widgets $enable_sound $with_package_path $enable_pdump $enable_bignum $with_default_eol_detection $build_options $generic_cfg_opts; then
+    print -u2 "\n$progname: could not configure $build_target.\n"
     return 1
   fi
 
-  build_dir=$TARGET
+  build_dir=$build_target
   if ! cd $build_dir; then
     print -u2 "\n$progname: couldn't cd to $build_dir.\n"
     return 1
@@ -118,7 +135,7 @@ function cfg_and_build {
     return 0
   fi
 
-  print "Installing package to $prefix/$TARGET."
+  print "Installing package to $prefix/$build_target."
   if ! make TAGS install >& inst.out; then
     print -u2 "\n$progname: make install failed.  See $build_dir/inst.out:"
     _POSIX2_VERSION=199209 tail inst.out >&2
@@ -130,21 +147,21 @@ function cfg_and_build {
   # If the target is being built from a daily snapshot (includes the
   # string '-YYYY-MM-DD' or '-YYYY-MM-DD-HHMM'), create an executable
   # script with the version information stripped from it:
-  # TARGET=xemacs-21.2-2000-01-01 -> $prefix/bin/xemacs-21.2
+  # build_target=xemacs-21.2-2000-01-01 -> $prefix/bin/xemacs-21.2
   stripped_target=
   for pat in "-20??-??-??" "-20??-??-??-[0-9][0-9][0-9][0-9]" ;
   do
-    if [[ $TARGET == xemacs-*${~pat} ]]; then
-      stripped_target=${TARGET%${~pat}}
+    if [[ $build_target == xemacs-*${~pat} ]]; then
+      stripped_target=${build_target%${~pat}}
       break
     fi
   done
   if [[ -n $stripped_target ]]; then
-    print exec "'$TARGET'" '"$@"' > $prefix/bin/$stripped_target
+    print exec "'$build_target'" '"$@"' > $prefix/bin/$stripped_target
     chmod 775 $prefix/bin/$stripped_target
   fi
-  rm $prefix/bin/$TARGET >& /dev/null
-  ln -s xemacs-version $prefix/bin/$TARGET
+  rm $prefix/bin/$build_target >& /dev/null
+  ln -s xemacs-version $prefix/bin/$build_target
   cd - > /dev/null
 }
 
@@ -153,7 +170,7 @@ function cfg_and_build {
 #
 #set -x
 
-zparseopts -D c=checkonly d=debug h=help m=mule n=normal o=optimized
+zparseopts -D c=checkonly d=debug e=muledebug h=help m=mule n=normal o=optimized u=muleoptim
 
 [[ -n $help || $# == 0 ]] && usage
 [[ -n $help ]] && exit 0
@@ -217,11 +234,11 @@ with_cflags="--with-cflags"
 with_default_eol_detection="--with-default-eol-detection"
 with_infopath="--with-infopath=$USRLOCAL/info"
 with_package_path="--with-package-path=$shared_root/site-packages::$shared_root/xemacs-packages"
-with_site_prefixes="--with-site-prefixes=$USRLOCAL"
+with_site_prefixes=( --with-site-prefixes=$USRLOCAL )
 
 # Need a way to enable/disable mule for different builds
-cfg_mule_off="--disable-mule"
-cfg_mule_on="--enable-mule --without-xim"
+cfg_mule_off=( --disable-mule )
+cfg_mule_on=( --enable-mule --without-xim )
 
 # Need a way to turn optimization and debugging on or off for different builds.
 cfg_debug_off=( --with-optimization --disable-debug --disable-assertions --disable-error-checking --with-cflags-warning= --with-cflags-optimization= --with-cflags-debugging= )
@@ -242,8 +259,8 @@ fi
 # and many configure options changed.
 # Test the version here.
 autoconf2_5=
-cd /tmp                 # Old versions of configure left temp files,
-                        # so change to the /tmp directory.
+# Old versions of configure left temp files, so change to the /tmp directory.
+cd /tmp
 $SRCROOT/$TARGET/configure --help | grep -c -- --with-site-prefixes >/dev/null && autoconf2_5=1
 cd -
 
@@ -259,11 +276,11 @@ if [[ -z $autoconf2_5 ]]; then
   with_default_eol_detection="--with-file-coding=yes"
   with_infopath="--infopath=$USRLOCAL/info"
   with_package_path="--package-path=$shared_root/site-packages::$shared_root/xemacs-packages"
-  with_site_prefixes="--site-includes=$prefix/include --site-libraries=$prefix/lib"
+  with_site_prefixes=( --site-includes=$prefix/include --site-libraries=$prefix/lib )
 
   # Here's how to turn mule on or off at build time.
-  cfg_mule_off="--with-mule=no"
-  cfg_mule_on="--with-mule  --without-xim"
+  cfg_mule_off=( --with-mule=no )
+  cfg_mule_on=( --with-mule  --without-xim )
 
   # Here's how to turn debugging on or off at build time.
   cfg_debug_off=( --debug=no --error-checking=none )
@@ -272,11 +289,11 @@ if [[ -z $autoconf2_5 ]]; then
   case $TARGET in
   (xemacs-19*)
     with_infopath=
-    cfg_mule_off=
+    cfg_mule_off=()
     ;&          # Fall through
   (xemacs-20*)
     with_package_path=
-    cfg_mule_on="--with-mule"
+    cfg_mule_on=( --with-mule )
     ;&          # Fall through
   (xemacs-21.1*)
     enable_pdump=
@@ -344,7 +361,7 @@ do
     enable_sound=$1
     ;;
   (--*site-prefix*)
-    with_site_prefixes=$1
+    with_site_prefixes=( $1 )
     ;;
   (--*infopath*)
     with_infopath=$1
@@ -374,9 +391,10 @@ done
 # Configure a build tree in a new sub-directory of the current directory
 SRCROOT=${SRCROOT:-$shared_root/src}
 
-[[ -n $normal ]] && cfg_and_build $TARGET ""
-[[ -n $optimized ]] && cfg_and_build $TARGET optimized
-if [[ -n "$mule" ]]; then
+[[ -n $normal ]] && cfg_and_build $TARGET 0 0 0
+[[ -n $optimized ]] && cfg_and_build $TARGET 1 0 0
+
+if [[ -n $mule || -n $muledebug || -n $muleoptim ]]; then
 
   # Mule support didn't exist until version 20
   if [[ $TARGET == xemacs-19* ]]; then
@@ -385,18 +403,36 @@ if [[ -n "$mule" ]]; then
   else
 
     # Make a symlink to the source directory
-    (cd $SRCROOT; [[ ! -e $TARGET-mule ]] && ln -s $TARGET $TARGET-mule)
+    (
+      cd $SRCROOT
+      if [[ -e $TARGET-mule ]]; then
+        print -u2 "\n$progname: $SRCROOT/$TARGET-mule already exists, skipping mule build.\n"
+      else
+        ln -s $TARGET $TARGET-mule
+      fi
+    )
 
-    cfg_and_build $TARGET-mule mule
+    mopt=0
+    [[ -n $muldoptim ]] && mopt=1
+    mdeb=0
+    [[ -n $muledebug ]] && mdeb=1
+    cfg_and_build $TARGET-mule $mopt $mdeb 1
   fi
 fi
 
-if [[ -n "$debug" ]]; then
+if [[ -n $debug ]]; then
 
-  # Make a symlink to the source directory
-  (cd $SRCROOT; [[ ! -e $TARGET-debug ]] && ln -s $TARGET $TARGET-debug)
+   # Make a symlink to the source directory
+   (
+      cd $SRCROOT
+      if [[ -e $TARGET-debug ]]; then
+        print -u2 "\n$progname: $SRCROOT/$TARGET-debug already exists, skipping debug build.\n"
+      else
+        ln -s $TARGET $TARGET-debug
+      fi
+    )
 
-  cfg_and_build "$TARGET-debug" debug
+  cfg_and_build "$TARGET-debug" 0 1 0
 fi
 
 # Local Variables:

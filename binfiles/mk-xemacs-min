@@ -36,26 +36,26 @@ fi
 
 #echo TARGET= $XEMACS CFG_OPTS = $CFG_OPTS
 
-source_dir=$(mk-src $XEMACS)
-if (( $? != 0 )); then
+if ! source_dir=$(mk-src $XEMACS); then
   print -u2 "mk-src $XEMACS failed"
   exit 1
 fi
 
 cd $source_dir
-./configure $CFG_OPTS >& conf.out
-if (( $? != 0 )); then
+if ! ./configure $CFG_OPTS >& conf.out; then
   print -u2 "configure failed; see $PWD/conf.out"
   exit 1
 fi
 
-make >& mk.out
-if (( $? != 0 )); then
+if ! make >& mk.out; then
   print -u2 "make failed; see $PWD/mk.out"
   exit 1
 fi
 
 make check >& check.out
+
+# Make a symlink to point to the local package directory
+ln -s ../../xemacs-packages
 
 # Local Variables:
 # mode: shell-script

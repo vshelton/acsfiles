@@ -1,18 +1,19 @@
 #!/usr/bin/env zsh
 
 # Make XEmacs, either from source control or from a tarball.
-# Usage: mk-xemacs [-[odmn]] version [cfg_opts],
+# Usage: mk-xemacs [-[cdehmnou]] version [cfg_opts],
 # where version is either '21.1', '21.4' or '21.5' to extract source
 # code from source control and anything else is assumed to be an
 # already-unpacked source distribution.
 # Options:
-#   -c Build and check, but don't install
-#   -d Build a debug version with default mule settings
-#   -e Build a debug mule version
-#   -m Build a mule version with default optimization
-#   -n Build a normal (non-optimized, non-debug) version
-#   -o Build an optimized version with default mule settings
-#   -u Build an optimized mule version
+#   -c - build XEmacs and run \'make check\', but do not install
+#   -d - build and install a debug version without mule
+#   -e - build and install a debug version with mule
+#   -h - print this help message
+#   -m - build and install a mule version
+#   -n - build and install a normal (non-optimized, non-debug) version
+#   -o - build and install an optimized version without mule
+#   -u - build and install an optimized version with mule
 # cfg_opts refers to XEmacs-specific configuration options, like
 # --with-sound=native or --with-dialogs=motif
 
@@ -25,13 +26,13 @@ function usage() {
   print -u2 "\
 usage: $progname [-cdhmno] xemacs-version [configure_options]
          -c - build XEmacs and run \'make check\', but do not install
-         -d - build and install a debug version with default mule settings
+         -d - build and install a debug version without mule
          -e - build and install a debug version with mule
          -h - print this help message
          -m - build and install a mule version
          -n - build and install a normal (non-optimized, non-debug) version
-         -o - build and install an optimized version with default mule settings
-         -u - build and install an optimized mule version
+         -o - build and install an optimized version without mule
+         -u - build and install an optimized version with mule
          [configure_options] are options to pass to the XEmacs configure
                              command, e.g. \'--with-dialogs=motif\'"
 }
@@ -170,11 +171,11 @@ function cfg_and_build {
 #
 #set -x
 
-zparseopts -D c=checkonly d=debug e=muledebug h=help m=mule n=normal o=optimized u=muleoptim
+zparseopts -D c=checkonly d=debug_no_mule e=mule_debug h=help m=mule n=normal o=optim_no_mule u=mule_optim
 
 [[ -n $help || $# == 0 ]] && usage
 [[ -n $help ]] && exit 0
-[[ $# == 0 ]] && exit 1
+(( #argv == 0 )) && exit 1
 
 # At this point, the version of XEmacs is the first argument.
 # This can either be a version number, like '21.5', in which case
@@ -215,7 +216,7 @@ esac
 shift
 
 # The default is a non-debug, non-optimized build.
-[[ -z "$optimized" && -z "$debug" && -z "$mule" ]] && normal=1
+[[ -z $optim_no_mule && -z $debug_no_mule && -z $mule ]] && normal=1
 
 prefix=${USRLOCAL:-/usr/local}          # Architecture-dependent stuff
 shared_root=${USRLOCAL:-/usr/local}     # Architecture-independent stuff
@@ -392,9 +393,9 @@ done
 SRCROOT=${SRCROOT:-$shared_root/src}
 
 [[ -n $normal ]] && cfg_and_build $TARGET 0 0 0
-[[ -n $optimized ]] && cfg_and_build $TARGET 1 0 0
+[[ -n $optim_no_mule ]] && cfg_and_build $TARGET 1 0 0
 
-if [[ -n $mule || -n $muledebug || -n $muleoptim ]]; then
+if [[ -n $mule || -n $mule_debug || -n $mule_optim ]]; then
 
   # Mule support didn't exist until version 20
   if [[ $TARGET == xemacs-19* ]]; then
@@ -413,14 +414,14 @@ if [[ -n $mule || -n $muledebug || -n $muleoptim ]]; then
     )
 
     mopt=0
-    [[ -n $muldoptim ]] && mopt=1
+    [[ -n $mule_optim ]] && mopt=1
     mdeb=0
-    [[ -n $muledebug ]] && mdeb=1
+    [[ -n $mule_debug ]] && mdeb=1
     cfg_and_build $TARGET-mule $mopt $mdeb 1
   fi
 fi
 
-if [[ -n $debug ]]; then
+if [[ -n $debug_no_mule ]]; then
 
    # Make a symlink to the source directory
    (

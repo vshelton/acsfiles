@@ -34,11 +34,6 @@ function cyg {
   reply=("$(cygpath -w $REPLY)")
 }
 
-# I now use the windows default black background,
-# so modify the default bart prompt colors
-PROMPT="%2c %w %T%(#.#.); "
-prompt bart red cyan
-
 # Make sure .emacs and lib/lisp/xemacs files are up-to-date.
 # These should be symbolic links, but native windows doesn't
 # grok cygwin symlinks.

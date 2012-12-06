@@ -1,8 +1,12 @@
+#include "config.h"
+#ifdef STDC_HEADERS
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <limits.h>
-#include <asm-generic/types.h>
+#endif
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 
 #define N_ELEMS(array)          (sizeof(array) / sizeof(array[0]))
 
@@ -39,13 +43,21 @@ typedef struct baz      blurfl;
 int
 pwd(void)
 {
-    // long maxpathlen = pathconf(".", _PC_PATH_MAX);
-    // debug_var(maxpathlen, ld);
-    // char pathbuf[maxpathlen];
+#ifdef HAVE_PATHCONF
+     long maxpathlen = pathconf(".", _PC_PATH_MAX);
+     debug_var(maxpathlen, ld);
+     char pathbuf[maxpathlen];
+#else
     char pathbuf[PATH_MAX];
+#endif
 
+#ifdef HAVE_GETCWD
     if ( getcwd(pathbuf, (size_t)PATH_MAX) == NULL )
         return -1;
+#else
+    fprintf(stderr, "getcwd not defined.\n");
+    pathbuf[0] = 0;
+#endif
 
     printf("Current directory is: %s\n", pathbuf);
     return 0;
@@ -90,17 +102,13 @@ main(int argc, char *argv[])
 #endif
 
     debug_sizeof(char);
-    debug_sizeof(__s8);
-    debug_sizeof(__u8);
     debug_sizeof(short);
-    debug_sizeof(__s16);
-    debug_sizeof(__u16);
     debug_sizeof(int);
-    debug_sizeof(__s32);
-    debug_sizeof(__u32);
     debug_sizeof(long);
-    debug_sizeof(__s64);
-    debug_sizeof(__u64);
+    debug_sizeof(int8_t);
+    debug_sizeof(int16_t);
+    debug_sizeof(int32_t);
+    debug_sizeof(int64_t);
     debug_sizeof(size_t);
     debug_sizeof(char *);
     debug_sizeof(short *);

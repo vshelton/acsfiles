@@ -14,6 +14,7 @@
  '(c-indent-comments-syntactically-p t)
  '(c-macro-preprocessor "gcc -C -E -")
  '(c-macro-prompt-flag t)
+ '(canlock-password "bc13bbe494dc254b3e5049a0ca3afa3139395fff")
  '(column-number-mode t)
  '(compilation-error-regexp-systems-list (quote (gnu comma)))
  '(compilation-mouse-motion-initiate-parsing t)

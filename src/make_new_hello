@@ -1,26 +1,63 @@
-set -x
+
+# Set up a micro-project using GNU autotools.
+
+# Use autoscan to build a new configure.ac and then customize it.
+# $1 = full package name.
+# $2 = package version.
+# $3 = bug report address.
+# all parameters must have special characters (like '@') quoted from perl.
+function new_configure_ac {
+  autoscan
+  mv configure.scan configure.ac
+  perl -pi -e "s/AC_INIT\(\[FULL-PACKAGE-NAME\], \[VERSION\], \[BUG-REPORT-ADDRESS\]\)/AC_INIT\(\[$1\], \[$2\], \[$3\]\)/;" configure.ac
+  patch <<EOF
+--- OLDconfigure.ac	2012-12-13 14:55:08.677012978 -0500
++++ configure.ac	2012-12-13 14:56:02.187045218 -0500
+@@ -6,6 +6,9 @@
+ AC_CONFIG_SRCDIR([config.h.in])
+ AC_CONFIG_HEADERS([config.h])
+ 
++# Initialize automake.
++AM_INIT_AUTOMAKE([foreign -Wall -Werror])
++
+ # Checks for programs.
+ AC_PROG_CC
+ 
+EOF
+}
+
+# Create Makefile.am, src/Makefile.am, src/main.c
 mkdir src
-echo 'bin_PROGRAMS = hello
-hello_SOURCES = main.c' >src/Makefile.am
-echo '#include "config.h"
+cat - >src/Makefile.am <<EOF1
+bin_PROGRAMS = hello
+hello_SOURCES = main.c
+EOF1
+cat - >src/main.c <<EOF2
+#include "config.h"
 #include <stdio.h>
 
 int
 main (void)
 {
   printf ("Hello World!");
-  printf (" This is " PACKAGE_STRING ".\\n");
+  printf (" This is " PACKAGE_STRING ".\n");
   return 0;
-}' > src/main.c
-echo 'SUBDIRS = src' > Makefile.am
-autoscan
-perl -p -e 's/FULL-PACKAGE-NAME/hello/;' \
--e 's/VERSION/1.0/;' \
--e 's/BUG-REPORT-ADDRESS/ethersoft\@gmail.com/;' \
--e 's/# Checks for programs./AM_INIT_AUTOMAKE([foreign -Wall -Werror])
+} 
+EOF2
+echo 'SUBDIRS = src' >Makefile.am
 
-# Checks for programs./;' <configure.scan >configure.ac
+# Generate and then modify configure.ac.
+new_configure_ac "hello" "1.0" "ethersoft\@gmail.com"
+
+# Configure and make the project.
 autoreconf --install
 ./configure
-make
-#src/hello
+if make; then
+  echo src/hello made successfully.
+fi
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

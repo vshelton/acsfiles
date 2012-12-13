@@ -1,0 +1,35 @@
+set -x
+
+ln -s ~/scmroot/gnulib/gnulib-tool
+./gnulib-tool --source-base=gl --m4-base=gl/m4 --import getnline
+
+perl -pi.orig -e 's/#include <stdio.h>/#include <stdio.h>
+#include "getnline.h"/;' src/main.c
+
+echo 'ACLOCAL_AMFLAGS = -I gl/m4
+
+SUBDIRS = gl src
+
+EXTRA_DIST = gl/m4/gnulib-cache.m4' >Makefile.am
+
+perl -pi.orig -e 's@^bin_PROGRAMS@AM_CPPFLAGS = -I \$\(top_srcdir\)/gl
+bin_PROGRAMS@;' src/Makefile.am 
+
+autoscan
+perl -p -e 's/FULL-PACKAGE-NAME/hello/;' \
+-e 's/VERSION/1.0/;' \
+-e 's/BUG-REPORT-ADDRESS/ethersoft\@gmail.com/;' \
+-e 's/# Checks for programs./AM_INIT_AUTOMAKE([foreign -Wall -Werror])
+
+# Checks for programs./;' <configure.scan >configure.ac
+
+perl -pi.orig -e 's/AC_PROG_CC/AC_PROG_CC
+
+# Gnulib initialization.
+gl_EARLY
+gl_INIT/;' configure.ac
+
+autoreconf --install
+./configure
+make
+#src/hello

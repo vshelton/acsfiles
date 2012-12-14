@@ -1,6 +1,7 @@
-#ACLOCAL_AMFLAGS = -I m4
+ACLOCAL_AMFLAGS = -I gl/m4
 
-#SUBDIRS = lib
+SUBDIRS = gl
 
 bin_PROGRAMS = t
 t_SOURCES = t.c
+t_LDADD = -L gl -lgnu

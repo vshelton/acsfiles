@@ -1,0 +1,6 @@
+#ACLOCAL_AMFLAGS = -I m4
+
+#SUBDIRS = lib
+
+bin_PROGRAMS = t
+t_SOURCES = t.c

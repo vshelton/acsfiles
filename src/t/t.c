@@ -29,13 +29,8 @@ pwd(void)
     char pathbuf[PATH_MAX];
 #endif
 
-#ifdef HAVE_GETCWD
     if ( getcwd(pathbuf, (size_t)PATH_MAX) == NULL )
         return -1;
-#else
-    fprintf(stderr, "getcwd not defined.\n");
-    pathbuf[0] = 0;
-#endif
 
     printf("Current directory is: %s\n", pathbuf);
     return 0;

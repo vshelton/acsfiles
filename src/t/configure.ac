@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.68])
-AC_INIT([t], [1.1], [ethersoft@gmail.com])
+AC_INIT([t], [1.3], [ethersoft@gmail.com])
 AM_INIT_AUTOMAKE([1.10 no-define])
 AC_CONFIG_SRCDIR([debug_print.h])
 AC_CONFIG_HEADERS([config.h])
@@ -15,9 +15,10 @@ gl_INIT
 gl_EARLY
 
 # Checks for libraries.
+AC_CHECK_LIB([gnu], [getcwd])
 
 # Checks for header files.
-AC_CHECK_HEADERS([OS.h fcntl.h limits.h netdb.h stddef.h stdlib.h string.h sys/param.h unistd.h])
+AC_CHECK_HEADERS([OS.h fcntl.h limits.h netdb.h stddef.h stdint.h stdlib.h string.h sys/param.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_UID_T

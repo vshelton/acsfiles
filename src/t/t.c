@@ -1,12 +1,15 @@
 #include "config.h"
 #include "debug_print.h"
-#ifdef STDC_HEADERS
-#include <stdio.h>
-#include <stdlib.h>
-#include <limits.h>
+#if STDC_HEADERS
+# include <stdio.h>
+# include <stdlib.h>
+# include <limits.h>
 #endif
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
+#if HAVE_STDINT_H
+# include <stdint.h>
+#endif
+#if HAVE_UNISTD_H
+# include <unistd.h>
 #endif
 
 typedef int foo;

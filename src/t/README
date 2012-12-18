@@ -1,0 +1,6 @@
+ln -s ~/scmroot/gnulib/gnulib-tool
+./gnulib-tool --lgpl --verbose --import --source-base=gl --m4-base=gl/m4 getcwd-lgpl
+autoreconf --install
+./configure
+make OR make CC=clang CFLAGS="-g -v"
+

@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.68])
-AC_INIT([t], [1.3], [ethersoft@gmail.com])
+AC_INIT([t], [1.4], [ethersoft@gmail.com])
 AM_INIT_AUTOMAKE([1.10 no-define])
 AC_CONFIG_SRCDIR([debug_print.h])
 AC_CONFIG_HEADERS([config.h])

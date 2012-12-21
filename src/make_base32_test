@@ -1,0 +1,141 @@
+#!/usr/bin/env zsh
+
+# Build a base32 test program using autoconf, automake and gnulib.
+
+emulate -LR zsh
+progname=${0:t}
+
+# Variables to tweak.
+: ${TARGET_DIR:=~/b32_tst}
+: ${PROJECT:=base32_test}
+: ${GNULIB_ARCHIVE:=~/scmroot/gnulib}
+: ${GNULIB_DIR:=gl}
+: ${TMP:=/tmp}
+
+# Use autoscan to build a new configure.ac and then customize it.
+# $1 = full package name.
+# $2 = package version.
+# $3 = bug report address.
+# all parameters must have special characters (like '@') quoted from perl.
+function new_configure_ac {
+  autoscan
+  mv configure.scan configure.ac
+  perl -pi -e "s/AC_INIT\(\[FULL-PACKAGE-NAME\], \[VERSION\], \[BUG-REPORT-ADDRESS\]\)/AC_INIT\(\[$1\], \[$2\], \[$3\]\)/;" configure.ac
+  patch --prefix=${TMP}/ --silent <<EOF
+--- OLDconfigure.ac     2012-12-13 14:55:08.677012978 -0500
++++ configure.ac        2012-12-13 14:56:02.187045218 -0500
+@@ -6,6 +6,9 @@
+ AC_CONFIG_SRCDIR([config.h.in])
+ AC_CONFIG_HEADERS([config.h])
+ 
++# Initialize automake.
++AM_INIT_AUTOMAKE([foreign -Wall -Werror])
++
+ # Checks for programs.
+ AC_PROG_CC
+ 
+EOF
+}
+
+if ! mkdir $TARGET_DIR; then
+  print -u2 "$progname: cannot mkdir $TARGET_DIR. Does it already exist? Quitting."
+  exit 1
+fi
+cd $TARGET_DIR
+
+# Create initial "Hello world" program.
+echo '#include <stdio.h>
+
+int
+main(void)
+{
+    printf("Hello world!\\n");
+    return 0;
+}' >${PROJECT}.c
+
+echo "bin_PROGRAMS = ${PROJECT}
+${PROJECT}_SOURCES = ${PROJECT}.c" >Makefile.am
+
+# Configure, build and run our "Hello world" program.
+new_configure_ac "${PROJECT}" "1.0" "ethersoft\@gmail.com"
+autoreconf --install
+./configure
+make
+./${PROJECT}
+
+# Add isbase32() calls to the source.
+echo '#include "config.h"
+#include <stdio.h>
+#include "base32.h"
+
+int
+checkbase32(char testchar)
+{
+    printf("isbase32 of %#x returned %s.\\n",
+           testchar, isbase32(testchar) ? "TRUE" : "FALSE");
+    return 0;
+}
+
+int
+main(void)
+{
+    printf("Hello world!\\n");
+
+    checkbase32(10);
+    checkbase32('\'A\'');
+    checkbase32('\'a\'');
+
+    return 0;
+}' >${PROJECT}.c
+
+echo "bin_PROGRAMS = ${PROJECT}
+${PROJECT}_SOURCES = ${PROJECT}.c
+${PROJECT}_LDADD = -L ${GNULIB_DIR} -lgnu
+AM_CPPFLAGS = -I \$(top_srcdir)/${GNULIB_DIR}
+SUBDIRS = ${GNULIB_DIR}
+ACLOCAL_AMFLAGS = -I ${GNULIB_DIR}/m4
+EXTRA_DIST = ${GNULIB_DIR}/m4/gnulib-cache.m4" >Makefile.am
+
+# Add gnulib support.
+ln -s ${GNULIB_ARCHIVE}/gnulib-tool
+if  [[ ! -s gnulib-tool ]]; then
+  print -u2 "${progname}: could not find gnulib source archive.
+                  Set GNULIB_ARCHIVE environment variable appropriately."
+  exit 1
+fi
+./gnulib-tool --verbose --import --source-base=${GNULIB_DIR} --m4-base=${GNULIB_DIR}/m4 base32
+
+# Update automake and autoconf stuff.
+new_configure_ac "${PROJECT}" "1.1" "ethersoft\@gmail.com"
+patch --prefix=${TMP}/ --silent <<EOF
+--- OLDconfigure.ac	2012-12-20 13:08:19.801753380 -0500
++++ configure.ac	2012-12-20 13:08:19.804753383 -0500
+@@ -12,9 +12,13 @@
+ # Checks for programs.
+ AC_PROG_CC
+ 
++# Initialize gnulib.
++gl_EARLY
++gl_INIT
++
+ # Checks for libraries.
+-# FIXME: Replace \`main' with a function in \`-lgnu':
+-AC_CHECK_LIB([gnu], [main])
++gl_FUNC_BASE32
++AC_CHECK_LIB([gnu], [isbase32])
+ 
+ # Checks for header files.
+ AC_CHECK_HEADERS([OS.h limits.h stddef.h stdlib.h string.h unistd.h wchar.h])
+EOF
+touch NEWS AUTHORS ChangeLog README
+autoreconf --install
+./configure
+make
+make distcheck
+./${PROJECT}
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

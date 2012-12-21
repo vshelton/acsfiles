@@ -19,6 +19,7 @@ progname=${0:t}
 # all parameters must have special characters (like '@') quoted from perl.
 function new_configure_ac {
   autoscan
+  [[ -e configure.ac ]] && mv configure.ac{,-$(date +'%Y-%m-%d')}
   mv configure.scan configure.ac
   perl -pi -e "s/AC_INIT\(\[FULL-PACKAGE-NAME\], \[VERSION\], \[BUG-REPORT-ADDRESS\]\)/AC_INIT\(\[$1\], \[$2\], \[$3\]\)/;" configure.ac
   patch --prefix=${TMP}/ --silent <<EOF

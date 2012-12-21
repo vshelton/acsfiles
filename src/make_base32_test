@@ -6,7 +6,7 @@ emulate -LR zsh
 progname=${0:t}
 
 # Variables to tweak.
-: ${TARGET_DIR:=~/b32_tst}
+: ${TARGET_DIR:=b32_tst}
 : ${PROJECT:=base32_test}
 : ${GNULIB_ARCHIVE:=~/scmroot/gnulib}
 : ${GNULIB_DIR:=gl}
@@ -106,7 +106,7 @@ fi
 ./gnulib-tool --verbose --import --source-base=${GNULIB_DIR} --m4-base=${GNULIB_DIR}/m4 base32 malloc
 
 # Update automake and autoconf stuff.
-new_configure_ac "${PROJECT}" "1.1" "ethersoft\@gmail.com"
+new_configure_ac "${PROJECT}" "1.2" "ethersoft\@gmail.com"
 patch --prefix=${TMP}/ --silent <<EOF
 --- OLDconfigure.ac	2012-12-20 13:08:19.801753380 -0500
 +++ configure.ac	2012-12-20 13:08:19.804753383 -0500

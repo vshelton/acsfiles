@@ -103,7 +103,7 @@ if  [[ ! -s gnulib-tool ]]; then
                   Set GNULIB_ARCHIVE environment variable appropriately."
   exit 1
 fi
-./gnulib-tool --verbose --import --source-base=${GNULIB_DIR} --m4-base=${GNULIB_DIR}/m4 base32
+./gnulib-tool --verbose --import --source-base=${GNULIB_DIR} --m4-base=${GNULIB_DIR}/m4 base32 malloc
 
 # Update automake and autoconf stuff.
 new_configure_ac "${PROJECT}" "1.1" "ethersoft\@gmail.com"

@@ -40,6 +40,12 @@ for d; do
     retval=$?
     find_newer $start_time
 
+  # git
+  elif [[ -d .git ]]; then
+    print "\n$d"
+    git pull
+    retval=$?
+
   # Subversion
   elif [[ -d .svn ]]; then
     print "\n$d"
@@ -60,7 +66,7 @@ for d; do
 
   else
     retval=1
-    print -u2 "$progname: no mercurial, svn or cvs hierarchy could be found at $pdir."
+    print -u2 "$progname: no mercurial, git, svn or cvs hierarchy could be found at $pdir."
     continue
   fi
 done

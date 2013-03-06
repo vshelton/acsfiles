@@ -1,0 +1,24 @@
+#!/usr/bin/env zsh
+emulate -LR zsh
+
+cd ${TMP:-/tmp}
+proj=xemacs-21.5
+print -n "Cloning $proj repository ... "
+hg clone $SCMROOT/$proj >/dev/null
+print done
+
+pushd ./$proj >/dev/null
+(
+  echo '--- CHOOSE A DATE ---'
+  hg history --template "{date|isodate}\n" | awk '{print $1}' | sort -ur
+) | ${PAGER:-less}
+read "hgdate?Select date: "
+
+print -n "Changing cloned repository to reflect contents on $hgdate ... "
+hg update -d $hgdate >/dev/null
+print done
+popd >/dev/null
+
+print -n "Building minimal version of $proj from $hgdate ... "
+SCMROOT=$PWD VERSION="$hgdate"-min mk-xemacs-min
+print done

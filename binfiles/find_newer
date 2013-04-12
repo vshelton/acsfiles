@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+
 # Print the names of all the files in the current hierarchy
 # newer than the specified file, omitting source code repository
 # maintenance files.

@@ -24,6 +24,7 @@ bin/diff_xemacs_build_results           $SCMROOT/binfiles/diff_xemacs_build_resu
 bin/diffs                               $SCMROOT/binfiles/diffs                                 linux,NT
 bin/fcedit                              $SCMROOT/binfiles/fcedit                                linux,NT
 bin/find_install_root                   $SCMROOT/binfiles/find_install_root                     linux,NT
+bin/find_newer                          $SCMROOT/binfiles/find_newer                            linux,NT
 bin/findpkg                             $SCMROOT/binfiles/findpkg                               linux,NT
 bin/installed_packages                  $SCMROOT/binfiles/installed_packages                    linux,NT
 bin/latest                              $SCMROOT/binfiles/latest                                linux,NT
@@ -78,7 +79,6 @@ lib/zsh-functions/dx4                   $SCMROOT/rcfiles/lib/zsh-functions/dx5  
 lib/zsh-functions/dx5                   $SCMROOT/rcfiles/lib/zsh-functions/dx5                  linux,NT
 lib/zsh-functions/exists                $SCMROOT/rcfiles/lib/zsh-functions/exists               linux,NT
 lib/zsh-functions/f                     $SCMROOT/rcfiles/lib/zsh-functions/f                    linux,NT
-lib/zsh-functions/find_newer            $SCMROOT/rcfiles/lib/zsh-functions/find_newer           linux,NT
 lib/zsh-functions/link-latest           $SCMROOT/rcfiles/lib/zsh-functions/link-latest          linux,NT
 lib/zsh-functions/loop_update           $SCMROOT/rcfiles/lib/zsh-functions/loop_update          linux,NT
 lib/zsh-functions/loop_while_failing    $SCMROOT/rcfiles/lib/zsh-functions/loop_while_failing   linux,NT

@@ -4,7 +4,7 @@
 # newer than the specified file
 
 emulate -LR zsh
-new_files=( $(find . -type f \( -not -path '*/CVS/*' \) -and \( -not -path '*/.hg*' \) -and \( -not -path '*/.git/*' \) -newer $1 -print) ) 2>/dev/null
+new_files=( $(find_newer $1) )
 print ${#new_files}
 
 # Local Variables:

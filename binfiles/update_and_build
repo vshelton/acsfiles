@@ -26,8 +26,8 @@ update_file="last_update"
 
 if scm_update $project_name ; then
   cd $SCMROOT/$project_name
-
-  if (( $(newer_than $update_file) > 0 )); then
+  new_files=( $(find_newer $update_file) )
+  if (( #new_files > 0 )); then
     (
       cd $BLDROOT
       print "\nBuilding $project_name"

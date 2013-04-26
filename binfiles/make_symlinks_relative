@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# Descend from the current directory and print commands to replace
+# all symlinks with relative paths to the same target.
+# The output from this script can be piped through "sh -sx" to execute.
+#
+# Usage: make_symlinks_relative [[directory] [find_search_primitives]]
+#        e.g. make_symlinks_relative . -lname '*scmroot*'
+
+# Print the a relative path from the second directory to the first,
+# defaulting the second directory to $PWD if none is specified.
+function relative()
+{
+  #echo relative "$@" >&2
+  # Handle various edge cases: not absolute path, filename, etc.
+  [[ "$1" != /* ]] && echo "$1" && return 0
+  [[ -f "$1" ]] && set $(dirname "$1") "${2:-$PWD}" $(basename "$1")
+  [[ ( -d "$1" || -L $1 ) && -d "${2:-$PWD}" ]] || return 1
+  [[ "$1" -ef "$2" ]] && echo ${3:-.} && return 0
+
+  # Split the current directory and the target directory into segments
+  OIFS=$IFS
+  IFS=/ cur=( $(pwd -P) )
+  IFS=/ abs=( $(cd "$1"; pwd -P) $3 )
+  IFS=$OIFS
+  #echo cur = \"${cur[*]}\" echo abs = \"${abs[*]}\" >&2
+  typeset -i i j
+  i=1
+  # Compute the length of the common prefix or discover and print a subdirectory
+  while (( i <= ${#abs[*]} )) && [[ ${cur[$i]} == ${abs[$i]} ]]; do
+    if ((++i >= ${#cur[*]})); then
+      OIFS=IFS
+      echo $(IFS=/ eval 'echo "${abs[*]:$i}"')
+      IFS=$OIFS
+      return
+    fi
+  done
+  dest=
+  for (( j = i; j < ${#cur[*]}; ++j )); do
+    dest="${dest}../"
+  done
+  for (( ; i < ${#abs[*]}; ++i )); do
+    dest="${dest}${abs[$i]}/"
+  done
+  echo ${dest%/}
+}
+
+dir=${1:-.}
+shift
+for d in $(find $dir -type d); do
+  echo cd $d
+  cd $d
+  find . -maxdepth 1 -type l "$@" -ls | while read x1 x2 perm lcnt uid gid sz mon day time name x3 target; do
+    echo rm $name
+    echo ln -s $(relative $target) $name
+  done
+  cd - >&/dev/null
+  echo cd -
+done
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

@@ -5,6 +5,7 @@
 : ${progname:=$(basename $0)}
 
 [[ -z $OSTYPE ]] && OSTYPE=linux
+[[ $OSTYPE == *linux* ]] && OSTYPE=linux
 [[ $OSTYPE == *ygwin* ]] && OSTYPE=NT
 
 while read linkname src targetOS

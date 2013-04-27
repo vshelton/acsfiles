@@ -5,7 +5,7 @@
 # The output from this script can be piped through "sh -sx" to execute.
 #
 # Usage: make_symlinks_relative [[directory] [find_search_primitives]]
-#        e.g. make_symlinks_relative . -lname '*scmroot*'
+#        e.g. make_symlinks_relative . -lname '*scmroot*' | sh -sx
 
 # Print the a relative path from the second directory to the first,
 # defaulting the second directory to $PWD if none is specified.

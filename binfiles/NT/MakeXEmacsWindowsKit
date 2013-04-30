@@ -35,10 +35,12 @@ if [[ -n $help ]]; then
 fi
 
 if [[ -z $InnoSetup ]]; then
-  ISKey='/HKLM/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall/Inno Setup 5_is1/Inno Setup: App Path'
+  ISKey='/HKLM/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall/\
+Inno Setup 5_is1/Inno Setup: App Path'
   InnoSetup=$(cygpath "$(regtool get $ISKey)")/iscc 2>/dev/null
   if (( $? != 0 )); then
-    print -u2 "$progname: cannot find registry key for Inno Setup 5; set InnoSetup environment variable to the cygwin path to iscc."
+    print -u2 "$progname: cannot find registry key for Inno Setup 5; \
+set InnoSetup environment variable to the cygwin path to iscc."
     exit 1
   fi
 fi
@@ -100,7 +102,9 @@ for ver in $*; do
   esac
 
   # Add options common to all kits
-  kit_options=( $kit_options "/dXEmacsVersion=$version_string" "/dKitFile=XEmacs_Setup_$version_string" )
+  kit_options=( $kit_options
+                "/dXEmacsVersion=$version_string"
+                "/dKitFile=XEmacs_Setup_$version_string" )
 
   # Extract the sources either from a tarball or from SCM
   case $ver in
@@ -130,7 +134,8 @@ Is there an SCM hierarchy at $SCMROOT?"
   # Make and install the executables
   install_dir="$(cygpath --mixed $PWD/installed)"
   if ! MakeNativeXEmacs --install --prefix=$install_dir $branch_options $srcdir ; then
-    print -u2 "$progname: \"MakeNativeXEmacs --install --prefix=$install_dir $branch_options $srcdir\" failed."
+    print -u2 "$progname: \"MakeNativeXEmacs --install --prefix=$install_dir \
+$branch_options $srcdir\" failed."
     exit 1;
   fi
 
@@ -138,12 +143,13 @@ Is there an SCM hierarchy at $SCMROOT?"
   cp -p DLLs/*.dll $install_dir/XEmacs-$version_string/i586-pc-win32
 
   # Run the Inno Setup compiler to make the kit
-  $InnoSetup XEmacs.iss /dExecSrc=$install_dir /dPkgSrc=$PACKAGE_DIR /dXEmacsVersion=$ver $kit_options
+  $InnoSetup XEmacs.iss /dExecSrc=$install_dir /dPkgSrc=$PACKAGE_DIR \
+             /dXEmacsVersion=$ver $kit_options
 
 done
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

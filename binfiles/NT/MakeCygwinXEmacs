@@ -44,7 +44,12 @@ while (( $# > 0 )); do
     exit 1
   esac
 
-  mk-xemacs $mule $branch --without-x --with-dragndrop --pdump --with-dialogs --with-widgets --with-sound=native $cfg_site_prefix$site_prefix $package_path || exit $?
+  mk-xemacs $mule $branch \
+            --without-x --with-dragndrop \
+            --pdump --with-dialogs \
+            --with-widgets --with-sound=native \
+            $cfg_site_prefix$site_prefix \
+            $package_path || exit $?
 
   # On cygwin, we're only building a mule version of 21.5,
   # so make a special script to run this version as 'xemacs-21.5'.
@@ -79,7 +84,7 @@ while (( $# > 0 )); do
 done
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

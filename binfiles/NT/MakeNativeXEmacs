@@ -1,7 +1,9 @@
 #!/usr/bin/env zsh
 
 # Build a Windows-native version of XEmacs.
-# Usage: MakeNativeXEmacs [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--without-debug] [--package-root=path] [--prefix=path] [--install] dirname
+# Usage: MakeNativeXEmacs [-h|--help] [--with-mule] [--without-mule] [--with-debug]
+#                         [--without-debug] [--package-root=path] [--prefix=path]
+#                         [--install] dirname
 #
 # Assumptions:
 #   1) Cygwin is installed on the build machine, including makeinfo, perl,
@@ -18,7 +20,9 @@ progname=${0:t}
 
 function usage {
   print -u2 "\
-usage: $progname [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--without-debug] [--package-root dir] [--prefix dir] [--install] [--intel] [--sdk] dirname
+usage: $progname [-h|--help] [--with-mule] [--without-mule] [--with-debug] \
+[--without-debug] [--package-root dir] [--prefix dir] [--install] [--intel] \
+[--sdk] dirname
        -h|--help            print this help message and exit
        --with-mule          turn on MULE support
        --without-mule       turn off MULE support
@@ -39,7 +43,10 @@ usage: $progname [-h|--help] [--with-mule] [--without-mule] [--with-debug] [--wi
 : ${TIFF_VER:=tiff-3.9.5}
 : ${ZLIB_VER:=zlib}
 
-zparseopts -D h=help -help=help -with-mule=with_mule -without-mule=without_mule -with-debug=with_debug -without-debug=without_debug -package-root:=package_root -prefix:=prefix -install=install -sdk=with_sdk -intel=with_intel
+zparseopts -D h=help -help=help -with-mule=with_mule -without-mule=without_mule \
+           -with-debug=with_debug -without-debug=without_debug \
+           -package-root:=package_root -prefix:=prefix -install=install \
+           -sdk=with_sdk -intel=with_intel
 
 if [[ -n $help ]]; then
   usage
@@ -87,14 +94,16 @@ fi
 cd $srcdir/nt
 unset HOME              # Don't pick up my emacs customizations
 # Configure for optional packages
-perl -pi -e "s@^OPTIONAL_LIBRARY_DIR=.*@OPTIONAL_LIBRARY_DIR=$(cygpath --mixed $LIB_DIR)@;
-             s@^PNG_DIR=.*@PNG_DIR=\\\$(OPTIONAL_LIBRARY_DIR)/$PNG_VER@;
-             s@^GIF_DIR=.*@GIF_DIR=\\\$(OPTIONAL_LIBRARY_DIR)/$GIFLIB_VER@;
-             s@^ZLIB_DIR=.*@ZLIB_DIR=\\\$(OPTIONAL_LIBRARY_DIR)/$ZLIB_VER@;
-             s@^TIFF_DIR=.*@TIFF_DIR=\\\$(OPTIONAL_LIBRARY_DIR)/$TIFF_VER@;
-             s@^HAVE_XFACE=.*@HAVE_XFACE=0@;
-             s@^USE_KKCC=.*@USE_KKCC=0@;
-             s@^MAKEINFO=.*@MAKEINFO=${(q)$(cygpath --windows =makeinfo.exe)}@" < config.inc.samp >config.inc
+perl -pi -e \
+  "s@^OPTIONAL_LIBRARY_DIR=.*@OPTIONAL_LIBRARY_DIR=$(cygpath --mixed $LIB_DIR)@;
+   s@^PNG_DIR=.*@PNG_DIR=\\\$(OPTIONAL_LIBRARY_DIR)/$PNG_VER@;
+   s@^GIF_DIR=.*@GIF_DIR=\\\$(OPTIONAL_LIBRARY_DIR)/$GIFLIB_VER@;
+   s@^ZLIB_DIR=.*@ZLIB_DIR=\\\$(OPTIONAL_LIBRARY_DIR)/$ZLIB_VER@;
+   s@^TIFF_DIR=.*@TIFF_DIR=\\\$(OPTIONAL_LIBRARY_DIR)/$TIFF_VER@;
+   s@^HAVE_XFACE=.*@HAVE_XFACE=0@;
+   s@^USE_KKCC=.*@USE_KKCC=0@;
+   s@^MAKEINFO=.*@MAKEINFO=${(q)$(cygpath --windows =makeinfo.exe)}@" \
+  < config.inc.samp > config.inc
 
 # Change installation directory if requested
 if [[ -n $install_dir ]]; then
@@ -115,10 +124,12 @@ perl -pi -e 's@.*BUILD_FOR_SETUP_KIT.*@BUILD_FOR_SETUP_KIT=1@' config.inc
 [[ -n $mule ]] &&  perl -pi -e "s@^MULE=.*@MULE=$mule@" config.inc
 
 # Use the Intel C Compiler if requested
-[[ -n $with_intel ]] && perl -pi -e "s@^USE_INTEL_COMPILER=.*@USE_INTEL_COMPILER=1@" config.inc
+[[ -n $with_intel ]] &&
+  perl -pi -e "s@^USE_INTEL_COMPILER=.*@USE_INTEL_COMPILER=1@" config.inc
 
 # Configure package path if requested
-[[ -n $package_dir ]] &&  perl -pi -e "s@^#PACKAGE_PREFIX=.*@PACKAGE_PREFIX=$package_dir@" config.inc
+[[ -n $package_dir ]] && 
+  perl -pi -e "s@^#PACKAGE_PREFIX=.*@PACKAGE_PREFIX=$package_dir@" config.inc
 
 # Build and install XEmacs
 nmake -f xemacs.mak || exit $?
@@ -130,7 +141,7 @@ fi
 exit 0
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

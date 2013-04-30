@@ -247,11 +247,18 @@ cfg_mule_off=( --disable-mule )
 cfg_mule_on=( --enable-mule --without-xim )
 
 # Need a way to turn optimization and debugging on or off for different builds.
-cfg_debug_off=( --with-optimization --disable-debug --disable-assertions \
-                --disable-error-checking --with-cflags-warning= \
-                --with-cflags-optimization= --with-cflags-debugging= )
-cfg_debug_on=( --enable-debug --enable-assertions --enable-memory-usage-stats \
-               --with-cflags-optimization= --with-cflags-debugging= )
+cfg_debug_off=( --with-optimization
+                --disable-debug
+                --disable-assertions
+                --disable-error-checking
+                --with-cflags-warning=
+                --with-cflags-optimization=
+                --with-cflags-debugging= )
+cfg_debug_on=( --enable-debug
+               --enable-assertions
+               --enable-memory-usage-stats
+               --with-cflags-optimization=
+               --with-cflags-debugging= )
 
 # Verify that the source directory exists and that there's an
 # executable configure script there.
@@ -270,9 +277,10 @@ fi
 # Test the version here.
 autoconf2_5=
 # Old versions of configure left temp files, so change to the /tmp directory.
-cd /tmp
-$SRCROOT/$TARGET/configure --help | grep -c -- --with-site-prefixes >/dev/null && autoconf2_5=1
-cd -
+(
+  cd /tmp
+  $SRCROOT/$TARGET/configure --help | grep -c -- --with-site-prefixes && autoconf2_5=1
+) > /dev/null
 
 # If we're not configuring against autoconf 2.5x, fiddle
 # with the configure options.

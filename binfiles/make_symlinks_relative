@@ -50,7 +50,8 @@ shift
 for d in $(find $dir -type d); do
   echo cd $d
   cd $d
-  find . -maxdepth 1 -type l "$@" -ls | while read x1 x2 perm lcnt uid gid sz mon day time name x3 target; do
+  find . -maxdepth 1 -type l "$@" -ls | while read x1 x2 perm lcnt uid gid sz \
+                                                   mon day time name x3 target; do
     echo rm $name
     echo ln -s $(relative $target) $name
   done

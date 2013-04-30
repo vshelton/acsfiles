@@ -1,38 +1,51 @@
 #!/usr/bin/env zsh
 
+# Configure and build but don't install old debug copies of XEmacs 21.5
+# under the $SRCROOT directory.
+
 emulate -LR zsh
 progname=${0:t}
 
+# Clone the XEmacs 21.5 source hierarchy.
 project=xemacs-21.5
-NEW_SCMROOT=/home/acs/tmp
-cd $NEW_SCMROOT
-hg clone $SCMROOT/$project
-cd $project
+OLD_SCMROOT=$SCMROOT
+SCMROOT=$HOME/tmp
+cd $SCMROOT
+hg clone $OLD_SCMROOT/$project
+cd $project             # Necessary for "hg update" below.
 
-# Generate list of dates from hg history
+: ${USRLOCAL:/usr/local}
+
+# Here's how to generate a list of dates from hg history:
 # hg history --template "{date|isodate}\n" | col 1 | sort -ur
-#dates=( 2012-11-06 2012-09-02 2012-07-02 2012-04-07 2012-01-01 2011-11-02 \
-#        2011-09-04 2011-06-01 2011-03-29 2011-01-02 )
-#dates=( 2009-01-01 2009-04-01 2009-07-01 2009-10-01 2010-01-01 2010-04-01 \
-#        2010-07-05 2010-10-10 2011-01-01 2011-04-02 2011-07-03 2011-10-02 \
-#        2012-01-01 2012-04-07 2012-07-02 2012-10-15 )
-dates=( 2009-01-01 2009-07-01 2010-01-01 2010-07-05 2011-01-01 2011-04-02 \
+
+# Define the list of dates we will use for building old versions of XEmacs 21.5.
+dates=( 2009-01-01 2009-07-01 2010-01-01 2010-07-05 2011-01-01 2011-04-02
         2011-07-03 2011-10-02 2012-01-01 2012-04-07 2012-07-02 2012-10-15 )
+
+# Define a set of options to build a consistent and somewhat minimal XEmacs.
+: ${CFLAGS:="-g -Os -m64 -msse4.2 -ffast-math -fno-exceptions"}
+cfg_options=( --prefix=$USRLOCAL
+              --with-cflags="$CFLAGS"
+              --with-site-prefixes=$USRLOCAL
+              --with-infopath=$USRLOCAL/info
+              --disable-dialogs
+              --disable-widgets
+              --with-sound=native
+              --with-package-path=$USRLOCAL/site-packages::$USRLOCAL/xemacs-packages
+              --enable-pdump
+              --enable-bignum=gmp
+              --with-default-eol-detection
+              --enable-mule
+              --without-xim )
 for d in $dates; do
+  echo Building $project $d
   hg update -d $d
-  SCMROOT=$NEW_SCMROOT mk-src $project $d
-  pushd /opt/src/$project-$d >/dev/null
-  ./configure --prefix=/opt \
-              --with-cflags="-g -Os -m64 -msse4.2 -ffast-math -fno-exceptions" \
-              --with-site-prefixes=/opt --with-infopath=/opt/info \
-              --disable-dialogs --disable-widgets --with-sound=native \
-              --with-package-path=/opt/site-packages::/opt/xemacs-packages \
-              --enable-pdump --enable-bignum=gmp --with-default-eol-detection \
-              --enable-mule --without-xim >& conf.out
+  pushd $(mk-src $project $d) > /dev/null
+  ./configure $cfg_options >& conf.out
   make >& mk.out
   make check >& check.out
   popd
-  echo
 done
 
 # Local Variables:

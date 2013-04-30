@@ -11,7 +11,8 @@ progname="${0:t}"
 
 function usage {
   print -u2 "\
-usage: $progname [-h|--help] --cache=<dir> --force --remote --scm=<dir> --src=<dir> --ver=<version_string> <project>
+usage: $progname [-h|--help] --cache=<dir> --force --remote --scm=<dir> \
+--src=<dir> --ver=<version_string> <project>
        -h|--help            Print this help message and exit
        --cache=<dir>        Specify the location of the local tarball cache
        --force              Force overwriting of local tarballs
@@ -69,7 +70,8 @@ function find_local_tarball {
   return 1
 }
 
-zparseopts -D h=help -help=help -cache:=cache_root -force=force -remote=remote -scm:=scm_root -src:=src_root -ver:=version
+zparseopts -D h=help -help=help -cache:=cache_root -force=force -remote=remote \
+           -scm:=scm_root -src:=src_root -ver:=version
 
 if [[ -n $help ]]; then
   usage

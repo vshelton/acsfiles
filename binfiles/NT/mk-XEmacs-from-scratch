@@ -44,8 +44,10 @@ function make_shortcut {
     ;;
   (*cygwin*)
     target="/bin/run.exe"
-    args="$(ls $USRLOCAL/xemacs-${xemacs_ver}-${xemacs_date}*/bin/xemacs-*.exe)" 2>/dev/null
-    [[ ! -e $args ]] && args="$(ls $USRLOCAL/xemacs-${xemacs_ver}.${xemacs_date}*/bin/xemacs-*.exe)" 2>/dev/null
+    for sep in "-" "."; do
+      args="$(ls $USRLOCAL/xemacs-${xemacs_ver}${sep}${xemacs_date}*/bin/xemacs-*.exe)"
+      [[ -e $args ]] && break
+    done 2> /dev/null
     if [[ ! -e $args ]]; then
       print -u2 "$progname: could not find XEmacs target for link."
       cd -
@@ -56,7 +58,8 @@ function make_shortcut {
   esac
 
   desc="XEmacs $xemacs_ver $xemacs_date ($xemacs_type)"
-  mkshortcut --desc="$desc" --icon=/bin/run.exe --iconoffset=1 --name="$desc" --workingdir=$HOME $args $target
+  mkshortcut --desc="$desc" --icon=/bin/run.exe --iconoffset=1 --name="$desc" \
+             --workingdir=$HOME $args $target
   cd -
 }
 
@@ -192,7 +195,9 @@ Is there an SCM hierarchy at $SCMROOT?"
   # Make but don't install a native version.
   # We'll run it from the source directory.
   print "Building XEmacs $ver native"
-  if MakeNativeXEmacs $build_opts --package-root="$(cygpath -m $XEMACS_INSTALLED_ROOT)" $with_intel $srcdir ; then
+  if MakeNativeXEmacs $build_opts \
+                      --package-root="$(cygpath -m $XEMACS_INSTALLED_ROOT)" \
+                      $with_intel $srcdir ; then
     make_shortcut $shortcut_dir $branch $datespec "native"
   else
     print -u2 "$progname: MakeNativeXEmacs failed!"
@@ -210,7 +215,7 @@ Is there an SCM hierarchy at $SCMROOT?"
 done
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

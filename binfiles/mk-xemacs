@@ -107,7 +107,11 @@ function cfg_and_build {
 
   generate_compiler_flags $build_debug
 
-  if ! cfg -s -o conf.out $(relative $SRCROOT/$build_target) $with_gcc $with_cflags="$DEBUG_FLAGS $OPTIMIZE_FLAGS" $with_site_prefixes $with_infopath $enable_dialogs $enable_widgets $enable_sound $with_package_path $enable_pdump $enable_bignum $with_default_eol_detection $build_options $generic_cfg_opts; then
+  if ! cfg -s -o conf.out $(relative $SRCROOT/$build_target) $with_gcc \
+           $with_cflags="$DEBUG_FLAGS $OPTIMIZE_FLAGS" $with_site_prefixes \
+           $with_infopath $enable_dialogs $enable_widgets $enable_sound \
+           $with_package_path $enable_pdump $enable_bignum \
+           $with_default_eol_detection $build_options $generic_cfg_opts; then
     print -u2 "\n$progname: could not configure $build_target.\n"
     return 1
   fi
@@ -171,7 +175,8 @@ function cfg_and_build {
 #
 #set -x
 
-zparseopts -D c=checkonly d=debug_no_mule e=mule_debug h=help m=mule n=normal o=optim_no_mule u=mule_optim
+zparseopts -D c=checkonly d=debug_no_mule e=mule_debug h=help m=mule n=normal \
+           o=optim_no_mule u=mule_optim
 
 [[ -n $help || $# == 0 ]] && usage
 [[ -n $help ]] && exit 0
@@ -242,8 +247,11 @@ cfg_mule_off=( --disable-mule )
 cfg_mule_on=( --enable-mule --without-xim )
 
 # Need a way to turn optimization and debugging on or off for different builds.
-cfg_debug_off=( --with-optimization --disable-debug --disable-assertions --disable-error-checking --with-cflags-warning= --with-cflags-optimization= --with-cflags-debugging= )
-cfg_debug_on=( --enable-debug --enable-assertions --enable-memory-usage-stats --with-cflags-optimization= --with-cflags-debugging= )
+cfg_debug_off=( --with-optimization --disable-debug --disable-assertions \
+                --disable-error-checking --with-cflags-warning= \
+                --with-cflags-optimization= --with-cflags-debugging= )
+cfg_debug_on=( --enable-debug --enable-assertions --enable-memory-usage-stats \
+               --with-cflags-optimization= --with-cflags-debugging= )
 
 # Verify that the source directory exists and that there's an
 # executable configure script there.
@@ -252,7 +260,8 @@ if [[ ! -d $SRCROOT/$TARGET ]]; then
   exit 1
 fi
 if [[ ! -x $SRCROOT/$TARGET/configure ]]; then
-  print -u2 "$progname: there is no executable configure script in source directory $SRCROOT/$TARGET."
+  print -u2 "$progname: there is no executable configure script in source \
+directory $SRCROOT/$TARGET."
   exit 1
 fi
 

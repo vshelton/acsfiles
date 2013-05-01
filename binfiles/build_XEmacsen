@@ -20,8 +20,13 @@ cd ./$project             # Necessary for "hg update" below.
 
 # Define the default list of dates we will use
 # for building old versions of XEmacs 21.5.
+#
+# Anything older than about 2011-04-02 trying to build with a
+# modern version of png will require Aidan Kehoe's
+# changeset 5372:6c3a695f54f5.
+#
 (( # == 0 )) &&
-  set 2009-01-01 2009-07-01 2010-01-01 2010-07-05 2011-01-01 2011-04-02 \
+  set 2009-01-01 2009-07-01 2010-01-01 2010-07-05 2011-01-02 2011-04-02 \
       2011-07-03 2011-10-02 2012-01-01 2012-04-07 2012-07-02 2012-10-15
 
 : ${USRLOCAL:/usr/local}

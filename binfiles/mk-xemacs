@@ -279,8 +279,8 @@ autoconf2_5=
 # Old versions of configure left temp files, so change to the /tmp directory.
 (
   cd /tmp
-  $SRCROOT/$TARGET/configure --help | grep -c -- --with-site-prefixes && autoconf2_5=1
-) > /dev/null
+  $SRCROOT/$TARGET/configure --help | grep -c -- --with-site-prefixes
+) > /dev/null && autoconf2_5=1
 
 # If we're not configuring against autoconf 2.5x, fiddle
 # with the configure options.

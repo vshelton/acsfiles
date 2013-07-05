@@ -35,8 +35,7 @@ if [[ -n $help ]]; then
 fi
 
 if [[ -z $InnoSetup ]]; then
-  ISKey='/HKLM/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall/\
-Inno Setup 5_is1/Inno Setup: App Path'
+  ISKey='/HKLM/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall/Inno Setup 5_is1/Inno Setup: App Path'
   InnoSetup=$(cygpath "$(regtool get $ISKey)")/iscc 2>/dev/null
   if (( $? != 0 )); then
     print -u2 "$progname: cannot find registry key for Inno Setup 5; \

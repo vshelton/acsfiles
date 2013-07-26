@@ -1,64 +1,28 @@
-#!/bin/sh
-#
+#!/usr/bin/env zsh
+
 # Make and install versions of zlib and libpng
-# Options:
-#   -u Unpack the sources from tarfiles
- 
-# Execute this script under the Z shell
-[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+
+emulate -LR zsh
 
 progname=${0:t}
-
-unpack=
-general_cfg_opts=
-prefix=${USRLOCAL:-/usr/local}
-
-err=1
-while getopts ":u-:" opt
-do
-  case $opt in
-  (u)	unpack=-u
-	;;
-  (-)	general_cfg_opts="$general_cfg_opts --$OPTARG"
-	;;
-  # Unknown option
-  (?)	print -u2 "$progname: invalid option: $argv[$OPTIND]"
-	exit $err
-	;;
-  esac
-done
-
-shift $OPTIND-1			# Skip over options
-
 CC=${CC:-gcc}
 
-zlibsrc=$(getsource $unpack zlib)
-bld -ltki $(relative $zlibsrc) ${=general_cfg_opts}
+: ${USRLOCAL:=/usr/local}
+: ${BLDROOT:=$USRLOCAL/build}
+: ${SRCROOT:=$USRLOCAL/src}
+: ${ZIPROOT:=$USRLOCAL/zip}
 
-pngsrc=$(getsource $unpack libpng)
+# Halt on an error unpacking or building either zlib or libpng
+set -e
 
-# Currently the libpng tarball is called libpng-1.2.8-config.tar.gz.
-# I created a symlink from that tarball to libpng-1.2.8.tar.gz,
-# but the files still unpack to libpng-1.2.8-config, so
-# move the unpacked directory and do a regular configure/make.
-if [[ ! -d $pngsrc ]] && [[ -d $pngsrc-config ]]
-then
+zlibsrc=$(unpack zlib)
+bld -ltki $(relative $zlibsrc)
 
-  mv $pngsrc-config $pngsrc
-  CFLAGS=-I$USRLOCAL/include LDFLAGS=-L$USRLOCAL/lib bld -ci $(relative $pngsrc) --disable-nls --disable-shared
+pngsrc=$(unpack libpng)
+CPPFLAGS=-I$USRLOCAL/include LDFLAGS=-L$USRLOCAL/lib bld -ci $(relative $pngsrc)
 
-else
-  mkdir $pngsrc:t
-  cd $pngsrc:t
-  symlink-tree $(relative $pngsrc)
-  case "$CC" in
-    (*gcc*)
-      makefile=scripts/makefile.gcc
-      ;;
-    (*)
-      makefile=scripts/makefile.std
-      ;;
-  esac
-  make -f $makefile ZLIBINC=../$zlibsrc:t ZLIBLIB=../$zlibsrc:t
-  make -f $makefile prefix=$USRLOCAL test install
-fi
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

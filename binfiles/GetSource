@@ -9,6 +9,9 @@
 emulate -LR zsh
 progname="${0:t}"
 
+# Here is the list of suffixes that identify tarfiles
+suffix_list=( "tar" "tar.*" "tgz" )
+
 function usage {
   print -u2 "\
 usage: $progname [-h|--help] --cache=<dir> --force --remote --scm=<dir> \
@@ -33,20 +36,15 @@ usage: $progname [-h|--help] --cache=<dir> --force --remote --scm=<dir> \
 function extract_local_tarball {
   local archive_name archive_path
 
-  # First check for an exact match
-  if [[ -r $ZIPROOT/$1 ]]; then
-    archive_name=${${1%%.tar*}%%.tgz}
-    archive_path=$ZIPROOT/$1
-  else
-    archive_name=$1
-    archive_path=$(find_local_tarball $archive_name)
-  fi
-
+  archive_name=$1
+  archive_path=$(find_local_tarball $archive_name)
+ 
   if (( $? == 0 )); then
     #print -u2 archive_path = \"$archive_path\"
     cd $SRCROOT
     if tar xfp $archive_path ; then
-      print $PWD/$archive_name
+      destdir=$(tar tf $archive_path | sed 1q)
+      print $PWD/${destdir%%/*}
     else
       print -u2 "$progname: tar error when extracting from $archive_path: $?"
       return 2
@@ -58,14 +56,15 @@ function extract_local_tarball {
   return 1
 }
 
+# Find a local tarball of the specified package
 function find_local_tarball {
-  local suffix
-  for suffix in $suffix_list; do
-    if [[ -r $ZIPROOT/${1}${suffix} ]]; then
-      print $ZIPROOT/${1}${suffix}
-      return 0
-    fi
-  done
+  typeset -a pkgs
+  pkgbase=$1
+  pkgs=( $ZIPROOT/$pkgbase*.(${(pj:|:)~suffix_list})(Nom) )
+  if [[ -r $pkgs[1] ]]; then
+    print $pkgs[1]
+    return 0
+  fi
 
   return 1
 }
@@ -88,17 +87,13 @@ fi
 : ${VERSION:="-$(date +'%Y-%m-%d')"}
 [[ -n $version ]] && VERSION=${version[2]#=}
 
-# This is the list of currently known suffixes for tarballs.
-suffix_list=( .tar .tar.bz2 .tar.gz .tar.lzma .tgz )
-
 # Remote file name, so retrieve the file to $ZIPROOT and unpack it from there.
 if [[ -n $remote ]] || [[ $1 =~ ftp://*\|http://* ]]; then
 
   # Unless the --force option was specified, a local copy of the
   # tarball supercedes the need to fetch the remote tarball.
   archive_name=$(basename $1)
-  package=${${archive_name%.tar*}%.tgz}
-  if [[ -z $force ]] && extract_local_tarball $package ; then
+  if [[ -z $force ]] && extract_local_tarball ${archive_name%.(${(pj:|:)~suffix_list})} ; then
     exit 0
   fi
   (

@@ -17,6 +17,9 @@ fi
 sudo mkfontscale
 sudo mkfontdir
 
+# Add this font to the list of fonts added to the X font path
+echo $d[1] >> ~/.additional-fonts
+
 # Local Variables:
 # mode: shell-script
 # sh-indentation: 2

@@ -1,0 +1,24 @@
+# Add the specified font to the X font path
+
+setopt localoptions
+setopt nomarkdirs
+typeset -a d
+if [[ -d $1 ]]; then
+  cd $1
+else
+  d=( /usr/share/fonts/**/$1(Nom) )
+  if [[ ! -d $d[1] ]] || ! cd $d[1]; then
+    print -u2 "Could not find directory $d"
+    return 1
+  fi
+fi
+
+# Make this font directory understood by X
+sudo mkfontscale
+sudo mkfontdir
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

@@ -71,6 +71,7 @@ lib/lisp/xemacs/acs-custom.el           $SCMROOT/rcfiles/lib/lisp/xemacs/acs-cus
 lib/lisp/xemacs/default.el              $SCMROOT/rcfiles/lib/lisp/xemacs/default.el             linux,NT
 lib/zsh-functions/_rm_versions          $SCMROOT/rcfiles/lib/zsh-functions/_rm_versions         linux,NT
 lib/zsh-functions/abspath               $SCMROOT/rcfiles/lib/zsh-functions/abspath              linux,NT
+lib/zsh-functions/addFont               $SCMROOT/rcfiles/lib/zsh-functions/addFont              linux
 lib/zsh-functions/addpath               $SCMROOT/rcfiles/lib/zsh-functions/addpath              linux,NT
 lib/zsh-functions/all_dirs              $SCMROOT/rcfiles/lib/zsh-functions/all_dirs             linux,NT
 lib/zsh-functions/all_versions          $SCMROOT/rcfiles/lib/zsh-functions/all_versions         linux,NT

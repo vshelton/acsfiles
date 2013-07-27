@@ -24,6 +24,8 @@ usage: $progname [-h|--help] --cache=<dir> --force --remote --scm=<dir> \
                             management directory
        --src=<dir>          Use the specifed directory as the root for the
                             destination source tree
+       --update             Assume we are looking for source code from
+                            scm and update prior to retrieving
        --ver=<string>       When retrieving sources from scm, use the
                             specified version string as a suffix.  If this
                             is not specified, the default version string
@@ -70,7 +72,7 @@ function find_local_tarball {
 }
 
 zparseopts -D h=help -help=help -cache:=cache_root -force=force -remote=remote \
-           -scm:=scm_root -src:=src_root -ver:=version
+           -scm:=scm_root -src:=src_root -update=update -ver:=version
 
 if [[ -n $help ]]; then
   usage
@@ -87,37 +89,48 @@ fi
 : ${VERSION:="-$(date +'%Y-%m-%d')"}
 [[ -n $version ]] && VERSION=${version[2]#=}
 
-# Remote file name, so retrieve the file to $ZIPROOT and unpack it from there.
-if [[ -n $remote ]] || [[ $1 =~ ftp://*\|http://* ]]; then
+# --update forces an SCM update and retrieves code from SCM.
+if [[ -z $update ]]; then
 
-  # Unless the --force option was specified, a local copy of the
-  # tarball supercedes the need to fetch the remote tarball.
-  archive_name=$(basename $1)
-  if [[ -z $force ]] && extract_local_tarball ${archive_name%.(${(pj:|:)~suffix_list})} ; then
-    exit 0
-  fi
-  (
-    cd $ZIPROOT
-    mv -f ${archive_name} ${archive_name}.old >& /dev/null
-    if ! wget -q $1 ; then
-      print -u2 "$progname wget error when retrieving $1: $?."
+  # Remote file name, so retrieve the file to $ZIPROOT and unpack it from there.
+  if [[ -n $remote ]] || [[ $1 =~ ftp://*\|http://* ]]; then
+
+    # Unless the --force option was specified, a local copy of the
+    # tarball supercedes the need to fetch the remote tarball.
+    archive_name=$(basename $1)
+    if [[ -z $force ]] && extract_local_tarball ${archive_name%.(${(pj:|:)~suffix_list})} ; then
+      exit 0
+    fi
+    (
+      cd $ZIPROOT
+      mv -f ${archive_name} ${archive_name}.old >& /dev/null
+      if ! wget -q $1 ; then
+        print -u2 "$progname wget error when retrieving $1: $?."
+        exit 1
+      fi
+    )
+
+    if ! extract_local_tarball $(basename $1) ; then
+      print -u2 "$progname: extracting files from the retrieved tarball failed."
       exit 1
     fi
-  )
+    exit 0
+  fi
 
-  if ! extract_local_tarball $(basename $1) ; then
-    print -u2 "$progname: extracting files from the retrieved tarball failed."
+  # Unpack a tarball from the local cache, if possible.
+  extract_local_tarball $1 && exit 0
+
+# Force an SCM update.
+else
+  if [[ ! -d $SCMROOT/$1 ]]; then
+    print -u2 "$progname: --update specified, but $SCMROOT/$1 was not found."
     exit 1
   fi
-  exit 0
+  SCMROOT=$SCMROOT scm_update $1
 fi
 
-# Unpack a tarball from the local cache, if possible.
-extract_local_tarball $1 && exit 0
-
 # Try to extract the named project from SCM.
-project_scm_dir=$SCMROOT/$1
-if [[ -d $project_scm_dir ]]; then
+if [[ -d $SCMROOT/$1 ]]; then
 
   target_dir=$SRCROOT/${1}${VERSION}
   mkdir -p $target_dir

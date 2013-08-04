@@ -25,9 +25,14 @@ usage()
 
 zparseopts -D h=help l=symlink o:=output p:=prefix s=snapshot
 
-[[ -n $help || $# == 0 ]] && usage
-[[ -n $help ]] && exit 0
-[[ $# == 0 ]] && exit 1
+if [[ -n $help ]]; then
+  usage
+  exit 0;
+fi
+if (( $# == 0 )); then
+  usage
+  exit 1
+fi
 
 if [[ ! -x $1/configure ]]; then
   print -u2 "$progname: No configure script exists in directory $1"

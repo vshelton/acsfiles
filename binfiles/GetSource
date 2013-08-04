@@ -10,12 +10,12 @@ emulate -LR zsh
 progname="${0:t}"
 
 # Here is the list of suffixes that identify tarfiles
-suffix_list=( "tar" "tar.*" "tgz" )
+suffix_list=( tar tar.bz2 tar.gz tar.lzma tar.xz tgz )
 
 function usage {
   print -u2 "\
 usage: $progname [-h|--help] --cache=<dir> --force --remote --scm=<dir> \
---src=<dir> --ver=<version_string> <project>
+--src=<dir> --update --ver=<version_string> <project>
        -h|--help            Print this help message and exit
        --cache=<dir>        Specify the location of the local tarball cache
        --force              Force overwriting of local tarballs

@@ -31,38 +31,48 @@ for d; do
 
   # Mercurial
   if [[ -d .hg ]]; then
-    print "\n$d"
-    if [[ -e .hgsub ]]; then
-      hg onsub "hg -q pull -u"
-    else
-      hg -q pull -u
-    fi
-    retval=$?
-    find_newer $start_time
+    (
+      print "\n$d"
+      if [[ -e .hgsub ]]; then
+        hg onsub "hg -q pull -u"
+      else
+        hg -q pull -u
+      fi
+      retval=$?
+      find_newer $start_time
+    ) >/dev/tty
 
   # git
   elif [[ -d .git ]]; then
-    print "\n$d"
-    git pull
-    retval=$?
+    (
+      print "\n$d"
+      git pull
+      retval=$?
+    ) >/dev/tty
 
   # Subversion
   elif [[ -d .svn ]]; then
-    print "\n$d"
-    svn update
-    retval=$?
+    (
+      print "\n$d"
+      svn update
+      retval=$?
+  ) >/dev/tty
 
   # CVS
   elif [[ -d CVS ]]; then
-    print "\n$d"
-    cvs -q update
-    retval=$?
+    (
+      print "\n$d"
+      cvs -q update
+      retval=$?
+    ) >/dev/tty
 
   # bzr
   elif [[ -d .bzr ]]; then
-    print "\n$d"
-    bzr update
-    retval=$?
+    (
+      print "\n$d"
+      bzr update
+      retval=$?
+    ) >/dev/tty
 
   else
     retval=1

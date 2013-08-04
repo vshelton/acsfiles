@@ -4,13 +4,10 @@ emulate -LR zsh
 
 progname=${0:t}
 
-#cde=$HOME/abcde-new/abcde
-cderoot=$HOME/abcde-new
-PATH=$cderoot:$PATH
 cde=$(whence abcde)
 
 : ${broot:=$HOME/MediaBackups/Ripped-$(date +'%Y-%m')}
-: ${mroot:=$HOME/Music}
+: ${mroot:=/opt/Music}
 
 export CDDBCOPYLOCAL=y EDITOR=vi
 

@@ -17,7 +17,7 @@ progname=${0:t}
 
 usage()
 {
-  print -u2 "usage: $progname [-hls] [-o outname] [-p prefix] [ctik] source_dir [configure_args]
+  print -u2 "usage: $progname [-hlsctik] [-o outname] [-p prefix] source_dir [configure_args]
        -h - Print this help message
        -l - Create symlinks to the source directory
        -o - Specify a file for configure's output

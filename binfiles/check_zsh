@@ -3,19 +3,14 @@
 # Run 'make check' on for the version of zsh currently running
 
 emulate -LR zsh
-progname=${0:t}
+0=${0:t}
 
 : ${USRLOCAL:/usr/local}
 : ${BLDROOT:/usr/local/build}
 
 version=${MODULE_PATH:h:h:h:t}
 build_dir=$BLDROOT/$version
-cd $build_dir
-err=$?
-if (( err != 0 )); then
-  print -u2 "$progname: could not cd to $build_dir."
-  exit $err
-fi
+cd $build_dir || exit $?
 if [[ ! ${MODULE_PATH:h:h:h:t} == *$(today)* ]]; then
   echoti smso
   print -u2 "\n$progname: warning - testing a build that was not made today.\n"
@@ -26,9 +21,9 @@ fi
 # Run tests
 outfile=/tmp/zsh_check$$.out
 make check |& tee $outfile
-err=$?
+err=${pipestatus[1]}
 if (( err != 0 )); then
-  print -u2 "$progname: make check failed.  See $outfile."
+  print -u2 "$0: make check failed with error code $err.  See $outfile."
   exit $err
 fi
 

@@ -3,16 +3,16 @@
 # Summarize the zsh test results from the specified file
 
 emulate -LR zsh
-progname=${0:t}
+0=${0:t}
 
 if ((ARGC != 1)); then
-  print -u2 "usage: $progname zsh_results_file";
+  print -u2 "usage: $0 zsh_results_file";
   exit 1
 fi
 
 outfile=$1
 if [[ ! -r $outfile ]]; then
-  print -u2 "$progname: could not read $outfile"
+  print -u2 "$0: could not read $outfile"
   exit 2
 fi
 

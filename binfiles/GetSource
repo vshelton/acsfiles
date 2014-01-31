@@ -86,8 +86,11 @@ fi
 [[ -n $src_root ]] && SRCROOT=${src_root[2]#=}
 : ${SCMROOT:=.}
 [[ -n $scm_root ]] && SCMROOT=${scm_root[2]#=}
-: ${VERSION:="-$(date +'%Y-%m-%d')"}
+: ${VERSION:="$(date +'%Y-%m-%d')"}
 [[ -n $version ]] && VERSION=${version[2]#=}
+
+# Make sure VERSION starts with a '-'
+[[ VERSION == -* ]] || VERSION="-${VERSION}"
 
 # --update forces an SCM update and retrieves code from SCM.
 if [[ -z $update ]]; then
@@ -127,6 +130,16 @@ else
     exit 1
   fi
   SCMROOT=$SCMROOT scm_update $1
+  cd $SCMROOT/$1
+  timestamp=last_update
+  newfiles=( $(find . \( -path ./.bzr -o -path ./.git -o -path ./.hg \) -prune -o -newer $timestamp -type f -print) )
+  #print -u2 newfiles = $newfiles
+  if (( $#newfiles < 1 )) && [[ -z $force ]]; then
+    #print -u2 "$progname: --update specified, but no newly-modified files were found in $SCMROOT/$1"
+    exit 1
+  fi
+  touch $timestamp
+  cd -
 fi
 
 # Try to extract the named project from SCM.

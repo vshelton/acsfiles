@@ -13,6 +13,7 @@
  '(column-number-mode t)
  '(compilation-error-regexp-systems-list (quote (gnu comma)))
  '(compilation-mouse-motion-initiate-parsing t)
+ '(desktop-save-mode t)
  '(enable-local-eval t)
  '(explicit-shell-file-name shell-file-name)
  '(find-file-compare-truenames t)

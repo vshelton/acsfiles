@@ -1,0 +1,33 @@
+#!/usr/bin/env zsh
+
+: ${LOCAL_CYGWIN:=$HOME/Windows/CygwinKit}
+: ${LOCAL_BIN:=$LOCAL_CYGWIN/bin}
+: ${CYGWIN_SETUP_DIR:=http://www.cygwin.com}
+
+emulate -LR zsh
+progname=${0:t}
+
+usage()
+{
+  print -u2 "usage: $progname [-h] [-q] [-v]
+         -h - print this help message
+         -q - run wget and rsync quietly
+         -v - run wget and rsync verbosely"
+  return 0
+}
+
+zparseopts -D h=help q=quiet v=verbose
+[[ -n $help ]] && usage && exit 0
+[[ -n $quiet ]] && quiet="--quiet"
+[[ -n $verbose ]] && verbose="--verbose"
+
+for platform in x86 x86_64; do
+  wget $quiet $verbose --output-document=${LOCAL_BIN}/setup-${platform}.exe ${CYGWIN_SETUP_DIR}/setup-${platform}.exe
+done
+rsync $quiet $verbose -vaz --delete rsync://mirrors.kernel.org/sourceware/cygwin/ ${LOCAL_CYGWIN}/cygwin_repo
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

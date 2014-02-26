@@ -27,7 +27,12 @@ fi
 
 # Default is to build from source control
 if [[ $# == 0 ]]; then
-  if ! srcdir=$( GetSource --update emacs ) ; then
+
+  # If a specific version is specified, assume we're trying something
+  # specific out and rebuild even if the sources have not changed.
+  force=
+  [[ -n $VERSION ]] && force="--force"
+  if ! srcdir=$( GetSource --update $force emacs ) ; then
     print -u2 $progname: Could not get emacs source from bzr.
     exit 1
   fi
@@ -43,12 +48,12 @@ case $(uname -a) in
 (SunOS*)
   cf=${CFLAGS:--O2 -pipe -ffast-math -fno-exceptions}
   ;;
-(*i?86*)
+(*x86*)
   # -m64 -O3 -march=native -funroll-loops
   #   and
   # -m64 -Ofast -flto -march=native
   # exhibit a strange flashing display bug after scrolling
-  cf=${CFLAGS:--m64 -O2 -march=native}
+  cf=${CFLAGS:--m64 -O -march=native}
   ;;
 esac
 

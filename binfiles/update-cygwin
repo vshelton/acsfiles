@@ -9,7 +9,8 @@ progname=${0:t}
 
 usage()
 {
-  print -u2 "usage: $progname [-h] [-q] [-v]
+  print -u2 "\
+usage: $progname [-h] [-q] [-v]
          -h - print this help message
          -q - run wget and rsync quietly
          -v - run wget and rsync verbosely"
@@ -20,6 +21,14 @@ zparseopts -D h=help q=quiet v=verbose
 [[ -n $help ]] && usage && exit 0
 [[ -n $quiet ]] && quiet="--quiet"
 [[ -n $verbose ]] && verbose="--verbose"
+
+# Nowadays, I just use rsync to keep a complete mirror, but I used to
+# copy the repo based on the setup list and remove the extra files.
+# That approach saved space at the cost of significant time every time
+# the update command was run.
+# cd $LOCAL_CYGWIN
+# ./bin/clone_repo
+# ./bin/clean_cygwin_repo -n
 
 for platform in x86 x86_64; do
   wget $quiet $verbose --output-document=${LOCAL_BIN}/setup-${platform}.exe ${CYGWIN_SETUP_DIR}/setup-${platform}.exe

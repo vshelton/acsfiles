@@ -57,7 +57,7 @@ function generate_compiler_flags {
     # Set compiler optimization flags based on OS version and compiler type
     case $(uname -a) in
     (*x86_64*)
-      OPTIMIZE_FLAGS=( -Os -m64 -msse4.2 -ffast-math -fno-exceptions )
+      OPTIMIZE_FLAGS=( -Os -m64 -fno-exceptions )
       ;;
     (*i?86*)
       case $CC in

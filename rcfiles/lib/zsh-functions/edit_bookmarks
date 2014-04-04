@@ -1,0 +1,13 @@
+# Edit the bookmark file
+
+(
+  cd ~/.sdt
+  cp bookmarks*.html(om[1]) bookmarks-$(today).html
+  $EDITOR bookmarks-$(today).html
+)
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

@@ -1,4 +1,4 @@
-						June 26, 2012
+						April 3, 2014
 
 This file describes the current state of my zsh start-up scripts.
 
@@ -31,8 +31,13 @@ here's what happens in the zsh startup files:
   function_definitions
   cygwin_build_environment
   build_environment
-  set_path
+  If the variable NO_PATH_CLOBBER is unset, call set_path
   language_definitions
+
+(I added the NO_PATH_CLOBBER guard before the set_path call because
+sometimes I want to set and maintain a special path before calling an
+executable script.  E.g., I may need a special version of makeinfo to
+build xemacs-21.5 or xemacs-packages.)
 
 .zshrc - set up a user environment for interactive shells:
   environment_variables

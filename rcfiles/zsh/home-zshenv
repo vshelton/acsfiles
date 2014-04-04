@@ -30,7 +30,8 @@ if [[ -z $ZDOTDIR ]]; then
   done
 fi
 
-# Can't source this very script again if we're using $HOME.
+# If ZDOTDIR is HOME, avoid sourcing this same script again.
+# If ZDOTDIR is a different directory, source .zshenv from that directory.
 if [[ $ZDOTDIR == $HOME ]]; then
   unset ZDOTDIR
   print -u2 "Using \$HOME instead of \$ZDOTDIR; to correct this,

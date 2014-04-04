@@ -5,7 +5,7 @@ desire function_definitions
 desire cygwin_build_environment
 desire build_environment
 
-desire set_path
+[[ -z $NO_PATH_CLOBBER ]] && desire set_path
 
 desire language_definitions
 

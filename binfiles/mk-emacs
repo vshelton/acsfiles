@@ -25,20 +25,24 @@ if [[ -n $help ]]; then
   exit 0
 fi
 
+# An argument that doesn't start with "-" is assumed to be a version name
+if [[ $# != 0 && $1 != -* ]]; then
+  emacs_version=$1
+  shift
+  if ! srcdir=$( GetSource $emacs_version ) ; then
+    print -u2 $progname: Could not get source for \"$emacs_version\"
+    exit 1
+  fi
+
 # Default is to build from source control
-if [[ $# == 0 ]]; then
+else
 
   # If a specific version is specified, assume we're trying something
   # specific out and rebuild even if the sources have not changed.
   force=
   [[ -n $VERSION ]] && force="--force"
   if ! srcdir=$( GetSource --update $force emacs ) ; then
-    print -u2 $progname: Could not get emacs source from bzr.
-    exit 1
-  fi
-else
-  if ! srcdir=$( GetSource $* ) ; then
-    print -u2 $progname: Could not get source for \"$*\"
+    print -u2 $progname: Could not get emacs source from git.
     exit 1
   fi
 fi
@@ -64,9 +68,16 @@ mkdir $BLDROOT/$ever
 cd  $BLDROOT/$ever
 
 # Configure and build emacs
+configure_options=(
+  --without-m17n-flt
+  --without-imagemagick
+  --without-selinux
+  --without-compress-install
+  $*
+)
 if CFLAGS="$cf" $srcdir/configure                                            \
        --prefix=$USRLOCAL/$ever                                              \
-       --without-{m17n-flt,imagemagick,selinux,compress-install} >& conf.out \
+       $configure_options >& conf.out                                        \
     && make bootstrap >& mk.out                                              \
     && make install >& inst.out ; then
 

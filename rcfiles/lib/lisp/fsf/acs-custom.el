@@ -22,6 +22,8 @@
  '(gnus-suppress-duplicates t)
  '(gnus-use-cache t)
  '(gnuserv-frame (quote gnuserv-visible-frame-function))
+ '(grep-command
+   "grep --line-number --with-filename --ignore-case --regexp=")
  '(indent-tabs-mode t)
  '(inhibit-startup-screen t)
  '(line-number-mode t)

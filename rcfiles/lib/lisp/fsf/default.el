@@ -31,8 +31,6 @@
 
 (setq suggest-key-bindings 1)
 
-(defvar grep-command "egrep -n ")
-
 (setq te-stty-string "stty -nl erase '^h' kill '^u' intr '^c' echo")
 
 (and (fboundp 'set-scroll-bar-mode) (set-scroll-bar-mode 'right))

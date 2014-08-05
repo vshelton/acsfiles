@@ -200,7 +200,7 @@ case $1 in
   ;;
 
 # Source-controlled versions of 21.x
-(21.*)  # Spell out PROJECT and VERSION to allow flexibility in over-riding.
+(21.?)  # Spell out PROJECT and VERSION to allow flexibility in over-riding.
   PROJECT=${PROJECT:-xemacs-$1}
   VERSION=${VERSION:-$(today)}
   TARGET=${TARGET:-$PROJECT-$VERSION}
@@ -208,6 +208,10 @@ case $1 in
   ;;
 
 # Non-source-controlled versions of 21.x.
+(21*)
+  TARGET=xemacs-$1
+  PROJECT=xemacs-${1%-????-??-??}
+  ;;
 (*21*)
   TARGET=$1
   PROJECT=${1%-????-??-??}

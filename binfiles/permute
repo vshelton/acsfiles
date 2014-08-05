@@ -1,0 +1,114 @@
+#!/usr/bin/env zsh
+
+#parts=(134 Princeton Nassau 08542 next to Panera 80)
+parts=(08542 Nassau Princeton 134 next to Panera 80)
+
+typeset -i i j k l m n o
+
+for p1 in $parts; do
+  print ${p1}
+done
+
+for ((i=1; i<=${#parts}; ++i)); do
+  for p1 in $parts; do
+    print "${parts[$i]}${p1}"
+    print "${parts[$i]} ${p1}"
+    print "${parts[$i]}_${p1}"
+  done
+done
+
+for ((i=1; i<=${#parts}; ++i)); do
+  for ((j=1; j<=${#parts}; ++j)); do
+    for p1 in $parts; do
+      print "${parts[$i]}${parts[$j]}${p1}"
+      print "${parts[$i]} ${parts[$j]} ${p1}"
+      print "${parts[$i]}_${parts[$j]}_${p1}"
+    done
+  done
+done
+
+for ((i=1; i<=${#parts}; ++i)); do
+  for ((j=1; j<=${#parts}; ++j)); do
+    for ((k=1; k<=${#parts}; ++k)); do
+      for p1 in $parts; do
+        print "${parts[$i]}${parts[$j]}${parts[$k]}${p1}"
+        print "${parts[$i]} ${parts[$j]} ${parts[$k]} ${p1}"
+        print "${parts[$i]}_${parts[$j]}_${parts[$k]}_${p1}"
+      done
+    done
+  done
+done
+
+for ((i=1; i<=${#parts}; ++i)); do
+  for ((j=1; j<=${#parts}; ++j)); do
+    for ((k=1; k<=${#parts}; ++k)); do
+      for ((l=1; l<=${#parts}; ++l)); do
+        for p1 in $parts; do
+          print "${parts[$i]}${parts[$j]}${parts[$k]}${parts[$l]}${p1}"
+          print "${parts[$i]} ${parts[$j]} ${parts[$k]} ${parts[$l]} ${p1}"
+          print "${parts[$i]}_${parts[$j]}_${parts[$k]}_${parts[$l]}_${p1}"
+        done
+      done
+    done
+  done
+done
+
+for ((i=1; i<=${#parts}; ++i)); do
+  for ((j=1; j<=${#parts}; ++j)); do
+    for ((k=1; k<=${#parts}; ++k)); do
+      for ((l=1; l<=${#parts}; ++l)); do
+        for ((m=1; m<=${#parts}; ++m)); do
+          for p1 in $parts; do
+            print "${parts[$i]}${parts[$j]}${parts[$k]}${parts[$l]}${parts[$m]}${p1}"
+            print "${parts[$i]} ${parts[$j]} ${parts[$k]} ${parts[$l]} ${parts[$m]} ${p1}"
+            print "${parts[$i]}_${parts[$j]}_${parts[$k]}_${parts[$l]}_${parts[$m]}_${p1}"
+          done
+        done
+      done
+    done
+  done
+done
+
+for ((i=1; i<=${#parts}; ++i)); do
+  for ((j=1; j<=${#parts}; ++j)); do
+    for ((k=1; k<=${#parts}; ++k)); do
+      for ((l=1; l<=${#parts}; ++l)); do
+        for ((m=1; m<=${#parts}; ++m)); do
+          for ((n=1; n<=${#parts}; ++n)); do
+            for p1 in $parts; do
+              print "${parts[$i]}${parts[$j]}${parts[$k]}${parts[$l]}${parts[$m]}${parts[$n]}${p1}"
+              print "${parts[$i]} ${parts[$j]} ${parts[$k]} ${parts[$l]} ${parts[$m]} ${parts[$n]} ${p1}"
+              print "${parts[$i]}_${parts[$j]}_${parts[$k]}_${parts[$l]}_${parts[$m]}_${parts[$n]}_${p1}"
+            done
+          done
+        done
+      done
+    done
+  done
+done
+
+for ((i=1; i<=${#parts}; ++i)); do
+  for ((j=1; j<=${#parts}; ++j)); do
+    for ((k=1; k<=${#parts}; ++k)); do
+      for ((l=1; l<=${#parts}; ++l)); do
+        for ((m=1; m<=${#parts}; ++m)); do
+          for ((n=1; n<=${#parts}; ++n)); do
+            for ((o=1; o<=${#parts}; ++o)); do
+              for p1 in $parts; do
+                print "${parts[$i]}${parts[$j]}${parts[$k]}${parts[$l]}${parts[$m]}${parts[$n]}${parts[$o]}${p1}"
+                print "${parts[$i]} ${parts[$j]} ${parts[$k]} ${parts[$l]} ${parts[$m]} ${parts[$n]} ${parts[$o]} ${p1}"
+                print "${parts[$i]}_${parts[$j]}_${parts[$k]}_${parts[$l]}_${parts[$m]}_${parts[$n]}_${parts[$o]}_${p1}"
+              done
+            done
+          done
+        done
+      done
+    done
+  done
+done
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

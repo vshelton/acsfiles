@@ -33,11 +33,12 @@ for d; do
   if [[ -d .hg ]]; then
     (
       print "\n$d"
-      if [[ -e .hgsub ]]; then
-        hg onsub "hg -q pull -u"
-      else
-        hg -q pull -u
-      fi
+#      if [[ -e .hgsub ]]; then
+#        hg onsub "hg -q pull -u"
+#      else
+#        hg -q pull -u
+#      fi
+      hg -q pull -u
       retval=$?
       find_newer $start_time
     ) >/dev/tty

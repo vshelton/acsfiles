@@ -114,15 +114,10 @@ for ver in $*; do
       exit 2
     fi
     ;;
-  (*)
-    if ! scm_update xemacs-$ver ; then
-      print -u2 "$progname: could not update xemacs-$ver. \
-Is there an SCM hierarchy at $SCMROOT?"
-      exit 2
-    fi
 
+  (*)
     # Make a local copy of the source tree
-    if ! srcdir=$(GetSource --src=. xemacs-$ver) ; then
+    if ! srcdir=$(GetSource --src=. --update --force xemacs-$ver) ; then
        print -u2 "$progname: could not retrieve sources for xemacs-$ver."
        exit 2
     fi

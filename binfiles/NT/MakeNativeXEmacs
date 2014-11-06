@@ -93,6 +93,31 @@ fi
 
 cd $srcdir/nt
 unset HOME              # Don't pick up my emacs customizations
+# Use user-supplied makeinfo
+if [[ -z $MAKEINFO ]]; then
+  # Use makeinfo.exe if it exists
+  MAKEINFO=$(whence -m makeinfo.exe)
+  if [[ -n $MAKEINFO ]]; then
+    MAKEINFO="$(cygpath --windows $MAKEINFO)"
+  else
+    # Nowadays, makeinfo is a symlink to a perl script,
+    # which cannot be run directly from cmd
+    MAKEINFO=$(whence -m makeinfo)
+    if [[ -n $MAKEINFO ]]; then # Give up if no makeinfo command
+      if [[ $(head -n1 $MAKEINFO) =~ .*perl.* ]]; then
+        MAKEINFO="$(cygpath --windows $(whence -m perl)) $(whence -m makeinfo)"
+      else
+        MAKEINFO="$(cygpath --windows $(whence -m makeinfo))"
+      fi
+    fi
+  fi
+fi
+
+# Add quotes to makeinfo so it ends up wrapped in quotes
+# when it is expanded into config.inc. E.g.
+#  MAKEINFO="c:\cygwin\usr\bin\perl c:\cygwin\bin\texi2any"
+MAKEINFO=\"$MAKEINFO\"
+
 # Configure for optional packages
 perl -pi -e \
   "s@^OPTIONAL_LIBRARY_DIR=.*@OPTIONAL_LIBRARY_DIR=$(cygpath --mixed $LIB_DIR)@;
@@ -102,7 +127,7 @@ perl -pi -e \
    s@^TIFF_DIR=.*@TIFF_DIR=\\\$(OPTIONAL_LIBRARY_DIR)/$TIFF_VER@;
    s@^HAVE_XFACE=.*@HAVE_XFACE=0@;
    s@^USE_KKCC=.*@USE_KKCC=0@;
-   s@^MAKEINFO=.*@MAKEINFO=${(q)$(cygpath --windows =makeinfo.exe)}@" \
+   s@^MAKEINFO=.*@MAKEINFO=${(q)MAKEINFO}@" \
   < config.inc.samp > config.inc
 
 # Change installation directory if requested

@@ -125,15 +125,25 @@
 ;; Load and customize various modes
 ;;
 
-(autoload 'tar-mode "tar-mode")			; before jka-compr
-(require 'jka-compr)
-(require 'uniquify)
+;; On by default in FSF emacs
+(when (featurep 'xemacs)
+  (autoload 'tar-mode "tar-mode")			; before jka-compr
+  (require 'jka-compr)
+  ;(require 'crypt)					; instead of jka-compr
+
+  ;; Prevent some file corruption
+  (modify-coding-system-alist 'file "\\.bzip2\\'" 'no-conversion-unix)
+  (modify-coding-system-alist 'file "\\.gz\\'" 'no-conversion-unix)
+  (modify-coding-system-alist 'file "\\.xz\\'" 'no-conversion-unix))
 
 ;; Starting with version 20 in both versions of emacs,
 ;; just loading the package is no longer sufficient
 (when (fboundp 'auto-compression-mode)
-  (setq uniquify-buffer-name-style 'post-forward)
   (auto-compression-mode 1))
+
+;; Differentiate buffer names
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'post-forward)
 
 ;; XEmacs supports mic-paren without X.
 (when (or (featurep 'xemacs) window-system)

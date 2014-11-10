@@ -6,7 +6,8 @@ for ver in 21.4 21.5; do
   update_and_build xemacs-$ver mk-xemacs -odm $ver $*
 done
 
-update_and_build xemacs-packages mk-xp -v $(installed_packages)
+#update_and_build xemacs-packages mk-xp -v $(installed_packages)
+NO_PATH_CLOBBER=1 PATH=/opt/build/texinfo-4.13/makeinfo:$PATH update_and_build xemacs-packages mk-xp -v $(installed_packages)
 
 # Local Variables:
 # mode: shell-script

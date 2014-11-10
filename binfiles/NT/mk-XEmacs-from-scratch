@@ -170,7 +170,7 @@ Is there an SCM hierarchy at $SCMROOT?"
     fi
 
     # Make a local copy of the source tree
-    if ! srcdir=$(GetSource --src=. $ver) ; then
+    if ! srcdir=$(GetSource --src=. --update --force $ver) ; then
        print -u2 "$progname: could not retrieve sources for $ver."
        exit 2
     fi

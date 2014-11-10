@@ -50,14 +50,15 @@
 
 ;; Use a slash to separate directories, but use
 ;; a blackslash if we're using (ugh!) cmd.exe
-(setq directory-sep-char ?/
-      shell-command-switch "-c"
-      shell-file-name (or (executable-find "zsh")
-			  (executable-find "bash")
-			  (executable-find "cmd")))
-(when (string-match "cmd" shell-file-name)
-  (setq directory-sep-char ?\\
-	shell-command-switch "/c"))
+(if (not acs::win32)
+    (setq directory-sep-char ?/
+	  shell-command-switch "-c"
+	  shell-file-name (or (executable-find "zsh")
+			      (executable-find "bash")
+			      (executable-find "cmd")))
+  (when (string-match "cmd" shell-file-name)
+    (setq directory-sep-char ?\\
+	  shell-command-switch "/c")))
 
 ;; Work around a specifier bug in modeline under Windows.
 ;; See http://article.gmane.org/gmane.emacs.xemacs.beta/27406
@@ -204,9 +205,13 @@
 ; Fix a bug with emacs-internal face in current ediff
 (setq ediff-coding-system-for-write 'raw-text)
 
+; On windows, the I-beam mouse pointer is not visible
+(set-glyph-image text-pointer-glyph "normal")
+
 ;(message "Leaving default.el")
 
 ;; Local Variables:
 ;; eval: (setq tab-width 8)
 ;; eval: (setq indent-tabs-mode t)
 ;; End:
+

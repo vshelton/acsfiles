@@ -1,8 +1,10 @@
 #!/usr/bin/env zsh
 
-: ${LOCAL_CYGWIN:=$HOME/Windows/CygwinKit}
+#: ${LOCAL_CYGWIN:=$HOME/Windows/CygwinKit}
+: ${LOCAL_CYGWIN:=/raid-3tb/CygwinKit}
 : ${LOCAL_BIN:=$LOCAL_CYGWIN/bin}
 : ${CYGWIN_SETUP_DIR:=http://www.cygwin.com}
+: ${RSYNC_SERVER:=rsync://mirrors.kernel.org/sourceware/cygwin/}
 
 emulate -LR zsh
 progname=${0:t}
@@ -33,7 +35,7 @@ zparseopts -D h=help q=quiet v=verbose
 for platform in x86 x86_64; do
   wget $quiet $verbose --output-document=${LOCAL_BIN}/setup-${platform}.exe ${CYGWIN_SETUP_DIR}/setup-${platform}.exe
 done
-rsync $quiet $verbose -vaz --delete rsync://mirrors.kernel.org/sourceware/cygwin/ ${LOCAL_CYGWIN}/cygwin_repo
+rsync $quiet $verbose -vaz --delete ${RSYNC_SERVER} ${LOCAL_CYGWIN}/cygwin_repo
 
 # Local Variables:
 # mode: shell-script

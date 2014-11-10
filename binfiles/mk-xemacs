@@ -107,11 +107,20 @@ function cfg_and_build {
 
   generate_compiler_flags $build_debug
 
-  if ! cfg -s -o conf.out $(relative $SRCROOT/$build_target) $with_gcc \
-           $with_cflags="$DEBUG_FLAGS $OPTIMIZE_FLAGS" $with_site_prefixes \
-           $with_infopath $enable_dialogs $enable_widgets $enable_sound \
-           $with_package_path $enable_pdump $enable_bignum \
-           $with_default_eol_detection $build_options $generic_cfg_opts; then
+  if ! cfg -s -o conf.out $(relative $SRCROOT/$build_target)    \
+       $build_options                                           \
+       $enable_bignum                                           \
+       $enable_dialogs                                          \
+       $enable_pdump                                            \
+       $enable_sound                                            \
+       $enable_widgets                                          \
+       $generic_cfg_opts                                        \
+       $with_cflags="$DEBUG_FLAGS $OPTIMIZE_FLAGS"              \
+       $with_default_eol_detection                              \
+       $with_infopath                                           \
+       $with_package_path                                       \
+       $with_site_prefixes                                      \
+       $with_tls; then
     print -u2 "\n$progname: could not configure $build_target.\n"
     return 1
   fi
@@ -237,7 +246,7 @@ export CC=${CC:-gcc}
 # The default options are now set up for XEmacs 21.5 with autoconf 2.5
 enable_bignum="--enable-bignum=gmp"
 enable_dialogs="--disable-dialogs"
-enable_pdump="--disable-pdump"
+enable_pdump="--enable-pdump"
 enable_sound="--disable-sound"
 enable_widgets="--disable-widgets"
 with_cflags="--with-cflags"
@@ -245,6 +254,7 @@ with_default_eol_detection="--with-default-eol-detection"
 with_infopath="--with-infopath=$USRLOCAL/info"
 with_package_path="--with-package-path=$shared_root/site-packages::$shared_root/xemacs-packages"
 with_site_prefixes=( --with-site-prefixes=$USRLOCAL )
+with_tls="--without-tls"
 
 # Need a way to enable/disable mule for different builds
 cfg_mule_off=( --disable-mule )
@@ -279,12 +289,16 @@ fi
 # Starting around 2005-03-12, XEmacs 21.5 converted to autoconf 2.59
 # and many configure options changed.
 # Test the version here.
-autoconf2_5=
 # Old versions of configure left temp files, so change to the /tmp directory.
-(
-  cd /tmp
-  $SRCROOT/$TARGET/configure --help | grep -c -- --with-site-prefixes
-) > /dev/null && autoconf2_5=1
+autoconf2_5=
+with_tls=
+cd /tmp
+tfile=$(mktemp)
+$SRCROOT/$TARGET/configure --help >$tfile
+grep -cq -- --with-site-prefixes $tfile && autoconf2_5=1
+grep -cq -- --with-tls $tfile && with_tls="--without-tls"
+rm $tfile
+cd -
 
 # If we're not configuring against autoconf 2.5x, fiddle
 # with the configure options.
@@ -381,6 +395,9 @@ do
     ;;
   (--*sound*)
     enable_sound=$1
+    ;;
+  (--*tls*)
+    with_tls=$1
     ;;
   (--*site-prefix*)
     with_site_prefixes=( $1 )

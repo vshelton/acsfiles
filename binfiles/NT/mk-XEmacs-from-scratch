@@ -163,11 +163,6 @@ for ver in $*; do
   # and the sources are retrieved from SCM.
   (*)
     [[ $ver == 21* ]] && ver=xemacs-$ver
-    if ! scm_update $ver ; then
-      print -u2 "$progname: could not update $ver. \
-Is there an SCM hierarchy at $SCMROOT?"
-      exit 2
-    fi
 
     # Make a local copy of the source tree
     if ! srcdir=$(GetSource --src=. --update --force $ver) ; then

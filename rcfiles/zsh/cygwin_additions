@@ -40,7 +40,7 @@ function cyg {
 (
   cd
   for f in .emacs lib/lisp/xemacs/acs-custom.el lib/lisp/xemacs/default.el; do
-    diff -q $f $rc_map[$f] || cp $rc_map[$f] $f
+    diff -u $f $rc_map[$f] #|| cp $rc_map[$f] $f
   done
 )
 

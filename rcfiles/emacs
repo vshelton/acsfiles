@@ -163,16 +163,17 @@
 	 (forward-line))))
 
 ;; Perl mode
-(autoload 'perl-mode "cperl-mode" "alternate mode for editing Perl programs" t)
-(defun acs::perl-mode-hook ()
-  "My Perl-mode hook"
-  (setq cperl-electric-keywords t
-	cperl-indent-level 4
-	cperl-label-offset 0
-	cperl-min-label-indent 0
-	cperl-continued-statement-offset 4
-	tab-width 8))
-(add-hook 'cperl-mode-hook 'acs::perl-mode-hook)
+(when (featurep 'xemacs)
+  (autoload 'perl-mode "cperl-mode" "alternate mode for editing Perl programs" t)
+  (defun acs::perl-mode-hook ()
+    "My Perl-mode hook"
+    (setq cperl-electric-keywords t
+	  cperl-indent-level 4
+	  cperl-label-offset 0
+	  cperl-min-label-indent 0
+	  cperl-continued-statement-offset 4
+	  tab-width 8))
+  (add-hook 'cperl-mode-hook 'acs::perl-mode-hook))
 
 ;; Load font-lock to make source code look nice
 (setq font-lock-auto-fontify t
@@ -387,10 +388,16 @@ Extends the region if it exists."
 	      :change-logs-updating manual)
 	     ("21.5"
 	      "~/scmroot/xemacs-21.5"
-	      :inheritance "21.4")
+	      :to-address "xemacs-patches@xemacs.org"
+	      :themes (mercurial)
+	      :diff-command "hg diff"
+	      :change-logs-updating manual)
 	     ("packages"
 	      "~/scmroot/xemacs-packages"
-	      :inheritance "21.4"))))
+	      :to-address "xemacs-patches@xemacs.org"
+	      :themes (mercurial)
+	      :diff-command "hg diff"
+	      :change-logs-updating manual))))
 
 ;; Local Variables:
 ;; mode: lisp

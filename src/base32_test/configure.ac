@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.68])
-AC_INIT([base32_test], [1.2.1], [ethersoft@gmail.com])
+AC_INIT([base32_test], [1.3.1], [ethersoft@gmail.com])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
 

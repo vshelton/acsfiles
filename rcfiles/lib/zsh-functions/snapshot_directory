@@ -1,0 +1,25 @@
+# Take a tarfile snapshot of a specified directories.
+# Defaults to current directory.
+
+if (($# == 0)); then
+  print -u2 "usage: $0 destination_directory [dir1_to_backup] [dir2_to_backup] ..."
+  return 1
+fi
+
+dest=$1; shift
+(($# == 0)) && set $PWD
+
+while (($# > 0)); do
+  src=$1; shift
+  sudo=
+  [[ -w $src ]] || sudo=sudo
+  t=${src:t}
+  [[ $t == . ]] && t=${PWD:t}
+  $sudo tar cf $dest/$t-$(now).tar --exclude-caches $src
+done
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

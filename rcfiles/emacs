@@ -35,62 +35,74 @@
 ;; Customize frame appearance
 ;;
 
-;; Set faces and colors.
-;; I'm using set-face-font here rather than customize-face because:
-;; (set-face-font 'default "-*-dejavu sans mono-medium-r-normal--12-*-*-*-m-*-iso8859-1")
-;;   ==> -misc-dejavu sans mono-medium-r-normal--12-87-100-100-m-0-iso8859-1
-;; customize-face 'default "dejavu sans mono" "12px"
-;;   ==> -*-dejavu sans mono-medium-r-*-*-*-90-*-*-*-*-iso8859-*
-;; customize-face 'default "dejavu sans mono" "11.9px"
-;;   ==> -*-dejavu sans mono-medium-r-*-*-*-80-*-*-*-*-iso8859-*
-;; I don't know any way to get the -87- font using customize.
-(let ((sep "-")
-      (foundry "*")
-      (family "dejavu sans mono")
-      (weight "medium")
-      (slant "r")
-      (setWidth "normal")
-      (pixels "12")
-      (points "*")
-      (horizontalRes "*")
-      (verticalRes "*")
-      (spacing "m")
-      (averageWidth "*")
-      (characterSet "iso8859-1"))
-  (setq acs::default-font (concat sep foundry sep family sep weight sep slant
-				  sep setWidth sep sep pixels sep points
-				  sep horizontalRes sep verticalRes sep
-				  spacing sep averageWidth sep characterSet))
-  (setq acs::bold-font (concat sep foundry sep family sep "bold" sep slant
-			       sep setWidth sep sep pixels sep points
-			       sep horizontalRes sep verticalRes sep
-			       spacing sep averageWidth sep characterSet))
-  (setq acs::italic-font (concat sep foundry sep family sep weight sep "o"
+;;
+;; Use customize to set faces in FSF emacs, as of mint 17.1 (2014-12-01).
+;;
+
+(when (featurep 'xemacs)
+
+  ;; Set faces and colors.
+  ;; I'm using set-face-font here rather than customize-face because:
+  ;; (set-face-font 'default "-*-dejavu sans mono-medium-r-normal--12-*-*-*-m-*-iso8859-1")
+  ;;   ==> -misc-dejavu sans mono-medium-r-normal--12-87-100-100-m-0-iso8859-1
+  ;; customize-face 'default "dejavu sans mono" "12px"
+  ;;   ==> -*-dejavu sans mono-medium-r-*-*-*-90-*-*-*-*-iso8859-*
+  ;; customize-face 'default "dejavu sans mono" "11.9px"
+  ;;   ==> -*-dejavu sans mono-medium-r-*-*-*-80-*-*-*-*-iso8859-*
+  ;; I don't know any way to get the -87- font using customize.
+  (let ((sep "-")
+	(foundry "*")
+	;; (family "dejavu sans mono")
+	(family "ubuntu mono")
+	(weight "medium")
+	(roman "r")
+	;; (italic "o")
+	(italic "i")
+	(setWidth "normal")
+	;; (pixels "12")
+	(pixels "14")
+	(points "*")
+	(horizontalRes "*")
+	(verticalRes "*")
+	(spacing "m")
+	(averageWidth "*")
+	(characterSet "iso8859-1"))
+    (setq acs::default-font (concat sep foundry sep family sep weight sep roman
+				    sep setWidth sep sep pixels sep points
+				    sep horizontalRes sep verticalRes sep
+				    spacing sep averageWidth sep characterSet))
+    (setq acs::bold-font (concat sep foundry sep family sep "bold" sep roman
 				 sep setWidth sep sep pixels sep points
 				 sep horizontalRes sep verticalRes sep
 				 spacing sep averageWidth sep characterSet))
-  (setq acs::bold-italic-font (concat sep foundry sep family sep "bold" sep
-				      "o" sep setWidth sep sep pixels sep
-				      points sep horizontalRes sep verticalRes
-				      sep spacing sep averageWidth sep characterSet)))
-(set-face-font 'default acs::default-font)
-(and (facep 'fixed-pitch)
-     (set-face-font 'fixed-pitch acs::default-font))
-(set-face-font 'bold acs::bold-font)
-(set-face-font 'italic acs::italic-font)
-(set-face-font 'bold-italic acs::bold-italic-font)
-(set-face-foreground 'default "LightYellow")
-(set-face-background 'default "Black")
+    (setq acs::italic-font (concat sep foundry sep family sep weight sep italic
+				   sep setWidth sep sep pixels sep points
+				   sep horizontalRes sep verticalRes sep
+				   spacing sep averageWidth sep characterSet))
+    (setq acs::bold-italic-font (concat sep foundry sep family sep "bold" sep
+					italic sep setWidth sep sep pixels sep
+					points sep horizontalRes sep verticalRes
+					sep spacing sep averageWidth sep characterSet)))
+  (set-face-font 'default acs::default-font)
+  (and (facep 'fixed-pitch)
+       (set-face-font 'fixed-pitch acs::default-font))
+  (set-face-font 'bold acs::bold-font)
+  (set-face-font 'italic acs::italic-font)
+  (set-face-font 'bold-italic acs::bold-italic-font)
+  (set-face-foreground 'default "LightYellow")
+  (set-face-background 'default "Black")
 
-;; FSF emacs used to use modeline and XEmacs still does,
-;; but as of 2012-12-01, FSF emacs uses mode-line.
-(let ((modeline
-       (if (facep 'mode-line)
-	   'mode-line
-	 'modeline)))
-  (set-face-font modeline "-microsoft-comic sans ms-medium-r-normal-*-12-*-*-*-*-*-iso8859-*")
-  (set-face-foreground modeline "Black")
-  (set-face-background modeline "light salmon"))
+
+  ;; FSF emacs used to use modeline and XEmacs still does,
+  ;; but as of 2012-12-01, FSF emacs uses mode-line.
+  (let ((modeline
+	 (if (facep 'mode-line)
+	     'mode-line
+	   'modeline)))
+    (set-face-font modeline "-microsoft-comic sans ms-medium-r-normal-*-11-*-*-*-*-*-iso8859-*")
+    ;; (set-face-font modeline "-microsoft-comic sans ms-medium-r-normal--11-79-100-100-p-0-iso8859-1")
+    (set-face-foreground modeline "Black")
+    (set-face-background modeline "light salmon")))
 
 ;; Set titlebar title
 (setq frame-title-format

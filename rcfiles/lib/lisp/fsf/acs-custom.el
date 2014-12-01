@@ -1,4 +1,3 @@
-;; Set these variables via custom
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -43,9 +42,13 @@
  '(user-full-name "Vin Shelton")
  '(user-mail-address "acs@xemacs.org")
  '(vc-follow-symlinks nil))
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(font-lock-comment-face ((t (:foreground "DodgerBlue1")))))
+ '(default ((t (:inherit nil :stipple nil :background "Black" :foreground "LightYellow" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 105 :width normal :foundry "unknown" :family "ubuntu mono"))))
+ '(fixed-pitch ((t (:inherit default))))
+ '(font-lock-comment-face ((t (:foreground "DodgerBlue1"))))
+ '(mode-line ((t (:background "LightSalmon" :foreground "black" :box (:line-width -1 :style released-button) :height 0.8 :family "comic sans ms")))))

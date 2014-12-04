@@ -35,10 +35,7 @@
 ;; Customize frame appearance
 ;;
 
-;;
-;; Use customize to set faces in FSF emacs, as of mint 17.1 (2014-12-01).
-;;
-
+;; As of mint 17.1 (2014-12-01), use customize to set faces in FSF emacs.
 (when (featurep 'xemacs)
 
   ;; Set faces and colors.

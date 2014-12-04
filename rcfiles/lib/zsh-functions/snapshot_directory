@@ -2,15 +2,15 @@
 # Defaults to current directory.
 
 if (($# == 0)); then
-  print -u2 "usage: $0 destination_directory [dir1_to_backup] [dir2_to_backup] ..."
+  print -u2 "usage: $0 destination_directory [dir1_to_backup [dir2_to_backup]...]"
+  print -u2 "       Default backup directory is cwd."
   return 1
 fi
 
 dest=$1; shift
 (($# == 0)) && set $PWD
 
-while (($# > 0)); do
-  src=$1; shift
+for src; do
   sudo=
   [[ -w $src ]] || sudo=sudo
   t=${src:t}

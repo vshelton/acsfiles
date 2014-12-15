@@ -1,0 +1,35 @@
+#!/usr/bin/env zsh
+
+# Run obnam backup
+setopt extended_glob
+
+# Include home directory and all of /raid-3tb except these sub-directories:
+exceptions=(Attic
+            CygwinKit
+            Videos
+            backups
+            lost+found
+            opt)
+
+exceptions=( /raid-3tb/${^exceptions} )
+
+# Parse arguments into obnam options and directories
+ob_opts=()
+while [[ $# -gt 0 && $1 = -* ]]; do
+  if [[ $1 == -- ]]; then
+    shift
+    break
+  fi
+  ob_opts+="$1"
+  shift
+done
+
+# Should we backup /opt/src??
+# obnam backup $HOME /raid-3tb/*~${(j:~:)~exceptions} /opt/src
+obnam $ob_opts backup $HOME /raid-3tb/*~${(j:~:)~exceptions} $*
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

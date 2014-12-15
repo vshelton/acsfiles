@@ -43,7 +43,7 @@ if ! mkdir -p $target_dir >&/dev/null; then
   exit 4
 fi
 print $target_dir
-tar cf - --exclude={CVS,.hg,.svn} . | tar xf - -C $target_dir
+tar cf - --exclude={CVS,.hg,.svn,.'git*'} . | tar xf - -C $target_dir
 
 # Local Variables:
 # mode: shell-script

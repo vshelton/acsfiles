@@ -35,6 +35,7 @@ setopt autolist
 setopt automenu
 setopt autoremoveslash
 setopt extendedglob
+setopt extendedhistory
 setopt hashcmds
 setopt hashdirs
 setopt histignoredups

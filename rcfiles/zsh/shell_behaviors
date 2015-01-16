@@ -66,6 +66,9 @@ if [[ $TERM != emacs ]]; then
   stty -parenb -istrip cs8 clocal erase '^?'
 fi
 
+# Save the session command history separate from .zhistory
+acs_session_histfile=$HOME/.hist/$(date '+%Y-%m-%d-%H%M').${HOST%%.*}
+
 # Local Variables:
 # mode: shell-script
 # sh-indentation: 2

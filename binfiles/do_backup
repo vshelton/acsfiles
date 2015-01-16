@@ -24,8 +24,8 @@ while [[ $# -gt 0 && $1 = -* ]]; do
   shift
 done
 
-# Should we backup /opt/src??
-# obnam backup $HOME /raid-3tb/*~${(j:~:)~exceptions} /opt/src
+# Should we backup /opt/src? /etc?
+# If so, just add those paths to the command line
 obnam $ob_opts backup $HOME /raid-3tb/*~${(j:~:)~exceptions} $*
 
 # Local Variables:

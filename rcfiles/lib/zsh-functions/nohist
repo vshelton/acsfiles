@@ -1,3 +1,5 @@
 unsetopt login
 unset SAVEHIST
 unset HISTFILE
+unfunction zshaddhistory
+rm $acs_session_histfile

@@ -14,6 +14,7 @@ typeset -g SAVEHIST=$HISTSIZE HISTFILE=~/.zhistory
 
 # Set manpath based on path, but include /usr/share/man.
 manpath=( $path:gs/bin/man/ )
+manpath[(r)$USRLOCAL/man]="$USRLOCAL/share/man"
 manpath[(r)/usr/man]="/usr/share/man"
 manpath[(r)/etc]=''
 

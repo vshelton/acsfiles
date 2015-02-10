@@ -4,6 +4,7 @@
 export USE_EMACS_AS_DEFAULT_APPLICATION_CLASS=t
 export EXINIT=":set ai nows"
 export LESS="-e -i -s -C -j2 -n -r -R"
+export MANPATH
 export MORE="-s"
 export PAGER="$(whence less)"
 [[ -z "$PAGER" ]] && PAGER=more

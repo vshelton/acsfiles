@@ -93,6 +93,7 @@ lib/zsh-functions/new_XEmacs            $SCMROOT/rcfiles/lib/zsh-functions/new_X
 lib/zsh-functions/nfunc                 $SCMROOT/rcfiles/lib/zsh-functions/nfunc                linux,NT
 lib/zsh-functions/nohist                $SCMROOT/rcfiles/lib/zsh-functions/nohist               linux,NT
 lib/zsh-functions/relative              $SCMROOT/rcfiles/lib/zsh-functions/relative             linux,NT
+lib/zsh-functions/rename_as_modified    $SCMROOT/rcfiles/lib/zsh-functions/rename_as_modified   linux,NT
 lib/zsh-functions/rm_versions           $SCMROOT/rcfiles/lib/zsh-functions/rm_versions          linux,NT
 lib/zsh-functions/snapshot_directory    $SCMROOT/rcfiles/lib/zsh-functions/snapshot_directory   linux,NT
 lib/zsh-functions/system_specific       $SCMROOT/rcfiles/lib/zsh-functions/system_specific      linux,NT

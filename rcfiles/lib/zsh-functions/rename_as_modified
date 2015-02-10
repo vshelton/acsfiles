@@ -1,0 +1,2 @@
+ls -ln --time-style="+%Y-%m-%d-%H%M" $1 | read perm lcnt uid grp sz dt fname
+mv $fname $fname-$dt

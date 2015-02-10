@@ -8,14 +8,16 @@ progname=${0:t}
 
 function usage() {
   print -u2 "\
-usage: $progname [-hsv] [package1 [package2 ...]]
+usage: $progname [-hsv] [-x dir] [package1 [package2 ...]]
        Options:
-       -h - print this help message.
-       -s - build and install vc-mode which supports svn.
-       -v - print verbose progress messages."
+       -h     - print this help message.
+       -s     - build and install vc-mode which supports svn.
+       -v     - print verbose progress messages.
+       -x dir - build from this existing named directory rather
+                than fetching the packages from version control"
 }
 
-zparseopts -D h=help s=svn v=verbose
+zparseopts -D h=help s=svn v=verbose x:=package_source
 if [[ -n $help ]]; then
   usage
   exit 0
@@ -24,16 +26,22 @@ fi
 # If no list of packages is supplied as arguments, supply a default set
 pkgs=( ${(z)*:-dired edit-utils efs prog-modes xemacs-base xemacs-devel} )
 
-# Copy the packages tree to a build directory
-SRCROOT=$PWD
-: ${VERSION:=$(today)}
-if ! mk-src xemacs-packages $VERSION ; then
-  print -u2 "$progname: mk-src error."
-  exit 1
+# Use an existing package directory or extract the packages from version control
+if [[ -n $package_source ]]; then
+  package_source=${package_source[2]}
+  VERSION=${package_source#*xemacs-packages-}
+  : ${VERSION:=$(today)}
+else
+  SRCROOT=$PWD
+  : ${VERSION:=$(today)}
+  if ! package_source=$(mk-src xemacs-packages $VERSION) ; then
+    print -u2 "$progname: mk-src error."
+    exit 1
+  fi
 fi
 
-if ! cd $SRCROOT/xemacs-packages-$VERSION ; then
-  print -u2 "$progname: could not change to $SRCROOT/xemacs-packages-$VERSION directory."
+if ! cd $package_source ; then
+  print -u2 "$progname: could not cd to $package_source."
   exit 1
 fi
 
@@ -83,14 +91,14 @@ fi
 
 [[ -n $verbose ]] && print "$progname: building all packages."
 if ! make >& mk.out ; then
-  print -u2 "$progname: make failed.  See $SRCROOT/xemacs-packages-$VERSION/mk.out."
+  print -u2 "$progname: make failed.  See $PWD/mk.out."
   exit 2
 fi
 
 rm -rf $STAGING
 [[ -n $verbose ]] && print "$progname: building bindist target."
 if ! make bindist >>& mk.out ; then
-  print -u2 "$progname: make bindist failed.  See $SRCROOT/xemacs-packages-$VERSION/mk.out."
+  print -u2 "$progname: make bindist failed.  See $PWD/mk.out."
   exit 3
 fi
 

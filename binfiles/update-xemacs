@@ -2,7 +2,8 @@
 
 emulate -LR zsh
 
-for ver in 21.4 21.5; do
+#for ver in 21.4 21.5; do
+for ver in 21.5; do
   update_and_build xemacs-$ver mk-xemacs -odm $ver $*
 done
 

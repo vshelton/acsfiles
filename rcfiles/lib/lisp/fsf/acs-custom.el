@@ -9,6 +9,7 @@
  '(c-indent-comments-syntactically-p t)
  '(c-macro-preprocessor "gcc -C -E -")
  '(c-macro-prompt-flag t)
+ '(canlock-password "fc1beddd41de3fad474c61c3c4f1621f06d8e8fb")
  '(column-number-mode t)
  '(compilation-error-regexp-systems-list (quote (gnu comma)))
  '(compilation-mouse-motion-initiate-parsing t)
@@ -48,37 +49,11 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil
-		:stipple nil
-		:background "Black"
-		:foreground "LightYellow"
-		:inverse-video nil
-		:box nil
-		:strike-through nil
-		:overline nil
-		:underline nil
-		:slant normal
-		:weight normal
-		:height 105
-		:width normal
-		:family "ubuntu mono"))))
+ '(default ((t (:inherit nil :stipple nil :background "Black" :foreground "LightYellow" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 105 :width normal :family "ubuntu mono"))))
  '(fixed-pitch ((t (:inherit default))))
  '(font-lock-comment-face ((t (:foreground "DodgerBlue1"))))
- '(mode-line ((t (:background "LightSalmon"
-		  :foreground "black"
-		  :box (:line-width -1 :style released-button)
-		  :height 1.0
-		  :family "comic sans ms"))))
- '(mode-line-buffer-id ((t (:background "LightSalmon"
-			    :foreground "black"
-			    :weight bold
-			    :height 1.0
-			    :family "comic sans ms"))))
- '(mode-line-emphasis ((t (:background "LightSalmon"
-			   :foreground "black"
-			   :weight bold
-			   :height 1.0
-			   :family "comic sans ms"))))
+ '(mode-line ((t (:background "LightSalmon" :foreground "black" :box (:line-width -1 :style released-button) :height 1.0 :family "comic sans ms"))))
+ '(mode-line-buffer-id ((t (:background "LightSalmon" :foreground "black" :weight bold :height 1.0 :family "comic sans ms"))))
+ '(mode-line-emphasis ((t (:background "LightSalmon" :foreground "black" :weight bold :height 1.0 :family "comic sans ms"))))
  '(mode-line-highlight ((t (:inherit mode-line))))
- '(mode-line-inactive ((t (:inherit mode-line
-			   :inverse-video t)))))
+ '(mode-line-inactive ((t (:inherit mode-line :inverse-video t)))))

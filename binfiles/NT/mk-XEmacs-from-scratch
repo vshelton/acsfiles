@@ -175,6 +175,9 @@ for ver in $*; do
     ;;
   esac
 
+  # Remove the "extra" ACLs, which prevent us from building obj files
+  find $srcdir -print0 | xargs -0 setfacl -k
+
   build_opts=
   install_default=
   case $ver in

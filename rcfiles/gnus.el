@@ -16,9 +16,9 @@
       gnus-read-active-file 'some
       gnus-save-killed-list nil
 ;      browse-url-browser-function 'browse-url-galeon
-      browse-url-browser-function 'browse-url-generic
+      browse-url-browser-function 'browse-url-default-browser
 ;      browse-url-generic-program "/opt/google/chrome/google-chrome"
-      browse-url-generic-program "/usr/bin/chromium-browser"
+;      browse-url-generic-program "/usr/bin/chromium-browser"
 ;      browse-url-mozilla-program "/opt/google/chrome/google-chrome"
 ;      browse-url-new-window-flag t
 ;      browse-url-galeon-new-window-is-tab t

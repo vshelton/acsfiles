@@ -126,7 +126,7 @@ for ver in $*; do
   esac
 
   # Remove the "extra" ACLs, which prevent us from building obj files
-  find $srcdir -print0 | xargs -0 setfacl -k
+  # find $srcdir -print0 | xargs -0 setfacl -k
 
   # Make and install the executables
   install_dir="$(cygpath --mixed $PWD/installed)"

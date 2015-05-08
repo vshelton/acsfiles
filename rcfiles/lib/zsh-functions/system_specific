@@ -7,7 +7,7 @@ local this_rcpath=${ZDOTDIR:-~}/$1.${HOST%%.*}$2
 [[ -f $this_rcpath ]] && . $this_rcpath
 
 # Local Variables:
-# mode: ksh
+# mode: shell-script
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

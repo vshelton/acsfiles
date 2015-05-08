@@ -39,7 +39,9 @@ setopt extendedglob
 setopt extendedhistory
 setopt hashcmds
 setopt hashdirs
+setopt histignorealldups
 setopt histignoredups
+setopt histignorespace
 setopt histnostore
 setopt interactivecomments
 setopt kshoptionprint
@@ -66,11 +68,6 @@ if [[ $TERM != emacs ]]; then
 
   stty -parenb -istrip cs8 clocal erase '^?'
 fi
-
-# Save the session command history separate from .zhistory
-acs_session_histfile=$HOME/.hist/$(date '+%Y-%m-%d-%H%M').${HOST%%.*}
-touch $acs_session_histfile
-chmod 600 $acs_session_histfile
 
 # Local Variables:
 # mode: shell-script

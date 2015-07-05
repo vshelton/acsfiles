@@ -1,0 +1,23 @@
+#!/usr/bin/env zsh
+
+# Build the lastpass commandline interface
+
+emulate -LR zsh
+progname=${0:t}
+
+: ${USRLOCAL:=/usr/local}
+: ${BLDROOT:=$USRLOCAL/build}
+lastpass=lastpass-cli
+
+scm_update $lastpass
+s=$(mk-src $lastpass)
+mkdir $BLDROOT/${s:t}
+cd $BLDROOT/${s:t}
+symlink-tree $s
+make PREFIX=$USRLOCAL install install-doc
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

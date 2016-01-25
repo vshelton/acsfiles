@@ -1,6 +1,7 @@
 .Xresources                             $SCMROOT/rcfiles/Xresources                             linux
 .emacs                                  $SCMROOT/rcfiles/emacs                                  linux,NT
 .zshenv                                 $SCMROOT/rcfiles/zsh/home-zshenv                        linux,NT
+.i3/config                              $SCMROOT/rcfiles/i3config                               linux
 bin/BuildXEmacsKits                     $SCMROOT/binfiles/NT/BuildXEmacsKits                    NT
 bin/GetSource                           $SCMROOT/binfiles/GetSource                             linux,NT
 bin/GetXEmacsPackages                   $SCMROOT/binfiles/NT/GetXEmacsPackages                  NT
@@ -36,6 +37,7 @@ bin/make-Manifest                       $SCMROOT/binfiles/make-Manifest         
 bin/make_symlinks_relative              $SCMROOT/binfiles/make_symlinks_relative                linux,NT
 bin/mk-XEmacs-from-scratch              $SCMROOT/binfiles/NT/mk-XEmacs-from-scratch             NT
 bin/mk-emacs                            $SCMROOT/binfiles/mk-emacs                              linux
+bin/mk-lastpass                         $SCMROOT/binfiles/mk-lastpass                           linux,NT
 bin/mk-src                              $SCMROOT/binfiles/mk-src                                linux,NT
 bin/mk-xemacs                           $SCMROOT/binfiles/mk-xemacs                             linux,NT
 bin/mk-xemacs-21.5                      $SCMROOT/binfiles/mk-xemacs-21.5                        linux,NT

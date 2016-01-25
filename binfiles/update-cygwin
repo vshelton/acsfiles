@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 #: ${LOCAL_CYGWIN:=$HOME/Windows/CygwinKit}
-: ${LOCAL_CYGWIN:=/raid-3tb/CygwinKit}
+: ${LOCAL_CYGWIN:=/opt/CygwinKit}
 : ${LOCAL_BIN:=$LOCAL_CYGWIN/bin}
 : ${CYGWIN_SETUP_DIR:=http://www.cygwin.com}
 : ${RSYNC_SERVER:=rsync://mirrors.kernel.org/sourceware/cygwin/}

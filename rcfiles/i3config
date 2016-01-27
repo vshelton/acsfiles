@@ -92,6 +92,9 @@ set $workspace3 "3: Browser"
 set $workspace4 "4: Windows"
 set $workspace5 "5: Synaptic"
 
+set $browser "vivaldi"
+#set $browser "firefox"
+
 # switch to workspace
 bindsym $mod+1 workspace $workspace1
 bindsym $mod+2 workspace $workspace2
@@ -117,7 +120,8 @@ bindsym $mod+Shift+9 move container to workspace 9
 bindsym $mod+Shift+0 move container to workspace 10
 
 assign[class="Clementine"] $workspace2
-assign[class="vivaldi-preview"] $workspace3UM
+assign[class="vivaldi-preview"] $workspace3
+assign[class="Firefox"] $workspace3
 assign[class="qemu-system-x86_64"] $workspace4
 assign[class="VirtualBox"] $workspace4
 assign[class="Synaptic"] $workspace5
@@ -169,6 +173,6 @@ exec /home/acs/bin/setup-fonts.sh
 exec --no-startup-id xfce4-power-manager
 
 exec clementine
-exec gnome-terminal
 exec --no-startup-id emacs
-exec --no-startup-id vivaldi
+exec --no-startup-id $browser
+exec i3-sensible-terminal

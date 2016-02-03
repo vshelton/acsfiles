@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Toggle sleep state between enabled and disabled.
+
+PATH=$HOME/bin:/usr/bin
+
+# If sleeping is currently enabled, disable it.
+if (( $(my_sleep) != 0 )); then
+  my_sleep 0
+
+# Sleeping is disabled, so enable it.
+else
+
+  # Default period of inactivity before sleeping is ten minutes,
+  # but it can be overridden by an input parameter.  
+  my_sleep ${1:-600}
+fi
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

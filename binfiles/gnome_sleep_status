@@ -1,0 +1,14 @@
+#!/bin/bash
+
+schema="org.cinnamon.settings-daemon.plugins.power"
+key="sleep-inactive-ac-timeout"
+
+(( $# == 0 )) &&
+  gsettings get $schema $key ||
+  gsettings set $schema $key $1
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

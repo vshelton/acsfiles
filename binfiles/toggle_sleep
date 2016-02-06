@@ -2,8 +2,7 @@
 
 # Toggle sleep state between enabled and disabled.
 
-p1=$(dirname $0)
-PATH=$p1:/usr/bin
+PATH=$(dirname $0):/usr/bin
 
 # If sleeping is currently enabled, disable it.
 if (( $(gnome_sleep_status) != 0 )); then

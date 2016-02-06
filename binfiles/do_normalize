@@ -1,0 +1,22 @@
+#!/usr/bin/env zsh
+
+# Normalize audio for multiple flac files without losing tags
+
+for f in $*; do
+  t=$(tempfile)
+  metaflac --export-tags-to=- $f | sort -u -o $t
+  [[ -s $t ]] && mv $t $f.tags
+  metaflac --remove-all-tags $f
+done
+
+normalize-audio --mix --verbose $*
+
+for f in $*; do
+  metaflac --import-tags-from=$f.tags $f
+done
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

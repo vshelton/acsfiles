@@ -64,6 +64,7 @@ esac
 cd $srcdir
 ever=${PWD:t}
 ./autogen.sh >& autogen.out
+./autogen.sh autoconf >>& autogen.out
 mkdir $BLDROOT/$ever
 cd  $BLDROOT/$ever
 

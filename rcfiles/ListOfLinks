@@ -1,7 +1,7 @@
 .Xresources                             $SCMROOT/rcfiles/Xresources                             linux
 .emacs                                  $SCMROOT/rcfiles/emacs                                  linux,NT
-.zshenv                                 $SCMROOT/rcfiles/zsh/home-zshenv                        linux,NT
 .i3/config                              $SCMROOT/rcfiles/i3config                               linux
+.zshenv                                 $SCMROOT/rcfiles/zsh/home-zshenv                        linux,NT
 bin/BuildXEmacsKits                     $SCMROOT/binfiles/NT/BuildXEmacsKits                    NT
 bin/GetSource                           $SCMROOT/binfiles/GetSource                             linux,NT
 bin/GetXEmacsPackages                   $SCMROOT/binfiles/NT/GetXEmacsPackages                  NT
@@ -24,11 +24,13 @@ bin/diff_output_files                   $SCMROOT/binfiles/diff_output_files     
 bin/diff_xemacs_build_results           $SCMROOT/binfiles/diff_xemacs_build_results             linux,NT
 bin/diffs                               $SCMROOT/binfiles/diffs                                 linux,NT
 bin/do_backup                           $SCMROOT/binfiles/do_backup                             linux,NT
+bin/do_normalize                        $SCMROOT/binfiles/do_normalize                          linux,NT
 bin/dobackup                            $SCMROOT/binfiles/dobackup                              linux
 bin/fcedit                              $SCMROOT/binfiles/fcedit                                linux,NT
 bin/find_install_root                   $SCMROOT/binfiles/find_install_root                     linux,NT
 bin/find_newer                          $SCMROOT/binfiles/find_newer                            linux,NT
 bin/findpkg                             $SCMROOT/binfiles/findpkg                               linux,NT
+bin/gnome_sleep_status                  $SCMROOT/binfiles/gnome_sleep_status                    linux,NT
 bin/installed_packages                  $SCMROOT/binfiles/installed_packages                    linux,NT
 bin/latest                              $SCMROOT/binfiles/latest                                linux,NT
 bin/link_latest                         $SCMROOT/binfiles/link_latest                           linux,NT
@@ -50,10 +52,12 @@ bin/newer_than                          $SCMROOT/binfiles/newer_than            
 bin/now                                 $SCMROOT/binfiles/now                                   linux,NT
 bin/permute                             $SCMROOT/binfiles/permute                               linux,NT
 bin/scm_update                          $SCMROOT/binfiles/scm_update                            linux,NT
+bin/setupfonts.sh                       $SCMROOT/binfiles/setupfonts.sh                         linux,NT
 bin/summarize_zsh_tests                 $SCMROOT/binfiles/summarize_zsh_tests                   linux,NT
 bin/symlink-tree                        $SCMROOT/binfiles/symlink-tree                          linux,NT
 bin/sysprefix                           $SCMROOT/binfiles/sysprefix                             linux,NT
 bin/today                               $SCMROOT/binfiles/today                                 linux,NT
+bin/toggle_sleep                        $SCMROOT/binfiles/toggle_sleep                          linux,NT
 bin/tomorrow                            $SCMROOT/binfiles/tomorrow                              linux,NT
 bin/unpack                              $SCMROOT/binfiles/unpack                                linux,NT
 bin/unpack_and_build                    $SCMROOT/binfiles/unpack_and_build                      linux,NT
@@ -64,6 +68,7 @@ bin/update-zsh                          $SCMROOT/binfiles/update-zsh            
 bin/update_and_build                    $SCMROOT/binfiles/update_and_build                      linux,NT
 bin/update_screenenv                    $SCMROOT/binfiles/update_screenenv                      linux,NT
 bin/vcsetup                             $SCMROOT/binfiles/NT/vcsetup                            NT
+bin/xspf-prettyprint.pl                 $SCMROOT/binfiles/xspf-prettyprint.pl                   linux,NT
 bin/xspf-prettyprint.pl                 $SCMROOT/binfiles/xspf-prettyprint.pl                   linux,NT
 bin/yesterday                           $SCMROOT/binfiles/yesterday                             linux,NT
 lib/app-defaults/Emacs.ad               $SCMROOT/rcfiles/lib/app-defaults/Emacs.ad              linux,NT

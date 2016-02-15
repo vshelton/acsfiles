@@ -70,8 +70,6 @@ cd  $BLDROOT/$ever
 
 # Configure and build emacs
 configure_options=(
-  --without-m17n-flt
-  --without-imagemagick
   --without-selinux
   --without-compress-install
   $*

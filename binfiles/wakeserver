@@ -1,0 +1,20 @@
+#!/usr/bin/env zsh
+
+# Wake up the legolas server from its powernap.
+
+emulate -LR zsh
+progname=${0:t}
+
+# Depends on the wakeonlan package:
+# sudo apt-get install wakeonlan
+# IPV4_address Hostname	MAC
+# 192.168.0.4  legolas	BC:5F:F4:8B:7C:A5
+
+legolas_MAC="BC:5F:F4:8B:7C:A5"
+wakeonlan "$legolas_MAC"
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

@@ -25,7 +25,6 @@ bin/diff_xemacs_build_results           $SCMROOT/binfiles/diff_xemacs_build_resu
 bin/diffs                               $SCMROOT/binfiles/diffs                                 linux,NT
 bin/do_backup                           $SCMROOT/binfiles/do_backup                             linux,NT
 bin/do_normalize                        $SCMROOT/binfiles/do_normalize                          linux,NT
-bin/dobackup                            $SCMROOT/binfiles/dobackup                              linux
 bin/fcedit                              $SCMROOT/binfiles/fcedit                                linux,NT
 bin/find_install_root                   $SCMROOT/binfiles/find_install_root                     linux,NT
 bin/find_newer                          $SCMROOT/binfiles/find_newer                            linux,NT

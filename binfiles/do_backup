@@ -4,14 +4,14 @@
 setopt extended_glob
 
 # Include home directory and all of /raid-3tb except these sub-directories:
-exceptions=(Attic
-            CygwinKit
-            Videos
-            backups
-            lost+found
-            opt)
+#exceptions=(Attic
+#            CygwinKit
+#            Videos
+#            backups
+#            lost+found
+#            opt)
 
-exceptions=( /raid-3tb/${^exceptions} )
+#exceptions=( /raid-3tb/${^exceptions} )
 
 # Parse arguments into obnam options and directories
 ob_opts=()
@@ -26,7 +26,8 @@ done
 
 # Should we backup /opt/src? /etc?
 # If so, just add those paths to the command line
-obnam $ob_opts backup $HOME /raid-3tb/*~${(j:~:)~exceptions} $*
+#obnam $ob_opts backup $HOME /raid-3tb/*~${(j:~:)~exceptions} $*
+obnam $ob_opts backup $HOME $*
 
 # Local Variables:
 # mode: shell-script

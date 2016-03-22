@@ -32,7 +32,7 @@ xftalpha 0.1
 TEXT
 ${offset 100}${color1}${font GE Inspira:pixelsize=110}${time %I:%M}${font}\
 ${voffset -75}${offset 10}${font GE Inspira:pixelsize=32}${time %d %B %Y } \
-${voffset 24}${offset -255}${font GE Inspira:pixelsize=42}${time %A}${font}\
+${voffset 30}${offset -250}${font GE Inspira:pixelsize=42}${time %A}${font}\
 ${voffset 45}${offset -495}${font Ubuntu:pixelsize=12}\
 HD ${offset 9}${color3}${fs_free /}${color} / ${fs_size /}${offset 30}\
 RAM ${offset 9}${color3}$mem${color} / $memmax${offset 30}\

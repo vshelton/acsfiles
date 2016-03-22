@@ -1,4 +1,5 @@
 .Xresources                             $SCMROOT/rcfiles/Xresources                             linux
+.conkyrc                                $SCMROOT/rcfiles/conkyrc                                linux
 .emacs                                  $SCMROOT/rcfiles/emacs                                  linux,NT
 .i3/config                              $SCMROOT/rcfiles/i3config                               linux
 .zshenv                                 $SCMROOT/rcfiles/zsh/home-zshenv                        linux,NT

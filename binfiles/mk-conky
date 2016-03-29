@@ -1,0 +1,24 @@
+#!/usr/bin/env zsh
+
+# Build conky
+
+emulate -LR zsh
+progname=${0:t}
+
+: ${USRLOCAL:=/usr/local}
+: ${BLDROOT:=$USRLOCAL/build}
+
+scm_update conky
+s=$(mk-src conky)
+b=$BLDROOT/${s:t}
+mkdir $b
+cd $b
+
+cmake -DCMAKE_INSTALL_PREFIX=/opt -DBUILD_XDBE=true $s
+make install
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

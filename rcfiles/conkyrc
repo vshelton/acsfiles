@@ -13,7 +13,7 @@ conky.config = {
   maximum_width = 700,
   no_buffers = true,
   override_utf8_locale = true,
-  own_window_argb_visual = true,
+  -- own_window_argb_visual = true,
   own_window = true,
   own_window_hints = undecorated,below,sticky,skip_taskbar,skip_pager,
   own_window_transparent = true,
@@ -29,7 +29,7 @@ conky.text = [[
 ${color1}${font GE Inspira:pixelsize=110}${time %I:%M}${font}\
 ${voffset -75}${offset 10}${font GE Inspira:pixelsize=32}${time %d %B %Y } \
 ${voffset 32}${offset -250}${font GE Inspira:pixelsize=42}${time %A}${font}\
-${voffset 40}${offset -480}${font Ubuntu:pixelsize=12}\
+${voffset 40}${offset -425}${font Ubuntu:pixelsize=12}\
 HD ${offset 9}${color3}${fs_free /}${color} / ${fs_size /}${offset 30}\
 RAM ${offset 9}${color3}$mem${color} / $memmax${offset 30}\
 CPU ${offset 9}${color3}${cpu cpu0}%

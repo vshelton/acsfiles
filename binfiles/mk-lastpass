@@ -14,7 +14,7 @@ s=$(mk-src $lastpass)
 mkdir $BLDROOT/${s:t}
 cd $BLDROOT/${s:t}
 symlink-tree $s
-make {DESTDIR,PREFIX}=$USRLOCAL install install-doc
+make PREFIX=$USRLOCAL COMPDIR=/$USRLOCAL/share/bash-completion install install-doc
 
 # Local Variables:
 # mode: shell-script

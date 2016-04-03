@@ -30,7 +30,7 @@ ${color1}${font GE Inspira:pixelsize=110}${time %I:%M}${font}\
 ${voffset -75}${goto 335}${font GE Inspira:pixelsize=32}${time %d %B %Y } \
 ${voffset 32}${goto 335}${font GE Inspira:pixelsize=42}${time %A}${font}\
 ${voffset 25}${font Ubuntu:pixelsize=12}
-      HD  ${color3}${fs_free /}${color} / ${fs_size /}\
-       RAM  ${color3}$mem${color} / $memmax\
-       CPU  ${color3}${cpu cpu0}%
+      HD  ${color2}${fs_free /}${color} / ${fs_size /}\
+       RAM  ${color2}$mem${color} / $memmax\
+       CPU  ${color2}${cpu cpu0}%
 ]]

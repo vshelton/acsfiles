@@ -1,0 +1,32 @@
+#!/usr/bin/env zsh
+
+# Build latest feh from git
+emulate -LR zsh
+progname=${0:t}
+
+: ${USRLOCAL:=/usr/local}
+: ${BLDROOT:=$USRLOCAL/build}
+
+# Export version (which is used by my scripts, too)
+# in order to get it compiled into feh --version
+: ${VERSION:=$(today)}
+export VERSION
+
+# PREFIX is used by feh's Makefile
+export PREFIX=$USRLOCAL
+
+project=feh
+scm_update $project
+s=$(mk-src $project)
+b=$BLDROOT/${s:t}
+mkdir $b
+cd $b
+symlink-tree $(relative $s)
+
+make -e && make -e install
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

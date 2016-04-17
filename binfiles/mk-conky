@@ -1,20 +1,21 @@
 #!/usr/bin/env zsh
 
-# Build conky
-
+# Build latest conky from git
 emulate -LR zsh
 progname=${0:t}
 
 : ${USRLOCAL:=/usr/local}
 : ${BLDROOT:=$USRLOCAL/build}
 
-scm_update conky
-s=$(mk-src conky)
+project=conky
+
+scm_update $project
+s=$(mk-src $project)
 b=$BLDROOT/${s:t}
 mkdir $b
 cd $b
 
-cmake -DCMAKE_INSTALL_PREFIX=/opt -DBUILD_XDBE=true $s
+cmake -DCMAKE_INSTALL_PREFIX=$USRLOCAL -DBUILD_XDBE=true $s
 make install
 
 # Local Variables:

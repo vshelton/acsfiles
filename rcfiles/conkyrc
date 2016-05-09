@@ -31,6 +31,6 @@ ${voffset -75}${goto 335}${font GE Inspira:pixelsize=32}${time %d %B %Y } \
 ${voffset 32}${goto 335}${font GE Inspira:pixelsize=42}${time %A}${font}\
 ${voffset 25}${font Ubuntu:pixelsize=12}
       HD  ${color2}${fs_free /home/acs}${color} / ${fs_size /home/acs}\
-       RAM  ${color2}$mem${color} / $memmax\
+       RAM  ${color2}$memfree${color} / $memmax\
        CPU  ${color2}${cpu cpu0}%
 ]]

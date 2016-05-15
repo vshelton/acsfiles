@@ -38,7 +38,9 @@ bin/loop_while_failing                  $SCMROOT/binfiles/loop_while_failing    
 bin/make-Manifest                       $SCMROOT/binfiles/make-Manifest                         linux,NT
 bin/make_symlinks_relative              $SCMROOT/binfiles/make_symlinks_relative                linux,NT
 bin/mk-XEmacs-from-scratch              $SCMROOT/binfiles/NT/mk-XEmacs-from-scratch             NT
+bin/mk-conky                            $SCMROOT/binfiles/mk-conky                              linux
 bin/mk-emacs                            $SCMROOT/binfiles/mk-emacs                              linux
+bin/mk-feh                              $SCMROOT/binfiles/mk-feh                                linux
 bin/mk-lastpass                         $SCMROOT/binfiles/mk-lastpass                           linux,NT
 bin/mk-src                              $SCMROOT/binfiles/mk-src                                linux,NT
 bin/mk-xemacs                           $SCMROOT/binfiles/mk-xemacs                             linux,NT

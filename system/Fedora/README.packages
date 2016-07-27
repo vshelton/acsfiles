@@ -1,0 +1,2 @@
+sudo dnf upgrade
+sudo dnf install git mercurial emacs zsh xfce4-terminal

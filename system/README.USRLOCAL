@@ -1,0 +1,6 @@
+: ${USRLOCAL:=/opt}
+
+pushd $USRLOCAL
+sudo chown acs .
+mkdir bin build include lib share src
+popd

@@ -1,0 +1,15 @@
+sudo -s <<EOF
+echo '
+
+host-root	/host-root	vboxsf	defaults,noauto	0	0' >> /etc/fstab
+
+mkdir /host-root
+mount /host-root
+
+cd /usr/share/fonts
+unzip /host-root/cygwin64/home/shelta/software/zip/ubuntu-font-family-0.83.zip
+fc-cache -f -v
+EOF
+
+cd
+tar xf /host-root/cygwin64/home/shelta/software/zip/wp.tar

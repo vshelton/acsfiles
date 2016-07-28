@@ -1,15 +1,37 @@
+# Generic VM configuration.
+
+: ${HTAG:=host-root}
+: ${MOUNTDIR:=/host-root}
+: ${HOSTHOME:=$MOUNTDIR/cygwin64/home/shelta}
+
 sudo -s <<EOF
-echo '
+echo "
 
-host-root	/host-root	vboxsf	defaults,noauto	0	0' >> /etc/fstab
+$HTAG	$MOUNTDIR	vboxsf	defaults,noauto	0	0" >> /etc/fstab
 
-mkdir /host-root
-mount /host-root
+mkdir $MOUNTDIR
+mount $MOUNTDIR
 
 cd /usr/share/fonts
-unzip /host-root/cygwin64/home/shelta/software/zip/ubuntu-font-family-0.83.zip
+unzip $HOSTHOME/software/zip/ubuntu-font-family-0.83.zip
 fc-cache -f -v
 EOF
 
+: ${SCMROOT:=$HOME/scmroot}
+export SCMROOT
+
+mkdir -p $SCMROOT/hgroot
+tar cf - -C ${HOSTHOME}/scmroot/hgroot acsfiles | tar xf - -C $SCMROOT/hgroot
+ln -s hgroot/acsfiles $SCMROOT
+ln -s hgroot/acsfiles/binfiles $SCMROOT
+ln -s hgroot/acsfiles/rcfiles $SCMROOT
 cd
-tar xf /host-root/cygwin64/home/shelta/software/zip/wp.tar
+$SCMROOT/binfiles/LinkStartupFiles
+
+tar xf ${HOSTHOME}/software/zip/wp.tar
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

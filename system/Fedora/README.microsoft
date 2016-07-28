@@ -1,8 +1,10 @@
 cd
-sudo dnf -y install cabextract ttmkfdir
+sudo dnf --assumeyes install cabextract ttmkfdir
 wget http://corefonts.sourceforge.net/msttcorefonts-2.5-1.spec
 echo '%_topdir %(echo $HOME)/rpmbuild' > .rpmmacros
-rpmbuild -bb msttcorefonts-2.5-1.spec
-sudo rpm -ihv rpmbuild/RPMS/noarch/msttcorefonts-2.5-1.noarch.rpm
-sudo fc-cache -f -v
-
+for i in {1..10}; do
+  if rpmbuild -bb msttcorefonts-2.5-1.spec; then
+    break
+  fi
+done
+sudo rpm -ihv rpmbuild/RPMS/noarch/msttcorefonts-2.5-1.noarch.rpm && sudo fc-cache -f -v

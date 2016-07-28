@@ -9,6 +9,6 @@ git clone https://github.com/brndnmtthws/conky.git
 cd ..
 ln -s gitroot/conky
 
-sudo dnf install conky conky-manager cmake lua-devel gcc-c++ freetype-devel libXdamage-devel libXext-devel libXft-devel libXinerama-devel ncurses-devel
+sudo dnf --assumeyes install conky conky-manager cmake lua-devel gcc-c++ freetype-devel libXdamage-devel libXext-devel libXft-devel libXinerama-devel ncurses-devel
 
 mk-conky

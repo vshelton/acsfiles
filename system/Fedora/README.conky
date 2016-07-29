@@ -1,13 +1,22 @@
-# Setup Fedora-based systems to build conky.
+# Set up a Fedora-based system to build conky.
 # This is necessary because my conky configuration crashes the default version.
 
-: ${SCMROOT:=$HOME/scmroot}
+# Clone a git repo
+function get_git_repo() {
+  # $1 - name of git repo (i.e. emacs)
+  # $2 - URL of repo
 
-mkdir -p $SCMROOT/gitroot
-cd $SCMROOT/gitroot
-git clone https://github.com/brndnmtthws/conky.git
-cd ..
-ln -s gitroot/conky
+: ${SCMROOT:=$HOME/scmroot}
+  mkdir -p $SCMROOT/gitroot
+  cd $SCMROOT/gitroot
+
+  git clone $2
+  touch --date=2016-01-01 $1/last_update
+  cd ..
+  ln -s gitroot/$1
+}
+
+get_git_repo conky https://github.com/brndnmtthws/conky.git
 
 sudo dnf --assumeyes install conky conky-manager cmake lua-devel gcc-c++ freetype-devel libXdamage-devel libXext-devel libXft-devel libXinerama-devel ncurses-devel
 

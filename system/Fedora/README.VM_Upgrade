@@ -1,0 +1,158 @@
+#!/bin/bash
+
+# Customize a Fedora-based VM.
+
+# First time through: install all package upgrades,
+# install VirtualBox user additions and reboot.
+if ! groups acs | grep vboxsf >/dev/null; then
+  sudo dnf --assumeyes upgrade
+  if ! sudo mount /dev/cdrom /mnt ; then
+    echo "Insert the Guest Additions CD image and press Enter" >/dev/tty
+    read junk
+    if ! sudo mount /dev/cdrom /mnt ; then
+      echo "Could not mount the Guest Additions CD" >/dev/tty
+      exit 1
+    fi
+  fi
+
+  # VBoxLinuxAdditions.run gets a permission error
+  # when this whole block is wrapped in sudo -s,
+  # so we'll run each individual command under sudo.
+  sudo /mnt/VBoxLinuxAdditions.run
+  sudo usermod --append --groups vboxsf acs
+  sync
+  sudo reboot
+fi
+
+: ${htag:=host-root}
+: ${hosthome:=/media/sf_${htag}/cygwin64/home/shelta}
+: ${USRLOCAL:=/opt}
+: ${SCMROOT:=$HOME/scmroot}
+export SCMROOT USRLOCAL
+
+# Configure my home directory.
+mkdir -p ${SCMROOT}/hgroot
+tar cf - -C ${hosthome}/scmroot/hgroot acsfiles | tar xf - -C ${SCMROOT}/hgroot
+ln -s hgroot/acsfiles hgroot/acsfiles/binfiles hgroot/acsfiles/rcfiles ${SCMROOT}
+(
+  cd
+  ${SCMROOT}/binfiles/LinkStartupFiles
+  mkdir .hist
+  tar xf ${hosthome}/software/zip/wp.tar
+)
+
+# Make the USRLOCAL hierarchy.
+sudo chown acs ${USRLOCAL}
+mkdir ${USRLOCAL}/{bin,build,include,lib,share,src}
+
+# Install zshell, emacs, source control systems and the i3 window manager.
+sudo -s <<EOF
+  dnf --assumeyes install zsh
+  mkdir /etc/ZSH-dist
+  mv /etc/z* /etc/ZSH-dist
+  dnf --assumeyes install emacs git i3 i3-doc i3-ipc i3blocks i3lock i3status mercurial xfce4-terminal
+EOF
+
+# Install Microsoft fonts.
+sudo dnf --assumeyes install cabextract ttmkfdir
+font_ver="msttcorefonts-2.5-1"
+specfile="${font_ver}.spec"
+wget http://corefonts.sourceforge.net/${specfile}
+# The list of mirrors is old; update it.
+perl -pi.orig -e 's/mirrors=".*"/mirrors="freefr+voxel"/;' -e 's/^mirror_count=.*/mirror_count=2/;' ${specfile}
+echo '%_topdir %(echo $HOME)/rpmbuild' > .rpmmacros
+for i in {1..10}; do
+  rpmbuild -bb ${specfile} && break
+done
+
+# Unpack ubuntu fonts and update the font cache.
+sudo -s <<EOF
+  rpm -ihv rpmbuild/RPMS/noarch/${font_ver}.noarch.rpm
+  cd /usr/share/fonts
+  unzip $hosthome/software/zip/ubuntu-font-family-0.83.zip
+  fc-cache -f -v
+EOF
+
+# Define a function to clone a git repo.
+function clone_git_repo() {
+  # $1 - name of git repo (i.e. emacs)
+  # $2 - URL of repo
+  local nickname=$1
+  local repo_url=$2
+
+  mkdir -p ${SCMROOT}/gitroot
+  (
+    cd ${SCMROOT}/gitroot
+
+    git clone ${repo_url} ${nickname}
+    touch --date=2016-01-01 ${nickname}/last_update
+    cd ..
+    ln -s gitroot/${nickname}
+  )
+}
+
+# Define a function to link the most recent version
+# of an application into the ${USRLOCAL} hierarchy.
+function link_latest() {
+  # $1 - destination name, i.e. "emacs"
+  # $2 - source name, i.e. "emacs-2016-01-02"
+  local nickname=$1
+  local fullname=$2
+  (
+    cd ${USRLOCAL}
+    ln -s ${fullname} ${nickname}
+    cd bin
+    ln -s ../${nickname}/bin/* .
+  )
+}
+
+typeset -A repos
+repos["conky"]="https://github.com/brndnmtthws/conky.git"
+repos["emacs"]="git://git.savannah.gnu.org/emacs.git"
+repos["zsh"]="git://git.code.sf.net/p/zsh/code"
+
+typeset -A deps
+deps["conky"]="conky conky-manager cmake lua-devel gcc-c++ freetype-devel \
+ libXdamage-devel libXext-devel libXft-devel libXinerama-devel ncurses-devel"
+deps["emacs"]="autoconf automake giflib-devel gnutls-devel libXaw-devel \
+ libjpeg-turbo-devel libtiff-devel texinfo"
+deps["zsh"]="ftp://fr2.rpmfind.net/linux/opensuse/distribution/13.2/repo/oss/suse/x86_64/yodl-3.03.0-2.1.9.x86_64.rpm \
+ autoconf pcre-devel texinfo"
+
+# Build and install conky because my conky configuration
+# crashes the default conky.
+pname=conky
+clone_git_repo ${pname} ${repos[$pname]}
+sudo dnf --assumeyes install ${deps[$pname]}
+mk-${pname}
+
+# Build and install zsh.
+pname=zsh
+clone_git_repo ${pname} ${repos[$pname]}
+sudo dnf --assumeyes install ${deps[$pname]}
+CFLAGS=-O update-${pname}
+link_latest ${pname} ${pname}-$(today)
+[[ -x ${USRLOCAL}/bin/${pname} ]] && sudo usermod --shell ${USRLOCAL}/bin/${pname} acs
+
+# Build and install emacs.
+pname=emacs
+clone_git_repo ${pname} ${repos[$pname]}
+sudo dnf --assumeyes install ${deps[$pname]}
+mk-${pname}
+link_latest ${pname} ${pname}-$(today)
+
+echo "
+*********************************
+Remember to:
+  1. Turn off screensaver.
+  2. Create ~/bin/xfce-autostart.
+  3. Modify session start-up.
+  4. Tune up xfce window manager.
+*********************************
+"
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

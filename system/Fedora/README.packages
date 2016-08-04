@@ -1,6 +1,0 @@
-sudo -s <<EOF
-dnf --assumeyes upgrade
-dnf --assumeyes install git mercurial emacs zsh xfce4-terminal
-mkdir /etc/ZSH-dist
-mv /etc/z* /etc/ZSH-dist
-EOF

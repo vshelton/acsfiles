@@ -1,0 +1,143 @@
+#!/bin/bash
+
+# Customize a debian-based VM.
+
+# First time through: install all package upgrades,
+# install VirtualBox user additions and reboot.
+if ! groups acs | grep vboxsf >/dev/null; then
+  # On debian, first make sure that sudo is installed
+  # and that we are authorized to use it.
+  if [[ ! -x /usr/bin/sudo ]]; then
+    su -c "apt-get install sudo;
+usermod --append --groups sudo acs;
+sync;
+reboot" root
+  fi
+
+  if ! sudo mount /dev/cdrom /mnt ; then
+    echo "Insert the Guest Additions CD image and press Enter" >/dev/tty
+    read junk
+    if ! sudo mount /dev/cdrom /mnt ; then
+      echo "Could not mount the Guest Additions CD" >/dev/tty
+      exit 1
+    fi
+  fi
+
+  if [[ ! -x /mnt/VBoxLinuxAdditions.run ]]; then
+    echo "Cannot find /mnt/VBoxLinuxAdditions.run, exiting." >/dev/tty
+    exit 2
+  fi
+
+  # VBoxLinuxAdditions.run gets a permission error
+  # when this whole block is wrapped in sudo -s,
+  # so we'll run each individual command under sudo.
+  sudo apt-get -y install gcc linux-headers-amd64 make
+  sudo /mnt/VBoxLinuxAdditions.run
+  sudo usermod --append --groups vboxsf acs
+
+  # Do the package upgrade here, after installing
+  # the VirtualBox Guest Additions.
+  sudo apt-get -y update && sudo apt-get -y upgrade
+
+  sync
+  sudo reboot
+fi
+
+: ${htag:=host-root}
+: ${hosthome:=/media/sf_${htag}/cygwin64/home/shelta}
+: ${USRLOCAL:=/opt}
+: ${SCMROOT:=$HOME/scmroot}
+export SCMROOT USRLOCAL
+
+# Configure my home directory.
+mkdir -p ${SCMROOT}/hgroot
+tar cf - -C ${hosthome}/scmroot/hgroot acsfiles | tar xf - -C ${SCMROOT}/hgroot
+ln -s hgroot/acsfiles hgroot/acsfiles/binfiles hgroot/acsfiles/rcfiles ${SCMROOT}
+(
+  cd
+  ${SCMROOT}/binfiles/LinkStartupFiles
+  mkdir .hist
+  tar xf ${hosthome}/software/zip/wp.tar
+)
+
+# Make the USRLOCAL hierarchy.
+sudo chown acs ${USRLOCAL}
+mkdir ${USRLOCAL}/{bin,build,include,lib,share,src}
+
+# Install zshell, emacs, source control systems and the i3 window manager.
+sudo -s <<EOF
+  apt-get -y install zsh
+  mv /etc/zsh /etc/ZSH-dist
+  apt-get -y install emacs git i3 mercurial
+EOF
+
+# Install Microsoft fonts.
+sudo apt-get -y install cabextract libmspack0
+wget http://ftp.us.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.6_all.deb
+sudo dpkg --install ttf-mscorefonts-installer_3.6_all.deb
+
+# Unpack ubuntu fonts and update the font cache.
+sudo -s <<EOF
+  cd /usr/share/fonts/truetype
+  unzip $hosthome/software/zip/ubuntu-font-family-0.83.zip
+  fc-cache -f -v
+EOF
+
+. ./clone_repos
+
+# Define a function to link the most recent version
+# of an application into the ${USRLOCAL} hierarchy.
+function link_latest() {
+  # $1 - destination name, i.e. "emacs"
+  # $2 - source name, i.e. "emacs-2016-01-02"
+  local nickname=$1
+  local fullname=$2
+  (
+    cd ${USRLOCAL}
+    ln -s ${fullname} ${nickname}
+    cd bin
+    ln -s ../${nickname}/bin/* .
+  )
+}
+
+typeset -A deps
+deps["conky"]="cmake g++ libXdamage-dev libfreetype6-dev liblua5.2-dev \
+libncurses5-dev libxft-dev libxinerama-dev make"
+deps["emacs"]="autoconf automake libgif-dev libgnutls28-dev \
+libjpeg62-turbo-dev libtiff5-dev libxaw7-dev libxpm-dev make texinfo"
+deps["zsh"]="autoconf libncurses5-dev libpcre3-dev make texinfo yodl"
+
+# Build and install conky because my conky configuration
+# crashes the default conky.
+pname=conky
+sudo apt-get -y install ${deps[$pname]}
+mk-${pname}
+
+# Build and install zsh.
+pname=zsh
+sudo apt-get -y install ${deps[$pname]}
+CFLAGS=-O update-${pname}
+link_latest ${pname} ${pname}-$(today)
+[[ -x ${USRLOCAL}/bin/${pname} ]] && sudo usermod --shell ${USRLOCAL}/bin/${pname} acs
+
+# Build and install emacs.
+pname=emacs
+sudo apt-get -y install ${deps[$pname]}
+mk-${pname}
+link_latest ${pname} ${pname}-$(today)
+
+echo "
+*********************************
+Remember to:
+  1. Turn off screensaver.
+  2. Create ~/bin/xfce-autostart.
+  3. Modify session start-up.
+  4. Tune up xfce window manager.
+*********************************
+"
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

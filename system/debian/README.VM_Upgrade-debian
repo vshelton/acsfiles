@@ -37,7 +37,7 @@ reboot" root
 
   # Do the package upgrade here, after installing
   # the VirtualBox Guest Additions.
-  sudo apt-get -y update && sudo apt-get -y upgrade
+  #sudo apt-get -y update && sudo apt-get -y upgrade
 
   sync
   sudo reboot
@@ -64,6 +64,9 @@ ln -s hgroot/acsfiles hgroot/acsfiles/binfiles hgroot/acsfiles/rcfiles ${SCMROOT
 sudo chown acs ${USRLOCAL}
 mkdir ${USRLOCAL}/{bin,build,include,lib,share,src}
 
+# Set up the execution path
+PATH=$HOME/bin:$USRLOCAL/bin:$PATH
+
 # Install zshell, emacs, source control systems and the i3 window manager.
 sudo -s <<EOF
   apt-get -y install zsh
@@ -83,7 +86,23 @@ sudo -s <<EOF
   fc-cache -f -v
 EOF
 
-. ./clone_repos
+# Define a function to clone a git repo.
+function clone_git_repo() {
+  # $1 - name of git repo (i.e. emacs)
+  # $2 - URL of repo
+  local nickname=$1
+  local repo_url=$2
+
+  mkdir -p ${SCMROOT}/gitroot
+  (
+    cd ${SCMROOT}/gitroot
+
+    git clone ${repo_url} ${nickname}
+    touch --date=2016-01-01 ${nickname}/last_update
+    cd ..
+    ln -s gitroot/${nickname}
+  )
+}
 
 # Define a function to link the most recent version
 # of an application into the ${USRLOCAL} hierarchy.
@@ -100,6 +119,11 @@ function link_latest() {
   )
 }
 
+typeset -A repos
+repos["conky"]="https://github.com/brndnmtthws/conky.git"
+repos["emacs"]="git://git.savannah.gnu.org/emacs.git"
+repos["zsh"]="git://git.code.sf.net/p/zsh/code"
+
 typeset -A deps
 deps["conky"]="cmake g++ libXdamage-dev libfreetype6-dev liblua5.2-dev \
 libncurses5-dev libxft-dev libxinerama-dev make"
@@ -110,11 +134,13 @@ deps["zsh"]="autoconf libncurses5-dev libpcre3-dev make texinfo yodl"
 # Build and install conky because my conky configuration
 # crashes the default conky.
 pname=conky
+clone_git_repo ${pname} ${repos[$pname]}
 sudo apt-get -y install ${deps[$pname]}
 mk-${pname}
 
 # Build and install zsh.
 pname=zsh
+clone_git_repo ${pname} ${repos[$pname]}
 sudo apt-get -y install ${deps[$pname]}
 CFLAGS=-O update-${pname}
 link_latest ${pname} ${pname}-$(today)
@@ -122,6 +148,7 @@ link_latest ${pname} ${pname}-$(today)
 
 # Build and install emacs.
 pname=emacs
+clone_git_repo ${pname} ${repos[$pname]}
 sudo apt-get -y install ${deps[$pname]}
 mk-${pname}
 link_latest ${pname} ${pname}-$(today)

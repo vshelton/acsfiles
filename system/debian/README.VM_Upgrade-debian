@@ -47,6 +47,7 @@ fi
 : ${hosthome:=/media/sf_${htag}/cygwin64/home/shelta}
 : ${USRLOCAL:=/opt}
 : ${SCMROOT:=$HOME/scmroot}
+: ${ZIPROOT:=${hosthome}/software/zip}
 export SCMROOT USRLOCAL
 
 # Configure my home directory.
@@ -57,7 +58,7 @@ ln -s hgroot/acsfiles hgroot/acsfiles/binfiles hgroot/acsfiles/rcfiles ${SCMROOT
   cd
   ${SCMROOT}/binfiles/LinkStartupFiles
   mkdir .hist
-  tar xf ${hosthome}/software/zip/wp.tar
+  tar xf ${ZIPROOT}/wp.tar
 )
 
 # Make the USRLOCAL hierarchy.
@@ -82,7 +83,7 @@ sudo dpkg --install ttf-mscorefonts-installer_3.6_all.deb
 # Unpack ubuntu fonts and update the font cache.
 sudo -s <<EOF
   cd /usr/share/fonts/truetype
-  unzip $hosthome/software/zip/ubuntu-font-family-0.83.zip
+  unzip ${ZIPROOT}/ubuntu-font-family-0.83.zip
   fc-cache -f -v
 EOF
 
@@ -125,7 +126,7 @@ repos["emacs"]="git://git.savannah.gnu.org/emacs.git"
 repos["zsh"]="git://git.code.sf.net/p/zsh/code"
 
 typeset -A deps
-deps["conky"]="cmake g++ libXdamage-dev libfreetype6-dev liblua5.2-dev \
+deps["conky"]="cmake g++ libfreetype6-dev liblua5.2-dev \
 libncurses5-dev libxft-dev libxinerama-dev make"
 deps["emacs"]="autoconf automake libgif-dev libgnutls28-dev \
 libjpeg62-turbo-dev libtiff5-dev libxaw7-dev libxpm-dev make texinfo"
@@ -135,7 +136,10 @@ deps["zsh"]="autoconf libncurses5-dev libpcre3-dev make texinfo yodl"
 # crashes the default conky.
 pname=conky
 clone_git_repo ${pname} ${repos[$pname]}
-sudo apt-get -y install ${deps[$pname]}
+# Somewhere the package name changed from libXdamage-dev
+# to libxdamage-dev, so we will special-case it here.
+apt-cache search lib.damage-dev | read pkg junk
+sudo apt-get -y install $pkg ${deps[$pname]}
 mk-${pname}
 
 # Build and install zsh.

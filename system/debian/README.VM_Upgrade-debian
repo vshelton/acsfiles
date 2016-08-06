@@ -31,13 +31,13 @@ reboot" root
   # VBoxLinuxAdditions.run gets a permission error
   # when this whole block is wrapped in sudo -s,
   # so we'll run each individual command under sudo.
-  sudo apt-get -y install gcc linux-headers-amd64 make
+  sudo apt-get --yes install gcc linux-headers-amd64 make
   sudo /mnt/VBoxLinuxAdditions.run
   sudo usermod --append --groups vboxsf acs
 
   # Do the package upgrade here, after installing
   # the VirtualBox Guest Additions.
-  #sudo apt-get -y update && sudo apt-get -y upgrade
+  #sudo apt-get --yes update && sudo apt-get --yes upgrade
 
   sync
   sudo reboot
@@ -68,15 +68,15 @@ mkdir ${USRLOCAL}/{bin,build,include,lib,share,src}
 # Set up the execution path
 PATH=$HOME/bin:$USRLOCAL/bin:$PATH
 
-# Install zshell, emacs, source control systems and the i3 window manager.
+# Install zshell, source control systems and the i3 window manager.
 sudo -s <<EOF
-  apt-get -y install zsh
+  apt-get --yes install zsh
   mv /etc/zsh /etc/ZSH-dist
-  apt-get -y install emacs git i3 mercurial
+  apt-get --yes install git i3 mercurial
 EOF
 
 # Install Microsoft fonts.
-sudo apt-get -y install cabextract libmspack0
+sudo apt-get --yes install cabextract libmspack0
 wget http://ftp.us.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.6_all.deb
 sudo dpkg --install ttf-mscorefonts-installer_3.6_all.deb
 
@@ -126,7 +126,10 @@ repos["emacs"]="git://git.savannah.gnu.org/emacs.git"
 repos["zsh"]="git://git.code.sf.net/p/zsh/code"
 
 typeset -A deps
+# Somewhere the package name changed from libXdamage-dev
+# to libxdamage-dev, so we will special-case it here.
 deps["conky"]="cmake g++ libfreetype6-dev liblua5.2-dev \
+$(apt-cache search 'lib.damage-dev' | sed -sne 's/ .*//p') \
 libncurses5-dev libxft-dev libxinerama-dev make"
 deps["emacs"]="autoconf automake libgif-dev libgnutls28-dev \
 libjpeg62-turbo-dev libtiff5-dev libxaw7-dev libxpm-dev make texinfo"
@@ -136,16 +139,13 @@ deps["zsh"]="autoconf libncurses5-dev libpcre3-dev make texinfo yodl"
 # crashes the default conky.
 pname=conky
 clone_git_repo ${pname} ${repos[$pname]}
-# Somewhere the package name changed from libXdamage-dev
-# to libxdamage-dev, so we will special-case it here.
-apt-cache search lib.damage-dev | read pkg junk
-sudo apt-get -y install $pkg ${deps[$pname]}
+sudo apt-get --yes install ${deps[$pname]}
 mk-${pname}
 
 # Build and install zsh.
 pname=zsh
 clone_git_repo ${pname} ${repos[$pname]}
-sudo apt-get -y install ${deps[$pname]}
+sudo apt-get --yes install ${deps[$pname]}
 CFLAGS=-O update-${pname}
 link_latest ${pname} ${pname}-$(today)
 [[ -x ${USRLOCAL}/bin/${pname} ]] && sudo usermod --shell ${USRLOCAL}/bin/${pname} acs
@@ -153,7 +153,7 @@ link_latest ${pname} ${pname}-$(today)
 # Build and install emacs.
 pname=emacs
 clone_git_repo ${pname} ${repos[$pname]}
-sudo apt-get -y install ${deps[$pname]}
+sudo apt-get --yes install ${deps[$pname]}
 mk-${pname}
 link_latest ${pname} ${pname}-$(today)
 

@@ -2,18 +2,18 @@
 
 # Customize a debian-based VM.
 
+# On debian, first make sure that sudo is installed
+# and that we are authorized to use it.
+if [[ ! -x /usr/bin/sudo ]]; then
+  su -c "apt-get install sudo;
+         usermod --append --groups sudo acs;
+         sync;
+         reboot" root
+fi
+
 # First time through: install all package upgrades,
 # install VirtualBox user additions and reboot.
 if ! groups acs | grep vboxsf >/dev/null; then
-  # On debian, first make sure that sudo is installed
-  # and that we are authorized to use it.
-  if [[ ! -x /usr/bin/sudo ]]; then
-    su -c "apt-get install sudo;
-usermod --append --groups sudo acs;
-sync;
-reboot" root
-  fi
-
   if ! sudo mount /dev/cdrom /mnt ; then
     echo "Insert the Guest Additions CD image and press Enter" >/dev/tty
     read junk
@@ -48,7 +48,7 @@ fi
 : ${USRLOCAL:=/opt}
 : ${SCMROOT:=$HOME/scmroot}
 : ${ZIPROOT:=${hosthome}/software/zip}
-export SCMROOT USRLOCAL
+export SCMROOT USRLOCAL ZIPROOT
 
 # Configure my home directory.
 mkdir -p ${SCMROOT}/hgroot

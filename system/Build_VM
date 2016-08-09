@@ -1,8 +1,46 @@
 #!/bin/bash
 
-# Customize a debian-based VM.
+# Customize a VM, whether it is debian-based or Fedora-based.
 
-# On debian, first make sure that sudo is installed
+# External variables that might be overridden in the environment.
+# The following defaults work from a Windows host.
+# In order to install from my linux host at home:
+# hosthome=/media/sf_host-home/acs ZIPROOT=/media/sf_host-SSD-2TB/opt/zip Build_VM
+: ${htag:=host-root}
+: ${hosthome:=/media/sf_${htag}/cygwin64/home/shelta}
+: ${variable_source:=${SCMROOT}/acsfiles/system}
+: ${USRLOCAL:=/opt}
+: ${SCMROOT:=${HOME}/scmroot}
+: ${ZIPROOT:=${hosthome}/software/zip}
+export SCMROOT USRLOCAL ZIPROOT
+
+# Define a function to install packages on either debian or Fedora.
+function install_package() {
+  if [[ -x /usr/bin/dnf ]]; then
+    pm="dnf --assumeyes"
+  elif [[ -x /usr/bin/apt-get ]]; then
+    pm="apt-get --yes"
+  else
+    echo Neither dnf nor apt-get was found to install packages.  Exiting. >/dev/tty
+    exit 3
+  fi
+  sudo ${pm} install $*
+}
+
+# Define a function to upgrade packages on either debian or Fedora.
+function upgrade_packages() {
+  if [[ -x /usr/bin/dnf ]]; then
+    sudo dnf --assumeyes upgrade
+  elif [[ -x /usr/bin/apt-get ]]; then
+    sudo apt-get --yes update && sudo apt-get --yes upgrade
+  else
+    echo Neither dnf nor apt-get was found to upgrade packages.  Exiting. >/dev/tty
+    exit 3
+  fi
+}
+
+# If sudo isn't installed (as on debian), first
+# use su to ensure that sudo is installed
 # and that we are authorized to use it.
 if [[ ! -x /usr/bin/sudo ]]; then
   su -c "apt-get install sudo;
@@ -11,8 +49,8 @@ if [[ ! -x /usr/bin/sudo ]]; then
          reboot" root
 fi
 
-# First time through: install all package upgrades,
-# install VirtualBox user additions and reboot.
+# First time through: install VirtualBox Guest additions,
+# upgrade packages and reboot.
 if ! groups acs | grep vboxsf >/dev/null; then
   if ! sudo mount /dev/cdrom /mnt ; then
     echo "Insert the Guest Additions CD image and press Enter" >/dev/tty
@@ -28,27 +66,27 @@ if ! groups acs | grep vboxsf >/dev/null; then
     exit 2
   fi
 
-  # VBoxLinuxAdditions.run gets a permission error
-  # when this whole block is wrapped in sudo -s,
-  # so we'll run each individual command under sudo.
-  sudo apt-get --yes install gcc linux-headers-amd64 make
+  install_package gcc make
+  install_package linux-headers-amd64 || install_package kernel-headers
   sudo /mnt/VBoxLinuxAdditions.run
   sudo usermod --append --groups vboxsf acs
 
   # Do the package upgrade here, after installing
   # the VirtualBox Guest Additions.
-  #sudo apt-get --yes update && sudo apt-get --yes upgrade
+  upgrade_packages
 
   sync
   sudo reboot
 fi
 
-: ${htag:=host-root}
-: ${hosthome:=/media/sf_${htag}/cygwin64/home/shelta}
-: ${USRLOCAL:=/opt}
-: ${SCMROOT:=$HOME/scmroot}
-: ${ZIPROOT:=${hosthome}/software/zip}
-export SCMROOT USRLOCAL ZIPROOT
+if [[ -x /usr/bin/apt-get ]]; then
+  variable_source=${variable_source}/debian
+elif [[ -x /usr/bin/dnf ]]; then
+  variable_source=${variable_source}/Fedora
+else
+  echo Cannot ascertain whether this system is debian or Fedora >/dev/tty
+  exit 1
+fi
 
 # Configure my home directory.
 mkdir -p ${SCMROOT}/hgroot
@@ -65,24 +103,25 @@ ln -s hgroot/acsfiles hgroot/acsfiles/binfiles hgroot/acsfiles/rcfiles ${SCMROOT
 sudo chown acs ${USRLOCAL}
 mkdir ${USRLOCAL}/{bin,build,include,lib,share,src}
 
-# Set up the execution path
-PATH=$HOME/bin:$USRLOCAL/bin:$PATH
+# Set up the execution path.
+PATH=${HOME}/bin:${USRLOCAL}/bin:$PATH
 
 # Install zshell, source control systems and the i3 window manager.
-sudo -s <<EOF
-  apt-get --yes install zsh
-  mv /etc/zsh /etc/ZSH-dist
-  apt-get --yes install git i3 mercurial
-EOF
+install_package zsh
+if [[ -d /etc/zsh ]]; then
+  sudo mv /etc/zsh /etc/ZSH-dist
+else
+  sudo mkdir /etc/ZSH-dist
+  sudo mv /etc/z* /etc/ZSH-dist
+fi
+install_package git i3 mercurial
 
-# Install Microsoft fonts.
-sudo apt-get --yes install cabextract libmspack0
-wget http://ftp.us.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.6_all.deb
-sudo dpkg --install ttf-mscorefonts-installer_3.6_all.deb
+. ${variable_source}/Microsoft_fonts
 
 # Unpack ubuntu fonts and update the font cache.
 sudo -s <<EOF
-  cd /usr/share/fonts/truetype
+  cd /usr/share/fonts
+  [[ -d truetype ]] && cd truetype
   unzip ${ZIPROOT}/ubuntu-font-family-0.83.zip
   fc-cache -f -v
 EOF
@@ -125,27 +164,19 @@ repos["conky"]="https://github.com/brndnmtthws/conky.git"
 repos["emacs"]="git://git.savannah.gnu.org/emacs.git"
 repos["zsh"]="git://git.code.sf.net/p/zsh/code"
 
-typeset -A deps
-# Somewhere the package name changed from libXdamage-dev
-# to libxdamage-dev, so we will special-case it here.
-deps["conky"]="cmake g++ libfreetype6-dev liblua5.2-dev \
-$(apt-cache search 'lib.damage-dev' | sed -sne 's/ .*//p') \
-libncurses5-dev libxft-dev libxinerama-dev make"
-deps["emacs"]="autoconf automake libgif-dev libgnutls28-dev \
-libjpeg62-turbo-dev libtiff5-dev libxaw7-dev libxpm-dev make texinfo"
-deps["zsh"]="autoconf libncurses5-dev libpcre3-dev make texinfo yodl"
+. ${variable_source}/packages_required
 
 # Build and install conky because my conky configuration
 # crashes the default conky.
 pname=conky
 clone_git_repo ${pname} ${repos[$pname]}
-sudo apt-get --yes install ${deps[$pname]}
+install_package ${deps[$pname]}
 mk-${pname}
 
 # Build and install zsh.
 pname=zsh
 clone_git_repo ${pname} ${repos[$pname]}
-sudo apt-get --yes install ${deps[$pname]}
+install_package ${deps[$pname]}
 CFLAGS=-O update-${pname}
 link_latest ${pname} ${pname}-$(today)
 [[ -x ${USRLOCAL}/bin/${pname} ]] && sudo usermod --shell ${USRLOCAL}/bin/${pname} acs
@@ -153,7 +184,7 @@ link_latest ${pname} ${pname}-$(today)
 # Build and install emacs.
 pname=emacs
 clone_git_repo ${pname} ${repos[$pname]}
-sudo apt-get --yes install ${deps[$pname]}
+install_package ${deps[$pname]}
 mk-${pname}
 link_latest ${pname} ${pname}-$(today)
 
@@ -169,6 +200,7 @@ Remember to:
 
 # Local Variables:
 # mode: shell-script
+# sh-basic-offset: 2
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

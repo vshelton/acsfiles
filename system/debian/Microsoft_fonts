@@ -1,0 +1,14 @@
+
+# Build the Microsoft fonts (debian version).
+
+# Install Microsoft fonts.
+sudo apt-get --yes install cabextract libmspack0
+wget http://ftp.us.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.6_all.deb
+sudo dpkg --install ttf-mscorefonts-installer_3.6_all.deb
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

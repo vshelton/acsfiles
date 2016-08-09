@@ -1,0 +1,18 @@
+
+# Define the packages needed on a Fedora-based VM.
+
+typeset -A deps
+deps["conky"]="conky conky-manager cmake lua-devel gcc-c++ freetype-devel    \
+               libXdamage-devel libXext-devel libXft-devel libXinerama-devel \
+               ncurses-devel"
+deps["emacs"]="autoconf automake giflib-devel gnutls-devel libXaw-devel \
+               libjpeg-turbo-devel libtiff-devel texinfo"
+deps["zsh"]="ftp://fr2.rpmfind.net/linux/opensuse/distribution/13.2/repo/oss/suse/x86_64/yodl-3.03.0-2.1.9.x86_64.rpm \
+             autoconf pcre-devel texinfo"
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

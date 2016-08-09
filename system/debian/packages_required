@@ -1,0 +1,20 @@
+
+# Define the packages needed on a debian-based VM.
+
+typeset -A deps
+# On debian, at some point the package name changed from libXdamage-dev
+# to libxdamage-dev, so we will special-case it here.
+deps["conky"]="cmake g++ libfreetype6-dev liblua5.2-dev                   \
+               $(apt-cache search 'lib.damage-dev' | sed -sne 's/ .*//p') \
+               libncurses5-dev libxft-dev libxinerama-dev make"
+deps["emacs"]="autoconf automake libgif-dev libgnutls28-dev \
+               libjpeg62-turbo-dev libtiff5-dev libxaw7-dev \
+               libxpm-dev make texinfo"
+deps["zsh"]="autoconf libncurses5-dev libpcre3-dev make texinfo yodl"
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

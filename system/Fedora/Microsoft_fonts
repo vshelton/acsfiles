@@ -1,0 +1,23 @@
+
+# Build the Microsoft fonts (Fedora version).
+
+# Install Microsoft fonts.
+sudo dnf --assumeyes install cabextract ttmkfdir
+font_ver="msttcorefonts-2.5-1"
+specfile="${font_ver}.spec"
+wget http://corefonts.sourceforge.net/${specfile}
+# The list of mirrors is old; update it.
+perl -pi.orig -e 's/mirrors=".*"/mirrors="freefr+voxel"/;' -e 's/^mirror_count=.*/mirror_count=2/;' ${specfile}
+echo '%_topdir %(echo $HOME)/rpmbuild' > .rpmmacros
+for i in {1..10}; do
+  rpmbuild -bb ${specfile} && break
+done
+
+sudo rpm -ihv rpmbuild/RPMS/noarch/${font_ver}.noarch.rpm
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

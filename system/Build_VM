@@ -5,7 +5,7 @@
 # External variables that might be overridden in the environment.
 # The following defaults work from a Windows host.
 # In order to install from my linux host at home:
-# hosthome=/media/sf_host-home/acs ZIPROOT=/media/sf_host-SSD-2TB/opt/zip Build_VM
+# hosthome=/media/sf_host-home/acs variable_source=/media/sf_host-home/acs/scmroot/hgroot/acsfiles/system ZIPROOT=/media/sf_host-SSD-2TB/opt/zip Build_VM
 : ${htag:=host-root}
 : ${hosthome:=/media/sf_${htag}/cygwin64/home/shelta}
 : ${variable_source:=${SCMROOT}/acsfiles/system}

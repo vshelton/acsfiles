@@ -8,10 +8,10 @@
 # hosthome=/media/sf_host-home/acs variable_source=/media/sf_host-home/acs/scmroot/hgroot/acsfiles/system ZIPROOT=/media/sf_host-SSD-2TB/opt/zip Build_VM
 : ${htag:=host-root}
 : ${hosthome:=/media/sf_${htag}/cygwin64/home/shelta}
-: ${variable_source:=${SCMROOT}/acsfiles/system}
+: ${ZIPROOT:=${hosthome}/software/zip}
 : ${USRLOCAL:=/opt}
 : ${SCMROOT:=${HOME}/scmroot}
-: ${ZIPROOT:=${hosthome}/software/zip}
+: ${variable_source:=${SCMROOT}/acsfiles/system}
 export SCMROOT USRLOCAL ZIPROOT
 
 # Define helper functions to identify the type of the underlying OS.
@@ -99,7 +99,10 @@ if ! groups acs | grep vboxsf >/dev/null; then
   upgrade_packages
 
   sync
-  sudo reboot
+  if ! sudo reboot ; then
+    echo "Could not reboot. Exiting." >/dev/tty
+    exit 2
+  fi
 fi
 
 # Configure my home directory.
@@ -117,9 +120,9 @@ ln -s hgroot/acsfiles hgroot/acsfiles/binfiles hgroot/acsfiles/rcfiles ${SCMROOT
 # Script to start up an XFCE session.
 
 : \${USRLOCAL:=/opt}
-PATH=\$HOME/bin:\$USRLOCAL/bin:$PATH
+PATH=\$HOME/bin:\$USRLOCAL/bin:\$PATH
 
-xfce4-terminal --geometry 90x60-1+1 &
+xfce4-terminal --geometry 90x54+1-1 &
 emacs &
 
 conky --pause=5 &

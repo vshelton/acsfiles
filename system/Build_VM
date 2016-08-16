@@ -3,10 +3,13 @@
 # Customize a VM, whether it is debian-based or Fedora-based.
 
 # External variables that might be overridden in the environment:
-# htag, hosthome, ZIPROOT, USRLOCAL, SCMROOT and variable_source.
-# The default environment variables work from a Windows host.
-# In order to install from my linux host at home:
-# hosthome=/media/sf_host-home/acs variable_source=/media/sf_host-home/acs/scmroot/hgroot/acsfiles/system ZIPROOT=/media/sf_host-SSD-2TB/opt/zip Build_VM
+# htag, hosthome, ZIPROOT and USRLOCAL.
+
+# The default environment variables work from a Windows host, but
+# alternatively fall back on paths that will work on my linux host at home.
+#
+# Sample usage to override some environment variables:
+# hosthome=/media/sf_host-home/acs ZIPROOT=/media/sf_host-SSD-2TB/opt/zip Build_VM
 
 # Define helper functions to identify the type of the underlying OS.
 function debian-p() {
@@ -50,9 +53,9 @@ function upgrade_packages() {
   # Package_manager has already reported this error.
   pm=$(package_manager) || exit $?
   if fedora-p; then
-    sudo $pm upgrade
+    sudo ${pm} upgrade
   elif debian-p; then
-    sudo $pm update && sudo $pm upgrade
+    sudo ${pm} update && sudo ${pm} upgrade
   fi
 }
 
@@ -99,39 +102,37 @@ if ! groups acs | grep vboxsf >/dev/null; then
   fi
 fi
 
-# I use 'host-root' as the name of the VirtualBox root share.
+# I use 'host-root' as the name of the VirtualBox
+# root share on both linux and Windows hosts.
 : ${htag:=host-root}
 
 # Set some key variables based on whether we are running at work
 # under a Windows host, or at home running under a linux host.
 : ${hosthome:=/media/sf_${htag}/cygwin64/home/shelta}
 [[ ! -d ${hosthome} ]] && hosthome=/media/sf_host-home/acs
-if [[ -d ${hosthome} ]]; then
+if [[ ! -d ${hosthome} ]]; then
   echo "Directory ${hosthome} does not exist.  Set the hosthome environment variable.  Exiting." >/dev/tty
   exit 3
 fi
 : ${ZIPROOT:=${hosthome}/software/zip}
 [[ ! -d ${ZIPROOT} ]] && ZIPROOT=/media/sf_host-SSD-2TB/opt/zip
-if [[ -d ${ZIPROOT} ]]; then
+if [[ ! -d ${ZIPROOT} ]]; then
   echo "Directory ${ZIPROOT} does not exist.  Set the ZIPROOT environment variable.  Exiting." >/dev/tty
   exit 3
 fi
 
-: ${USRLOCAL:=/opt}
-: ${SCMROOT:=${HOME}/scmroot}
-: ${variable_source:=${SCMROOT}/acsfiles/system}
-export SCMROOT USRLOCAL ZIPROOT
-         
 # Configure my home directory.
-mkdir -p ${SCMROOT}/hgroot
-tar cf - -C ${hosthome}/scmroot/hgroot acsfiles | tar xf - -C ${SCMROOT}/hgroot
-ln -s hgroot/acsfiles hgroot/acsfiles/binfiles hgroot/acsfiles/rcfiles ${SCMROOT}
-(
-  cd
-  ${SCMROOT}/binfiles/LinkStartupFiles
-  mkdir .hist
-  tar xf ${ZIPROOT}/wp.tar
-  cat >bin/xfce-autostart <<EOF
+
+# Use the current directory as my home directory,
+# so all actions will use a relative directory.
+scmbase="scmroot"
+acs_repo="hgroot/acsfiles"
+tar cf - -C ${hosthome} ${scmbase}/${acs_repo} | tar xf -
+ln -s ${acs_repo} ${acs_repo}/binfiles ${acs_repo}/rcfiles ${scmbase}
+SCMROOT=${PWD}/${scmbase} ${scmbase}/${acs_repo}/binfiles/LinkStartupFiles
+mkdir .hist
+tar xf ${ZIPROOT}/wp.tar
+cat >bin/xfce-autostart <<EOF
 #!/bin/bash
 
 # Script to start up an XFCE session.
@@ -143,23 +144,13 @@ xfce4-terminal --geometry 90x54+1-1 &
 emacs &
 
 conky --pause=5 &
-
-# Local Variables:
-# mode: shell-script
-# sh-basic-offset: 2
-# sh-indentation: 2
-# indent-tabs-mode: nil
-# End:
 EOF
-  chmod 755 bin/xfce-autostart
-)
+chmod 755 bin/xfce-autostart
 
 # Make the USRLOCAL hierarchy.
+: ${USRLOCAL:=/opt}
 sudo chown acs ${USRLOCAL}
 mkdir ${USRLOCAL}/{bin,build,include,lib,share,src}
-
-# Set up the execution path.
-PATH=${HOME}/bin:${USRLOCAL}/bin:$PATH
 
 # Install zshell, source control systems and the i3 window manager.
 install_package zsh
@@ -171,9 +162,9 @@ else
 fi
 install_package git i3 mercurial
 
-# The error has already been reported if we're not running
-# on debian or Fedora, so the exit call is appropriate.
-variable_source=${variable_source}/$(os-type) || exit $?
+# The error has already been reported (by os-type) if we're
+# not running on debian or Fedora, so the exit call is appropriate.
+variable_source=${scmbase}/${acs_repo}/system/$(os-type) || exit $?
 
 . ${variable_source}/Microsoft_fonts
 
@@ -192,10 +183,9 @@ function clone_git_repo() {
   local nickname=$1
   local repo_url=$2
 
-  mkdir -p ${SCMROOT}/gitroot
   (
-    cd ${SCMROOT}/gitroot
-
+    mkdir -p ${scmbase}/gitroot
+    cd ${scmbase}/gitroot
     git clone ${repo_url} ${nickname}
     touch --date=2016-01-01 ${nickname}/last_update
     cd ..
@@ -224,6 +214,10 @@ repos["emacs"]="git://git.savannah.gnu.org/emacs.git"
 repos["zsh"]="git://git.code.sf.net/p/zsh/code"
 
 . ${variable_source}/packages_required
+
+# Set up the execution path to include my scripts
+# to make conky, emacs and zsh.
+PATH=${HOME}/bin:${PATH}
 
 # Build and install conky because my conky configuration
 # crashes the default conky.

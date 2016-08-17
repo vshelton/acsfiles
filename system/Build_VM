@@ -86,14 +86,14 @@ if ! groups acs | grep vboxsf >/dev/null; then
     exit 2
   fi
 
+  # Upgrade the packages.
+  upgrade_packages
+
+  # Install the VirtualBox additions and the prerequisites.
   install_package gcc make
   install_package linux-headers-amd64 || install_package kernel-headers
-  sudo /mnt/VBoxLinuxAdditions.run
-  sudo usermod --append --groups vboxsf acs
-
-  # Do the package upgrade here, after installing
-  # the VirtualBox Guest Additions.
-  upgrade_packages
+  sudo /mnt/VBoxLinuxAdditions.run &&
+    sudo usermod --append --groups vboxsf acs
 
   sync
   if ! sudo reboot ; then

@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# Print the arguments separated by commas and terminated by "and".
+function print_list() {
+  while (( $# > 0 ))
+  do
+    echo -n "\"$1\""
+    shift
+    if [[ $# -gt 1 ]]; then
+      echo -n ", "
+    elif [[ $# -eq 1 ]]; then
+      echo -n " and "
+    fi
+  done
+}
+
+typeset -a dirs
+dirs=( "/media/sf_${htag}/cygwin64/home/shelta" "/media/sf_host-home/acs" )
+[[ -n ${hosthome} ]] && dirs=( "${hosthome}" "${dirs[@]}" )
+for hosthome in "${dirs[@]}"; do
+  [[ -d ${hosthome} ]] && break
+done
+if [[ ! -d ${hosthome} ]]; then
+  (
+    echo -n "Home directory not found on host: "
+    print_list "${dirs[@]}"
+    echo " were tried.
+Set the \"hosthome\" environment variable to a directory on the host. Exiting."
+  ) >/dev/tty
+  exit 1
+else
+  echo "Using \"${hosthome}\" as hosthome."
+fi
+
+unset dirs
+typeset -a dirs
+dirs=( "${hosthome}/software/zip" "/media/sf_host-SSD-2TB/opt/zip" )
+[[ -n ${ZIPROOT} ]] && dirs=( "${ZIPROOT}" "${dirs[@]}" )
+for ZIPROOT in "${dirs[@]}"; do
+  [[ -d ${ZIPROOT} ]] && break
+done
+if [[ ! -d ${ZIPROOT} ]]; then
+  (
+    echo -n "Zip directory not found on host: "
+    print_list "${dirs[@]}"
+    echo " were tried.
+Set the \"ZIPROOT\" environment variable to a directory on the host. Exiting."
+  ) >/dev/tty
+  exit 1
+else
+  echo "Using \"${ZIPROOT}\" as ZIPROOT."
+fi
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

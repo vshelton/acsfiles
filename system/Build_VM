@@ -140,8 +140,6 @@ if [[ ! -d ${hosthome} ]]; then
 Set the \"hosthome\" environment variable to a directory on the host. Exiting."
   ) >/dev/tty
   exit 1
-else
-  echo "Using \"${hosthome}\" as hosthome."
 fi
 
 unset dirs
@@ -159,8 +157,6 @@ if [[ ! -d ${ziproot} ]]; then
 Set the \"ziproot\" environment variable to a directory on the host. Exiting."
   ) >/dev/tty
   exit 1
-else
-  echo "Using \"${ziproot}\" as ziproot."
 fi
 
 # Configure my home directory.

@@ -3,13 +3,13 @@
 # Customize a VM, whether it is debian-based or Fedora-based.
 
 # External variables that might be overridden in the environment:
-# htag, hosthome, ZIPROOT and USRLOCAL.
+# htag, hosthome, ziproot and USRLOCAL.
 
 # The default environment variables work from a Windows host, but
 # alternatively fall back on paths that will work on my linux host at home.
 #
 # Sample usage to override some environment variables:
-# hosthome=/media/sf_host-home/acs ZIPROOT=/media/sf_host-SSD-2TB/opt/zip Build_VM
+# hosthome=/media/sf_host-home/acs ziproot=/media/sf_host-SSD-2TB/opt/zip Build_VM
 
 # Define helper functions to identify the type of the underlying OS.
 function debian-p() {
@@ -58,6 +58,24 @@ function upgrade_packages() {
     sudo ${pm} update && sudo ${pm} upgrade
   fi
 }
+
+# Print the arguments separated by commas and terminated by "and".
+function print_list() {
+  while (( $# > 0 ))
+  do
+    echo -n "\"$1\""
+    shift
+    if [[ $# -gt 1 ]]; then
+      echo -n ", "
+    elif [[ $# -eq 1 ]]; then
+      echo -n " and "
+    fi
+  done
+}
+
+#
+# Code starts here.
+#
 
 # If sudo isn't installed (as on debian), first
 # use su to ensure that sudo is installed
@@ -108,17 +126,41 @@ fi
 
 # Set some key variables based on whether we are running at work
 # under a Windows host, or at home running under a linux host.
-: ${hosthome:=/media/sf_${htag}/cygwin64/home/shelta}
-[[ ! -d ${hosthome} ]] && hosthome=/media/sf_host-home/acs
+typeset -a dirs
+dirs=( "/media/sf_${htag}/cygwin64/home/shelta" "/media/sf_host-home/acs" )
+[[ -n ${hosthome} ]] && dirs=( "${hosthome}" "${dirs[@]}" )
+for hosthome in "${dirs[@]}"; do
+  [[ -d ${hosthome} ]] && break
+done
 if [[ ! -d ${hosthome} ]]; then
-  echo "Directory ${hosthome} does not exist.  Set the hosthome environment variable.  Exiting." >/dev/tty
-  exit 3
+  (
+    echo -n "Home directory not found on host: "
+    print_list "${dirs[@]}"
+    echo " were tried.
+Set the \"hosthome\" environment variable to a directory on the host. Exiting."
+  ) >/dev/tty
+  exit 1
+else
+  echo "Using \"${hosthome}\" as hosthome."
 fi
-: ${ZIPROOT:=${hosthome}/software/zip}
-[[ ! -d ${ZIPROOT} ]] && ZIPROOT=/media/sf_host-SSD-2TB/opt/zip
-if [[ ! -d ${ZIPROOT} ]]; then
-  echo "Directory ${ZIPROOT} does not exist.  Set the ZIPROOT environment variable.  Exiting." >/dev/tty
-  exit 3
+
+unset dirs
+typeset -a dirs
+dirs=( "${hosthome}/software/zip" "/media/sf_host-SSD-2TB/opt/zip" )
+[[ -n ${ziproot} ]] && dirs=( "${ziproot}" "${dirs[@]}" )
+for ziproot in "${dirs[@]}"; do
+  [[ -d ${ziproot} ]] && break
+done
+if [[ ! -d ${ziproot} ]]; then
+  (
+    echo -n "Zip directory not found on host: "
+    print_list "${dirs[@]}"
+    echo " were tried.
+Set the \"ziproot\" environment variable to a directory on the host. Exiting."
+  ) >/dev/tty
+  exit 1
+else
+  echo "Using \"${ziproot}\" as ziproot."
 fi
 
 # Configure my home directory.
@@ -131,7 +173,7 @@ tar cf - -C ${hosthome} ${scmbase}/${acs_repo} | tar xf -
 ln -s ${acs_repo} ${acs_repo}/binfiles ${acs_repo}/rcfiles ${scmbase}
 SCMROOT=${PWD}/${scmbase} ${scmbase}/${acs_repo}/binfiles/LinkStartupFiles
 mkdir .hist
-tar xf ${ZIPROOT}/wp.tar
+tar xf ${ziproot}/wp.tar
 cat >bin/xfce-autostart <<EOF
 #!/bin/bash
 
@@ -172,7 +214,7 @@ variable_source=${scmbase}/${acs_repo}/system/$(os-type) || exit $?
 sudo -s <<EOF
   cd /usr/share/fonts
   [[ -d truetype ]] && cd truetype
-  unzip ${ZIPROOT}/ubuntu-font-family-0.83.zip
+  unzip ${ziproot}/ubuntu-font-family-0.83.zip
   fc-cache -f -v
 EOF
 

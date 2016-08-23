@@ -31,9 +31,9 @@ bin/find_install_root                   $SCMROOT/binfiles/find_install_root     
 bin/find_newer                          $SCMROOT/binfiles/find_newer                            linux,NT
 bin/findpkg                             $SCMROOT/binfiles/findpkg                               linux,NT
 bin/gnome_sleep_status                  $SCMROOT/binfiles/gnome_sleep_status                    linux,NT
-bin/init_conky                          $SCMROOT/binfiles/init_emacs                            linux,NT
-bin/init_emacs                          $SCMROOT/binfiles/init_emacs                            linux,NT
-bin/init_zsh                            $SCMROOT/binfiles/init_emacs                            linux,NT
+bin/init-conky                          $SCMROOT/binfiles/init-emacs                            linux,NT
+bin/init-emacs                          $SCMROOT/binfiles/init-emacs                            linux,NT
+bin/init-zsh                            $SCMROOT/binfiles/init-emacs                            linux,NT
 bin/installed_packages                  $SCMROOT/binfiles/installed_packages                    linux,NT
 bin/latest                              $SCMROOT/binfiles/latest                                linux,NT
 bin/link_latest                         $SCMROOT/binfiles/link_latest                           linux,NT

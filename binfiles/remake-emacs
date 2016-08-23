@@ -1,1 +1,52 @@
-remake-xp
+#!/usr/bin/env zsh
+
+# Replace today's version of a software package with a new one.
+# Currently emacs and xemacs-packages are supported.
+
+: ${USRLOCAL:=/usr/local}
+: ${BLDROOT:=$USRLOCAL/build}
+: ${SCMROOT:=$HOME/scmroot}
+
+case $0 in
+(*xp*)
+    app=xemacs-packages
+    ;;
+(*emacs)
+    app=emacs
+    ;;
+(*zsh)
+    app=zsh
+    ;;
+esac
+
+# Remove today's version and reset the master link
+# to point to the next-oldest version.
+rm_versions -v $app-$(today)
+cd $USRLOCAL
+rm $app
+ln -s $app*(om[1]) $app
+
+# Force a rebuild by making ChangeLog "new".
+touch $SCMROOT/$app/ChangeLog
+cd $BLDROOT
+
+# Rebuild the application.
+case $app in
+(xemacs-packages)
+  NO_PATH_CLOBBER=1 PATH=/opt/build/texinfo-4.13/makeinfo:$PATH mk-xp -v $(installed_packages)
+  ;;
+(emacs)
+  mk-emacs
+  ;;
+(zsh)
+  scm_update zsh
+  CFLAGS=-O mk-zsh
+esac
+
+(( $? == 0 )) && touch $SCMROOT/$app/last_update
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

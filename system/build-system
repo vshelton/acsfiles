@@ -1,0 +1,273 @@
+#!/bin/bash
+
+# Build a new linux system, either a native one
+# or one hosted under VirtualBox.
+
+# Define helper functions to identify the type of the underlying OS.
+function debian-p() {
+  [[ -x /usr/bin/apt-get ]]
+}
+function fedora-p() {
+  [[ -x /usr/bin/dnf ]]
+}
+function package_manager() {
+  if debian-p; then
+    echo "apt-get --yes"
+  elif fedora-p; then
+    echo "dnf --assumeyes"
+  else
+    echo "Not a supported OS type." 2>&1
+    return 1
+  fi
+  return 0
+}
+
+# Define a platform-agnostic function to install packages.
+function install_package() {
+  # Package_manager has already reported this error.
+  pm=$(package_manager) || exit $?
+  sudo ${pm} install $*
+}
+
+# Define a platform-agnostic function to upgrade packages.
+function upgrade_packages() {
+  # Package_manager has already reported this error.
+  pm=$(package_manager) || exit $?
+  if fedora-p; then
+    sudo ${pm} upgrade
+  elif debian-p; then
+    sudo ${pm} update && sudo ${pm} upgrade
+  fi
+}
+
+# Print the arguments separated by commas and, ultimately, "and".
+function print_list() {
+  while (( $# > 0 ))
+  do
+    echo -n "\"$1\""
+    shift
+    if [[ $# -gt 1 ]]; then
+      echo -n ", "
+    elif [[ $# -eq 1 ]]; then
+      echo -n " and "
+    fi
+  done
+}
+
+# Define a function to link the most recent version
+# of an application into the ${USRLOCAL} hierarchy.
+function link_latest() {
+  # $1 - destination name, i.e. "emacs"
+  # $2 - source name, i.e. "emacs-2016-01-02"
+  local nickname=$1
+  local fullname=$2
+  (
+    cd ${USRLOCAL}
+    ln -s ${fullname} ${nickname}
+    cd bin
+    ln -s ../${nickname}/bin/* .
+  )
+}
+
+#
+# Code starts here.
+#
+
+username=$(whoami)
+
+# This build script depends on sudo, so install sudo
+# (and reboot to make sure the group permissions get
+# propagated) if sudo isn't already installed.
+if [[ ! -x /usr/bin/sudo ]]; then
+  su -c "apt-get install sudo;
+         usermod --append --groups sudo ${username};
+         sync;
+         reboot" root
+fi
+
+# Install the system upgrades.
+upgrade_packages
+
+host=$(sudo dmidecode -s system-product-name)
+
+# Install the VirtualBox Guest Additions.
+if [[ ${host} == "VirtualBox" ]]; then
+
+  # First time through: install VirtualBox Guest Additions and reboot.
+  if ! groups acs | grep vboxsf >/dev/null; then
+
+    # Install VirtualBox Guest Additions.
+    if ! sudo mount /dev/cdrom /mnt ; then
+      echo "Insert the Guest Additions CD image and press Enter" 2>&1
+      read junk
+      if ! sudo mount /dev/cdrom /mnt ; then
+        echo "Could not mount the Guest Additions CD.  Exiting." 2>&1
+        exit 1
+      fi
+    fi
+
+    if [[ ! -x /mnt/VBoxLinuxAdditions.run ]]; then
+      echo "Cannot find /mnt/VBoxLinuxAdditions.run.  Exiting." 2>&1
+      exit 2
+    fi
+
+    # Install the VirtualBox additions and the prerequisites.
+    install_package gcc make
+    install_package linux-headers-amd64 || install_package kernel-headers
+    sudo /mnt/VBoxLinuxAdditions.run &&
+      sudo usermod --append --groups vboxsf acs
+
+    sync
+    if ! sudo reboot ; then
+      echo "Could not reboot. Exiting." 2>&1
+      exit 2
+    fi
+  fi
+fi
+
+# Install the Z-shell and move aside the customization.
+install_package zsh
+if [[ -d /etc/zsh ]]; then
+  sudo mv /etc/zsh /etc/ZSH-dist
+else
+  sudo mkdir /etc/ZSH-dist
+  sudo mv /etc/z* /etc/ZSH-dist
+fi
+
+# Install i3, git and mercurial.
+install_package git i3 mercurial
+
+# Create USRLOCAL hierarchy
+: ${USRLOCAL:=/opt}
+sudo chown ${username} ${USRLOCAL}
+mkdir ${USRLOCAL}/{bin,build,include,lib,share,src}
+
+# These are the path names for my source code repository.
+scmbase="scmroot"
+hgroot="${scmbase}/hgroot"
+acs_repo="${hgroot}/acsfiles"
+
+if [[ ${host} == "VirtualBox" ]]; then
+  # I use 'host-root' as the name of the VirtualBox
+  # root share on both linux and Windows hosts.
+  : ${htag:=host-root}
+
+  # Set some key variables based on whether we are running at work
+  # under a Windows host, or at home running under a linux host.
+  typeset -a dirs
+  dirs=( "/media/sf_${htag}/cygwin64/home/shelta" "/media/sf_host-home/acs" )
+  [[ -n ${hosthome} ]] && dirs=( "${hosthome}" "${dirs[@]}" )
+  for hosthome in "${dirs[@]}"; do
+    [[ -d ${hosthome} ]] && break
+  done
+  if [[ ! -d ${hosthome} ]]; then
+    (
+      echo -n "Home directory not found on host: "
+      print_list "${dirs[@]}"
+      echo " were tried.
+  Set the \"hosthome\" environment variable to a directory on the host. Exiting."
+    ) 2>&1
+    exit 1
+  fi
+
+  unset dirs
+  typeset -a dirs
+  dirs=( "${hosthome}/software/zip" "/media/sf_host-SSD-2TB/opt/zip" )
+  [[ -n ${ziproot} ]] && dirs=( "${ziproot}" "${dirs[@]}" )
+  for ziproot in "${dirs[@]}"; do
+    [[ -d ${ziproot} ]] && break
+  done
+  if [[ ! -d ${ziproot} ]]; then
+    (
+      echo -n "Zip directory not found on host: "
+      print_list "${dirs[@]}"
+      echo " were tried.
+  Set the \"ziproot\" environment variable to a directory on the host. Exiting."
+    ) 2>&1
+    exit 1
+  fi
+
+  # Running under VirtualBox, so copy source code rpository from host.
+  tar cf - -C ${hosthome} ${acs_repo} | tar xf -
+
+# Running a native linux install.
+else
+  ziproot=${ZIPROOT}
+  mkdir -p ${acs_repo}
+  (
+    cd ${acs_repo}/..
+    hg clone http://192.168.0.2:8000 acsfiles
+  )
+fi
+
+# Link startup files.
+SCMROOT=${PWD}/${scmbase} ${acs_repo}/binfiles/LinkStartupFiles
+mkdir .hist
+tar xf ${ziproot}/wp.tar
+cat >bin/xfce-autostart <<EOF
+#!/bin/bash
+
+# Script to start up an XFCE session.
+
+: \${USRLOCAL:=/opt}
+PATH=\$HOME/bin:\$USRLOCAL/bin:\$PATH
+
+xfce4-terminal --geometry 90x54+1-1 &
+emacs &
+
+conky --pause=5 &
+EOF
+chmod 755 bin/xfce-autostart
+
+# Install Microsoft and Ubuntu fonts.
+if debian-p ; then
+  sudo apt-get --yes install cabextract libmspack0
+  wget http://ftp.us.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.6_all.deb
+  sudo dpkg --install ttf-mscorefonts-installer_3.6_all.deb
+
+elif fedora-p ; then
+  sudo dnf --assumeyes install cabextract ttmkfdir
+  font_ver="msttcorefonts-2.5-1"
+  specfile="${font_ver}.spec"
+  wget http://corefonts.sourceforge.net/${specfile}
+  # The list of mirrors is old; update it.
+  perl -pi.orig -e 's/mirrors=".*"/mirrors="freefr+voxel"/;' -e 's/^mirror_count=.*/mirror_count=2/;' ${specfile}
+  echo '%_topdir %(echo $HOME)/rpmbuild' > .rpmmacros
+  for i in {1..10}; do
+    rpmbuild -bb ${specfile} && break
+  done
+  sudo rpm -ihv rpmbuild/RPMS/noarch/${font_ver}.noarch.rpm
+
+else
+  echo "Not a supported OS type." 2>&1
+  exit 2
+fi
+
+# Unpack ubuntu fonts and update the font cache.
+sudo -s <<EOF
+  cd /usr/share/fonts
+  [[ -d truetype ]] && cd truetype
+  unzip ${ziproot}/ubuntu-font-family-0.83.zip
+  fc-cache -f -v
+EOF
+
+# Set up the execution path to include my scripts
+# to make conky, emacs and zsh.
+PATH=${HOME}/bin:${PATH}
+
+# Build conky, emacs and zsh.
+init-conky              # Installs directly to USRLOCAL, so calling
+                        # link_latest() is not necessary.
+init-zsh
+link_latest zsh zsh-$(today)
+[[ -x ${USRLOCAL}/bin/zsh ]] && sudo usermod --shell ${USRLOCAL}/bin/zsh ${username)
+
+init-emacs
+link_latest emacs emacs-$(today)
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

@@ -59,7 +59,7 @@ function upgrade_packages() {
   fi
 }
 
-# Print the arguments separated by commas and terminated by "and".
+# Print the arguments separated by commas and, ultimately, "and".
 function print_list() {
   while (( $# > 0 ))
   do
@@ -87,9 +87,11 @@ if [[ ! -x /usr/bin/sudo ]]; then
          reboot" root
 fi
 
-# First time through: install VirtualBox Guest additions,
-# upgrade packages and reboot.
+# First time through: make sure the packages are up-to-date,
+# install VirtualBox Guest additions and reboot.
 if ! groups acs | grep vboxsf >/dev/null; then
+
+  # Install VirtualBox Guest Additions.
   if ! sudo mount /dev/cdrom /mnt ; then
     echo "Insert the Guest Additions CD image and press Enter" >/dev/tty
     read junk

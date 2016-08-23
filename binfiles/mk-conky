@@ -8,7 +8,6 @@ progname=${0:t}
 : ${BLDROOT:=$USRLOCAL/build}
 
 project=conky
-
 scm_update $project
 s=$(mk-src $project)
 b=$BLDROOT/${s:t}

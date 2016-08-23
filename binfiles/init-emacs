@@ -1,0 +1,143 @@
+#!/usr/bin/env zsh
+
+emulate -LR zsh
+
+# Clone a repo, build and install it -
+# works for conky, emacs and zsh.
+
+: ${USRLOCAL:=/usr/local}
+: ${SCMROOT:=$HOME/scmroot}
+
+#
+# Utility functions.
+#
+
+# Define helper functions to identify the type of the underlying OS.
+function debian-p() {
+  [[ -x /usr/bin/apt-get ]]
+}
+function fedora-p() {
+  [[ -x /usr/bin/dnf ]]
+}
+function package_manager() {
+  if debian-p; then
+    echo "apt-get --yes"
+  elif fedora-p; then
+    echo "dnf --assumeyes"
+  else
+    print -u2 "Not a supported OS type."
+    return 1
+  fi
+  return 0
+}
+
+# Define a platform-agnostic function to install packages.
+function install_package() {
+  # Package_manager has already reported this error.
+  pm=$(package_manager) || exit $?
+  sudo ${=pm} install ${=*}
+}
+
+# Define a function to clone a git repo.
+function clone_git_repo() {
+  # $1 - name of git repo (i.e. emacs)
+  # $2 - URL of repo
+  local nickname=$1
+  local repo_url=$2
+
+  (
+    mkdir -p ${SCMROOT}/gitroot
+    cd ${SCMROOT}/gitroot
+    git clone ${repo_url} ${nickname}
+    touch --date=2001-01-01 ${nickname}/last_update
+    cd ..
+    ln -s gitroot/${nickname}
+  )
+}
+
+# Define a function to link the most recent version
+# of an application into the ${USRLOCAL} hierarchy.
+function link_latest() {
+  # $1 - destination name, i.e. "emacs"
+  # $2 - source name, i.e. "emacs-2016-01-02"
+  local nickname=$1
+  local fullname=$2
+  (
+    cd ${USRLOCAL}
+    ln -s ${fullname} ${nickname}
+    cd bin
+    ln -s ../${nickname}/bin/* .
+  )
+}
+
+#
+# Code starts here.
+#
+
+# Figure out which app we're building, based on the invocation name.
+case $0 in
+(*conky*)
+  nickname=conky
+  build_script=mk-conky
+  ;;
+(*emacs*)
+  nickname=emacs
+  build_script=mk-emacs
+  ;;
+(*zsh*)
+  nickname=zsh
+  build_script=update-zsh
+  ;;
+(*)
+  print -u2 "Only conky, emacs and zsh are currently supported."
+  exit 1;
+  ;;
+esac
+
+# Define the source code repositories.
+typeset -A repos
+repos[conky]="https://github.com/brndnmtthws/conky.git"
+repos[emacs]="git://git.savannah.gnu.org/emacs.git"
+repos[zsh]="git://git.code.sf.net/p/zsh/code"
+
+# Define the packages needed.  The names depend on whether
+# the package manager is based on rpm or apt-get.
+typeset -A deps
+
+# On debian, at some point the package name changed from libXdamage-dev
+# to libxdamage-dev, so we will special-case it here.
+if debian-p; then
+  deps[conky]="cmake g++ libfreetype6-dev liblua5.2-dev                   \
+               $(apt-cache search 'lib.damage-dev' | sed -sne 's/ .*//p') \
+               libncurses5-dev libxft-dev libxinerama-dev make"
+  deps[emacs]="autoconf automake libgif-dev libgnutls28-dev               \
+               libjpeg62-turbo-dev libtiff5-dev libxaw7-dev               \
+               libxpm-dev make texinfo"
+  deps[zsh]="autoconf libncurses5-dev libpcre3-dev make texinfo yodl"
+
+# Define the packages needed on a Fedora-based VM.
+elif fedora-p ; then
+  deps[conky]="conky conky-manager cmake lua-devel gcc-c++ freetype-devel    \
+               libXdamage-devel libXext-devel libXft-devel libXinerama-devel \
+               ncurses-devel"
+  deps[emacs]="autoconf automake giflib-devel gnutls-devel libXaw-devel      \
+               libjpeg-turbo-devel libtiff-devel texinfo"
+  deps[zsh]="ftp://ftp.pbone.net/mirror/ftp5.gwdg.de/pub/opensuse/repositories/Publishing/openSUSE_Factory/x86_64/yodl-3.06.00-2777.25.x86_64.rpm \
+             autoconf pcre-devel texinfo"
+fi
+
+# Clone the source code repository.
+clone_git_repo ${nickname} ${repos[${nickname}]}
+
+# Install the pre-requisite packages.
+install_package ${deps[${nickname}]}
+
+# Build the package.
+${build_script}
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

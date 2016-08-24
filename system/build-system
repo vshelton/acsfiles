@@ -165,7 +165,7 @@ if [[ ${host} == "VirtualBox" ]]; then
       echo -n "Home directory not found on host: "
       print_list "${dirs[@]}"
       echo " were tried.
-  Set the \"hosthome\" environment variable to a directory on the host. Exiting."
+Set the \"hosthome\" environment variable to a directory on the host. Exiting."
     ) 2>&1
     exit 1
   fi
@@ -182,7 +182,7 @@ if [[ ${host} == "VirtualBox" ]]; then
       echo -n "Zip directory not found on host: "
       print_list "${dirs[@]}"
       echo " were tried.
-  Set the \"ziproot\" environment variable to a directory on the host. Exiting."
+Set the \"ziproot\" environment variable to a directory on the host. Exiting."
     ) 2>&1
     exit 1
   fi
@@ -196,7 +196,7 @@ else
   mkdir -p ${acs_repo}
   (
     cd ${acs_repo}/..
-    hg clone http://192.168.0.2:8000 acsfiles
+    hg clone http://192.168.0.4:8000 acsfiles
   )
 fi
 
@@ -262,6 +262,7 @@ PATH=${HOME}/bin:${PATH}
 # Build conky, emacs and zsh.
 init-conky              # Installs directly to USRLOCAL, so calling
                         # link_latest() is not necessary.
+
 init-zsh
 link_latest zsh zsh-$(today)
 [[ -x ${USRLOCAL}/bin/zsh ]] && sudo usermod --shell ${USRLOCAL}/bin/zsh ${username}

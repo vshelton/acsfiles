@@ -126,7 +126,7 @@ if [[ ${host} == "VirtualBox" ]]; then
 fi
 
 # Install the Z-shell and move aside the customization.
-install_package zsh
+install_package zsh zsh-doc
 if [[ -d /etc/zsh ]]; then
   sudo mv /etc/zsh /etc/ZSH-dist
 else
@@ -201,6 +201,7 @@ else
 fi
 
 # Link startup files.
+ln -s hgroot/acsfiles hgroot/acsfiles/binfiles hgroot/acsfiles/rcfiles ${scmbase}
 SCMROOT=${PWD}/${scmbase} ${acs_repo}/binfiles/LinkStartupFiles
 mkdir .hist
 tar xf ${ziproot}/wp.tar
@@ -214,6 +215,9 @@ PATH=\$HOME/bin:\$USRLOCAL/bin:\$PATH
 
 xfce4-terminal --geometry 90x54+1-1 &
 emacs &
+
+#google-chrome-beta &
+#clementine &
 
 conky --pause=5 &
 EOF
@@ -260,7 +264,7 @@ init-conky              # Installs directly to USRLOCAL, so calling
                         # link_latest() is not necessary.
 init-zsh
 link_latest zsh zsh-$(today)
-[[ -x ${USRLOCAL}/bin/zsh ]] && sudo usermod --shell ${USRLOCAL}/bin/zsh ${username)
+[[ -x ${USRLOCAL}/bin/zsh ]] && sudo usermod --shell ${USRLOCAL}/bin/zsh ${username}
 
 init-emacs
 link_latest emacs emacs-$(today)

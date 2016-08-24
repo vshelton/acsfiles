@@ -148,6 +148,26 @@ hgroot="${scmbase}/hgroot"
 acs_repo="${hgroot}/acsfiles"
 
 # Clone my source repo from bitbucket.
+echo >.hgrc <<EOF
+# example user config (see "hg help config" for more info)
+[ui]
+# name and email, e.g.
+# username = Jane Doe <jdoe@example.com>
+username = Vin Shelton <ethersoft@gmail.com>
+
+[auth]
+bb.prefix = https://bitbucket.org
+bb.username = acs
+bb.password = Ether5802 Bullard
+
+[extensions]
+# uncomment these lines to enable some popular extensions
+# (see "hg help extensions" for more info)
+#
+# pager =
+# color =
+EOF
+chmod 600 .hgrc
 hg clone https://acs@bitbucket.org/acs/acs_script ${acs_repo}
 ln -s ${acs_repo#${scmbase}/}{,/binfiles,/rcfiles} ${scmbase}
 
@@ -205,9 +225,13 @@ chmod 755 bin/xfce-autostart
 
 # Install Microsoft and Ubuntu fonts.
 if debian-p ; then
-  sudo apt-get --yes install cabextract libmspack0
-  wget http://ftp.us.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.6_all.deb
-  sudo dpkg --install ttf-mscorefonts-installer_3.6_all.deb
+  if apt-cache search ttf-mscorefonts-installer >&/dev/null ; then
+    sudo apt-get --yes install ttf-mscorefonts-installer
+  else
+    sudo apt-get --yes install cabextract libmspack0
+    wget http://ftp.us.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.6_all.deb
+    sudo dpkg --install ttf-mscorefonts-installer_3.6_all.deb
+  fi
 
 elif fedora-p ; then
   sudo dnf --assumeyes install cabextract ttmkfdir

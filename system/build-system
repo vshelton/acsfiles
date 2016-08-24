@@ -201,7 +201,7 @@ else
 fi
 
 # Link startup files.
-ln -s hgroot/acsfiles hgroot/acsfiles/binfiles hgroot/acsfiles/rcfiles ${scmbase}
+ln -s ${acs_repo#$scmbase/}{,/binfiles,/rcfiles} ${scmbase}
 SCMROOT=${PWD}/${scmbase} ${acs_repo}/binfiles/LinkStartupFiles
 mkdir .hist
 tar xf ${ziproot}/wp.tar

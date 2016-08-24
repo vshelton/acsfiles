@@ -147,32 +147,21 @@ scmbase="scmroot"
 hgroot="${scmbase}/hgroot"
 acs_repo="${hgroot}/acsfiles"
 
+# Clone my source repo from bitbucket.
+hg clone https://acs@bitbucket.org/acs/acs_script ${acs_repo}
+ln -s ${acs_repo#${scmbase}/}{,/binfiles,/rcfiles} ${scmbase}
+
+# Link startup files.
+SCMROOT=${PWD}/${scmbase} ${acs_repo}/binfiles/LinkStartupFiles
+
+# Find the directory containing zip files.
 if [[ ${host} == "VirtualBox" ]]; then
   # I use 'host-root' as the name of the VirtualBox
   # root share on both linux and Windows hosts.
   : ${htag:=host-root}
 
-  # Set some key variables based on whether we are running at work
-  # under a Windows host, or at home running under a linux host.
   typeset -a dirs
-  dirs=( "/media/sf_${htag}/cygwin64/home/shelta" "/media/sf_host-home/acs" )
-  [[ -n ${hosthome} ]] && dirs=( "${hosthome}" "${dirs[@]}" )
-  for hosthome in "${dirs[@]}"; do
-    [[ -d ${hosthome} ]] && break
-  done
-  if [[ ! -d ${hosthome} ]]; then
-    (
-      echo -n "Home directory not found on host: "
-      print_list "${dirs[@]}"
-      echo " were tried.
-Set the \"hosthome\" environment variable to a directory on the host. Exiting."
-    ) 2>&1
-    exit 1
-  fi
-
-  unset dirs
-  typeset -a dirs
-  dirs=( "${hosthome}/software/zip" "/media/sf_host-SSD-2TB/opt/zip" )
+  dirs=( "/media/sf_${htag}/cygwin64/home/shelta/software/zip" "/media/sf_host-SSD-2TB/opt/zip" )
   [[ -n ${ziproot} ]] && dirs=( "${ziproot}" "${dirs[@]}" )
   for ziproot in "${dirs[@]}"; do
     [[ -d ${ziproot} ]] && break
@@ -187,22 +176,13 @@ Set the \"ziproot\" environment variable to a directory on the host. Exiting."
     exit 1
   fi
 
-  # Running under VirtualBox, so copy source code rpository from host.
-  tar cf - -C ${hosthome} ${acs_repo} | tar xf -
-
 # Running a native linux install.
 else
   ziproot=${ZIPROOT}
-  mkdir -p ${acs_repo}
-  (
-    cd ${acs_repo}/..
-    hg clone http://192.168.0.4:8000 acsfiles
-  )
 fi
 
-# Link startup files.
-ln -s ${acs_repo#$scmbase/}{,/binfiles,/rcfiles} ${scmbase}
-SCMROOT=${PWD}/${scmbase} ${acs_repo}/binfiles/LinkStartupFiles
+# Create a directory for saving shell history, unpack wallpapers
+# and create a startup-script for xfce.
 mkdir .hist
 tar xf ${ziproot}/wp.tar
 cat >bin/xfce-autostart <<EOF

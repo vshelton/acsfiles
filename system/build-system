@@ -217,7 +217,7 @@ emacs &
 #google-chrome-beta &
 #clementine &
 
-conky --pause=5 &
+conky --pause=8 &
 EOF
 chmod 755 bin/xfce-autostart
 

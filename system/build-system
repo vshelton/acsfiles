@@ -88,6 +88,7 @@ fi
 # Install the system upgrades.
 upgrade_packages
 
+[[ ! -x /usr/sbin/dmidecode ]] && install_package dmidecode
 host=$(sudo dmidecode -s system-product-name)
 
 # Install the VirtualBox Guest Additions.
@@ -126,7 +127,7 @@ if [[ ${host} == "VirtualBox" ]]; then
 fi
 
 # Install the Z-shell and move aside the customization.
-install_package zsh zsh-doc
+install_package zsh
 if [[ -d /etc/zsh ]]; then
   sudo mv /etc/zsh /etc/ZSH-dist
 else

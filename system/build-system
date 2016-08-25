@@ -148,11 +148,9 @@ hgroot="${scmbase}/hgroot"
 acs_repo="${hgroot}/acsfiles"
 
 # Clone my source repo from bitbucket.
-echo >.hgrc <<EOF
+cat >.hgrc <<EOF
 # example user config (see "hg help config" for more info)
 [ui]
-# name and email, e.g.
-# username = Jane Doe <jdoe@example.com>
 username = Vin Shelton <ethersoft@gmail.com>
 
 [auth]
@@ -225,7 +223,8 @@ chmod 755 bin/xfce-autostart
 
 # Install Microsoft and Ubuntu fonts.
 if debian-p ; then
-  if apt-cache search ttf-mscorefonts-installer >&/dev/null ; then
+  pkg=$(apt-cache search ttf-mscorefonts-installer)
+  if [[ -n $pkg ]]; then
     sudo apt-get --yes install ttf-mscorefonts-installer
   else
     sudo apt-get --yes install cabextract libmspack0

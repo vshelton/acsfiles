@@ -224,8 +224,7 @@ chmod 755 bin/xfce-autostart
 
 # Install Microsoft and Ubuntu fonts.
 if debian-p ; then
-  pkg=$(apt-cache search ttf-mscorefonts-installer)
-  if [[ -n $pkg ]]; then
+  if [[ -n $(apt-cache search ttf-mscorefonts-installer) ]]; then
     sudo apt-get --yes install ttf-mscorefonts-installer
   else
     sudo apt-get --yes install cabextract libmspack0

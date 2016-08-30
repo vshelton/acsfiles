@@ -113,7 +113,7 @@ if debian-p; then
   deps[emacs]="autoconf automake libgif-dev libgnutls28-dev               \
                libjpeg62-turbo-dev libtiff5-dev libxaw7-dev               \
                libxpm-dev make texinfo"
-  deps[zsh]="autoconf libncurses5-dev libpcre3-dev make texinfo yodl"
+  deps[zsh]="autoconf gcc libncurses5-dev libpcre3-dev make texinfo yodl"
 
 # Define the packages needed on a Fedora-based VM.
 elif fedora-p ; then
@@ -123,7 +123,7 @@ elif fedora-p ; then
   deps[emacs]="autoconf automake giflib-devel gnutls-devel libXaw-devel      \
                libjpeg-turbo-devel libtiff-devel texinfo"
   deps[zsh]="ftp://ftp.pbone.net/mirror/ftp5.gwdg.de/pub/opensuse/repositories/Publishing/openSUSE_Factory/x86_64/yodl-3.06.00-2777.25.x86_64.rpm \
-             autoconf pcre-devel texinfo"
+             autoconf gcc pcre-devel texinfo"
 fi
 
 # Clone the source code repository.

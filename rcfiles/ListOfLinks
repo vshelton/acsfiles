@@ -75,6 +75,7 @@ bin/update-zsh                          $SCMROOT/binfiles/update-zsh            
 bin/update_and_build                    $SCMROOT/binfiles/update_and_build                      linux,NT
 bin/update_screenenv                    $SCMROOT/binfiles/update_screenenv                      linux,NT
 bin/vcsetup                             $SCMROOT/binfiles/NT/vcsetup                            NT
+bin/wakeserver                          $SCMROOT/binfiles/wakeserver                            linux
 bin/xspf-prettyprint.pl                 $SCMROOT/binfiles/xspf-prettyprint.pl                   linux,NT
 bin/yesterday                           $SCMROOT/binfiles/yesterday                             linux,NT
 lib/app-defaults/Emacs.ad               $SCMROOT/rcfiles/lib/app-defaults/Emacs.ad              linux,NT

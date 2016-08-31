@@ -17,6 +17,10 @@ case $0 in
 (*zsh)
     app=zsh
     ;;
+(*)
+    print -u2 "$0: only xemacs-packages, emacs and zsh are currently supported.  Exiting."
+    exit 1
+    ;;
 esac
 
 # Remove today's version and reset the master link
@@ -31,15 +35,15 @@ touch $SCMROOT/$app/ChangeLog
 cd $BLDROOT
 
 # Rebuild the application.
+scm_update $app
 case $app in
 (xemacs-packages)
-  NO_PATH_CLOBBER=1 PATH=/opt/build/texinfo-4.13/makeinfo:$PATH mk-xp -v $(installed_packages)
+  NO_PATH_CLOBBER=1 PATH=$BLDROOT/texinfo-4.13/makeinfo:$PATH mk-xp -v $(installed_packages)
   ;;
 (emacs)
   mk-emacs
   ;;
 (zsh)
-  scm_update zsh
   CFLAGS=-O mk-zsh
 esac
 
@@ -47,6 +51,7 @@ esac
 
 # Local Variables:
 # mode: shell-script
+# sh-basic-offset: 2
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

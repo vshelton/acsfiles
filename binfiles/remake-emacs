@@ -35,16 +35,16 @@ touch $SCMROOT/$app/ChangeLog
 cd $BLDROOT
 
 # Rebuild the application.
-scm_update $app
 case $app in
 (xemacs-packages)
+  scm_update $app
   NO_PATH_CLOBBER=1 PATH=$BLDROOT/texinfo-4.13/makeinfo:$PATH mk-xp -v $(installed_packages)
   ;;
 (emacs)
   mk-emacs
   ;;
 (zsh)
-  CFLAGS=-O mk-zsh
+  update-zsh
 esac
 
 (( $? == 0 )) && touch $SCMROOT/$app/last_update

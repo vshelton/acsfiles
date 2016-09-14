@@ -1,0 +1,35 @@
+conky.config = {
+  -- Comments start with a double dash
+  alignment = 'top_right',
+  cpu_avg_samples = 2,
+  double_buffer = true,
+  draw_borders = no,
+  draw_graph_borders = no,
+  draw_outline = no,
+  draw_shades = no,
+  maximum_width = 700,
+  no_buffers = true,
+  override_utf8_locale = true,
+  -- own_window_argb_visual = true,
+  own_window = true,
+  own_window_hints = undecorated,below,sticky,skip_taskbar,skip_pager,
+  own_window_transparent = true,
+  own_window_type = 'override',
+  total_run_times = 0,
+  update_interval = 1,
+  uppercase = no,
+  use_xft = true,
+  xftalpha = 0.1
+}
+
+-- FFA300 works well as the color of the status line on dark backgrounds.
+-- Other possible colors are: NavyBlue, DodgerBlue1 and LightYellow.
+conky.text = [[
+${color gray100}${font GE Inspira:pixelsize=110}${time %I:%M}${font}\
+${voffset -75}${goto 335}${font GE Inspira:pixelsize=32}${time %d %B %Y} \
+${voffset 32}${goto 335}${font GE Inspira:pixelsize=42}${time %A}${font}\
+${voffset 25}${font Ubuntu:pixelsize=15}${color FFA300}
+      HD  ${fs_free /home/acs} / ${fs_size /home/acs}\
+    RAM  $memfree / $memmax\
+    CPU  ${cpu cpu0}%
+]]

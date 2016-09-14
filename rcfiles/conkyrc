@@ -1,9 +1,12 @@
 conky.config = {
   -- Comments start with a double dash
   alignment = 'top_right',
-  color1 = 'EAEAEA',
-  color2 = 'FFA300',
-  color3 = 'SteelBlue',
+  color0 = 'gray100',
+  color1 = 'NavyBlue',
+  color2 = 'DodgerBlue1',
+  color3 = 'FFA300',
+  color4 = 'LightYellow',
+  color5 = 'LimeGreen',
   cpu_avg_samples = 2,
   double_buffer = true,
   draw_borders = no,
@@ -26,11 +29,11 @@ conky.config = {
 }
 
 conky.text = [[
-${color1}${font GE Inspira:pixelsize=110}${time %I:%M}${font}\
+${color0}${font GE Inspira:pixelsize=110}${time %I:%M}${font}\
 ${voffset -75}${goto 335}${font GE Inspira:pixelsize=32}${time %d %B %Y } \
 ${voffset 32}${goto 335}${font GE Inspira:pixelsize=42}${time %A}${font}\
 ${voffset 25}${font Ubuntu:pixelsize=12}
-      HD  ${color2}${fs_free /home/acs}${color} / ${fs_size /home/acs}\
-       RAM  ${color2}$memfree${color} / $memmax\
-       CPU  ${color2}${cpu cpu0}%
+      ${color1}HD  ${fs_free /home/acs} / ${fs_size /home/acs}\
+       RAM  $memfree / $memmax\
+       CPU  ${cpu cpu0}%
 ]]

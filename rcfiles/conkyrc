@@ -32,7 +32,7 @@ conky.text = [[
 ${color0}${font GE Inspira:pixelsize=110}${time %I:%M}${font}\
 ${voffset -75}${goto 335}${font GE Inspira:pixelsize=32}${time %d %B %Y } \
 ${voffset 32}${goto 335}${font GE Inspira:pixelsize=42}${time %A}${font}\
-${voffset 25}${font Ubuntu:pixelsize=12}
+${voffset 25}${font Ubuntu:pixelsize=15}
       ${color1}HD  ${fs_free /home/acs} / ${fs_size /home/acs}\
        RAM  $memfree / $memmax\
        CPU  ${cpu cpu0}%

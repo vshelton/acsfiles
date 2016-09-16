@@ -7,6 +7,7 @@ conky.config = {
   draw_graph_borders = no,
   draw_outline = no,
   draw_shades = no,
+  font = 'Liberation Sans',
   maximum_width = 700,
   no_buffers = true,
   override_utf8_locale = true,
@@ -25,11 +26,11 @@ conky.config = {
 -- FFA300 works well as the color of the status line on dark backgrounds.
 -- Other possible colors are: NavyBlue, DodgerBlue1 and LightYellow.
 conky.text = [[
-${color gray100}${font GE Inspira:pixelsize=110}${time %I:%M}${font}\
-${voffset -75}${goto 335}${font GE Inspira:pixelsize=32}${time %d %B %Y} \
-${voffset 32}${goto 335}${font GE Inspira:pixelsize=42}${time %A}${font}\
-${voffset 25}${font Ubuntu:pixelsize=15}${color FFA300}
-      HD  ${fs_free /home/acs} / ${fs_size /home/acs}\
-    RAM  $memfree / $memmax\
-    CPU  ${cpu cpu0}%
+${color gray100}${font :pixelsize=100}${time %I:%M}
+${voffset -160}${goto 295}${font :pixelsize=42}${time %A}                   \
+${voffset 36}${goto 295}${font :pixelsize=32}${time %d %B %Y}\
+${font Ubuntu:pixelsize=15}${color FFA300}${voffset 30}\
+${goto 28}HD free: ${fs_free /home/acs} / ${fs_size /home/acs}
+${goto 28}RAM free: $memfree / $memmax
+${goto 28}CPU: ${cpu cpu0}%
 ]]

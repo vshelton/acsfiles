@@ -1,6 +1,7 @@
 conky.config = {
   -- Comments start with a double dash
   alignment = 'top_right',
+  color1 = 'FFA300',
   cpu_avg_samples = 2,
   double_buffer = true,
   draw_borders = no,
@@ -29,7 +30,7 @@ conky.text = [[
 ${color gray100}${font :pixelsize=100}${time %I:%M}
 ${voffset -160}${goto 295}${font :pixelsize=42}${time %A}                   \
 ${voffset 36}${goto 295}${font :pixelsize=32}${time %d %B %Y}\
-${font Ubuntu:pixelsize=15}${color FFA300}${voffset 30}\
+${font Ubuntu:pixelsize=15}${color1}${voffset 30}\
 ${goto 28}HD free: ${fs_free /home/acs} / ${fs_size /home/acs}
 ${goto 28}RAM free: $memfree / $memmax
 ${goto 28}CPU: ${cpu cpu0}%

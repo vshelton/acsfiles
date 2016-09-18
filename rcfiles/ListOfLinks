@@ -39,6 +39,7 @@ bin/latest                              $SCMROOT/binfiles/latest                
 bin/link_latest                         $SCMROOT/binfiles/link_latest                           linux,NT
 bin/loop_while_failing                  $SCMROOT/binfiles/loop_while_failing                    linux,NT
 bin/make-Manifest                       $SCMROOT/binfiles/make-Manifest                         linux,NT
+bin/make_conky_config                   $SCMROOT/binfiles/make_conky_config                     linux
 bin/make_symlinks_relative              $SCMROOT/binfiles/make_symlinks_relative                linux,NT
 bin/mk-XEmacs-from-scratch              $SCMROOT/binfiles/NT/mk-XEmacs-from-scratch             NT
 bin/mk-conky                            $SCMROOT/binfiles/mk-conky                              linux

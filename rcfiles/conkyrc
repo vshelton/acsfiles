@@ -1,37 +1,31 @@
 conky.config = {
-  -- Comments start with a double dash
   alignment = 'top_right',
+  -- Date and time are displayed in color0.
+  color0 = 'gray100',
+  -- FFA300 works well as the color of the status line on dark backgrounds.
+  -- Other possible colors are: NavyBlue, DodgerBlue1 and LightYellow.
   color1 = 'FFA300',
   cpu_avg_samples = 2,
   double_buffer = true,
-  draw_borders = no,
-  draw_graph_borders = no,
-  draw_outline = no,
-  draw_shades = no,
   font = 'Liberation Sans',
+  -- font = 'Ubuntu',
   maximum_width = 700,
   no_buffers = true,
-  override_utf8_locale = true,
-  -- own_window_argb_visual = true,
   own_window = true,
-  own_window_hints = undecorated,below,sticky,skip_taskbar,skip_pager,
   own_window_transparent = true,
-  own_window_type = 'override',
+  own_window_type = 'desktop',
   total_run_times = 0,
   update_interval = 1,
   uppercase = no,
-  use_xft = true,
-  xftalpha = 0.1
+  use_xft = true
 }
 
--- FFA300 works well as the color of the status line on dark backgrounds.
--- Other possible colors are: NavyBlue, DodgerBlue1 and LightYellow.
 conky.text = [[
-${color gray100}${font :pixelsize=100}${time %I:%M}
-${voffset -160}${goto 295}${font :pixelsize=42}${time %A}                   \
-${voffset 36}${goto 295}${font :pixelsize=32}${time %d %B %Y}\
-${font Ubuntu:pixelsize=15}${color1}${voffset 30}\
-${goto 28}HD free: ${fs_free /home/acs} / ${fs_size /home/acs}
-${goto 28}RAM free: $memfree / $memmax
-${goto 28}CPU: ${cpu cpu0}%
+${color0}${font :size=72}${time %I:%M}
+${voffset -160}${goto 295}${font :size=28}${time %A}                   \
+${voffset 36}${goto 295}${font :size=24}${time %d %B %Y}
+${color1}${font :size=11}\
+   HD free: ${fs_free /home/acs} / ${fs_size /home/acs}\
+    RAM free: $memfree / $memmax\
+    CPU: ${cpu cpu0}%  
 ]]

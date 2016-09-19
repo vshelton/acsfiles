@@ -26,7 +26,7 @@ case $(xfconf-query --channel xfce4-desktop --property /backdrop/screen0/monitor
 
   # Traffic
   (*mtNrf7oxS4uSxTzMBWfQ_DSC_0043*)
-    color1="FFA300"
+    color1="LightYellow"
     ;;
 esac
 

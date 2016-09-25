@@ -26,6 +26,6 @@ ${voffset -160}${goto 295}${font :size=28}${time %A}                   \
 ${voffset 36}${goto 295}${font :size=24}${time %d %B %Y}
 ${color1}${font :size=11}\
    HD free: ${fs_free /home/acs} / ${fs_size /home/acs}\
-    RAM free: $memfree / $memmax\
-    CPU: ${cpu cpu0}%  
+    RAM in use: $mem / $memmax\
+    CPU: ${cpu cpu0}%
 ]]

@@ -1,0 +1,19 @@
+#!/usr/bin/env zsh
+
+# Convert symlinks from absolute targets to relative targets.
+# find <dir> -lname '/*' -ls | relative_links | sh -sx
+
+rootdir=$PWD
+while read j1 j2 j3 j4 j5 j6 j7 j8 j9 j10 fname j11 lname ; do
+  d=$(dirname $fname | sed -e "s@^\.@$rootdir@")
+  f=$(basename $fname)
+  [[ "$d" != "$PWD" ]] && cd "$d" && echo cd \"$d\"
+  echo rm $f
+  echo ln -s $(relative $lname) $f
+done
+  
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

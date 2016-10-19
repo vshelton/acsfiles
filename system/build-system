@@ -222,6 +222,28 @@ conky --pause=8 &
 EOF
 chmod 755 bin/xfce-autostart
 
+cat >bin/daily <<EOF
+#!/usr/bin/env zsh
+# Daily update of system packages and home-built applications.
+emulate -LR zsh
+
+for a in update dist-upgrade autoremove autoclean; do
+  sudo apt-get --yes \$a || break
+done
+
+scm_update acsfiles conky emacs zsh
+
+update-zsh && new_default -v zsh
+mk-emacs
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:
+EOF
+chmod 755 bin/daily
+
 # Install Microsoft and Ubuntu fonts.
 if debian-p ; then
   if [[ -n $(apt-cache search ttf-mscorefonts-installer) ]]; then

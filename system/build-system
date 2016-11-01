@@ -305,7 +305,10 @@ init-conky              # Installs directly to USRLOCAL, so calling
 
 init-zsh
 link_latest zsh zsh-$(today)
-[[ -x ${USRLOCAL}/bin/zsh ]] && sudo usermod --shell ${USRLOCAL}/bin/zsh ${username}
+if [[ -x ${USRLOCAL}/bin/zsh ]]; then
+  echo "${USRLOCAL}/bin/zsh" >>/etc/shells
+  sudo usermod --shell ${USRLOCAL}/bin/zsh ${username}
+fi
 
 init-emacs
 link_latest emacs emacs-$(today)

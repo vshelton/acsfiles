@@ -69,11 +69,52 @@ function link_latest() {
   )
 }
 
+# Echo the name of the home directory on the host.
+function find_host_home() {
+  directory_list=( ${vbox_prefix}${shared_home}/${username}
+                   ${vbox_prefix}${shared_home}/${host_user}
+                   ${vbox_prefix}${shared_root}/cygwin64/home/${username}
+                   ${vbox_prefix}${shared_root}/cygwin64/home/${host_user} )
+  for d in ${directory_list[@]}; do
+    [[ -d ${d} ]] && echo $d && return 0
+  done
+  return 1
+}
+
+# Echo the name of the zip directory on the host.
+function find_host_ziproot {
+  directory_list=( ${vbox_prefix}${shared_opt}/zip
+                   $(find_host_home)/software/zip )
+  [[ -n ${ziproot} ]] &&
+    directory_list=( ${ziproot}
+                     ${directory_list[@]} )
+  for d in ${directory_list[@]}; do
+    [[ -d $d ]] && echo $d && break
+  done
+  if [[ ! -d $d ]]; then
+    (
+      echo -n "Zip directory not found on host: "
+      print_list "${directory_list[@]}"
+      echo " were tried.
+Set the \"ziproot\" environment variable to a directory on the host. Exiting."
+    ) 2>&1
+    exit 1
+  fi
+ 
+}
+
 #
 # Code starts here.
 #
 
 username=$(whoami)
+
+# Define VirtualBox tag names for shared folders.
+vbox_prefix="/media/sf_"
+: ${shared_root:=host-root}
+: ${shared_home:=host-home}
+: ${shared_opt:=host-SSD-2TB}
+: ${host_user:=shelta}
 
 # This build script depends on sudo, so install sudo
 # (and reboot to make sure the group permissions get
@@ -174,35 +215,20 @@ ln -s ${acs_repo#${scmbase}/}{,/binfiles,/rcfiles} ${scmbase}
 SCMROOT=${PWD}/${scmbase} ${acs_repo}/binfiles/LinkStartupFiles
 
 # Find the directory containing zip files.
+host_home=
+ziproot=${ZIPROOT}
 if [[ ${host} == "VirtualBox" ]]; then
-  # I use 'host-root' as the name of the VirtualBox
-  # root share on both linux and Windows hosts.
-  : ${htag:=host-root}
-
-  typeset -a dirs
-  dirs=( "/media/sf_${htag}/cygwin64/home/shelta/software/zip" "/media/sf_host-SSD-2TB/opt/zip" )
-  [[ -n ${ziproot} ]] && dirs=( "${ziproot}" "${dirs[@]}" )
-  for ziproot in "${dirs[@]}"; do
-    [[ -d ${ziproot} ]] && break
-  done
-  if [[ ! -d ${ziproot} ]]; then
-    (
-      echo -n "Zip directory not found on host: "
-      print_list "${dirs[@]}"
-      echo " were tried.
-Set the \"ziproot\" environment variable to a directory on the host. Exiting."
-    ) 2>&1
-    exit 1
-  fi
-
-# Running a native linux install.
-else
-  ziproot=${ZIPROOT}
+  ziproot=$(find_host_ziproot)
+  host_home=$(find_host_home)
 fi
 
 # Create a directory for saving shell history, unpack wallpapers
 # and create a startup-script for xfce.
-mkdir .hist
+if [[ -d ${host_home}/.hist ]]; then
+  ln -s ${host_home}/.hist
+else
+  mkdir .hist
+fi
 tar xf ${ziproot}/wp.tar
 cat >bin/xfce-autostart <<EOF
 #!/bin/bash

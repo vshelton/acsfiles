@@ -1,0 +1,28 @@
+#!/usr/bin/env zsh
+# git clone git://git.liw.fi/obnam
+
+# Build latest obnam from git
+emulate -LR zsh
+progname=${0:t}
+
+: ${USRLOCAL:=/usr/local}
+: ${BLDROOT:=$USRLOCAL/build}
+: ${VERSION:=$(today)}
+
+project=obnam
+scm_update $project
+s=$(mk-src $project)
+b=$BLDROOT/${s:t}
+mkdir $b
+cd $b
+symlink-tree $(relative $s)
+
+python setup.py build
+python setup.py check
+#python setup.py install --prefix=/opt
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

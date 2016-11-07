@@ -1,0 +1,33 @@
+#!/usr/bin/env zsh
+
+# Print the date and time of the latest build of the specified project.
+
+emulate -LR zsh
+
+function usage() {
+  print -u2 "\
+usage: $progname [-h|--help] [-s] project_name
+       -h|--help - Print this help message to stderr
+       -s        - Print the time in human-readable format."
+  return 0
+}
+
+: ${USRLOCAL:=/usr/local}
+: ${BLDROOT:=$USRLOCAL/build}
+
+progname=${0:t}
+zparseopts -D h=help -help=help s=stat_opts
+
+[[ -n $help ]] && usage && exit 0
+[[ $# -ne 1 ]] && usage && exit 1
+
+zmodload zsh/stat
+
+stat +mtime $stat_opts $BLDROOT/$1*(om[1])
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

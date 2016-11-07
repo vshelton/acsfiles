@@ -8,22 +8,19 @@
 # --without-xim or --with-x-toolkit=lucid
 
 emulate -LR zsh
-progname=${0:t}
-
-: ${USRLOCAL:=/usr/local}
 
 function usage() {
   print -u2 "\
 usage: $progname [-h|--help] [emacs_version] [configure_args]
        -h|--help - Print this help message"
+  return 0
 }
 
-zparseopts -D h=help -help=help
+progname=${0:t}
+: ${USRLOCAL:=/usr/local}
 
-if [[ -n $help ]]; then
-  usage
-  exit 0
-fi
+zparseopts -D h=help -help=help
+[[ -n $help ]] && usage && exit 0
 
 # An argument that doesn't start with "-" is assumed to be a version name
 if [[ $# != 0 && $1 != -* ]]; then
@@ -37,13 +34,16 @@ if [[ $# != 0 && $1 != -* ]]; then
 # Default is to build from source control
 else
 
+  # Get the time of the most recent emacs build.
+  last_build_time=$(PrintProjectBuildTime emacs)
+
   # If a specific version is specified, assume we're trying something
   # specific out and rebuild even if the sources have not changed.
   force=
   [[ -n $VERSION ]] && force="--force"
-  if ! srcdir=$( GetSource --update $force emacs ) ; then
-    print -u2 $progname: Could not get emacs source from git.
-    exit 1
+  if ! srcdir=$( GetSource --latest="$last_build_time" \
+                           --update $force emacs ); then
+    exit $?
   fi
 fi
 

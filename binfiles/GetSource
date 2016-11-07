@@ -7,33 +7,6 @@
 #   4. A remote SCM hierarchy (not yet implemented)
 
 emulate -LR zsh
-progname="${0:t}"
-
-# Here is the list of suffixes that identify tarfiles
-suffix_list=( tar tar.bz2 tar.gz tar.lzma tar.xz tgz )
-
-function usage {
-  print -u2 "\
-usage: $progname [-h|--help] --cache=<dir> --force --remote --scm=<dir> \
---src=<dir> --update --ver=<version_string> <project>
-       -h|--help            Print this help message and exit
-       --cache=<dir>        Specify the location of the local tarball cache
-       --force              Force overwriting of local tarballs
-       --remote             Use wget to retrieve the file
-       --scm=<dir>          Specify the location of software configuration
-                            management directory
-       --src=<dir>          Use the specifed directory as the root for the
-                            destination source tree
-       --update             Assume we are looking for source code from
-                            scm and update prior to retrieving
-       --ver=<string>       When retrieving sources from scm, use the
-                            specified version string as a suffix.  If this
-                            is not specified, the default version string
-                            is \"-YYYY-MM-DD\"
-
-       project              The name of the archive or URL, or the name of
-                            the project under the scm directory."
-}
 
 function extract_local_tarball {
   local archive_name archive_path
@@ -71,13 +44,42 @@ function find_local_tarball {
   return 1
 }
 
-zparseopts -D h=help -help=help -cache:=cache_root -force=force -remote=remote \
-           -scm:=scm_root -src:=src_root -update=update -ver:=version
+function usage {
+  print -u2 "\
+usage: $progname [-h|--help] --cache=<dir> --force --remote --scm=<dir> \
+--src=<dir> --update --ver=<version_string> <project>
+       -h|--help            Print this help message and exit
+       --cache=<dir>        Specify the location of the local tarball cache
+       --force              Force overwriting of local tarballs
+       --latest=<timespec>  At least one file must be newer than the
+                            timespec [as understood by find(1)]
+       --remote             Use wget to retrieve the file
+       --scm=<dir>          Specify the location of software configuration
+                            management directory
+       --src=<dir>          Use the specifed directory as the root for the
+                            destination source tree
+       --update             Assume we are looking for source code from
+                            scm and update prior to retrieving
+       --ver=<string>       When retrieving sources from scm, use the
+                            specified version string as a suffix.  If this
+                            is not specified, the default version string
+                            is \"-YYYY-MM-DD\"
 
-if [[ -n $help ]]; then
-  usage
-  exit 0
-fi
+       project              The name of the archive or URL, or the name of
+                            the project under the scm directory."
+  return 0
+}
+
+progname="${0:t}"
+
+# Here is the list of suffixes that identify tarfiles
+suffix_list=( tar tar.bz2 tar.gz tar.lzma tar.xz tgz )
+
+zparseopts -D h=help -help=help -cache:=cache_root -force=force \
+           -latest:=timespec -remote=remote -scm:=scm_root     \
+           -src:=src_root -update=update -ver:=version
+
+[[ -n $help ]] && usage && exit 0
 
 # ZIPROOT, SRCROOT, SCMROOT and VERSION are preserved for historical reasons.
 : ${ZIPROOT:=.}
@@ -108,7 +110,7 @@ if [[ -z $update ]]; then
       cd $ZIPROOT
       mv -f ${archive_name} ${archive_name}.old >& /dev/null
       if ! wget -q $1 ; then
-        print -u2 "$progname wget error when retrieving $1: $?."
+        print -u2 "$progname: wget error when retrieving $1: $?."
         exit 1
       fi
     )
@@ -131,21 +133,22 @@ else
   fi
   SCMROOT=$SCMROOT scm_update $1
   cd $SCMROOT/$1
-  timestamp=last_update
-  newfiles=( $(find . \( -path ./.bzr -o -path ./.git -o -path ./.hg \) -prune -o -newer $timestamp -type f -print) )
+
+  timestamp=${timespec[2]#=}
+  newfiles=( $(find . \( -path ./.bzr -o -path ./.git -o -path ./.hg \) -prune \
+                     -o -newermt $timestamp -type f -print) )
   #print -u2 newfiles = $newfiles
   if (( $#newfiles < 1 )) && [[ -z $force ]]; then
-    #print -u2 "$progname: --update specified, but no newly-modified files were found in $SCMROOT/$1"
-    exit 1
+    print -u2 "$progname: --update specified, but no newly-modified files were found in $SCMROOT/$1"
+    exit 2
   fi
-  touch $timestamp
   cd -
 fi
 
 # Try to extract the named project from SCM.
 if [[ -d $SCMROOT/$1 ]]; then
 
-  target_dir=$SRCROOT/${1}${VERSION}
+  target_dir=$SRCROOT/${1}$VERSION
   mkdir -p $target_dir
   cd $target_dir
   if ! tar cf - -C $SCMROOT/$1 --exclude-vcs --dereference . | tar xfp - ; then
@@ -158,7 +161,7 @@ fi
 
 # No luck.
 print -u2 "$progname: No local file, remote file or SCM archive matched $1."
-exit 2
+exit 3
 
 # Local Variables:
 # mode: shell-script

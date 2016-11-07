@@ -35,7 +35,7 @@ if [[ $# != 0 && $1 != -* ]]; then
 else
 
   # Get the time of the most recent emacs build.
-  last_build_time=$(PrintProjectBuildTime emacs)
+  last_build_time=$( PrintProjectBuildTime -s emacs )
 
   # If a specific version is specified, assume we're trying something
   # specific out and rebuild even if the sources have not changed.

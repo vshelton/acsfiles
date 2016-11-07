@@ -12,6 +12,7 @@ bin/MakeCygwinXEmacs                    $SCMROOT/binfiles/NT/MakeCygwinXEmacs   
 bin/MakeLinuxLinks                      $SCMROOT/binfiles/MakeLinuxLinks                        neither
 bin/MakeNativeXEmacs                    $SCMROOT/binfiles/NT/MakeNativeXEmacs                   NT
 bin/MakeXEmacsWindowsKit                $SCMROOT/binfiles/NT/MakeXEmacsWindowsKit               NT
+bin/PrintProjectBuildTime               $SCMROOT/binfiles/PrintProjectBuildTime                 linux
 bin/Rip.acs                             $SCMROOT/binfiles/Rip.acs                               linux
 bin/all_dirs                            $SCMROOT/binfiles/all_dirs                              linux,NT
 bin/all_versions                        $SCMROOT/binfiles/all_versions                          linux,NT

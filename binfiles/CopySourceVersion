@@ -31,6 +31,7 @@ case $1 in
     ;;
 esac
 
+# Extract a local or remote tarball.
 if [[ -n $program_version ]]; then
   if ! srcdir=$( GetSource $program_version ) ; then
     print -u2 $progname: Could not get source for \"$program_version\"

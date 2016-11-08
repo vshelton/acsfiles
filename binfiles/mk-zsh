@@ -1,120 +1,108 @@
 #!/usr/bin/env zsh
 
-# Make zsh from the latest CVS sources
+# Make zsh either from CVS or from an unpacked tarball.
 # Usage: mk-zsh [zsh-version] [configure opts]
 
 emulate -LR zsh
+
+function usage() {
+  print -u2 "\
+usage: $progname [-h|--help] [zsh_version] [configure_args]
+       -h|--help - Print this help message"
+  return 0
+}
+
 progname=${0:t}
-
-# User-visible and user-overridable variables are all caps
-: ${PROJECT:=zsh}
 : ${USRLOCAL:=/usr/local}
-: ${SRCROOT:=$USRLOCAL/src}
-: ${VERSION:=$(today)}
 
-# If either there are no more remaining arguments,
-# or if the next argument is a configuration option,
-# copy a source snapshot from CVS to the source tree
-if [[ $# = 0 ]] || [[ $1 == -* ]]; then
-  mk-src $PROJECT $VERSION || exit $?
+zparseopts -D h=help -help=help
+[[ -n $help ]] && usage && exit 0
 
-  TARGET=$PROJECT-$VERSION
-  if ! cd $SRCROOT/$TARGET >&/dev/null; then
-    print -u2 "$progname: could not cd to $SRCROOT/$TARGET."
+# Assume that an argument that doesn't start with "-" is a version name.
+if [[ $# != 0 && $1 != -* ]]; then
+  zsh_version=$1
+  shift
+  if ! srcdir=$( GetSource $zsh_version ) ; then
+    print -u2 $progname: Could not get source for \"$zsh_version\"
     exit 1
   fi
 
-  # Generate a configure script
+# Default is to update and build from source control.
+else
+
+  # Get the time of the most recent build.
+  last_build_time=$( PrintProjectBuildTime -s zsh )
+
+  # If a specific version is specified, assume we're trying something
+  # specific out and rebuild even if the sources have not changed.
+  force=
+  [[ -n $VERSION ]] && force="--force"
+  if ! srcdir=$( GetSource --latest="$last_build_time" \
+                           --update $force zsh ); then
+    exit $?
+  fi
+fi
+
+cd $srcdir
+if [[ ! -e configure ]]; then
+
+  # Generate a configure script.
   if ! ./Util/preconfig; then
     print -u2 "$progname: preconfig failure."
     exit 2
   fi
-
-  # On cygwin, move the process substitution test aside
-  [[ $(uname) =~ CYGWIN* ]] && mv Test/D03procsubst{.ztst,-NOT}
-
-# Otherwise, $1 is the name of the already-unpacked source directory
-else
-  TARGET=$1
-  shift
-  if ! cd $SRCROOT/$TARGET 2>/dev/null; then
-    print -u2 "$progname: could not cd to $SRCROOT/$TARGET."
-    exit 1
-  fi
 fi
 
-# We've changed into the source directory.  Return to the
-# starting directory, but remember the source directory in SRCDIR.
-SRCDIR=$PWD
-cd $OLDPWD
+: ${zsh_version:=$PWD:t}
+mkdir $BLDROOT/$zsh_version
+cd $BLDROOT/$zsh_version
 
-generic_cfg_opts=()
-
-# Default to:
-#  --with-tcsetpgrp
-#  --enable-zsh-mem everywhere except cygwin
-#  --enable-pcre
-with_tcsetpgrp="--with-tcsetpgrp"
-enable_zsh_mem="--enable-zsh-mem"
-[[ $(uname -s) == CYGWIN* ]] && enable_zsh_mem=
-enable_pcre="--enable-pcre"
-
-# Support options to configure
-while [[ $# -gt 0 ]]; do
-  case $1 in
-  (--with-tcsetpgrp*)
-    with_tcsetpgrp=$1
-    ;;
-  (--*able-zsh-mem*)
-    enable_zsh_mem=$1
-    ;;
-  (--*able-pcre*)
-    enable_pcre=$1
-    ;;
-  (--*)
-    generic_cfg_opts[$#generic_cfg_opts+1]=$1
-    ;;
-  esac
-  shift
-done
-
-cfg -s -o conf.out $SRCDIR        \
-    --datadir=$USRLOCAL/share     \
-    --enable-etcdir=$USRLOCAL/etc \
-    $with_tcsetpgrp               \
-    $enable_zsh_mem               \
-    $enable_pcre                  \
-    $generic_cfg_opts || {
+# Configure.
+configure_options=(
+  --prefix=$USRLOCAL/$zsh_version
+  --datadir=$USRLOCAL/share
+  --enable-etcdir=$USRLOCAL/etc
+  --enable-zsh-mem
+  --enable-pcre
+  --with-tcsetpgrp
+  $*
+)
+if ! CFLAGS=-O $srcdir/configure $configure_options >& conf.out; then
   err=$?
-  print -u2 "$progname: could not configure $PROJECT."
+  print -u2 "$progname: configure failed:"
+  tail -n 15 conf.out
   exit $err
-}
-
-if ! cd $TARGET >&/dev/null; then
-  print -u2 "$progname: couldn't cd to $TARGET."
-  exit 3
 fi
 
-print -n "Building zsh..."
+# Build.
+print -n "Building zsh ... "
 if ! make >& mk.out; then
-  print -u2 "$progname: make failed.  See $TARGET/mk.out."
-  exit 4
+  err=$?
+  print -u2 "done.
+$progname: make failed:"
+  tail -n 15 mk.out
+  exit $err
 fi
 print "done."
 
-# Run tests
-print -n "Running tests..."
+# Run tests.
+print -n "Running tests ... "
 make -k check >& check.out
 print "done."
 summarize_zsh_tests check.out
-print "Installing package to $USRLOCAL/$TARGET."
+print "Installing package to $USRLOCAL/$zsh_version."
 if ! make install install.info >& inst.out; then
-  print -u2 "$progname: make install failed.  See $TARGET/inst.out."
-  exit 5
+  err=$?
+  print -u2 "$progname: make install failed:"
+  tail -n 15 inst.out
+  exit $err
 fi
+
+new_default -v zsh
 
 # Local Variables:
 # mode: shell-script
+# sh-basic-offset: 2
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

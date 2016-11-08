@@ -34,8 +34,9 @@ esac
 # Extract a local or remote tarball.
 if [[ -n $program_version ]]; then
   if ! srcdir=$( GetSource $program_version ) ; then
+    err=$?
     print -u2 $progname: Could not get source for \"$program_version\"
-    exit 1
+    exit $err
   fi
 
 # Default is to update and build from source control.

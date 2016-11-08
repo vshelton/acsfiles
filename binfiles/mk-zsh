@@ -23,6 +23,9 @@ project=zsh
 (( $# > 0 )) && project=$1 && shift
 srcdir=$( CopySourceVersion $project )
 
+# Not sure why $? is 0 if srcdir does not get set...
+[[ -z $srcdir ]] && exit 1
+
 cd $srcdir
 if [[ ! -e configure ]]; then
 
@@ -44,7 +47,6 @@ configure_options=(
   --enable-etcdir=$USRLOCAL/etc
   --enable-zsh-mem
   --enable-pcre
-  --with-tcsetpgrp
   $*
 )
 if ! CFLAGS=-O $srcdir/configure $configure_options >& conf.out; then
@@ -58,9 +60,9 @@ fi
 print -n "Building zsh ... "
 if ! make >& mk.out; then
   err=$?
-  print -u2 "done.
-$progname: make failed:"
-  tail -n 15 mk.out
+  print "done."
+  print -u2 "$progname: make failed:"
+  tail -n 15 mk.out 2>&1
   exit $err
 fi
 print "done."
@@ -74,7 +76,7 @@ print "Installing package to $USRLOCAL/$zsh_version."
 if ! make install install.info >& inst.out; then
   err=$?
   print -u2 "$progname: make install failed:"
-  tail -n 15 inst.out
+  tail -n 15 inst.out 2>&1
   exit $err
 fi
 

@@ -273,7 +273,7 @@ fi
 
 scm_update acsfiles conky
 
-update-zsh && new_default -v zsh
+mk-zsh
 mk-emacs
 
 # Local Variables:

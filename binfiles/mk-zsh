@@ -18,30 +18,10 @@ progname=${0:t}
 zparseopts -D h=help -help=help
 [[ -n $help ]] && usage && exit 0
 
-# Assume that an argument that doesn't start with "-" is a version name.
-if [[ $# != 0 && $1 != -* ]]; then
-  zsh_version=$1
-  shift
-  if ! srcdir=$( GetSource $zsh_version ) ; then
-    print -u2 $progname: Could not get source for \"$zsh_version\"
-    exit 1
-  fi
-
-# Default is to update and build from source control.
-else
-
-  # Get the time of the most recent build.
-  last_build_time=$( PrintProjectBuildTime -s zsh )
-
-  # If a specific version is specified, assume we're trying something
-  # specific out and rebuild even if the sources have not changed.
-  force=
-  [[ -n $VERSION ]] && force="--force"
-  if ! srcdir=$( GetSource --latest="$last_build_time" \
-                           --update $force zsh ); then
-    exit $?
-  fi
-fi
+# Extract the program name from the command line.
+project=zsh
+(( $# > 0 )) && project=$1 && shift
+srcdir=$( CopySourceVersion $project )
 
 cd $srcdir
 if [[ ! -e configure ]]; then

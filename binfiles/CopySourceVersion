@@ -1,0 +1,63 @@
+#!/usr/bin/env zsh
+
+# Copy a source directory, either from a tarball or from version control.
+
+emulate -LR zsh
+
+function usage() {
+  print -u2 "\
+usage: $progname [-h|--help] [version] [configure_args]
+       -h|--help - Print this help message"
+  return 0
+}
+
+progname=${0:t}
+
+zparseopts -D h=help -help=help
+[[ -n $help ]] && usage && exit 0
+
+: ${USRLOCAL:=/usr/local}
+
+# Heuristically determine whether the caller wants a project
+# or a specific version of a project based on whether or not
+# a number appears in the argument.
+# Note: this precludes projects named things like emacs21.
+case $1 in
+  (*[0-9]*)
+    program_version=$1
+    ;;
+  (*)
+    project=$1
+    ;;
+esac
+
+if [[ -n $program_version ]]; then
+  if ! srcdir=$( GetSource $program_version ) ; then
+    print -u2 $progname: Could not get source for \"$program_version\"
+    exit 1
+  fi
+
+# Default is to update and build from source control.
+else
+
+  # Get the time of the most recent build.
+  last_build_time=$( PrintProjectBuildTime -s $project )
+
+  # If a specific version is specified, assume we're trying something
+  # specific out and rebuild even if the sources have not changed.
+  force=
+  [[ -n $VERSION ]] && force="--force"
+  if ! srcdir=$( GetSource --latest="$last_build_time" \
+                           --update $force $project ); then
+    exit $?
+  fi
+fi
+
+print $srcdir
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

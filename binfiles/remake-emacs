@@ -44,7 +44,7 @@ case $app in
   mk-emacs
   ;;
 (zsh)
-  update-zsh
+  mk-zsh
 esac
 
 (( $? == 0 )) && touch $SCMROOT/$app/last_update

@@ -274,7 +274,7 @@ fi
 scm_update acsfiles conky
 
 mk-zsh
-mk-emacs
+mk-emacs --with-x-toolkit=lucid
 
 # Local Variables:
 # mode: shell-script

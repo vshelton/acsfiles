@@ -4,6 +4,7 @@
 .i3/config                              $SCMROOT/rcfiles/i3config                               linux
 .zshenv                                 $SCMROOT/rcfiles/zsh/home-zshenv                        linux,NT
 bin/BuildXEmacsKits                     $SCMROOT/binfiles/NT/BuildXEmacsKits                    NT
+bin/CopySourceVersion                   $SCMROOT/binfiles/CopySourceVersion                     linux
 bin/GetSource                           $SCMROOT/binfiles/GetSource                             linux,NT
 bin/GetXEmacsPackages                   $SCMROOT/binfiles/NT/GetXEmacsPackages                  NT
 bin/InstallExtraXEmacsPackages          $SCMROOT/binfiles/NT/InstallExtraXEmacsPackages         NT

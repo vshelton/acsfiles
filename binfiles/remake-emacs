@@ -31,7 +31,7 @@ rm $app
 ln -s $app*(om[1]) $app
 
 # Force a rebuild by making ChangeLog "new".
-touch $SCMROOT/$app/ChangeLog
+touch $SCMROOT/$app/ChangeLog*
 cd $BLDROOT
 
 # Rebuild the application.
@@ -41,10 +41,10 @@ case $app in
   NO_PATH_CLOBBER=1 PATH=$BLDROOT/texinfo-4.13/makeinfo:$PATH mk-xp -v $(installed_packages)
   ;;
 (emacs)
-  mk-emacs
+  mk-emacs $@
   ;;
 (zsh)
-  mk-zsh
+  mk-zsh $@
 esac
 
 (( $? == 0 )) && touch $SCMROOT/$app/last_update

@@ -4,7 +4,7 @@
 .i3/config                              $SCMROOT/rcfiles/i3config                               linux
 .zshenv                                 $SCMROOT/rcfiles/zsh/home-zshenv                        linux,NT
 bin/BuildXEmacsKits                     $SCMROOT/binfiles/NT/BuildXEmacsKits                    NT
-bin/CopySourceVersion                   $SCMROOT/binfiles/CopySourceVersion                     linux
+bin/CopySourceVersion                   $SCMROOT/binfiles/CopySourceVersion                     linux,NT
 bin/GetSource                           $SCMROOT/binfiles/GetSource                             linux,NT
 bin/GetXEmacsPackages                   $SCMROOT/binfiles/NT/GetXEmacsPackages                  NT
 bin/InstallExtraXEmacsPackages          $SCMROOT/binfiles/NT/InstallExtraXEmacsPackages         NT
@@ -13,7 +13,7 @@ bin/MakeCygwinXEmacs                    $SCMROOT/binfiles/NT/MakeCygwinXEmacs   
 bin/MakeLinuxLinks                      $SCMROOT/binfiles/MakeLinuxLinks                        neither
 bin/MakeNativeXEmacs                    $SCMROOT/binfiles/NT/MakeNativeXEmacs                   NT
 bin/MakeXEmacsWindowsKit                $SCMROOT/binfiles/NT/MakeXEmacsWindowsKit               NT
-bin/PrintProjectBuildTime               $SCMROOT/binfiles/PrintProjectBuildTime                 linux
+bin/PrintProjectBuildTime               $SCMROOT/binfiles/PrintProjectBuildTime                 linux,NT
 bin/Rip.acs                             $SCMROOT/binfiles/Rip.acs                               linux
 bin/all_dirs                            $SCMROOT/binfiles/all_dirs                              linux,NT
 bin/all_versions                        $SCMROOT/binfiles/all_versions                          linux,NT

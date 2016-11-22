@@ -21,8 +21,14 @@ zparseopts -D h=help -help=help s=stat_opts
 [[ -n $help ]] && usage && exit 0
 [[ $# -ne 1 ]] && usage && exit 1
 
-zmodload zsh/stat
+# If no previous file exists, return a time close to the epoch.
+setopt extendedglob nonomatch nocshnullglob
+if [[ ! -d $BLDROOT/$1*(#q[1]) ]]; then
+  [[ $stat_opts == -s ]] && date --date=@0 || print 0
+  exit 0
+fi
 
+zmodload zsh/stat
 stat +mtime $stat_opts $BLDROOT/$1*(om[1])
 
 # Local Variables:

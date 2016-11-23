@@ -155,7 +155,7 @@ if [[ ${host} == "VirtualBox" ]]; then
 
     # Install the VirtualBox additions and the prerequisites.
     install_package gcc make
-    install_package linux-headers-amd64 || install_package kernel-headers
+    install_package linux-headers-amd64 || install_package kernel-devel kernel-headers
     sudo /mnt/VBoxLinuxAdditions.run &&
       sudo usermod --append --groups vboxsf acs
 

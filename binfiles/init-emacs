@@ -131,7 +131,7 @@ elif fedora-p ; then
   deps[emacs]="autoconf automake giflib-devel gnutls-devel libXaw-devel      \
                libjpeg-turbo-devel libtiff-devel texinfo"
   deps[zsh]="ftp://ftp.pbone.net/mirror/ftp5.gwdg.de/pub/opensuse/repositories/Publishing/openSUSE_Factory/x86_64/yodl-3.06.00-2777.25.x86_64.rpm \
-             autoconf gcc pcre-devel texinfo"
+             autoconf gcc pcre-devel ncurses-devel texinfo"
 fi
 
 # Clone the source code repository.

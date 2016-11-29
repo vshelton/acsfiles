@@ -113,7 +113,7 @@ username=$(whoami)
 vbox_prefix="/media/sf_"
 : ${shared_root:=host-root}
 : ${shared_home:=host-home}
-: ${shared_opt:=host-SSD-2TB}
+: ${shared_opt:=host-SSD-2TB/opt}
 : ${host_user:=shelta}
 
 # This build script depends on sudo, so install sudo

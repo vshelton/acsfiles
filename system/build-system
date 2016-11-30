@@ -296,12 +296,12 @@ if debian-p ; then
   fi
 
 elif fedora-p ; then
-  sudo dnf --assumeyes install cabextract ttmkfdir
+  sudo dnf --assumeyes install cabextract ttmkfdir rpm-build
   font_ver="msttcorefonts-2.5-1"
   specfile="${font_ver}.spec"
   wget http://corefonts.sourceforge.net/${specfile}
   # The list of mirrors is old; update it.
-  perl -pi.orig -e 's/mirrors=".*"/mirrors="freefr+voxel"/;' -e 's/^mirror_count=.*/mirror_count=2/;' ${specfile}
+  perl -pi.orig -e 's/mirrors=".*"/mirrors="freefr"/;' -e 's/^mirror_count=.*/mirror_count=1/;' ${specfile}
   echo '%_topdir %(echo $HOME)/rpmbuild' > .rpmmacros
   for i in {1..10}; do
     rpmbuild -bb ${specfile} && break

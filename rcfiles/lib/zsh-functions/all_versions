@@ -8,7 +8,9 @@ setopt extended_glob
 
 typeset -a x
 x=( ${^$(all_dirs)}/$=~^*(N/:t) )
+(( $#x == 0 )) && return 1
 print -l ${(ou)x}
+return 0
 
 # Local Variables:
 # mode: shell-script

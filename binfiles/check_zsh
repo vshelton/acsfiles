@@ -13,7 +13,7 @@ build_dir=$BLDROOT/$version
 cd $build_dir || exit $?
 if [[ ! ${MODULE_PATH:h:h:h:t} == *$(today)* ]]; then
   echoti smso
-  print -u2 "\n$progname: warning - testing a build that was not made today.\n"
+  print -u2 "\n$0: warning - testing a build that was not made today.\n"
   echoti rmso
   echoti flash
 fi

@@ -10,7 +10,7 @@ fi
 
 umask 022
 
-zdirs=( $HOME/zsh/$OSTYPE/$(uname -n) $HOME/zsh/$OSTYPE $HOME/zsh $HOME )
+zdirs=( $HOME/zsh/$OSTYPE/$(/bin/uname -n) $HOME/zsh/$OSTYPE $HOME/zsh $HOME )
 
 desire() {
   for zd in $zdirs; do

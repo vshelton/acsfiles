@@ -1,47 +1,24 @@
-#!/bin/sh
-#
-# Make and install perl
-# Options:
-#   -u Unpack the sources from tarfiles
- 
-# Execute this script under the Z shell
-[ ! -n "$ZSH_VERSION" ] && exec zsh "$0" ${1+"$@"}
+#!/usr/bin/env zsh
 
-progname=${0:t}
+: ${USRLOCAL:=/usr/local}
+: ${BLDROOT:=$USRLOCAL/build}
 
-unpack=
-general_cfg_opts=
-prefix=${USRLOCAL:-/usr/local}
+pkgname=perl
+scm_opts=
+if [[ $# == 0 ]]; then
+  set $pkgname
+  scm_opts=--update
+fi
 
-err=1
-while getopts ":u-:" opt
-do
-  case $opt in
-  (u)	unpack=-u
-	;;
-  # Unused in this case because we're not using configure
-  (-)	general_cfg_opts="$general_cfg_opts --$OPTARG"
-	;;
-  # Unknown option
-  (?)	print -u2 "$progname: invalid option: $argv[$OPTIND]"
-	exit $err
-	;;
-  esac
-done
+cd $(SRCROOT=$BLDROOT GetSource --src=$BLDROOT $scm_opts "$1")
+./Configure -Dprefix=$USRLOCAL -Dusedevel -des
 
-shift $OPTIND-1			# Skip over options
+make
+make test
 
-CC=${CC:-gcc}
-use_gcc=
-case $CC in
-  (*gcc*)
-    use_gcc="-Dcc=gcc"
-    ;;
-esac
-
-perlsrc=$(getsource $unpack perl)
-mkdir $perlsrc:t
-cd $perlsrc:t
-
-sh $perlsrc/Configure -Dmksymlinks $use_gcc -Dprefix=$prefix -des
-make all test install
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

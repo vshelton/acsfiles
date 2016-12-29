@@ -135,6 +135,7 @@ else
   cd $SCMROOT/$1
 
   timestamp=${timespec[2]#=}
+  [[ -z $timestamp ]] && timestamp=$(today)
   newfiles=( $(find . \( -path ./.bzr -o -path ./.git -o -path ./.hg \) -prune \
                      -o -newermt $timestamp -type f -print) )
   #print -u2 newfiles = $newfiles

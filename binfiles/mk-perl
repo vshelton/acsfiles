@@ -3,6 +3,10 @@
 : ${USRLOCAL:=/usr/local}
 : ${BLDROOT:=$USRLOCAL/build}
 
+install=
+snapshot=
+zparseopts -D i=install -install=install s=snapshot -snapshot=snapshot
+
 pkgname=perl
 scm_opts=
 if [[ $# == 0 ]]; then
@@ -11,10 +15,13 @@ if [[ $# == 0 ]]; then
 fi
 
 cd $(SRCROOT=$BLDROOT GetSource --src=$BLDROOT $scm_opts "$1")
-./Configure -Dprefix=$USRLOCAL -Dusedevel -des
+prefix=$USRLOCAL
+[[ -n $snapshot ]] && prefix=$prefix/${PWD:t}
+./Configure -Dprefix=$prefix -Dusedevel -Dcf_email=ethersoft@gmail.com -des
 
 make
 make test
+[[ -n $install ]] && make install
 
 # Local Variables:
 # mode: shell-script

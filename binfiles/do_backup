@@ -13,6 +13,11 @@ setopt extended_glob
 
 #exceptions=( /raid-3tb/${^exceptions} )
 
+exceptions=(backups
+            lost+found
+            opt)
+exceptions=( /SSD-2TB/${^exceptions} )
+
 # Parse arguments into obnam options and directories
 ob_opts=()
 while [[ $# -gt 0 && $1 = -* ]]; do
@@ -26,8 +31,15 @@ done
 
 # Should we backup /opt/src? /etc?
 # If so, just add those paths to the command line
-#obnam $ob_opts backup $HOME /raid-3tb/*~${(j:~:)~exceptions} $*
-obnam $ob_opts backup $HOME $*
+for repo in /SSD-2TB/backups/obnam-backup /media/acs/5ac9e345-ab80-4fb4-b5e7-041bec76829d/obnam-backup; do
+  set -x
+  obnam --repository="$repo" $ob_opts backup $HOME /SSD-2TB/*~${(j:~:)~exceptions} $*
+  set +x
+done
+
+print -r "Also (if you want to be complete):"
+print -r obnam -r sftp://acs@legolas/WD-4TB-1/obnam-backups $ob_opts backup $HOME /SSD-2TB/*~${(j:~:)~exceptions} $*
+
 
 # Local Variables:
 # mode: shell-script

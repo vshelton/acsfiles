@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 use strict;
 use File::Copy;
@@ -29,6 +29,7 @@ foreach my $filename (@ARGV) {
             print $fh "      <album>"    . $track->album    . "</album>\n";
             print $fh "      <location>" . $track->location . "</location>\n";
             print $fh "      <duration>" . $track->duration . "</duration>\n";
+            print $fh "      <trackNum>" . $track->trackNum . "</trackNum>\n";
             print $fh "    </track>\n";
         }
     }

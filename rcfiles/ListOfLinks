@@ -48,6 +48,7 @@ bin/mk-conky                            $SCMROOT/binfiles/mk-conky              
 bin/mk-emacs                            $SCMROOT/binfiles/mk-emacs                              linux
 bin/mk-feh                              $SCMROOT/binfiles/mk-feh                                linux
 bin/mk-lastpass                         $SCMROOT/binfiles/mk-lastpass                           linux,NT
+bin/mk-perl                             $SCMROOT/binfiles/mk-perl                                linux,NT
 bin/mk-src                              $SCMROOT/binfiles/mk-src                                linux,NT
 bin/mk-xemacs                           $SCMROOT/binfiles/mk-xemacs                             linux,NT
 bin/mk-xemacs-21.5                      $SCMROOT/binfiles/mk-xemacs-21.5                        linux,NT

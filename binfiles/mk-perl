@@ -19,9 +19,10 @@ prefix=$USRLOCAL
 [[ -n $snapshot ]] && prefix=$prefix/${PWD:t}
 ./Configure -Dprefix=$prefix -Dusedevel -Dcf_email=ethersoft@gmail.com -des
 
-make
-make test
-[[ -n $install ]] && make install
+make && make test
+retval=$?
+[[ -z $install ]] && exit $retval
+make install
 
 # Local Variables:
 # mode: shell-script

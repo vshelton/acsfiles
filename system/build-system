@@ -178,11 +178,19 @@ if [[ ${host} == "VirtualBox" ]]; then
   fi
 fi
 
+# Find the directory containing zip files.
+host_home=
+ziproot=${ZIPROOT}
+if [[ ${host} == "VirtualBox" ]]; then
+  ziproot=$(find_host_ziproot)
+  host_home=$(find_host_home)
+fi
+
 # Add the 'extra' repository if we're running under Arch linux.
 sudo cat >>/etc/pacman.conf <<EOF
 
-[extra]
-Server = http://mirror.es.its.nyu.edu/archlinux/extra/os/x86_64
+[custom]
+Server = file:///${ziproot}/arch
 EOF
 
 # Install the Z-shell and move aside the customization.
@@ -232,14 +240,6 @@ ln -s ${acs_repo#${scmbase}/}{,/binfiles,/rcfiles} ${scmbase}
 
 # Link startup files.
 SCMROOT=${PWD}/${scmbase} ${acs_repo}/binfiles/LinkStartupFiles
-
-# Find the directory containing zip files.
-host_home=
-ziproot=${ZIPROOT}
-if [[ ${host} == "VirtualBox" ]]; then
-  ziproot=$(find_host_ziproot)
-  host_home=$(find_host_home)
-fi
 
 # Create a directory for saving shell history, unpack wallpapers
 # and create a startup-script for xfce.

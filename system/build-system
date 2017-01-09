@@ -182,7 +182,7 @@ fi
 sudo cat >>/etc/pacman.conf <<EOF
 
 [extra]
-Server= http://mirror.es.its.nyu.edu/archlinux/extra/os/x86_64
+Server = http://mirror.es.its.nyu.edu/archlinux/extra/os/x86_64
 EOF
 
 # Install the Z-shell and move aside the customization.
@@ -306,19 +306,24 @@ chmod 755 bin/daily
 
 # Install Microsoft and Ubuntu fonts.
 if arch-p ; then
-  install_package ttf-ms-fonts ttf-ubuntu-family
+  install_package ttf-ms-fonts ttf-ubuntu-font
   fc-cache -f -v
+
 elif debian-p ; then
+  # A little too much inside baseball here:
+  # knowledge of apt-cache and dpkg.
+  # Still, use install_package for hygiene's sake.
   if [[ -n $(apt-cache search ttf-mscorefonts-installer) ]]; then
-    sudo apt-get --yes install ttf-mscorefonts-installer
+    install_package ttf-mscorefonts-installer
   else
-    sudo apt-get --yes install cabextract libmspack0
+    install_package cabextract libmspack0
     wget http://ftp.us.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.6_all.deb
     sudo dpkg --install ttf-mscorefonts-installer_3.6_all.deb
   fi
 
 elif fedora-p ; then
-  sudo dnf --assumeyes install cabextract ttmkfdir rpm-build
+  # Like in debian, too much knowledge of RPM packaging is required here.
+  install_package cabextract ttmkfdir rpm-build
   font_ver="msttcorefonts-2.5-1"
   specfile="${font_ver}.spec"
   wget http://corefonts.sourceforge.net/${specfile}

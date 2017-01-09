@@ -4,6 +4,9 @@
 # or one hosted under VirtualBox.
 
 # Define helper functions to identify the type of the underlying OS.
+function arch-p() {
+  [[ -x /usr/bin/pacman ]]
+}
 function debian-p() {
   [[ -x /usr/bin/apt-get ]]
 }
@@ -11,7 +14,9 @@ function fedora-p() {
   [[ -x /usr/bin/dnf ]]
 }
 function package_manager() {
-  if debian-p; then
+  if arch-p; then
+    echo "pacman"
+  elif debian-p; then
     echo "apt-get --yes"
   elif fedora-p; then
     echo "dnf --assumeyes"
@@ -26,14 +31,20 @@ function package_manager() {
 function install_package() {
   # Package_manager has already reported this error.
   pm=$(package_manager) || exit $?
-  sudo ${pm} install $*
+  if arch-p; then
+    sudo ${pm} --sync $*
+  else
+    sudo ${pm} install $*
+  fi
 }
 
 # Define a platform-agnostic function to upgrade packages.
 function upgrade_packages() {
   # Package_manager has already reported this error.
   pm=$(package_manager) || exit $?
-  if fedora-p; then
+  if arch-p; then
+    sudo ${pm} --sync --refresh --upgrade
+  elif fedora-p; then
     sudo ${pm} upgrade
   elif debian-p; then
     sudo ${pm} update && sudo ${pm} upgrade
@@ -136,7 +147,7 @@ host=$(sudo dmidecode -s system-product-name)
 if [[ ${host} == "VirtualBox" ]]; then
 
   # First time through: install VirtualBox Guest Additions and reboot.
-  if ! groups acs | grep vboxsf >/dev/null; then
+  if ! groups ${username} | grep vboxsf >/dev/null; then
 
     # Install VirtualBox Guest Additions.
     if ! sudo mount /dev/cdrom /mnt ; then
@@ -157,7 +168,7 @@ if [[ ${host} == "VirtualBox" ]]; then
     install_package gcc make
     install_package linux-headers-amd64 || install_package kernel-devel kernel-headers
     sudo /mnt/VBoxLinuxAdditions.run &&
-      sudo usermod --append --groups vboxsf acs
+      sudo usermod --append --groups vboxsf ${username}
 
     sync
     if ! sudo reboot ; then
@@ -166,6 +177,13 @@ if [[ ${host} == "VirtualBox" ]]; then
     fi
   fi
 fi
+
+# Add the 'extra' repository if we're running under Arch linux.
+sudo cat >>/etc/pacman.conf <<EOF
+
+[extra]
+Server= http://mirror.es.its.nyu.edu/archlinux/extra/os/x86_64
+EOF
 
 # Install the Z-shell and move aside the customization.
 install_package zsh
@@ -177,7 +195,8 @@ else
 fi
 
 # Install i3, git and mercurial.
-install_package git i3 mercurial
+install_package git mercurial
+install_package i3
 
 # Create USRLOCAL hierarchy
 : ${USRLOCAL:=/opt}
@@ -286,7 +305,10 @@ EOF
 chmod 755 bin/daily
 
 # Install Microsoft and Ubuntu fonts.
-if debian-p ; then
+if arch-p ; then
+  install_package ttf-ms-fonts ttf-ubuntu-family
+  fc-cache -f -v
+elif debian-p ; then
   if [[ -n $(apt-cache search ttf-mscorefonts-installer) ]]; then
     sudo apt-get --yes install ttf-mscorefonts-installer
   else
@@ -314,12 +336,14 @@ else
 fi
 
 # Unpack ubuntu fonts and update the font cache.
-sudo -s <<EOF
-  cd /usr/share/fonts
-  [[ -d truetype ]] && cd truetype
-  unzip ${ziproot}/ubuntu-font-family-0.83.zip
-  fc-cache -f -v
+if ! arch-p ; then
+  sudo -s <<EOF
+    cd /usr/share/fonts
+    [[ -d truetype ]] && cd truetype
+    unzip ${ziproot}/ubuntu-font-family-0.83.zip
+    fc-cache -f -v
 EOF
+fi
 
 # Set up the execution path to include my scripts
 # to make conky, emacs and zsh.

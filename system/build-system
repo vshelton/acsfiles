@@ -43,7 +43,7 @@ function upgrade_packages() {
   # Package_manager has already reported this error.
   pm=$(package_manager) || exit $?
   if arch-p; then
-    sudo ${pm} --sync --refresh --upgrade
+    sudo ${pm} --sync --refresh -u
   elif fedora-p; then
     sudo ${pm} upgrade
   elif debian-p; then
@@ -187,11 +187,15 @@ if [[ ${host} == "VirtualBox" ]]; then
 fi
 
 # Add the 'extra' repository if we're running under Arch linux.
-sudo cat >>/etc/pacman.conf <<EOF
+if arch-p ; then
+  sudo -s << EOF
+  echo "
 
 [custom]
-Server = file:///${ziproot}/arch
+Server = file:///${ziproot}/arch" >>/etc/pacman.conf
+  sudo pacman --sync --refresh
 EOF
+fi
 
 # Install the Z-shell and move aside the customization.
 install_package zsh

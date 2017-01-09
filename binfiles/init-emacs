@@ -13,6 +13,9 @@ emulate -LR zsh
 #
 
 # Define helper functions to identify the type of the underlying OS.
+function arch-p() {
+  [[ -x /usr/bin/pacman ]]
+}
 function debian-p() {
   [[ -x /usr/bin/apt-get ]]
 }
@@ -20,7 +23,9 @@ function fedora-p() {
   [[ -x /usr/bin/dnf ]]
 }
 function package_manager() {
-  if debian-p; then
+  if arch-p; then
+    echo "pacman"
+  elif debian-p; then
     echo "apt-get --yes"
   elif fedora-p; then
     echo "dnf --assumeyes"
@@ -35,7 +40,11 @@ function package_manager() {
 function install_package() {
   # Package_manager has already reported this error.
   pm=$(package_manager) || exit $?
-  sudo ${=pm} install ${=*}
+  if arch-p; then
+    sudo ${pm} --sync $*
+  else
+    sudo ${pm} install $*
+  fi
 }
 
 # Define a function to clone a git repo.
@@ -110,7 +119,13 @@ repos[zsh]="git://git.code.sf.net/p/zsh/code"
 # the package manager is based on rpm or apt-get.
 typeset -A deps
 
-if debian-p; then
+if arch-p; then
+  deps[conky]=cmake
+  deps[emacs]="autoconf automake giflib-devel gnutls-devel libXaw-devel      \
+               libjpeg-turbo-devel libtiff-devel texinfo"
+  # sudo pacman --upgrade /media/sf_host-SSD-2TB/opt/zip/yodl/arch/yodl-package/yodl-3.08.01-1-x86_64.pkg.tar.xz
+  deps[zsh]="autoconf gcc pcre-devel ncurses-devel texinfo"
+elif debian-p; then
   # On debian, at some point the package name changed from libXdamage-dev
   # to libxdamage-dev, so we will special-case it here.
   deps[conky]="cmake g++ libfreetype6-dev liblua5.2-dev         \

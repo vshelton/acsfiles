@@ -283,7 +283,11 @@ cat >bin/daily <<EOF
 # Daily update of system packages and home-built applications.
 emulate -LR zsh
 
-if [[ -x /usr/bin/apt-get ]]; then
+if [[ -x /usr/bin/pacman ]]; then
+  sudo pacman -Syu
+  sudo paccache -ruk0
+
+elif [[ -x /usr/bin/apt-get ]]; then
   for a in update dist-upgrade autoremove autoclean; do
     sudo apt-get --yes \$a || break
   done

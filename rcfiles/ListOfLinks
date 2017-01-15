@@ -15,6 +15,7 @@ bin/MakeNativeXEmacs                    $SCMROOT/binfiles/NT/MakeNativeXEmacs   
 bin/MakeXEmacsWindowsKit                $SCMROOT/binfiles/NT/MakeXEmacsWindowsKit               NT
 bin/PrintProjectBuildTime               $SCMROOT/binfiles/PrintProjectBuildTime                 linux,NT
 bin/Rip.acs                             $SCMROOT/binfiles/Rip.acs                               linux
+bin/SaveAllVMs                          $SCMROOT/binfiles/SaveAllVMs                               linux
 bin/all_dirs                            $SCMROOT/binfiles/all_dirs                              linux,NT
 bin/all_versions                        $SCMROOT/binfiles/all_versions                          linux,NT
 bin/bld                                 $SCMROOT/binfiles/bld                                   linux,NT

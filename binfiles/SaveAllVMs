@@ -1,0 +1,35 @@
+#!/usr/bin/env zsh
+
+# Backup each virtual machine on the system.
+
+emulate -LR zsh
+
+function usage() {
+  print -u2 "\
+usage: $progname [-h|--help]
+       -h|--help - Print this help message"
+  return 0
+}
+
+progname=${0:t}
+: ${USRLOCAL:=/usr/local}
+: ${ZIPROOT:=$USRLOCAL/zip}
+
+zparseopts -D h=help -help=help
+[[ -n $help ]] && usage && exit 0
+
+pushd $ZIPROOT
+[[ -d ISOs ]]  && cd ./ISOs
+for v in $(VBoxManage list vms | sed -n -e 's/\"\(.*\)\" .*/\1/p'); do
+  echo $v
+  rm -f $v.ova
+  VBoxManage export $v --output $v.ova --ovf20 --manifest
+  chmod 444 $v.ova
+done
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

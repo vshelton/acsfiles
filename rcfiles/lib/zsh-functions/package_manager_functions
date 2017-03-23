@@ -1,0 +1,70 @@
+#
+# Utility functions to implement package management on different systems.
+#
+
+arch_pm=/usr/bin/pacman
+debian_pm=/usr/bin/apt-get
+fedora_pm=/usr/bin/dnf
+suse_pm=/usr/bin/zypper
+
+# Define helper functions to identify the type of the underlying OS.
+function arch-p() {
+  [[ -x $arch_pm ]]
+}
+function debian-p() {
+  [[ -x $debian_pm ]]
+}
+function fedora-p() {
+  [[ -x $fedora_pm ]]
+}
+function suse-p() {
+  [[ -x $suse_pm ]]
+}
+function package_manager() {
+  if suse-p; then
+    echo $suse_pm
+  elif arch-p; then
+    echo $arch_pm
+  elif debian-p; then
+    echo "$debian_pm --yes"
+  elif fedora-p; then
+    echo "$fedora_pm --assumeyes"
+  else
+    print -u2 "Not a supported OS type."
+    return 1
+  fi
+  return 0
+}
+
+# Define a platform-agnostic function to install packages.
+function install_package() {
+  # Package_manager has already reported this error.
+  pm=$(package_manager) || exit $?
+  if arch-p; then
+    sudo ${pm} --sync $*
+  else
+    sudo ${pm} install $*
+  fi
+}
+
+# Define a platform-agnostic function to upgrade packages.
+function upgrade_packages() {
+  # Package_manager has already reported this error.
+  pm=$(package_manager) || exit $?
+  if suse-p; then
+    sudo ${pm} update
+  elif arch-p; then
+    sudo ${pm} --sync --refresh -u
+  elif fedora-p; then
+    sudo ${pm} upgrade
+  elif debian-p; then
+    sudo ${pm} update && sudo ${pm} upgrade
+  fi
+}
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

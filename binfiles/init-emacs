@@ -12,23 +12,33 @@ emulate -LR zsh
 # Utility functions.
 #
 
+arch_pm=/usr/bin/pacman
+debian_pm=/usr/bin/apt-get
+fedora_pm=/usr/bin/dnf
+suse_pm=/usr/bin/zypper
+
 # Define helper functions to identify the type of the underlying OS.
 function arch-p() {
-  [[ -x /usr/bin/pacman ]]
+  [[ -x $arch_pm ]]
 }
 function debian-p() {
-  [[ -x /usr/bin/apt-get ]]
+  [[ -x $debian_pm ]]
 }
 function fedora-p() {
-  [[ -x /usr/bin/dnf ]]
+  [[ -x $fedora_pm ]]
+}
+function suse-p() {
+  [[ -x $suse_pm ]]
 }
 function package_manager() {
-  if arch-p; then
-    echo "pacman"
+  if suse-p; then
+    echo $suse_pm
+  elif arch-p; then
+    echo $arch_pm
   elif debian-p; then
-    echo "apt-get --yes"
+    echo "$debian_pm --yes"
   elif fedora-p; then
-    echo "dnf --assumeyes"
+    echo "$fedora_pm --assumeyes"
   else
     print -u2 "Not a supported OS type."
     return 1
@@ -81,7 +91,7 @@ function link_latest() {
 
 # Define a (debian) function to list a package name.
 function list_package() {
-  debian-p || return 1
+  [[ -x /usr/bin/apt-cache ]] || return 1
   apt-cache search "$1" | sed -sne 's/ .*//p'
 }
 

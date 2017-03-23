@@ -13,8 +13,13 @@ function debian-p() {
 function fedora-p() {
   [[ -x /usr/bin/dnf ]]
 }
+function suse-p() {
+  [[ -x /usr/bin/zypper ]]
+}
 function package_manager() {
-  if arch-p; then
+  if suse-p; then
+    echo "zypper"
+  elif arch-p; then
     echo "pacman"
   elif debian-p; then
     echo "apt-get --yes"
@@ -42,7 +47,9 @@ function install_package() {
 function upgrade_packages() {
   # Package_manager has already reported this error.
   pm=$(package_manager) || exit $?
-  if arch-p; then
+  if suse-p; then
+    sudo ${pm} update
+  elif arch-p; then
     sudo ${pm} --sync --refresh -u
   elif fedora-p; then
     sudo ${pm} upgrade

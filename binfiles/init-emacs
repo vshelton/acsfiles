@@ -12,50 +12,12 @@ emulate -LR zsh
 # Utility functions.
 #
 
-arch_pm=/usr/bin/pacman
-debian_pm=/usr/bin/apt-get
-fedora_pm=/usr/bin/dnf
-suse_pm=/usr/bin/zypper
-
-# Define helper functions to identify the type of the underlying OS.
-function arch-p() {
-  [[ -x $arch_pm ]]
-}
-function debian-p() {
-  [[ -x $debian_pm ]]
-}
-function fedora-p() {
-  [[ -x $fedora_pm ]]
-}
-function suse-p() {
-  [[ -x $suse_pm ]]
-}
-function package_manager() {
-  if suse-p; then
-    echo $suse_pm
-  elif arch-p; then
-    echo $arch_pm
-  elif debian-p; then
-    echo "$debian_pm --yes"
-  elif fedora-p; then
-    echo "$fedora_pm --assumeyes"
-  else
-    print -u2 "Not a supported OS type."
-    return 1
+for d in $SCMROOT/acsfiles/rcfiles/lib/zsh-functions $HOME/lib/zsh-functions $HOME; do
+  if [[ -e $d/package_manager_functions ]]; then
+    . $d/package_manager_functions
+    break
   fi
-  return 0
-}
-
-# Define a platform-agnostic function to install packages.
-function install_package() {
-  # Package_manager has already reported this error.
-  pm=$(package_manager) || exit $?
-  if arch-p; then
-    sudo ${pm} --sync $*
-  else
-    sudo ${pm} install $*
-  fi
-}
+done
 
 # Define a function to clone a git repo.
 function clone_git_repo() {

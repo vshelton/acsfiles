@@ -3,60 +3,12 @@
 # Build a new linux system, either a native one
 # or one hosted under VirtualBox.
 
-# Define helper functions to identify the type of the underlying OS.
-function arch-p() {
-  [[ -x /usr/bin/pacman ]]
-}
-function debian-p() {
-  [[ -x /usr/bin/apt-get ]]
-}
-function fedora-p() {
-  [[ -x /usr/bin/dnf ]]
-}
-function suse-p() {
-  [[ -x /usr/bin/zypper ]]
-}
-function package_manager() {
-  if suse-p; then
-    echo "zypper"
-  elif arch-p; then
-    echo "pacman"
-  elif debian-p; then
-    echo "apt-get --yes"
-  elif fedora-p; then
-    echo "dnf --assumeyes"
-  else
-    echo "Not a supported OS type." 2>&1
-    return 1
+for d in $HOME/scmroot/acsfiles/rcfiles/lib/zsh-functions $HOME/lib/zsh-functions $HOME; do
+  if [[ -e $d/package_manager_functions ]]; then
+    . $d/package_manager_functions
+    break
   fi
-  return 0
-}
-
-# Define a platform-agnostic function to install packages.
-function install_package() {
-  # Package_manager has already reported this error.
-  pm=$(package_manager) || exit $?
-  if arch-p; then
-    sudo ${pm} --sync $*
-  else
-    sudo ${pm} install $*
-  fi
-}
-
-# Define a platform-agnostic function to upgrade packages.
-function upgrade_packages() {
-  # Package_manager has already reported this error.
-  pm=$(package_manager) || exit $?
-  if suse-p; then
-    sudo ${pm} update
-  elif arch-p; then
-    sudo ${pm} --sync --refresh -u
-  elif fedora-p; then
-    sudo ${pm} upgrade
-  elif debian-p; then
-    sudo ${pm} update && sudo ${pm} upgrade
-  fi
-}
+done
 
 # Print the arguments separated by commas and, ultimately, "and".
 function print_list() {

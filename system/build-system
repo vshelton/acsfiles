@@ -3,7 +3,7 @@
 # Build a new linux system, either a native one
 # or one hosted under VirtualBox.
 
-for d in $HOME/scmroot/acsfiles/rcfiles/lib/zsh-functions $HOME/lib/zsh-functions $HOME; do
+for d in $HOME/lib/zsh-functions $HOME/scmroot/acsfiles/rcfiles/lib/zsh-functions $HOME; do
   if [[ -e $d/package_manager_functions ]]; then
     . $d/package_manager_functions
     break
@@ -242,7 +242,10 @@ cat >bin/daily <<EOF
 # Daily update of system packages and home-built applications.
 emulate -LR zsh
 
-if [[ -x /usr/bin/pacman ]]; then
+f [[ -x /usr/bin/zypper ]]; then
+  sudo zypper update
+
+elif [[ -x /usr/bin/pacman ]]; then
   sudo pacman -Syu
   sudo paccache -ruk0
 

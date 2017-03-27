@@ -112,6 +112,8 @@ lib/zsh-functions/loop_while_failing    $SCMROOT/rcfiles/lib/zsh-functions/loop_
 lib/zsh-functions/new_XEmacs            $SCMROOT/rcfiles/lib/zsh-functions/new_XEmacs           linux,NT
 lib/zsh-functions/nfunc                 $SCMROOT/rcfiles/lib/zsh-functions/nfunc                linux,NT
 lib/zsh-functions/nohist                $SCMROOT/rcfiles/lib/zsh-functions/nohist               linux,NT
+lib/zsh-functions/recentfiles           $SCMROOT/rcfiles/lib/zsh-functions/recentfiles          linux,NT
+lib/zsh-functions/recursivefiles        $SCMROOT/rcfiles/lib/zsh-functions/recursivefiles       linux,NT
 lib/zsh-functions/relative              $SCMROOT/rcfiles/lib/zsh-functions/relative             linux,NT
 lib/zsh-functions/rename_as_modified    $SCMROOT/rcfiles/lib/zsh-functions/rename_as_modified   linux,NT
 lib/zsh-functions/rm_versions           $SCMROOT/rcfiles/lib/zsh-functions/rm_versions          linux,NT

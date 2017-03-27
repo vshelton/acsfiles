@@ -1,0 +1,12 @@
+# Print the names of the n most recent files in all sub-directories.
+# Usage: recursivefiles [count [file_pattern]]
+# e.g. noglob recursivefiles 2 m*
+
+print **/${~2:-*}(.om[1,${1:-1}])
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

@@ -162,7 +162,7 @@ if [[ -d /etc/zsh ]]; then
   sudo mv /etc/zsh /etc/ZSH-dist
 else
   sudo mkdir /etc/ZSH-dist
-  sudo mv /etc/z* /etc/ZSH-dist
+  #sudo mv /etc/z* /etc/ZSH-dist
 fi
 
 # Install i3, git and mercurial.
@@ -242,7 +242,7 @@ cat >bin/daily <<EOF
 # Daily update of system packages and home-built applications.
 emulate -LR zsh
 
-f [[ -x /usr/bin/zypper ]]; then
+if [[ -x /usr/bin/zypper ]]; then
   sudo zypper update
 
 elif [[ -x /usr/bin/pacman ]]; then

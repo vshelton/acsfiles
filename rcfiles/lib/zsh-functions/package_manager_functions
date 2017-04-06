@@ -22,7 +22,7 @@ function suse-p() {
 }
 function package_manager() {
   if suse-p; then
-    echo $suse_pm
+    echo "$suse_pm --non-interactive"
   elif arch-p; then
     echo $arch_pm
   elif debian-p; then

@@ -91,12 +91,20 @@ repos[zsh]="git://git.code.sf.net/p/zsh/code"
 # the package manager is based on rpm or apt-get.
 typeset -A deps
 
-if arch-p; then
+if suse-p; then
+  deps[conky]="cmake gcc-c++ freetype2-devel lua-devel libXdamage-devel      \
+               ncurses-devel libXinerama-devel libXft-devel"
+  deps[emacs]="autoconf automake giflib-devel gnutls-devel libXaw-devel      \
+               libjpeg-devel libpng-devel libtiff-devel makeinfo"
+  deps[zsh]="autoconf gcc pcre-devel ncurses-devel makeinfo yodl"
+
+elif arch-p; then
   deps[conky]=cmake
   deps[emacs]="autoconf automake giflib-devel gnutls-devel libXaw-devel      \
                libjpeg-turbo-devel libtiff-devel texinfo"
   # sudo pacman --upgrade /media/sf_host-SSD-2TB/opt/zip/yodl/arch/yodl-package/yodl-3.08.01-1-x86_64.pkg.tar.xz
   deps[zsh]="autoconf gcc pcre-devel ncurses-devel texinfo"
+
 elif debian-p; then
   # On debian, at some point the package name changed from libXdamage-dev
   # to libxdamage-dev, so we will special-case it here.

@@ -10,6 +10,11 @@ for d in $HOME/lib/zsh-functions $HOME/scmroot/acsfiles/rcfiles/lib/zsh-function
   fi
 done
 
+if ! type upgrade_packages >/dev/null; then
+  echo File package_manager_functions not found >&2
+  exit 1
+fi
+
 # Print the arguments separated by commas and, ultimately, "and".
 function print_list() {
   while (( $# > 0 ))
@@ -162,7 +167,11 @@ if [[ -d /etc/zsh ]]; then
   sudo mv /etc/zsh /etc/ZSH-dist
 else
   sudo mkdir /etc/ZSH-dist
-  #sudo mv /etc/z* /etc/ZSH-dist
+  if [[ -d /etc/zypp ]]; then
+    sudo mv /etc/zprofile /etc/zsh_completion.d /etc/zshrc /etc/zsh_command_not_found /etc/zshenv /etc/ZSH-dist
+  else
+    sudo mv /etc/z* /etc/ZSH-dist
+  fi
 fi
 
 # Install i3, git and mercurial.
@@ -202,6 +211,7 @@ hg clone https://acs@bitbucket.org/acs/acs_script ${acs_repo}
 ln -s ${acs_repo#${scmbase}/}{,/binfiles,/rcfiles} ${scmbase}
 
 # Link startup files.
+mv .emacs .emacs-dist
 SCMROOT=${PWD}/${scmbase} ${acs_repo}/binfiles/LinkStartupFiles
 
 # Create a directory for saving shell history, unpack wallpapers
@@ -275,7 +285,11 @@ EOF
 chmod 755 bin/daily
 
 # Install Microsoft and Ubuntu fonts.
-if arch-p ; then
+if suse-p ; then
+  install_package fetchmsttfonts ubuntu-fonts
+  fc-cache -f -v
+
+elif arch-p ; then
   install_package ttf-ms-fonts ttf-ubuntu-font
   fc-cache -f -v
 

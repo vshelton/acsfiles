@@ -133,7 +133,7 @@ fi
 clone_git_repo ${nickname} ${repos[${nickname}]}
 
 # Install the pre-requisite packages.
-install_package ${deps[${nickname}]}
+install_package ${=deps[${nickname}]}
 
 # Build the package.
 ${build_script}

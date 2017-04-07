@@ -2,6 +2,12 @@
 # Utility functions to implement package management on different systems.
 #
 
+# This runs under both bash and zsh.
+# In order to get word splitting under zsh.
+if type emulate >/dev/null; then
+  emulate sh
+fi
+
 arch_pm=/usr/bin/pacman
 debian_pm=/usr/bin/apt-get
 fedora_pm=/usr/bin/dnf

@@ -3,8 +3,8 @@
 #
 
 # This runs under both bash and zsh.
-# In order to get word splitting under zsh.
-if type emulate >/dev/null; then
+# Under zsh, emulate sh in order to get word splitting.
+if type emulate >&/dev/null; then
   emulate sh
 fi
 

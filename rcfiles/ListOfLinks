@@ -15,14 +15,16 @@ bin/MakeNativeXEmacs                    $SCMROOT/binfiles/NT/MakeNativeXEmacs   
 bin/MakeXEmacsWindowsKit                $SCMROOT/binfiles/NT/MakeXEmacsWindowsKit               NT
 bin/PrintProjectBuildTime               $SCMROOT/binfiles/PrintProjectBuildTime                 linux,NT
 bin/Rip.acs                             $SCMROOT/binfiles/Rip.acs                               linux
-bin/SaveAllVMs                          $SCMROOT/binfiles/SaveAllVMs                               linux
+bin/SaveAllVMs                          $SCMROOT/binfiles/SaveAllVMs                            linux
 bin/all_dirs                            $SCMROOT/binfiles/all_dirs                              linux,NT
 bin/all_versions                        $SCMROOT/binfiles/all_versions                          linux,NT
+bin/arch-pm                             $SCMROOT/binfiles/arch-pm                               linux,NT
 bin/bld                                 $SCMROOT/binfiles/bld                                   linux,NT
 bin/cfg                                 $SCMROOT/binfiles/cfg                                   linux,NT
 bin/check_cfg                           $SCMROOT/binfiles/check_cfg                             linux,NT
 bin/check_zsh                           $SCMROOT/binfiles/check_zsh                             linux,NT
 bin/cleanup-xemacs                      $SCMROOT/binfiles/cleanup-xemacs                        linux,NT
+bin/debian-pm                           $SCMROOT/binfiles/debian-pm                             linux,NT
 bin/diff-xemacs-tests                   $SCMROOT/binfiles/diff-xemacs-tests                     linux,NT
 bin/diff_output_files                   $SCMROOT/binfiles/diff_output_files                     linux,NT
 bin/diff_xemacs_build_results           $SCMROOT/binfiles/diff_xemacs_build_results             linux,NT
@@ -30,6 +32,8 @@ bin/diffs                               $SCMROOT/binfiles/diffs                 
 bin/do_backup                           $SCMROOT/binfiles/do_backup                             linux,NT
 bin/do_normalize                        $SCMROOT/binfiles/do_normalize                          linux,NT
 bin/fcedit                              $SCMROOT/binfiles/fcedit                                linux,NT
+bin/fedora-pm                           $SCMROOT/binfiles/fedora-pm                             linux,NT
+bin/find-pm                             $SCMROOT/binfiles/find-pm                               linux,NT
 bin/find_install_root                   $SCMROOT/binfiles/find_install_root                     linux,NT
 bin/find_newer                          $SCMROOT/binfiles/find_newer                            linux,NT
 bin/findpkg                             $SCMROOT/binfiles/findpkg                               linux,NT
@@ -37,6 +41,7 @@ bin/gnome_sleep_status                  $SCMROOT/binfiles/gnome_sleep_status    
 bin/init-conky                          $SCMROOT/binfiles/init-emacs                            linux,NT
 bin/init-emacs                          $SCMROOT/binfiles/init-emacs                            linux,NT
 bin/init-zsh                            $SCMROOT/binfiles/init-emacs                            linux,NT
+bin/install-packages                    $SCMROOT/binfiles/install-packages                      linux,NT
 bin/installed_packages                  $SCMROOT/binfiles/installed_packages                    linux,NT
 bin/latest                              $SCMROOT/binfiles/latest                                linux,NT
 bin/link_latest                         $SCMROOT/binfiles/link_latest                           linux,NT
@@ -49,7 +54,7 @@ bin/mk-conky                            $SCMROOT/binfiles/mk-conky              
 bin/mk-emacs                            $SCMROOT/binfiles/mk-emacs                              linux
 bin/mk-feh                              $SCMROOT/binfiles/mk-feh                                linux
 bin/mk-lastpass                         $SCMROOT/binfiles/mk-lastpass                           linux,NT
-bin/mk-perl                             $SCMROOT/binfiles/mk-perl                                linux,NT
+bin/mk-perl                             $SCMROOT/binfiles/mk-perl                               linux,NT
 bin/mk-src                              $SCMROOT/binfiles/mk-src                                linux,NT
 bin/mk-xemacs                           $SCMROOT/binfiles/mk-xemacs                             linux,NT
 bin/mk-xemacs-21.5                      $SCMROOT/binfiles/mk-xemacs-21.5                        linux,NT
@@ -67,6 +72,7 @@ bin/remake-zsh                          $SCMROOT/binfiles/remake-emacs          
 bin/scm_update                          $SCMROOT/binfiles/scm_update                            linux,NT
 bin/setupfonts.sh                       $SCMROOT/binfiles/setupfonts.sh                         linux,NT
 bin/summarize_zsh_tests                 $SCMROOT/binfiles/summarize_zsh_tests                   linux,NT
+bin/suse-pm                             $SCMROOT/binfiles/suse-pm                               linux,NT
 bin/symlink-tree                        $SCMROOT/binfiles/symlink-tree                          linux,NT
 bin/sysprefix                           $SCMROOT/binfiles/sysprefix                             linux,NT
 bin/today                               $SCMROOT/binfiles/today                                 linux,NT
@@ -76,6 +82,7 @@ bin/unpack                              $SCMROOT/binfiles/unpack                
 bin/unpack_and_build                    $SCMROOT/binfiles/unpack_and_build                      linux,NT
 bin/update-cygwin                       $SCMROOT/binfiles/update-cygwin                         linux,NT
 bin/update-emacs                        $SCMROOT/binfiles/update-emacs                          linux
+bin/update-packages                     $SCMROOT/binfiles/update-packages                       linux,NT
 bin/update-xemacs                       $SCMROOT/binfiles/update-xemacs                         linux,NT
 bin/update-zsh                          $SCMROOT/binfiles/update-zsh                            linux,NT
 bin/update_and_build                    $SCMROOT/binfiles/update_and_build                      linux,NT

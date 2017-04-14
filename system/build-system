@@ -3,18 +3,6 @@
 # Build a new linux system, either a native one
 # or one hosted under VirtualBox.
 
-for d in $HOME/lib/zsh-functions $HOME/scmroot/acsfiles/rcfiles/lib/zsh-functions $HOME; do
-  if [[ -e $d/package_manager_functions ]]; then
-    . $d/package_manager_functions
-    break
-  fi
-done
-
-if ! type upgrade_packages >/dev/null; then
-  echo File package_manager_functions not found >&2
-  exit 1
-fi
-
 # Print the arguments separated by commas and, ultimately, "and".
 function print_list() {
   while (( $# > 0 ))
@@ -82,7 +70,10 @@ Set the \"ziproot\" environment variable to a directory on the host. Exiting."
 # Code starts here.
 #
 
-username=$(whoami)
+: ${username:=$(whoami)}
+
+# Make sure the directory contining this script is in PATH.
+PATH=$(cd $(dirname $0); pwd):$PATH
 
 # Define VirtualBox tag names for shared folders.
 vbox_prefix="/media/sf_"
@@ -102,9 +93,9 @@ if [[ ! -x /usr/bin/sudo ]]; then
 fi
 
 # Install the system upgrades.
-upgrade_packages
+update-packages
 
-[[ -x /usr/sbin/dmidecode ]] || install_package dmidecode
+[[ -x /usr/sbin/dmidecode ]] || install-packages dmidecode
 host=$(sudo dmidecode -s system-product-name)
 
 # Install the VirtualBox Guest Additions.
@@ -129,8 +120,8 @@ if [[ ${host} == "VirtualBox" ]]; then
     fi
 
     # Install the VirtualBox additions and the prerequisites.
-    install_package gcc make
-    install_package linux-headers-amd64 || install_package kernel-devel kernel-headers
+    install-packages gcc make
+    install-packages linux-headers-amd64 || install-packages kernel-devel kernel-headers
     sudo /mnt/VBoxLinuxAdditions.run &&
       sudo usermod --append --groups vboxsf ${username}
 
@@ -151,7 +142,7 @@ if [[ ${host} == "VirtualBox" ]]; then
 fi
 
 # Add the 'extra' repository if we're running under Arch linux.
-if arch-p ; then
+if arch-pm >/dev/null ; then
   sudo -s << EOF
   echo "
 
@@ -162,7 +153,7 @@ EOF
 fi
 
 # Install the Z-shell and move aside the customization.
-install_package zsh
+install-packages zsh
 if [[ -d /etc/zsh ]]; then
   sudo mv /etc/zsh /etc/ZSH-dist
 else
@@ -175,8 +166,8 @@ else
 fi
 
 # Install i3, git and mercurial.
-install_package git mercurial
-install_package i3
+install-packages git mercurial
+install-packages i3
 
 # Create USRLOCAL hierarchy
 : ${USRLOCAL:=/opt}
@@ -252,27 +243,11 @@ cat >bin/daily <<EOF
 # Daily update of system packages and home-built applications.
 emulate -LR zsh
 
-if [[ -x /usr/bin/zypper ]]; then
-  sudo zypper update
-
-elif [[ -x /usr/bin/pacman ]]; then
-  sudo pacman -Syu
-  sudo paccache -ruk0
-
-elif [[ -x /usr/bin/apt-get ]]; then
-  for a in update dist-upgrade autoremove autoclean; do
-    sudo apt-get --yes \$a || break
-  done
-
-elif [[ -x /usr/bin/dnf ]]; then
-  sudo dnf --assumeyes update &&
-    sudo dnf --assumeyes autoremove &&
-      sudo dnf --assumeyes clean all
-fi
+update-packages
 
 scm_update acsfiles conky
 
-mk-zsh
+mk-zsh zsh --disable-gdbm
 mk-emacs --with-x-toolkit=lucid
 
 # Local Variables:
@@ -285,29 +260,29 @@ EOF
 chmod 755 bin/daily
 
 # Install Microsoft and Ubuntu fonts.
-if suse-p ; then
-  install_package fetchmsttfonts ubuntu-fonts
+if suse-pm >/dev/null ; then
+  install-packages fetchmsttfonts ubuntu-fonts
   fc-cache -f -v
 
-elif arch-p ; then
-  install_package ttf-ms-fonts ttf-ubuntu-font
+elif arch-pm >/dev/null ; then
+  install-packages ttf-ms-fonts ttf-ubuntu-font
   fc-cache -f -v
 
-elif debian-p ; then
+elif debian-pm >/dev/null ; then
   # A little too much inside baseball here:
   # knowledge of apt-cache and dpkg.
-  # Still, use install_package for hygiene's sake.
+  # Still, use install-packages for hygiene's sake.
   if [[ -n $(apt-cache search ttf-mscorefonts-installer) ]]; then
-    install_package ttf-mscorefonts-installer
+    install-packages ttf-mscorefonts-installer
   else
-    install_package cabextract libmspack0
+    install-packages cabextract libmspack0
     wget http://ftp.us.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.6_all.deb
     sudo dpkg --install ttf-mscorefonts-installer_3.6_all.deb
   fi
 
-elif fedora-p ; then
+elif fedora-pm >/dev/null ; then
   # Like in debian, too much knowledge of RPM packaging is required here.
-  install_package cabextract ttmkfdir rpm-build
+  install-packages cabextract ttmkfdir rpm-build
   font_ver="msttcorefonts-2.5-1"
   specfile="${font_ver}.spec"
   wget http://corefonts.sourceforge.net/${specfile}
@@ -325,7 +300,7 @@ else
 fi
 
 # Unpack ubuntu fonts and update the font cache.
-if ! arch-p ; then
+if debian-pm >/dev/null || fedora-pm >/dev/null ; then
   sudo -s <<EOF
     cd /usr/share/fonts
     [[ -d truetype ]] && cd truetype
@@ -344,12 +319,12 @@ init-conky              # Installs directly to USRLOCAL, so calling
 
 init-zsh
 link_latest zsh zsh-$(today)
-if [[ -x ${USRLOCAL}/bin/zsh ]]; then
-  sudo -s <<EOF
-    echo "${USRLOCAL}/bin/zsh" >>/etc/shells
-    usermod --shell ${USRLOCAL}/bin/zsh ${username}
-EOF
-fi
+#if [[ -x ${USRLOCAL}/bin/zsh ]]; then
+#  sudo -s <<EOF
+#    echo "${USRLOCAL}/bin/zsh" >>/etc/shells
+#    usermod --shell ${USRLOCAL}/bin/zsh ${username}
+#EOF
+#fi
 
 init-emacs
 link_latest emacs emacs-$(today)

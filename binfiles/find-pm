@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Print out the name of the linux package manager
+# and options required to make it non-interactive.
+pm=$(suse-pm)
+if [[ -z $pm ]]; then
+  pm=$(arch-pm)
+  if [[ -z $pm ]]; then
+    pm=$(debian-pm)
+    if [[ -z $pm ]]; then
+      pm=$(fedora-pm)
+      if [[ -z $pm ]]; then
+         echo "Not a supported OS type." >&2
+         exit 1
+      fi
+    fi
+  fi
+fi
+
+echo $pm
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

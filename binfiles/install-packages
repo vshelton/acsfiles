@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Install packages in a platform-agnostic way.
+
+pm=$(find-pm) || exit $?        # find-pm has already reported this error.
+if arch-pm >/dev/null ; then
+  sudo ${pm} $*
+else
+  sudo ${pm} install $*
+fi
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

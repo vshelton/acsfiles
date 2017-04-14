@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Upgrade all packages in a platform-agnostic way.
+
+pm=$(find-pm) || exit $?        # find-pm has already reported this error.
+if suse-pm >/dev/null ; then
+  sudo ${pm} refresh && sudo ${pm} update
+elif arch-pm >/dev/null ; then
+  sudo ${pm} --refresh -u
+elif fedora-pm >/dev/null ; then
+  sudo ${pm} upgrade
+elif debian-pm >/dev/null ; then
+  sudo ${pm} update && sudo ${pm} upgrade
+fi
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

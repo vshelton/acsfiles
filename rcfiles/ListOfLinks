@@ -122,6 +122,7 @@ lib/zsh-functions/nohist                $SCMROOT/rcfiles/lib/zsh-functions/nohis
 lib/zsh-functions/recentfiles           $SCMROOT/rcfiles/lib/zsh-functions/recentfiles          linux,NT
 lib/zsh-functions/recursivefiles        $SCMROOT/rcfiles/lib/zsh-functions/recursivefiles       linux,NT
 lib/zsh-functions/relative              $SCMROOT/rcfiles/lib/zsh-functions/relative             linux,NT
+lib/zsh-functions/rm_unused_zsh_scripts $SCMROOT/rcfiles/lib/zsh-functions/rm_unused_zsh_scripts linux,NT
 lib/zsh-functions/rename_as_modified    $SCMROOT/rcfiles/lib/zsh-functions/rename_as_modified   linux,NT
 lib/zsh-functions/rm_versions           $SCMROOT/rcfiles/lib/zsh-functions/rm_versions          linux,NT
 lib/zsh-functions/snapshot_directory    $SCMROOT/rcfiles/lib/zsh-functions/snapshot_directory   linux,NT

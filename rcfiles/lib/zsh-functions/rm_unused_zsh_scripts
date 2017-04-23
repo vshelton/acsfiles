@@ -1,0 +1,11 @@
+
+# Remove old (unused) zsh scripts
+
+: ${USRLOCAL:=/usr/local}
+: ${BLDROOT:=$USRLOCAL/build}
+
+keep=( $( cat $BLDROOT/zsh*/Src/zshpaths.h | sed -n -e s'/^.* \"\(.*\)\"/\1/p' | sort -u | grep share ) )
+t=$(mktemp -d)
+tar cf $t/zsh-share.tar $keep
+rm -rf $USRLOCAL/share/zsh/*
+tar -xv -C / -f $t/zsh-share.tar

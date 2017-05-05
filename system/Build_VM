@@ -129,7 +129,7 @@ fi
 # Set some key variables based on whether we are running at work
 # under a Windows host, or at home running under a linux host.
 typeset -a dirs
-dirs=( "/media/sf_${htag}/cygwin64/home/shelta" "/media/sf_host-home/acs" )
+dirs=( "/media/sf_${htag}/cygwin64/home/shelta" "/media/sf_host-home" )
 [[ -n ${hosthome} ]] && dirs=( "${hosthome}" "${dirs[@]}" )
 for hosthome in "${dirs[@]}"; do
   [[ -d ${hosthome} ]] && break
@@ -146,7 +146,7 @@ fi
 
 unset dirs
 typeset -a dirs
-dirs=( "${hosthome}/software/zip" "/media/sf_host-SSD-2TB/opt/zip" )
+dirs=( "/media/sf_host-zip" "${hosthome}/software/zip" "/media/sf_host-SSD-2TB/opt/zip" )
 [[ -n ${ziproot} ]] && dirs=( "${ziproot}" "${dirs[@]}" )
 for ziproot in "${dirs[@]}"; do
   [[ -d ${ziproot} ]] && break

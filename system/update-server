@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Bring a Sparky 4.6 CLI installation up to date.
+# This script is run as root.
+
+# Install some packages.
+apt-get update
+apt-get dist-upgrade
+apt-get install sudo nfs-kernel-server ssh devscripts build-essential
+
+# Install powernap; get and install -common first.
+: ${pkg_server:="http://mirrors.kernel.org/ubuntu/pool/main/p/powernap"}
+: ${pn_ver:="2.21-0ubuntu1_all"
+for p in powernap-common powernap; do
+  pw=$p_${pn_ver}.deb
+  wget $pkg_server/$pw
+  dpkg --install ./$pw
+done
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

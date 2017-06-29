@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 # Bring a Sparky 4.6 CLI installation up to date.
 # This script is run as root.
 
@@ -83,16 +85,16 @@ EOF
 
 # Configure rc.local.
 patch -p0 <<EOF
---- /etc/rc.local.orig	2014-12-04 19:06:24.000000000 -0500
-+++ /etc/rc.local	2017-06-29 08:40:33.003721903 -0400
-@@ -11,5 +11,8 @@
+--- /etc/rc.local.orig	2017-06-29 12:45:13.293964958 -0400
++++ /etc/rc.local	2017-06-29 12:25:32.466140856 -0400
+@@ -11,4 +11,8 @@
  #
  # By default this script does nothing.
  
 +fstrim --all
 +
 +powernapd
- 
++
  exit 0
 EOF
 

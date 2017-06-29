@@ -14,7 +14,7 @@ apt-get install sudo nfs-kernel-server ssh devscripts build-essential
 
 # Install powernap; get and install -common first.
 : ${pkg_server:="http://mirrors.kernel.org/ubuntu/pool/main/p/powernap"}
-: ${pn_ver:="2.21-0ubuntu1_all}"
+: ${pn_ver:="2.21-0ubuntu1_all"}
 for p in powernap-common powernap; do
   pw=${p}_${pn_ver}.deb
   wget $pkg_server/$pw

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 # Bring a Sparky 4.6 CLI installation up to date.
 # This script is run as root.
 
@@ -41,9 +39,9 @@ rm /usr/lib/python2.7/dist-packages/powernap/monitors/ConsoleMonitor.pyc
 
 # Configure powernap.
 patch /etc/powernap/config <<EOF
---- config.orig	2012-05-18 15:06:44.000000000 -0400
-+++ config	2016-08-02 20:56:08.000000000 -0400
-@@ -93,7 +93,8 @@
+--- config.orig	2017-06-29 15:18:05.306873456 -0400
++++ config	2017-06-29 15:31:40.907043551 -0400
+@@ -93,7 +93,7 @@
  # STAGE2_ACTION_METHOD is set correctly.
  # Example:
  #   STAGE2_ABSENT_SECONDS = 500
@@ -52,7 +50,7 @@ patch /etc/powernap/config <<EOF
  
  # The STAGE2_ACTION_METHOD variable determines what action should be taken
  # after a period on inactivity while under PowerSave Mode (See ACTION_METHOD
-@@ -106,7 +107,8 @@
+@@ -106,7 +106,7 @@
  # The default mode of operation is best-effort. This method will try to
  # user-defined script  at "/etc/powernap/action", or suspend, hibernate,
  # or poweroff the machine.
@@ -61,7 +59,7 @@ patch /etc/powernap/config <<EOF
  
  ############################################################################
  ####                          MONITORS                                  ####
-@@ -144,6 +146,8 @@
+@@ -144,6 +144,8 @@
  #  sshd = "sshd: .*\[priv\]$"
  #  kvm = "kvm "
  [ProcessMonitor]
@@ -70,14 +68,12 @@ patch /etc/powernap/config <<EOF
  #init = "^/sbin/init"
  
  # The [LoadMonitor] section defines the load threshold.  When the system load
-@@ -172,7 +176,9 @@
+@@ -172,7 +174,7 @@
  #  https = 443
  #  other = 64500-65000
  [TCPMonitor]
 -#ssh = 22
 +ssh = 22
-+http = 80
-+https = 443
  
  # The [UDPMonitor] section lists all the UDP ports on which to listen
  # for data.

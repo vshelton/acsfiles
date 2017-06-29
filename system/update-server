@@ -6,16 +6,95 @@
 # Install some packages.
 apt-get update
 apt-get dist-upgrade
-apt-get install sudo nfs-kernel-server ssh devscripts build-essential
+apt-get install sudo nfs-kernel-server ssh devscripts build-essential patch
+
+# Install powernap for power management.
+#   https://ubuntuforums.org/showthread.php?t=2045541
+#   https://bugs.launchpad.net/powernap/+bug/1497782
 
 # Install powernap; get and install -common first.
 : ${pkg_server:="http://mirrors.kernel.org/ubuntu/pool/main/p/powernap"}
 : ${pn_ver:="2.21-0ubuntu1_all"
 for p in powernap-common powernap; do
-  pw=$p_${pn_ver}.deb
+  pw=${p}_${pn_ver}.deb
   wget $pkg_server/$pw
   dpkg --install ./$pw
 done
+
+# Patch powernap.
+patch <<EOF
+--- /usr/share/pyshared/powernap/monitors/ConsoleMonitor.py.orig	2012-05-18 15:06:44.000000000 -0400
++++ /usr/share/pyshared/powernap/monitors/ConsoleMonitor.py	2017-06-29 07:57:41.873755139 -0400
+@@ -38,6 +38,7 @@
+         if source == "i8042" or source == "keyboard" or source == "mouse":
+             items.pop(0)
+             items.pop()
++            items.pop()
+             for i in items:
+                 interrupts += int(i)
+     f.close()
+
+EOF
+rm /usr/lib/python2.7/dist-packages/powernap/monitors/ConsoleMonitor.pyc
+
+# Configure powernap.
+patch <<EOF
+--- /etc/powernap/config.orig	2012-05-18 15:06:44.000000000 -0400
++++ /etc/powernap/config	2016-08-02 20:56:08.000000000 -0400
+@@ -93,7 +93,8 @@
+ # STAGE2_ACTION_METHOD is set correctly.
+ # Example:
+ #   STAGE2_ABSENT_SECONDS = 500
+-STAGE2_ABSENT_SECONDS = 0
++STAGE2_ABSENT_SECONDS = 480
+ 
+ # The STAGE2_ACTION_METHOD variable determines what action should be taken
+ # after a period on inactivity while under PowerSave Mode (See ACTION_METHOD
+@@ -106,7 +107,8 @@
+ # The default mode of operation is best-effort. This method will try to
+ # user-defined script  at "/etc/powernap/action", or suspend, hibernate,
+ # or poweroff the machine.
+-STAGE2_ACTION_METHOD = 4
++STAGE2_ACTION_METHOD = 1
+ 
+ ############################################################################
+ ####                          MONITORS                                  ####
+@@ -144,6 +146,8 @@
+ #  sshd = "sshd: .*\[priv\]$"
+ #  kvm = "kvm "
+ [ProcessMonitor]
++dpkg = "dpkg "
++aptget = "apt-get "
+ #init = "^/sbin/init"
+ 
+ # The [LoadMonitor] section defines the load threshold.  When the system load
+@@ -172,7 +176,9 @@
+ #  https = 443
+ #  other = 64500-65000
+ [TCPMonitor]
+-#ssh = 22
++ssh = 22
++http = 80
++https = 443
+ 
+ # The [UDPMonitor] section lists all the UDP ports on which to listen
+ # for data.
+EOF
+
+# Configure rc.local.
+patch <<EOF
+--- /etc/rc.local.orig	2014-12-04 19:06:24.000000000 -0500
++++ /etc/rc.local	2017-06-29 08:40:33.003721903 -0400
+@@ -11,5 +11,8 @@
+ #
+ # By default this script does nothing.
+ 
++fstrim --all
++
++powernapd
+ 
+ exit 0
+EOF
 
 # Local Variables:
 # mode: shell-script

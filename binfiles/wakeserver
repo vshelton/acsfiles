@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Wake up the legolas server from its powernap.
+# Wake up the legolas or nuc server from its powernap.
 
 emulate -LR zsh
 progname=${0:t}
@@ -9,9 +9,19 @@ progname=${0:t}
 # sudo apt-get install wakeonlan
 # IPV4_address Hostname	MAC
 # 192.168.0.4  legolas	BC:5F:F4:8B:7C:A5
+# 192.168.0.5  nuc      B8:AE:ED:79:33:98
 
-legolas_MAC="BC:5F:F4:8B:7C:A5"
-wakeonlan "$legolas_MAC"
+typeset -A macs
+macs[legolas]="BC:5F:F4:8B:7C:A5"
+macs[nuc]="B8:AE:ED:79:33:98"
+
+[[ -z "$1" ]] && set legolas
+if [[ -z "$macs[$1]" ]]; then
+  print -u2 "Usage: $progname [legolas|nuc]"
+  exit 1
+fi
+
+wakeonlan $macs[$1]
 
 # Local Variables:
 # mode: shell-script

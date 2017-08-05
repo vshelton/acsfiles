@@ -1,0 +1,25 @@
+#!/usr/bin/env zsh
+
+# Build latest exa from git
+emulate -LR zsh
+progname=${0:t}
+
+: ${USRLOCAL:=/usr/local}
+: ${BLDROOT:=$USRLOCAL/build}
+
+project=exa
+scm_update $project
+s=$(mk-src $project)
+
+b=$BLDROOT/${s:t}
+mkdir $b
+cd $b
+
+symlink-tree $(relative $s)
+make PREFIX=$USRLOCAL install
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

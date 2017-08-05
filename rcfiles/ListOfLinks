@@ -52,6 +52,7 @@ bin/make_symlinks_relative              $SCMROOT/binfiles/make_symlinks_relative
 bin/mk-XEmacs-from-scratch              $SCMROOT/binfiles/NT/mk-XEmacs-from-scratch             NT
 bin/mk-conky                            $SCMROOT/binfiles/mk-conky                              linux
 bin/mk-emacs                            $SCMROOT/binfiles/mk-emacs                              linux
+bin/mk-exa                              $SCMROOT/binfiles/mk-exa                                linux
 bin/mk-feh                              $SCMROOT/binfiles/mk-feh                                linux
 bin/mk-lastpass                         $SCMROOT/binfiles/mk-lastpass                           linux,NT
 bin/mk-perl                             $SCMROOT/binfiles/mk-perl                               linux,NT

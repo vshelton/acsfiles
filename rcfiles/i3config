@@ -18,13 +18,15 @@ set $mod Mod4
 # clear in small sizes. However, if you need a lot of unicode glyphs or
 # right-to-left text rendering, you should instead use pango for rendering and
 # chose a FreeType font, such as:
-font pango:DejaVu Sans Mono 8
+#font pango:DejaVu Sans Mono 10
+font pango:Verdana 10
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec i3-sensible-terminal
+#bindsym $mod+Return exec i3-sensible-terminal
+bindsym $mod+Return exec tilix
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -92,8 +94,8 @@ set $workspace3 "3: Browser"
 set $workspace4 "4: Windows"
 set $workspace5 "5: Synaptic"
 
-set $browser "vivaldi"
-#set $browser "firefox"
+#set $browser "vivaldi"
+set $browser "firefox-esr"
 
 # switch to workspace
 bindsym $mod+1 workspace $workspace1
@@ -168,11 +170,12 @@ bar {
 
 exec_always feh --bg-scale /home/acs/wallpapers/unsplash_52cd96f512830_1.JPG
 
-exec /home/acs/bin/setup-fonts.sh
+#exec /home/acs/bin/setup-fonts.sh
 
 exec --no-startup-id xfce4-power-manager
 
 exec clementine
-exec --no-startup-id emacs
+exec --no-startup-id /opt/bin/emacs -f about-emacs
 exec --no-startup-id $browser
-exec i3-sensible-terminal
+#exec i3-sensible-terminal
+exec tilix

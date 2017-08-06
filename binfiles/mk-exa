@@ -13,8 +13,9 @@ install=
 zparseopts -D i=install -install=install
 cd $(GetSource --src=$BLDROOT --update $project)
 
-make PREFIX=$USRLOCAL
-[[ -n $install ]] && make PREFIX=$USRLOCAL install
+export PREFIX=$USRLOCAL ZSHDIR=$USRLOCAL/share/zsh/site-functions
+make -e
+[[ -n $install ]] && make -e install install-zsh-completions
 
 # Local Variables:
 # mode: shell-script

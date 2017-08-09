@@ -1,6 +1,7 @@
 .Xresources                             $SCMROOT/rcfiles/Xresources                             linux
 .conkyrc                                $SCMROOT/rcfiles/conkyrc                                linux
 .emacs                                  $SCMROOT/rcfiles/emacs                                  linux,NT
+.i3status.conf                          $SCMROOT/rcfiles/i3status.conf                          linux
 .i3/config                              $SCMROOT/rcfiles/i3config                               linux
 .zshenv                                 $SCMROOT/rcfiles/zsh/home-zshenv                        linux,NT
 bin/BuildXEmacsKits                     $SCMROOT/binfiles/NT/BuildXEmacsKits                    NT
@@ -38,6 +39,7 @@ bin/find_install_root                   $SCMROOT/binfiles/find_install_root     
 bin/find_newer                          $SCMROOT/binfiles/find_newer                            linux,NT
 bin/findpkg                             $SCMROOT/binfiles/findpkg                               linux,NT
 bin/gnome_sleep_status                  $SCMROOT/binfiles/gnome_sleep_status                    linux,NT
+bin/i3-autostart                        $SCMROOT/binfiles/i3-autostart                          linux,NT
 bin/init-conky                          $SCMROOT/binfiles/init-emacs                            linux,NT
 bin/init-emacs                          $SCMROOT/binfiles/init-emacs                            linux,NT
 bin/init-zsh                            $SCMROOT/binfiles/init-emacs                            linux,NT
@@ -50,10 +52,10 @@ bin/make-Manifest                       $SCMROOT/binfiles/make-Manifest         
 bin/make_conky_config                   $SCMROOT/binfiles/make_conky_config                     linux
 bin/make_symlinks_relative              $SCMROOT/binfiles/make_symlinks_relative                linux,NT
 bin/mk-XEmacs-from-scratch              $SCMROOT/binfiles/NT/mk-XEmacs-from-scratch             NT
-bin/mk-conky                            $SCMROOT/binfiles/mk-conky                              linux
+bin/mk-conky                            $SCMROOT/binfiles/mk-perl                               linux
 bin/mk-emacs                            $SCMROOT/binfiles/mk-emacs                              linux
-bin/mk-exa                              $SCMROOT/binfiles/mk-exa                                linux
-bin/mk-feh                              $SCMROOT/binfiles/mk-feh                                linux
+bin/mk-exa                              $SCMROOT/binfiles/mk-perl                               linux
+bin/mk-feh                              $SCMROOT/binfiles/mk-perl                               linux
 bin/mk-lastpass                         $SCMROOT/binfiles/mk-lastpass                           linux,NT
 bin/mk-perl                             $SCMROOT/binfiles/mk-perl                               linux,NT
 bin/mk-src                              $SCMROOT/binfiles/mk-src                                linux,NT
@@ -90,6 +92,7 @@ bin/update_and_build                    $SCMROOT/binfiles/update_and_build      
 bin/update_screenenv                    $SCMROOT/binfiles/update_screenenv                      linux,NT
 bin/vcsetup                             $SCMROOT/binfiles/NT/vcsetup                            NT
 bin/wakeserver                          $SCMROOT/binfiles/wakeserver                            linux
+bin/xfce-autostart                      $SCMROOT/binfiles/xfce-autostart                        linux,NT
 bin/xspf-prettyprint.pl                 $SCMROOT/binfiles/xspf-prettyprint.pl                   linux,NT
 bin/yesterday                           $SCMROOT/binfiles/yesterday                             linux,NT
 lib/app-defaults/Emacs.ad               $SCMROOT/rcfiles/lib/app-defaults/Emacs.ad              linux,NT

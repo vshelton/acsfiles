@@ -1,5 +1,8 @@
 #!/usr/bin/env zsh
 
+# This is a generic build script to download the latest source code and
+# build a new version of software.  Link this to "mk-exa" or "mk-perl", etc.
+
 : ${USRLOCAL:=/usr/local}
 : ${BLDROOT:=$USRLOCAL/build}
 
@@ -7,22 +10,53 @@ install=
 snapshot=
 zparseopts -D i=install -install=install s=snapshot -snapshot=snapshot
 
-pkgname=perl
-scm_opts=
-if [[ $# == 0 ]]; then
-  set $pkgname
-  scm_opts=--update
-fi
+# Strip "mk-" from the command name in order to get the package name.
+pkgname=${0:t:s/mk-/}
+scm_opts=--update
 
-cd $(SRCROOT=$BLDROOT GetSource --src=$BLDROOT $scm_opts "$1")
-prefix=$USRLOCAL
-[[ -n $snapshot ]] && prefix=$prefix/${PWD:t}
-./Configure -Dprefix=$prefix -Dusedevel -Dcf_email=ethersoft@gmail.com -des
+# Nowadays it's hard to separate the source directory
+# from the build directory, hence the --src option below.
+cd $(GetSource --src=$BLDROOT $scm_opts $pkgname)
 
-make && make test
-retval=$?
-[[ -z $install ]] && exit $retval
-make install
+# Package-specific stuff
+case $pkgname in
+(conky)
+  cmake -DCMAKE_INSTALL_PREFIX=$USRLOCAL -DBUILD_XDBE=true
+  make
+  [[ -n $install ]] && make install
+  retval=$?
+  ;;
+
+(exa)
+  export PREFIX=$USRLOCAL ZSHDIR=$USRLOCAL/share/zsh/site-functions
+  make -e
+  [[ -n $install ]] && make -e install install-zsh-completions
+  retval=$?
+  ;;
+
+(feh)
+  export PREFIX=$USRLOCAL VERSION=$(today)
+  make -e
+  [[ -n $install ]] && make -e install
+  retval=$?
+  ;;
+
+(perl)
+  prefix=$USRLOCAL
+  [[ -n $snapshot ]] && prefix=$prefix/${PWD:t}
+  ./Configure -Dprefix=$prefix -Dusedevel -Dcf_email=ethersoft@gmail.com -des
+  make && make test
+  [[ -n $install ]] && make install
+  retval=$?
+  ;;
+
+(*)
+  print -u2 Unknown package: $pkgname
+  retval=1
+  ;;
+esac
+
+exit $retval
 
 # Local Variables:
 # mode: shell-script

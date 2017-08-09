@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Script to start up an i3 session.
+
+: ${USRLOCAL:=/opt}
+PATH=$HOME/bin:$USRLOCAL/bin:$PATH
+
+# clementine &
+emacs -f about-emacs &
+
+# The browser is passed as the first parameter
+$1 &
+
+TERMINAL=$(which tilix) i3-sensible-terminal &
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

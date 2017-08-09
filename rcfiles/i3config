@@ -170,12 +170,4 @@ bar {
 
 exec_always feh --bg-scale /home/acs/wallpapers/unsplash_52cd96f512830_1.JPG
 
-#exec /home/acs/bin/setup-fonts.sh
-
-exec --no-startup-id xfce4-power-manager
-
-exec clementine
-exec --no-startup-id /opt/bin/emacs -f about-emacs
-exec --no-startup-id $browser
-#exec i3-sensible-terminal
-exec tilix
+exec --no-startup-id /home/acs/bin/i3-autostart $browser

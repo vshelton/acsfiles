@@ -23,22 +23,31 @@ case $pkgname in
 (conky)
   cmake -DCMAKE_INSTALL_PREFIX=$USRLOCAL -DBUILD_XDBE=true
   make
-  [[ -n $install ]] && make install
   retval=$?
+  if (( retval == 0 )) && [[ -n $install ]]; then
+    make install
+    retval=$?
+  fi
   ;;
 
 (exa)
   export PREFIX=$USRLOCAL ZSHDIR=$USRLOCAL/share/zsh/site-functions
   make -e
-  [[ -n $install ]] && make -e install install-zsh-completions
   retval=$?
+  if (( retval == 0 )) && [[ -n $install ]]; then
+    make -e install install-zsh-completions
+    retval=$?
+  fi
   ;;
 
 (feh)
   export PREFIX=$USRLOCAL VERSION=$(today)
   make -e
-  [[ -n $install ]] && make -e install
   retval=$?
+  if (( retval == 0 )) && [[ -n $install ]]; then
+    make -e install
+    retval=$?
+  fi
   ;;
 
 (perl)
@@ -46,8 +55,11 @@ case $pkgname in
   [[ -n $snapshot ]] && prefix=$prefix/${PWD:t}
   ./Configure -Dprefix=$prefix -Dusedevel -Dcf_email=ethersoft@gmail.com -des
   make && make test
-  [[ -n $install ]] && make install
   retval=$?
+  if (( retval == 0 )) && [[ -n $install ]]; then
+    make install
+    retval=$?
+  fi
   ;;
 
 (*)

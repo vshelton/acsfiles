@@ -19,4 +19,3 @@ conky --pause=15 &
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:
-EOF

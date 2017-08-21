@@ -15,8 +15,8 @@ pkgname=${0:t:s/mk-/}
 scm_opts=--update
 
 # Nowadays it's hard to separate the source directory
-# from the build directory, hence the --src option below.
-cd $(GetSource --src=$BLDROOT $scm_opts $pkgname)
+# from the build directory, so we'll build in the source directory.
+cd $(GetSource $scm_opts $pkgname)
 
 # Package-specific stuff
 case $pkgname in

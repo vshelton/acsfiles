@@ -24,12 +24,12 @@ function ls() {
     [[ ! -e "$a" ]] && bad+="$a"
   done
   #echo bad = $#bad \"$bad\"
-  exa $opts $bad ${~argv}(N-M)
+  exa $opts $bad ${^~argv}(N-M)
 }
 
 alias l="command ls --classify"
 alias la="ls --all"
-alias ll="ls --long --time-style=long-iso"
+alias ll="ls --long --bytes --time-style=long-iso"
 alias llrt="ll --sort=modified"
 
 # Local Variables:

@@ -27,7 +27,7 @@ function ls() {
   exa $opts $bad ${^~argv}(N-M)
 }
 
-alias l="command ls --classify"
+alias l="ls --classify"
 alias la="ls --all"
 alias ll="ls --long --bytes --time-style=long-iso"
 alias llrt="ll --sort=modified"

@@ -1,12 +1,67 @@
 # Set up aliases for interactive shells.
 
-# coreutils now supports NOT dereferencing symlinks to directories!
-ls --dereference-command-line-symlink-to-dir /dev/null >& /dev/null \
-  && alias ls="ls --dereference-command-line-symlink-to-dir"
-alias l='ls -F'
-alias la='ls -A'
-alias ll='ls -l'
-alias lr='ls -R'
+# Possible file listers in priority order.
+l=( exa ls )               
+
+# The 'LS' environment variable has priority.
+if [[ -z $LS ]]; then
+  for f in $l; do
+    LS=$(whence $f) && break
+  done
+fi
+
+# /bin/ls coreutils now supports dereferencing symlinks to directories!
+if $LS --dereference-command-line-symlink-to-dir /dev/null >& /dev/null; then
+  alias ls="$LS --dereference-command-line-symlink-to-dir"
+
+else
+
+  # Dereference symbolic links in argv pointing to directories.
+  function ls() {
+    # Split out options.
+    opts=()
+    for a; do
+      [[ "$a" != -* ]] && break
+      opts+="$a"
+      shift
+    done
+    #echo opts = $#opts \"$opts\" argv = $#argv \"$argv\"
+
+    # Save the filenames of nonexistent files
+    # so they don't get ignored in the glob below.
+    bad=()
+    for a; do
+      [[ ! -e "$a" ]] && bad+="$a"
+    done
+    #echo bad = $#bad \"$bad\"
+    $LS $opts $bad ${^~argv}(N-M)
+  }
+fi
+
+# Common aliases across all file listers.
+alias l="ls --classify"
+alias lr="ls -R"
+
+case $LS in
+(*exa)
+  alias la="ls --all"
+  alias ll="ls --long --bytes --time-style=long-iso"
+  alias lt="ll --sort=modified"
+  ;;
+(*ls)
+  alias la="ls -A"
+  alias ll="ls -l"
+  alias lt="ll -rt"
+  ;;
+esac
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:
+
 
 alias -- +w="chmod u+w"
 alias -- -w="chmod a-w"
@@ -14,9 +69,7 @@ alias -- +x="chmod u+x"
 alias -- -x="chmod a-x"
 alias all_versions="noglob all_versions"
 alias aver=all_versions
-alias b=unpack_and_build
 alias d='dirs -v'
-alias eterm="$USRLOCAL/bin/emacs*(om[1]) --unibyte -name EmacsTerm -xrm \"EmacsTerm.iconName: ${HOST%%.*}\" -xrm \"EmacsTerm.title: ${HOST%%.*}\" --geometry 120x40 -eval '(emacs-term \"zsh\")'"
 alias e='fcedit -q'
 alias grep='command grep --extended-regexp --text'
 alias h=history

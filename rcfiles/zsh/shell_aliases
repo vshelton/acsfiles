@@ -79,6 +79,8 @@ for i in {1..9} ; do
   alias r$i="noglob recentfiles $i"
   alias rr$i="noglob recursivefiles $i"
 done
+alias rm_versions="noglob rm_versions"
+alias rmver="rm_versions -v"
 alias tt='tar t -f'
 alias ttv='tar tv -f'
 alias tx='tar x -f'

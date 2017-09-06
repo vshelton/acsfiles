@@ -17,25 +17,27 @@ if $LS --dereference-command-line-symlink-to-dir /dev/null >& /dev/null; then
 else
 
   # Dereference symbolic links in argv pointing to directories.
-  function ls() {
+  # Use 'eval' in order to use the value of LS as currently
+  # defined, not as defined at run-time.
+  eval "function ls() {
     # Split out options.
     opts=()
     for a; do
-      [[ "$a" != -* ]] && break
-      opts+="$a"
+      [[ \"\$a\" != -* ]] && break
+      opts+=\"\$a\"
       shift
     done
-    #echo opts = $#opts \"$opts\" argv = $#argv \"$argv\"
+    #echo opts = \$#opts \"\$opts\" argv = \$#argv \"\$argv\"
 
     # Save the filenames of nonexistent files
     # so they don't get ignored in the glob below.
     bad=()
     for a; do
-      [[ ! -e "$a" ]] && bad+="$a"
+      [[ ! -e \"\$a\" ]] && bad+=\"\$a\"
     done
-    #echo bad = $#bad \"$bad\"
-    $LS $opts $bad ${^~argv}(N-M)
-  }
+    #echo bad = \$#bad \"\$bad\"
+    $LS \$opts \$bad \${^~argv}(N-M)
+  }"
 fi
 
 # Common aliases across all file listers.
@@ -54,14 +56,6 @@ case $LS in
   alias lt="ll -rt"
   ;;
 esac
-
-# Local Variables:
-# mode: shell-script
-# sh-basic-offset: 2
-# sh-indentation: 2
-# indent-tabs-mode: nil
-# End:
-
 
 alias -- +w="chmod u+w"
 alias -- -w="chmod a-w"

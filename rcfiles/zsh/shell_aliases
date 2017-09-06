@@ -40,22 +40,24 @@ else
   }"
 fi
 
-# Common aliases across all file listers.
+# Define common aliases across all file listers.
 alias l="ls --classify"
 alias lr="ls -R"
 
-case $LS in
-(*exa)
+# Define aliases for /bin/ls.
+alias la="ls -A"
+alias ll="ls -l --time-style=long-iso"
+alias lt="ll -rt"
+
+# (Re)define aliases for exa.
+if [[ $LS == *exa ]]; then
   alias la="ls --all"
   alias ll="ls --long --bytes --time-style=long-iso"
   alias lt="ll --sort=modified"
-  ;;
-(*ls)
-  alias la="ls -A"
-  alias ll="ls -l"
-  alias lt="ll -rt"
-  ;;
-esac
+fi
+
+# Clean up.
+unset l LS
 
 alias -- +w="chmod u+w"
 alias -- -w="chmod a-w"
@@ -107,6 +109,7 @@ autoload -U run-help
 
 # Local Variables:
 # mode: shell-script
+# sh-basic-offset: 2
 # sh-indentation: 2
 # indent-tabs-mode: nil
 # End:

@@ -1,8 +1,9 @@
-# Print the names of the n most recent files in the current directory.
+# Print the names of the n most recent files or directories
+# in the current directory.
 # Usage: recentfiles [count [file_pattern]]
 # e.g. noglob recentfiles 2 m*
 
-print ${~2:-*}(.om[1,${1:-1}])
+print ${~2:-*}(om[1,${1:-1}])
 
 # Local Variables:
 # mode: shell-script

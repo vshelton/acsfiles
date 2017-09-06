@@ -51,7 +51,7 @@ usage: $progname [-h|--help] --cache=<dir> --force --remote --scm=<dir> \
        -h|--help            Print this help message and exit
        --cache=<dir>        Specify the location of the local tarball cache
        --force              Force overwriting of local tarballs
-       --latest=<timespec>  At least one file must be newer than the
+       --since=<timespec>   At least one file must be newer than the
                             timespec [as understood by find(1)]
        --remote             Use wget to retrieve the file
        --scm=<dir>          Specify the location of software configuration
@@ -76,7 +76,7 @@ progname="${0:t}"
 suffix_list=( tar tar.bz2 tar.gz tar.lzma tar.xz tgz )
 
 zparseopts -D h=help -help=help -cache:=cache_root -force=force \
-           -latest:=timespec -remote=remote -scm:=scm_root     \
+           -since:=timespec -remote=remote -scm:=scm_root     \
            -src:=src_root -update=update -ver:=version
 
 [[ -n $help ]] && usage && exit 0

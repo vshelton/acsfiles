@@ -75,26 +75,10 @@ alias new_zsh='new_default -v zsh'
 alias patch='command patch --version-control=numbered --backup'
 alias pd=pushd
 alias pp=popd
-alias r1="noglob recentfiles 1"
-alias r2="noglob recentfiles 2"
-alias r3="noglob recentfiles 3"
-alias r4="noglob recentfiles 4"
-alias r5="noglob recentfiles 5"
-alias r6="noglob recentfiles 6"
-alias r7="noglob recentfiles 7"
-alias r8="noglob recentfiles 8"
-alias r9="noglob recentfiles 9"
-alias rm_versions="noglob rm_versions"
-alias rmver="rm_versions -v"
-alias rr1="noglob recursivefiles 1"
-alias rr2="noglob recursivefiles 2"
-alias rr3="noglob recursivefiles 3"
-alias rr4="noglob recursivefiles 4"
-alias rr5="noglob recursivefiles 5"
-alias rr6="noglob recursivefiles 6"
-alias rr7="noglob recursivefiles 7"
-alias rr8="noglob recursivefiles 8"
-alias rr9="noglob recursivefiles 9"
+for i in {1..9} ; do
+  alias r$i="noglob recentfiles $i"
+  alias rr$i="noglob recursivefiles $i"
+done
 alias tt='tar t -f'
 alias ttv='tar tv -f'
 alias tx='tar x -f'

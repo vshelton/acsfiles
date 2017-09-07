@@ -49,7 +49,7 @@ else
   # specific out and rebuild even if the sources have not changed.
   force=
   [[ -n $VERSION ]] && force="--force"
-  if ! srcdir=$( GetSource --latest="$last_build_time" \
+  if ! srcdir=$( GetSource --since="$last_build_time" \
                            --update $force $project ); then
     exit $?
   fi

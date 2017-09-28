@@ -8,7 +8,7 @@
 
 install=
 snapshot=
-zparseopts -D i=install -install=install s=snapshot -snapshot=snapshot
+zparseopts -E -D i=install -install=install s=snapshot -snapshot=snapshot
 
 # Strip "mk-" from the command name in order to get the package name.
 pkgname=${0:t:s/mk-/}

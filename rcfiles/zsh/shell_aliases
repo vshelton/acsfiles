@@ -11,8 +11,10 @@ if [[ -z $LS ]]; then
 fi
 
 # /bin/ls coreutils now supports dereferencing symlinks to directories!
-if $LS --dereference-command-line-symlink-to-dir /dev/null >& /dev/null; then
-  alias ls="$LS --dereference-command-line-symlink-to-dir"
+LS_opts=()
+z="--dereference-command-line-symlink-to-dir"
+if $LS $z /dev/null >& /dev/null; then
+  LS_opts=($z)
 
 else
 
@@ -40,6 +42,12 @@ else
   }"
 fi
 
+z="--quoting-style=escape"
+if $LS $z /dev/null >& /dev/null; then
+  LS_opts=($LS_opts $z)
+fi
+alias ls="$LS $LS_opts"
+
 # Define common aliases across all file listers.
 alias l="ls --classify"
 alias lr="ls -R"
@@ -51,13 +59,15 @@ alias lt="ll -rt"
 
 # (Re)define aliases for exa.
 if [[ $LS == *exa ]]; then
+  #export EXA_COLORS="*.flac=38;5;125"
+  export EXA_COLORS="*.flac=0"
   alias la="ls --all"
   alias ll="ls --long --bytes --time-style=long-iso"
   alias lt="ll --sort=modified"
 fi
 
 # Clean up.
-unset l LS
+unset l LS LS_opts z
 
 alias -- +w="chmod u+w"
 alias -- -w="chmod a-w"

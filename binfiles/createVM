@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Set up default share folders for a VirtualBox VM.
+
+if [[ $# -ne 1 ]]; then
+  echo "Usage: $0 <VM_name>"
+  exit 1
+fi
+vm=$1
+
+# Find VirtualBox executable and set the default (linux) paths.
+vbm=$(which VBoxManage 2>/dev/null)
+host_home=/home/acs
+host_root=/
+host_zip=/opt/zip
+
+# Check for Cygwin (with VBoxManage outside PATH).
+if [[ $vbm == "" ]]; then
+  PATH="/c/Program Files/Oracle/VirtualBox:$PATH"
+  vbm=$(which VBoxManage 2>/dev/null)
+  if [[ $vbm == "" ]]; then
+    echo "$0: VBoxManage not found" >&2
+    exit 2
+  fi
+  host_home="$(cygpath -d $HOME)"
+  host_root="$(cygpath -d /)"
+  host_zip="$(cygpath -d $ZIPROOT)"
+fi
+
+#echo host_home=\"$host_home\"
+#echo host_root=\"$host_root\"
+#echo host_zip=\"$host_zip\"
+
+$vbm sharedfolder add ${vm} --name "host-home" --hostpath "$host_home" --automount
+$vbm sharedfolder add ${vm} --name "host-root" --hostpath "$host_root" --automount
+$vbm sharedfolder add ${vm} --name "host-zip"  --hostpath "$host_zip"  --automount
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

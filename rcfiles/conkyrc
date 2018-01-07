@@ -2,14 +2,17 @@ conky.config = {
   alignment = 'top_right',
   -- Date and time are displayed in color0.
   color0 = 'gray100',
+  -- color1 is used for the system status.
   -- FFA300 works well as the color of the status line on dark backgrounds.
   -- Other possible colors are: NavyBlue, DodgerBlue1 and LightYellow.
   color1 = 'FFA300',
+  -- color2 is used to display the hostname
+  color2 = 'Tomato',
   cpu_avg_samples = 2,
   double_buffer = true,
   font = 'Liberation Sans',
   -- font = 'Ubuntu',
-  maximum_width = 700,
+  maximum_width = 3000,
   no_buffers = true,
   own_window = true,
   own_window_transparent = true,
@@ -20,12 +23,16 @@ conky.config = {
   use_xft = true
 }
 
+-- On my 4K display at home:
+--   470 is the horizontal position for the date strings
+--   40 is the horizontal position for the system status
 conky.text = [[
-${color0}${font :size=72}${time %I:%M}
-${voffset -160}${goto 295}${font :size=28}${time %A}                   \
-${voffset 36}${goto 295}${font :size=24}${time %d %B %Y}
-${color1}${font :size=11}\
-   HD free: ${fs_free /home/acs} / ${fs_size /home/acs}\
-    RAM in use: $mem / $memmax\
-    CPU: ${cpu cpu0}%
+${color2}${font :size=28}${goto 30}${nodename -s}
+${color0}${voffset -28}${font :size=60}${time %I:%M}
+${voffset -250}${goto 470}${font :size=28}${time %A}                   \
+${voffset 64}${goto 470}${font :size=24}${time %d %B %Y}
+${voffset -30}${color1}${font :size=12}\
+${goto 40}HD free: ${fs_free /home/acs} / ${fs_size /home/acs}
+${goto 40}RAM in use: $mem / $memmax
+${goto 40}CPU: ${cpu cpu0}%
 ]]

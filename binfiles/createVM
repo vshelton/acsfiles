@@ -9,16 +9,15 @@ fi
 vm=$1
 
 # Find VirtualBox executable and set the default (linux) paths.
-vbm=$(which VBoxManage 2>/dev/null)
-host_home=/home/acs
-host_root=/
-host_zip=/opt/zip
+if vbm=$(which VBoxManage 2>/dev/null); then
+  host_home=/home/acs
+  host_root=/
+  host_zip=/opt/zip
 
 # Check for Cygwin (with VBoxManage outside PATH).
-if [[ $vbm == "" ]]; then
+else
   PATH="/c/Program Files/Oracle/VirtualBox:$PATH"
-  vbm=$(which VBoxManage 2>/dev/null)
-  if [[ $vbm == "" ]]; then
+  if ! vbm=$(which VBoxManage 2>/dev/null); then
     echo "$0: VBoxManage not found" >&2
     exit 2
   fi
@@ -31,9 +30,20 @@ fi
 #echo host_root=\"$host_root\"
 #echo host_zip=\"$host_zip\"
 
-$vbm sharedfolder add ${vm} --name "host-home" --hostpath "$host_home" --automount
-$vbm sharedfolder add ${vm} --name "host-root" --hostpath "$host_root" --automount
-$vbm sharedfolder add ${vm} --name "host-zip"  --hostpath "$host_zip"  --automount
+cd "$HOME/VirtualBox VMs"
+
+"$vbm" createvm --name ${vm} --register  --ostype Linux_64
+"$vbm" modifyvm ${vm} --memory 4096  --vram 48 --acpi on --cpus 2
+"$vbm" createmedium disk --filename ${vm}/${vm}.vdi --size 20000 --variant Fixed
+"$vbm" storagectl ${vm} --name "SATA" --add sata
+"$vbm" storageattach ${vm} --storagectl "SATA" --device 0 --port 0 \
+  --type hdd --medium ${vm}/${vm}.vdi
+"$vbm" storageattach ${vm} --storagectl "SATA" --device 0 --port 1 \
+  --type dvddrive --medium emptydrive
+
+"$vbm" sharedfolder add ${vm} --name "host-home" --hostpath "$host_home" --automount
+"$vbm" sharedfolder add ${vm} --name "host-root" --hostpath "$host_root" --automount
+"$vbm" sharedfolder add ${vm} --name "host-zip"  --hostpath "$host_zip"  --automount
 
 # Local Variables:
 # mode: shell-script

@@ -1,0 +1,17 @@
+# Wake the specified server and connect to it.
+
+server=$1
+wakeserver $server >& /dev/null
+retcode=$?
+if [[ $retcode != 0 ]]; then
+  print -u2 "Unknown server: $server"
+  return $retcode
+fi
+sleep 3
+rl $server
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

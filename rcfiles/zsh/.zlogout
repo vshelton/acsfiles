@@ -3,6 +3,7 @@
 if [[ -e $acs_session_histfile ]]; then
   exec 2>/dev/null
   chmod 400 $acs_session_histfile
+  cat $acs_session_histfile >> ~/.zhistory
   : ${HISTDIR:=$HOME/.hist}
   mkdir -p $HISTDIR
   cd $HISTDIR

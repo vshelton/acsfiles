@@ -11,6 +11,8 @@ typeset -g DIRSTACKSIZE=20 FIGNORE='~'
 histchars=\!,#
 typeset -g HISTSIZE=4096 WORDCHARS='.-_'
 typeset -g SAVEHIST=$HISTSIZE HISTFILE=~/.zhistory
+acs_session_histfile=$(mktemp)
+typeset -g HISTFILE=$acs_session_histfile
 
 # Set manpath based on path, but include /usr/share/man.
 manpath=( $path:gs/bin/man/ )

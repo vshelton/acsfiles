@@ -134,7 +134,6 @@ lib/zsh-functions/system_specific       $SCMROOT/rcfiles/lib/zsh-functions/syste
 lib/zsh-functions/title                 $SCMROOT/rcfiles/lib/zsh-functions/title                linux,NT
 lib/zsh-functions/xdef                  $SCMROOT/rcfiles/lib/zsh-functions/xdef                 linux,NT
 lib/zsh-functions/xres                  $SCMROOT/rcfiles/lib/zsh-functions/xres                 linux,NT
-lib/zsh-functions/zshaddhistory         $SCMROOT/rcfiles/lib/zsh-functions/zshaddhistory        linux,NT
 zsh/.zlogout                            $SCMROOT/rcfiles/zsh/.zlogout                           linux,NT
 zsh/.zshenv                             $SCMROOT/rcfiles/zsh/.zshenv                            linux,NT
 zsh/.zshrc                              $SCMROOT/rcfiles/zsh/.zshrc                             linux,NT

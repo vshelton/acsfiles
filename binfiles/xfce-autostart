@@ -5,13 +5,18 @@
 : ${USRLOCAL:=/opt}
 PATH=$HOME/bin:$USRLOCAL/bin:$PATH
 
-xfce4-terminal &
+sleep 2
+tilda &
 emacs -f about-emacs &
 
 #google-chrome-beta &
 #clementine &
 
-conky --pause=15 &
+#conky --pause=5 &
+sleep 5
+conky --alignment=top_middle \
+  --text='${color tomato}${font Comic Sans MS:bold:size=24}${nodename -s}' &
+conky &
 
 # Local Variables:
 # mode: shell-script

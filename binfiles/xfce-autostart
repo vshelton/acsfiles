@@ -15,7 +15,7 @@ emacs -f about-emacs &
 #conky --pause=5 &
 sleep 5
 conky --alignment=top_middle \
-  --text='${color tomato}${font Comic Sans MS:bold:size=24}${nodename -s}' &
+  --text='${color tomato}${font Comic Sans MS:bold:size=30}${nodename -s}' &
 conky &
 
 # Local Variables:

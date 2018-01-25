@@ -12,9 +12,8 @@ fi
 # Return if command is empty
 [[ -z $cmd ]] && return 1
 
-# Save all commands (along with time and current directory)
-# to a special per-shell file
-print -- "$(now); $PWD; $cmd" >> $acs_session_histfile
+# Ignore history commands, if appropriate
+[[ $options[histnostore] == on && $cmd =~ "^h$|history|fc " ]] && return 0
 
 # Ignore commands starting with a space, if appropriate
 [[ $options[histignorespace] == on && $cmd =~ "^ .*" ]] && return 0
@@ -24,6 +23,10 @@ print -- "$(now); $PWD; $cmd" >> $acs_session_histfile
 
 # Implement HIST_IGNORE_ALL_DUPS
 #[[ $options[histignorealldups] == on ]] && unset history[(R)$cmd]
+
+# Save all commands (along with time and current directory)
+# to a special per-shell file
+print -- "$(now); $PWD; $cmd" >> $acs_session_histfile
 
 # Save command to in-memory history list
 print -sr -- $cmd

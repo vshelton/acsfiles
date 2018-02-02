@@ -11,7 +11,8 @@ snapshot=
 zparseopts -E -D i=install -install=install s=snapshot -snapshot=snapshot
 
 # Strip "mk-" from the command name in order to get the package name.
-pkgname=${0:t:s/mk-/}
+progname=${0:t}
+pkgname=${progname:s/mk-/}
 scm_opts=( --update $* )
 
 # Nowadays it's hard to separate the source directory
@@ -53,12 +54,33 @@ case $pkgname in
 (perl)
   prefix=$USRLOCAL
   [[ -n $snapshot ]] && prefix=$prefix/${PWD:t}
-  ./Configure -Dprefix=$prefix -Dusedevel -Dcf_email=ethersoft@gmail.com -des
-  make && make test
+  ./Configure -Dprefix=$prefix -Dusedevel -Dcf_email=ethersoft@gmail.com -des >& conf.out
   retval=$?
-  if (( retval == 0 )) && [[ -n $install ]]; then
-    make install
+  if (( retval != 0 )); then
+    print -u2 "$progname: configure failed:"
+    tail -n 15 conf.out
+    exit $retval
+  fi
+
+  # Build.
+  print -n "Building $pkgname ..."
+  ( make && make test ) >& mk.out
+  retval=$?
+  print "done."
+  if (( retval != 0 )); then
+    print -u2 "$progname: make failed:"
+    tail -n 15 mk.out
+    exit $retval
+  fi
+
+  if [[ -n $install ]]; then
+    make install >& inst.out
     retval=$?
+    if (( retval != 0 )); then
+      print -u2 "$progname: make install failed:"
+      tail -n 15 inst.out
+      exit $retval
+    fi
   fi
   ;;
 

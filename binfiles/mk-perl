@@ -20,6 +20,8 @@ scm_opts=( --update $* )
 srcdir=$(GetSource $scm_opts $pkgname) || exit $?
 cd  $srcdir
 
+export PREFIX=$USRLOCAL
+
 # Package-specific stuff
 case $pkgname in
 (conky)
@@ -33,7 +35,7 @@ case $pkgname in
   ;;
 
 (exa)
-  export PREFIX=$USRLOCAL ZSHDIR=$USRLOCAL/share/zsh/site-functions
+  export ZSHDIR=$USRLOCAL/share/zsh/site-functions
   make -e
   retval=$?
   if (( retval == 0 )) && [[ -n $install ]]; then
@@ -43,7 +45,7 @@ case $pkgname in
   ;;
 
 (feh)
-  export PREFIX=$USRLOCAL VERSION=$(today)
+  export VERSION=$(today)
   make -e
   retval=$?
   if (( retval == 0 )) && [[ -n $install ]]; then
@@ -53,11 +55,10 @@ case $pkgname in
   ;;
 
 (perl)
-  prefix=$USRLOCAL
-  [[ -n $snapshot ]] && prefix=$prefix/${PWD:t}
+  [[ -n $snapshot ]] && PREFIX=$PREFIX/${PWD:t}
   f=conf.out
   print -n "Configuring $pkgname ... "
-  ./Configure -Dprefix=$prefix -Dusedevel -Dcf_email=ethersoft@gmail.com -des >& $f
+  ./Configure -Dprefix=$PREFIX -Dusedevel -Dcf_email=ethersoft@gmail.com -des >& $f
   retval=$?
   print "done."
   if (( retval != 0 )); then

@@ -141,6 +141,10 @@ if [[ ${host} == "VirtualBox" ]]; then
   host_home=$(find_host_home)
 fi
 
+echo host_home=\"$host_home\"
+echo ziproot=\"$ziproot\"
+read -p "Pause..."
+
 # Add the 'extra' repository if we're running under Arch linux.
 if arch-pm >/dev/null ; then
   sudo -s << EOF
@@ -221,9 +225,9 @@ emulate -LR zsh
 
 update-packages
 
-scm_update acsfiles conky
+scm_update acsfiles emacs zsh
 
-mk-zsh zsh --disable-gdbm
+mk-zsh
 mk-emacs --with-x-toolkit=lucid
 
 # Local Variables:
@@ -286,13 +290,10 @@ EOF
 fi
 
 # Set up the execution path to include my scripts
-# to make conky, emacs and zsh.
+# to make emacs and zsh.
 PATH=${HOME}/bin:${PATH}
 
-# Build conky, emacs and zsh.
-init-conky              # Installs directly to USRLOCAL, so calling
-                        # link_latest() is not necessary.
-
+# Build emacs and zsh.
 init-zsh
 link_latest zsh zsh-$(today)
 #if [[ -x ${USRLOCAL}/bin/zsh ]]; then

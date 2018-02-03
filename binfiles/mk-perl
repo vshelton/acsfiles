@@ -25,32 +25,71 @@ export PREFIX=$USRLOCAL
 # Package-specific stuff
 case $pkgname in
 (conky)
-  cmake -DCMAKE_INSTALL_PREFIX=$USRLOCAL -DBUILD_XDBE=true
-  make
+  print -n "Building $pkgname ... "
+  f=mk.out
+  cmake -DCMAKE_INSTALL_PREFIX=$USRLOCAL -DBUILD_XDBE=true >& $f
+  make >>& $f
   retval=$?
-  if (( retval == 0 )) && [[ -n $install ]]; then
-    make install
+  print "done."
+  if (( retval != 0 )); then
+    print -u2 "$progname: make failed:"
+    tail -n 15 $f
+  elif [[ -n $install ]]; then
+    print -n "Installing $pkgname ... "
+    f=inst.out
+    make install >& $f
     retval=$?
+    print "done."
+    if (( retval != 0 )); then
+      print -u2 "$progname: make install failed:"
+      tail -n 15 $f
+    fi
   fi
   ;;
 
 (exa)
+  print -n "Building $pkgname ... "
+  f=mk.out
   export ZSHDIR=$USRLOCAL/share/zsh/site-functions
-  make -e
+  make -e >& $f
   retval=$?
-  if (( retval == 0 )) && [[ -n $install ]]; then
-    make -e install install-zsh-completions
+  print "done."
+  if (( retval != 0 )); then
+    print -u2 "$progname: make failed:"
+    tail -n 15 $f
+  elif [[ -n $install ]]; then
+    print -n "Installing $pkgname ... "
+    f=inst.out
+    make -e install install-zsh-completions >& $f
     retval=$?
+    print "done."
+    if (( retval != 0 )); then
+      print -u2 "$progname: make install failed:"
+      tail -n 15 $f
+    fi
   fi
   ;;
 
 (feh)
   export VERSION=$(today)
-  make -e
+  print -n "Building $pkgname ... "
+  f=mk.out
+  make -e >& $f
   retval=$?
-  if (( retval == 0 )) && [[ -n $install ]]; then
-    make -e install
+  print "done."
+  if (( retval != 0 )); then
+    print -u2 "$progname: make failed:"
+    tail -n 15 $f
+  elif [[ -n $install ]]; then
+    print -n "Installing $pkgname ... "
+    f=inst.out
+    make -e install >& $f
     retval=$?
+    print "done."
+    if (( retval != 0 )); then
+      print -u2 "$progname: make install failed:"
+      tail -n 15 $f
+    fi
   fi
   ;;
 

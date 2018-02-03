@@ -134,15 +134,26 @@ else
   SCMROOT=$SCMROOT scm_update $1
   cd $SCMROOT/$1
 
+  # The specified source tree must include (in priority order):
+  #  1. One or more files whose modification time is newer than the --since parameter
+  #  2. One or more files whose modification time is newer than $updatefile
+  #  3. One or more files whose modification time is more recent than midnight.
+  : ${updatefile:=last_update}
+  ts=( "-newermt" $(today) )
   timestamp=${timespec[2]#=}
-  [[ -z $timestamp ]] && timestamp=$(today)
+  if [[ -n $timestamp ]]; then
+    ts=( "-newermt" $timestamp )
+  elif [[ -e $updatefile ]]; then
+    ts=( "-newermm" $updatefile )
+  fi
   newfiles=( $(find . \( -path ./.bzr -o -path ./.git -o -path ./.hg \) -prune \
-                     -o -newermt $timestamp -type f -print) )
+                     -o $ts -type f -print) )
   #print -u2 newfiles = $newfiles
   if (( $#newfiles < 1 )) && [[ -z $force ]]; then
     print -u2 "$progname: --update specified, but no newly-modified files were found in $SCMROOT/$1"
     exit 2
   fi
+  touch $updatefile
   cd -
 fi
 

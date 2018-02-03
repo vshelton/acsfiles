@@ -54,31 +54,51 @@ case $pkgname in
 (perl)
   prefix=$USRLOCAL
   [[ -n $snapshot ]] && prefix=$prefix/${PWD:t}
-  ./Configure -Dprefix=$prefix -Dusedevel -Dcf_email=ethersoft@gmail.com -des >& conf.out
+  f=conf.out
+  print -n "Configuring $pkgname ... "
+  ./Configure -Dprefix=$prefix -Dusedevel -Dcf_email=ethersoft@gmail.com -des >& $f
   retval=$?
+  print "done."
   if (( retval != 0 )); then
     print -u2 "$progname: configure failed:"
-    tail -n 15 conf.out
+    tail -n 15 $f
     exit $retval
   fi
 
   # Build.
-  print -n "Building $pkgname ..."
-  ( make && make test ) >& mk.out
+  print -n "Building $pkgname ... "
+  f=mk.out
+  make >& $f
   retval=$?
   print "done."
   if (( retval != 0 )); then
     print -u2 "$progname: make failed:"
-    tail -n 15 mk.out
+    tail -n 15 $f
     exit $retval
   fi
 
+  # Test.
+  print -n "Testing $pkgname ... "
+  f=check.out
+  make test >& $f
+  retval=$?
+  print "done."
+  if (( retval != 0 )); then
+    print -u2 "$progname: make test failed:"
+    tail -n 15 $f
+    exit $retval
+  fi
+
+  # Install.
   if [[ -n $install ]]; then
-    make install >& inst.out
+    print -n "Installing $pkgname ... "
+    f=inst.out
+    make install >& $f
     retval=$?
+    print "done."
     if (( retval != 0 )); then
       print -u2 "$progname: make install failed:"
-      tail -n 15 inst.out
+      tail -n 15 $f
       exit $retval
     fi
   fi

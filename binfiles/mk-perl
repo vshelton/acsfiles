@@ -17,7 +17,8 @@ scm_opts=( --update $* )
 
 # Nowadays it's hard to separate the source directory
 # from the build directory, so we'll build in the source directory.
-cd $(GetSource $scm_opts $pkgname)
+srcdir=$(GetSource $scm_opts $pkgname) || exit $?
+cd  $srcdir
 
 # Package-specific stuff
 case $pkgname in

@@ -1,10 +1,12 @@
 #!/usr/bin/env zsh
 
 # This is a generic build script to download the latest source code and
-# build a new version of software.  Link this to "mk-exa" or "mk-perl", etc.
+# build a new version of a software package.  This script knows how to
+# build conky, exa, feh and perl.  Link this to "mk-exa" or "mk-perl", etc.
 
 : ${USRLOCAL:=/usr/local}
-: ${BLDROOT:=$USRLOCAL/build}
+
+export PREFIX=$USRLOCAL
 
 install=
 snapshot=
@@ -15,141 +17,105 @@ progname=${0:t}
 pkgname=${progname:s/mk-/}
 scm_opts=( --update $* )
 
-# Nowadays it's hard to separate the source directory
-# from the build directory, so we'll build in the source directory.
-srcdir=$(GetSource $scm_opts $pkgname) || exit $?
-cd  $srcdir
+# All packages potentially go through the same steps: update source control,
+# copy from source control, configure, make, make test & make install.
 
-export PREFIX=$USRLOCAL
-
-# Package-specific stuff
+# Set the package-specific commands.
 case $pkgname in
 (conky)
-  print -n "Building $pkgname ... "
-  f=mk.out
-  cmake -DCMAKE_INSTALL_PREFIX=$USRLOCAL -DBUILD_XDBE=true >& $f
-  make >>& $f
-  retval=$?
-  print "done."
-  if (( retval != 0 )); then
-    print -u2 "$progname: make failed:"
-    tail -n 15 $f
-  elif [[ -n $install ]]; then
-    print -n "Installing $pkgname ... "
-    f=inst.out
-    make install >& $f
-    retval=$?
-    print "done."
-    if (( retval != 0 )); then
-      print -u2 "$progname: make install failed:"
-      tail -n 15 $f
-    fi
-  fi
+  CONFIGURE=( "cmake" "-DCMAKE_INSTALL_PREFIX=$USRLOCAL" "-DBUILD_XDBE=true" )
+  BUILD=( "make" )
+  TEST=
+  INSTALL=( "make" "install" )
   ;;
 
 (exa)
-  print -n "Building $pkgname ... "
-  f=mk.out
   export ZSHDIR=$USRLOCAL/share/zsh/site-functions
-  make -e >& $f
-  retval=$?
-  print "done."
-  if (( retval != 0 )); then
-    print -u2 "$progname: make failed:"
-    tail -n 15 $f
-  elif [[ -n $install ]]; then
-    print -n "Installing $pkgname ... "
-    f=inst.out
-    make -e install install-zsh-completions >& $f
-    retval=$?
-    print "done."
-    if (( retval != 0 )); then
-      print -u2 "$progname: make install failed:"
-      tail -n 15 $f
-    fi
-  fi
+  CONFIGURE=
+  BUILD=( "make" "-e" )
+  TEST=
+  INSTALL=( "make" "-e" "install" "install-zsh-completions" )
   ;;
 
 (feh)
   export VERSION=$(today)
-  print -n "Building $pkgname ... "
-  f=mk.out
-  make -e >& $f
-  retval=$?
-  print "done."
-  if (( retval != 0 )); then
-    print -u2 "$progname: make failed:"
-    tail -n 15 $f
-  elif [[ -n $install ]]; then
-    print -n "Installing $pkgname ... "
-    f=inst.out
-    make -e install >& $f
-    retval=$?
-    print "done."
-    if (( retval != 0 )); then
-      print -u2 "$progname: make install failed:"
-      tail -n 15 $f
-    fi
-  fi
+  CONFIGURE=
+  BUILD=( "make" "-e" )
+  TEST=
+  INSTALL=( "make" "-e" "install" )
   ;;
 
 (perl)
-  [[ -n $snapshot ]] && PREFIX=$PREFIX/${PWD:t}
-  f=conf.out
-  print -n "Configuring $pkgname ... "
-  ./Configure -Dprefix=$PREFIX -Dusedevel -Dcf_email=ethersoft@gmail.com -des >& $f
-  retval=$?
-  print "done."
-  if (( retval != 0 )); then
-    print -u2 "$progname: configure failed:"
-    tail -n 15 $f
-    exit $retval
-  fi
-
-  # Build.
-  print -n "Building $pkgname ... "
-  f=mk.out
-  make >& $f
-  retval=$?
-  print "done."
-  if (( retval != 0 )); then
-    print -u2 "$progname: make failed:"
-    tail -n 15 $f
-    exit $retval
-  fi
-
-  # Test.
-  print -n "Testing $pkgname ... "
-  f=check.out
-  make test >& $f
-  retval=$?
-  print "done."
-  if (( retval != 0 )); then
-    print -u2 "$progname: make test failed:"
-    tail -n 15 $f
-    exit $retval
-  fi
-
-  # Install.
-  if [[ -n $install ]]; then
-    print -n "Installing $pkgname ... "
-    f=inst.out
-    make install >& $f
-    retval=$?
-    print "done."
-    if (( retval != 0 )); then
-      print -u2 "$progname: make install failed:"
-      tail -n 15 $f
-      exit $retval
-    fi
-  fi
+  [[ -n $snapshot ]] && PREFIX=$PREFIX/${pkgname}-$(today)
+  CONFIGURE=( "./Configure"
+              "-Dprefix=$PREFIX"
+              "-Dusedevel"
+              "-Dcf_email=ethersoft@gmail.com"
+              "-des" )
+  BUILD=( "make" )
+  TEST=( "make" "test" )
+  INSTALL=( "make" "install" )
   ;;
 
 (*)
-  print -u2 Unknown package: $pkgname
-  retval=1
+  print -u2 "$progname: unknown package: ${pkgname}.
+This script knows how to build conky, exa, feh and perl."
+  exit 1
   ;;
 esac
+
+# Nowadays it's hard to separate the source directory
+# from the build directory, so we'll build in the source directory.
+srcdir=$(GetSource $scm_opts $pkgname) || exit $?
+cd $srcdir
+
+if [[ -n $CONFIGURE ]]; then
+  out=conf.out
+  print -n "Configuring $pkgname ... "
+  ( $CONFIGURE ) >& $out
+  retval=$?
+  print "done."
+  if (( retval != 0 )); then
+    print -u2 "$progname: configuration failed:"
+    tail -n 15 $out
+  fi
+fi
+
+if (( retval == 0 )) && [[ -n $BUILD ]]; then
+  out=mk.out
+  print -n "Building $pkgname ... "
+  ( $BUILD ) >& $out
+  retval=$?
+  print "done."
+  if (( retval != 0 )); then
+    print -u2 "$progname: building failed:"
+    tail -n 15 $out
+  fi
+fi
+
+if  (( retval == 0 )) && [[ -n $TEST ]]; then
+  out=check.out
+  print -n "Testing $pkgname ... "
+  ( $TEST ) >& $out
+  retval=$?
+  print "done."
+  if (( retval != 0 )); then
+    print -u2 "$progname: testing failed:"
+    tail -n 15 $out
+  fi
+fi
+
+if (( retval == 0 )) && [[ -n $INSTALL ]] && [[ -n $install ]]; then
+  out=inst.out
+  print -n "Installing $pkgname ... "
+  ( $INSTALL ) >& $out
+  retval=$?
+  print "done."
+  if (( retval != 0 )); then
+    print -u2 "$progname: installation failed:"
+    tail -n 15 $out
+  fi
+fi
 
 exit $retval
 

@@ -5,6 +5,8 @@
 # build conky, exa, feh and perl.  Link this to "mk-exa" or "mk-perl", etc.
 
 : ${USRLOCAL:=/usr/local}
+: ${BLDROOT:=$USRLOCAL/build}
+: ${SRCROOT:=$USRLOCAL/src}
 
 export PREFIX=$USRLOCAL
 
@@ -20,54 +22,74 @@ scm_opts=( --update $* )
 # All packages potentially go through the same steps: update source control,
 # copy from source control, configure, make, make test & make install.
 
+# Update the sources and copy them into a source directory.
+srcdir=$(GetSource $scm_opts $pkgname) || exit $?
+
 # Set the package-specific commands.
+BUILD=()
+CONFIGURE=()
+INSTALL=()
+TEST=()
 case $pkgname in
 (conky)
   CONFIGURE=( "cmake" "-DCMAKE_INSTALL_PREFIX=$USRLOCAL" "-DBUILD_XDBE=true" )
   BUILD=( "make" )
-  TEST=
   INSTALL=( "make" "install" )
   ;;
 
 (exa)
   export ZSHDIR=$USRLOCAL/share/zsh/site-functions
-  CONFIGURE=
   BUILD=( "make" "-e" )
-  TEST=
   INSTALL=( "make" "-e" "install" "install-zsh-completions" )
   ;;
 
 (feh)
   export VERSION=$(today)
-  CONFIGURE=
   BUILD=( "make" "-e" )
-  TEST=
   INSTALL=( "make" "-e" "install" )
   ;;
 
 (perl)
   [[ -n $snapshot ]] && PREFIX=$PREFIX/${pkgname}-$(today)
-  CONFIGURE=( "./Configure"
+  CONFIGURE=( "$srcdir/Configure"
               "-Dprefix=$PREFIX"
               "-Dusedevel"
               "-Dcf_email=ethersoft@gmail.com"
+              "-Dmksymlinks"
               "-des" )
   BUILD=( "make" )
   TEST=( "make" "test" )
   INSTALL=( "make" "install" )
   ;;
 
+(tilda)
+  [[ -n $snapshot ]] && PREFIX=$PREFIX/${pkgname}-$(today)
+  CONFIGURE=( "$srcdir/autogen.sh" "--prefix=$PREFIX" "--enable-clang" )
+  BUILD=( "make" )
+  INSTALL=( "make" "install" )
+  ;;
+
 (*)
   print -u2 "$progname: unknown package: ${pkgname}.
-This script knows how to build conky, exa, feh and perl."
+This script knows how to build conky, exa, feh, perl and tilda."
   exit 1
   ;;
 esac
 
-# Nowadays it's hard to separate the source directory
-# from the build directory, so we'll build in the source directory.
-srcdir=$(GetSource $scm_opts $pkgname) || exit $?
-cd $srcdir
+# The recipes for tilda and perl include separate build directories.
+case $pkgname in
+(perl|tilda)
+  ver=${srcdir#$SRCROOT/}
+  mkdir $BLDROOT/$ver
+  cd $BLDROOT/$ver
+  ;;
+
+# Nowadays it's hard to build in a separate directory, so we'll build
+# in the source directory for packages other than perl and tilda.
+(*)
+  cd $srcdir
+  ;;
+esac
 
 if [[ -n $CONFIGURE ]]; then
   out=conf.out

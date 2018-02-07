@@ -59,6 +59,7 @@ bin/mk-feh                              $SCMROOT/binfiles/mk-perl               
 bin/mk-lastpass                         $SCMROOT/binfiles/mk-lastpass                           linux,NT
 bin/mk-perl                             $SCMROOT/binfiles/mk-perl                               linux,NT
 bin/mk-src                              $SCMROOT/binfiles/mk-src                                linux,NT
+bin/mk-tilda                            $SCMROOT/binfiles/mk-perl                               linux
 bin/mk-xemacs                           $SCMROOT/binfiles/mk-xemacs                             linux,NT
 bin/mk-xemacs-21.5                      $SCMROOT/binfiles/mk-xemacs-21.5                        linux,NT
 bin/mk-xemacs-min                       $SCMROOT/binfiles/mk-xemacs-min                         linux,NT

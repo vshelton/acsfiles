@@ -8,6 +8,14 @@
 : ${BLDROOT:=$USRLOCAL/build}
 : ${SRCROOT:=$USRLOCAL/src}
 
+# Make a suitable build directory under $BLDROOT and cd to it.
+function CreateBuildDirectory()
+{
+  ver=${1#$SRCROOT/}
+  mkdir $BLDROOT/$ver
+  cd $BLDROOT/$ver
+}
+
 export PREFIX=$USRLOCAL
 
 install=
@@ -36,7 +44,12 @@ INSTALL=()
 TEST=()
 case $pkgname in
 (conky)
-  CONFIGURE=( "cmake" "-DCMAKE_INSTALL_PREFIX=$USRLOCAL" "-DBUILD_XDBE=true" )
+  CreateBuildDirectory $srcdir
+  srcdir=$(relative $srcdir)
+  CONFIGURE=( "cmake"
+              "-DCMAKE_INSTALL_PREFIX=$USRLOCAL"
+              "-DBUILD_XDBE=true"
+              "$srcdir" )
   BUILD=( "make" )
   INSTALL=( "make" "install" )
   ;;
@@ -55,6 +68,8 @@ case $pkgname in
 
 (perl)
   [[ -n $snapshot ]] && PREFIX=$PREFIX/${pkgname}-$(today)
+  CreateBuildDirectory $srcdir
+  srcdir=$(relative $srcdir)
   CONFIGURE=( "$srcdir/Configure"
               "-Dprefix=$PREFIX"
               "-Dusedevel"
@@ -68,6 +83,8 @@ case $pkgname in
 
 (tilda)
   [[ -n $snapshot ]] && PREFIX=$PREFIX/${pkgname}-$(today)
+  CreateBuildDirectory $srcdir
+  srcdir=$(relative $srcdir)
   CONFIGURE=( "$srcdir/autogen.sh" "--prefix=$PREFIX" "--enable-clang" )
   BUILD=( "make" )
   INSTALL=( "make" "install" )
@@ -79,13 +96,6 @@ This script knows how to build conky, exa, feh, perl and tilda."
   exit 1
   ;;
 esac
-
-# The recipes for tilda and perl include separate build directories.
-if [[ $pkgname =~ "perl|tilda" ]]; then
-  ver=${srcdir#$SRCROOT/}
-  mkdir $BLDROOT/$ver
-  cd $BLDROOT/$ver
-fi
 
 if [[ -n $CONFIGURE ]]; then
   out=conf.out

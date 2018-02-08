@@ -25,6 +25,10 @@ scm_opts=( --update $* )
 # Update the sources and copy them into a source directory.
 srcdir=$(GetSource $scm_opts $pkgname) || exit $?
 
+# Nowadays it's hard to build in a separate directory, so the default
+# behavior will be to build in the source directory.
+cd $srcdir
+
 # Set the package-specific commands.
 BUILD=()
 CONFIGURE=()
@@ -77,19 +81,11 @@ This script knows how to build conky, exa, feh, perl and tilda."
 esac
 
 # The recipes for tilda and perl include separate build directories.
-case $pkgname in
-(perl|tilda)
+if [[ $pkgname =~ "perl|tilda" ]]; then
   ver=${srcdir#$SRCROOT/}
   mkdir $BLDROOT/$ver
   cd $BLDROOT/$ver
-  ;;
-
-# Nowadays it's hard to build in a separate directory, so we'll build
-# in the source directory for packages other than perl and tilda.
-(*)
-  cd $srcdir
-  ;;
-esac
+fi
 
 if [[ -n $CONFIGURE ]]; then
   out=conf.out

@@ -44,10 +44,11 @@ INSTALL=()
 TEST=()
 case $pkgname in
 (conky)
+  [[ -n $snapshot ]] && PREFIX=$PREFIX/${pkgname}-$(today)
   CreateBuildDirectory $srcdir
   srcdir=$(relative $srcdir)
   CONFIGURE=( "cmake"
-              "-DCMAKE_INSTALL_PREFIX=$USRLOCAL"
+              "-DCMAKE_INSTALL_PREFIX=$PREFIX"
               "-DBUILD_XDBE=true"
               "$srcdir" )
   BUILD=( "make" )

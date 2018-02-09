@@ -9,11 +9,33 @@
 : ${SRCROOT:=$USRLOCAL/src}
 
 # Make a suitable build directory under $BLDROOT and cd to it.
-function CreateBuildDirectory()
+function
+CreateBuildDirectory()
 {
   ver=${1#$SRCROOT/}
   mkdir $BLDROOT/$ver
   cd $BLDROOT/$ver
+}
+
+# Update the symbolic link pointing to the most recent copy
+# of the specified package.
+function
+LinkLatest()
+{
+  cd $USRLOCAL
+  package=$1
+  rm $package || return $?
+  ln -s ${package}*(oc[1]) $package
+}
+
+# Run the pre-config command in zsh.
+function
+ZshPreConfigure()
+{
+  (
+    cd $1
+    ./Util/preconfig
+  )
 }
 
 export PREFIX=$USRLOCAL
@@ -35,23 +57,29 @@ srcdir=$(GetSource $scm_opts $pkgname) || exit $?
 
 # exa and feh both lack real configuration mechanisms,
 # so they must build in the source directory.
-if [[ $pkgname =~ "exa|feh" ]]; then
+case $pkgname in
+(exa)
+(feh)
   cd $srcdir
+  ;;
   
 # Other packages support building in a separate directory
 # and their package-specific recipes reflect that.
-else
+(*)
   CreateBuildDirectory $srcdir
   srcdir=$(relative $srcdir)
-fi
+  ;;
+esac
 
 # Implement the --snapshot option.
 [[ -n $snapshot ]] && PREFIX=$PREFIX/${pkgname}-$(today)
 
 # Set the package-specific commands.
-BUILD=()
+BUILD=( "make" )
 CONFIGURE=()
-INSTALL=()
+INSTALL=( "make" "install" )
+POSTINSTALL=()
+[[ -n $snapshot ]] && POSTINSTALL=( "LinkLatest" "$pkgname" )
 PRECONFIGURE=()
 TEST=()
 case $pkgname in
@@ -60,8 +88,6 @@ case $pkgname in
               "-DCMAKE_INSTALL_PREFIX=$PREFIX"
               "-DBUILD_XDBE=true"
               "$srcdir" )
-  BUILD=( "make" )
-  INSTALL=( "make" "install" )
   ;;
 
 (exa)
@@ -83,25 +109,19 @@ case $pkgname in
               "-Dcf_email=ethersoft@gmail.com"
               "-Dmksymlinks"
               "-des" )
-  BUILD=( "make" )
   TEST=( "make" "test" )
-  INSTALL=( "make" "install" )
   ;;
 
 (tilda)
   CONFIGURE=( "$srcdir/autogen.sh" "--prefix=$PREFIX" "--enable-clang" )
-  BUILD=( "make" )
-  INSTALL=( "make" "install" )
   ;;
 
 (zsh)
-  PRECONFIGURE=( "cd" "$srcdir;" "./Util/preconfig" )
+  PRECONFIGURE=( "ZshPreConfigure" "$srcdir" )
   CONFIGURE=( "$srcdir/configure"
               "--prefix=$PREFIX"
               "--enable-pcre" )
-  BUILD=( "make" )
   TEST=( "make" "-k" "check" )
-  INSTALL=( "make" "install" )
   ;;
 
 (*)
@@ -115,7 +135,7 @@ if [[ -n $CONFIGURE ]]; then
   out=conf.out
   print -n "Configuring $pkgname ... "
   if [[ -n $PRECONFIGURE ]]; then
-    ( eval $PRECONFIGURE ) >& /dev/null
+    ( $PRECONFIGURE ) >& /dev/null
   fi
   ( $CONFIGURE ) >& $out
   retval=$?
@@ -155,6 +175,7 @@ if (( retval == 0 )) && [[ -n $INSTALL ]] && [[ -n $install ]]; then
   print -n "Installing $pkgname ... "
   ( $INSTALL ) >& $out
   retval=$?
+  ( $POSTINSTALL ) >>& $out
   print "done."
   if (( retval != 0 )); then
     print -u2 "$progname: installation failed:"

@@ -37,6 +37,9 @@ srcdir=$(GetSource $scm_opts $pkgname) || exit $?
 # behavior will be to build in the source directory.
 cd $srcdir
 
+# Implement the --snapshot option.
+[[ -n $snapshot ]] && PREFIX=$PREFIX/${pkgname}-$(today)
+
 # Set the package-specific commands.
 BUILD=()
 CONFIGURE=()
@@ -44,7 +47,6 @@ INSTALL=()
 TEST=()
 case $pkgname in
 (conky)
-  [[ -n $snapshot ]] && PREFIX=$PREFIX/${pkgname}-$(today)
   CreateBuildDirectory $srcdir
   srcdir=$(relative $srcdir)
   CONFIGURE=( "cmake"
@@ -68,7 +70,6 @@ case $pkgname in
   ;;
 
 (perl)
-  [[ -n $snapshot ]] && PREFIX=$PREFIX/${pkgname}-$(today)
   CreateBuildDirectory $srcdir
   srcdir=$(relative $srcdir)
   CONFIGURE=( "$srcdir/Configure"
@@ -83,7 +84,6 @@ case $pkgname in
   ;;
 
 (tilda)
-  [[ -n $snapshot ]] && PREFIX=$PREFIX/${pkgname}-$(today)
   CreateBuildDirectory $srcdir
   srcdir=$(relative $srcdir)
   CONFIGURE=( "$srcdir/autogen.sh" "--prefix=$PREFIX" "--enable-clang" )

@@ -33,9 +33,17 @@ scm_opts=( --update $* )
 # Update the sources and copy them into a source directory.
 srcdir=$(GetSource $scm_opts $pkgname) || exit $?
 
-# Nowadays it's hard to build in a separate directory, so the default
-# behavior will be to build in the source directory.
-cd $srcdir
+# exa and feh both lack real configuration mechanisms,
+# so they must build in the source directory.
+if [[ $pkgname =~ "exa|feh" ]]; then
+  cd $srcdir
+  
+# Other packages support building in a separate directory
+# and their package-specific recipes reflect that.
+else
+  CreateBuildDirectory $srcdir
+  srcdir=$(relative $srcdir)
+fi
 
 # Implement the --snapshot option.
 [[ -n $snapshot ]] && PREFIX=$PREFIX/${pkgname}-$(today)
@@ -44,11 +52,10 @@ cd $srcdir
 BUILD=()
 CONFIGURE=()
 INSTALL=()
+PRECONFIGURE=()
 TEST=()
 case $pkgname in
 (conky)
-  CreateBuildDirectory $srcdir
-  srcdir=$(relative $srcdir)
   CONFIGURE=( "cmake"
               "-DCMAKE_INSTALL_PREFIX=$PREFIX"
               "-DBUILD_XDBE=true"
@@ -70,8 +77,6 @@ case $pkgname in
   ;;
 
 (perl)
-  CreateBuildDirectory $srcdir
-  srcdir=$(relative $srcdir)
   CONFIGURE=( "$srcdir/Configure"
               "-Dprefix=$PREFIX"
               "-Dusedevel"
@@ -84,10 +89,18 @@ case $pkgname in
   ;;
 
 (tilda)
-  CreateBuildDirectory $srcdir
-  srcdir=$(relative $srcdir)
   CONFIGURE=( "$srcdir/autogen.sh" "--prefix=$PREFIX" "--enable-clang" )
   BUILD=( "make" )
+  INSTALL=( "make" "install" )
+  ;;
+
+(zsh)
+  PRECONFIGURE=( "cd" "$srcdir;" "./Util/preconfig" )
+  CONFIGURE=( "$srcdir/configure"
+              "--prefix=$PREFIX"
+              "--enable-pcre" )
+  BUILD=( "make" )
+  TEST=( "make" "-k" "check" )
   INSTALL=( "make" "install" )
   ;;
 
@@ -101,6 +114,9 @@ esac
 if [[ -n $CONFIGURE ]]; then
   out=conf.out
   print -n "Configuring $pkgname ... "
+  if [[ -n $PRECONFIGURE ]]; then
+    ( eval $PRECONFIGURE ) >& /dev/null
+  fi
   ( $CONFIGURE ) >& $out
   retval=$?
   print "done."

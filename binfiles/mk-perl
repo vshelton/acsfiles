@@ -122,6 +122,7 @@ case $pkgname in
               "--prefix=$PREFIX"
               "--enable-pcre" )
   TEST=( "make" "-k" "check" )
+  INSTALL=( "make" "install" "install.info" )
   ;;
 
 (*)

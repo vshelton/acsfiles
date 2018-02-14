@@ -11,7 +11,7 @@
  '(c-macro-prompt-flag t)
  '(canlock-password "fc1beddd41de3fad474c61c3c4f1621f06d8e8fb")
  '(column-number-mode t)
- '(compilation-error-regexp-systems-list (quote (gnu comma)))
+ '(compilation-error-regexp-systems-list '(gnu comma))
  '(compilation-mouse-motion-initiate-parsing t)
  '(desktop-save-mode t)
  '(enable-local-eval t)
@@ -21,13 +21,13 @@
  '(gnus-novice-user nil)
  '(gnus-suppress-duplicates t)
  '(gnus-use-cache t)
- '(gnuserv-frame (quote gnuserv-visible-frame-function))
+ '(gnuserv-frame 'gnuserv-visible-frame-function)
  '(grep-command
    "grep --line-number --with-filename --ignore-case --regexp=")
  '(indent-tabs-mode t)
  '(inhibit-startup-screen t)
  '(line-number-mode t)
- '(mail-user-agent (quote message-user-agent))
+ '(mail-user-agent 'message-user-agent)
  '(modeline-click-swaps-buffers t)
  '(mouse-yank-at-point nil)
  '(next-line-add-newlines nil)
@@ -35,7 +35,7 @@
  '(query-user-mail-address nil)
  '(require-final-newline t)
  '(resize-minibuffer-frame-exactly t t)
- '(send-mail-function (quote smtpmail-send-it))
+ '(send-mail-function 'smtpmail-send-it)
  '(shell-file-name "zsh")
  '(shell-multiple-shells t)
  '(show-paren-mode t)
@@ -52,7 +52,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "Black" :foreground "LightYellow" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "unknown" :family "Ubuntu Mono"))))
+ '(default ((t (:inherit default :stipple nil :background "Black" :foreground "LightYellow" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 100 :width normal :foundry "Google" :family "Noto Mono"))))
  '(fixed-pitch ((t (:inherit default))))
  '(font-lock-comment-face ((t (:foreground "DodgerBlue1"))))
  '(mode-line ((t (:background "LightSalmon" :foreground "black" :box (:line-width -1 :style released-button) :height 1.0 :family "comic sans ms"))))

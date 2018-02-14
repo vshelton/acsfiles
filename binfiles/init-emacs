@@ -69,14 +69,18 @@ case $0 in
   ;;
 (*emacs*)
   nickname=emacs
-  build_script=mk-emacs
+  build_script="mk-emacs --with-x-toolkit=lucid"
+  ;;
+(*tilda*)
+  nickname=tilda
+  build_script="mk-tilda --snapshot --install"
   ;;
 (*zsh*)
   nickname=zsh
-  build_script=update-zsh
+  build_script="mk-zsh --snapshot --install"
   ;;
 (*)
-  print -u2 "Only conky, emacs and zsh are currently supported."
+  print -u2 "Only conky, emacs, tilda and zsh are currently supported."
   exit 1;
   ;;
 esac
@@ -85,6 +89,7 @@ esac
 typeset -A repos
 repos[conky]="https://github.com/brndnmtthws/conky.git"
 repos[emacs]="git://git.savannah.gnu.org/emacs.git"
+repos[tilda]="https://github.com/lanoxx/tilda.git"
 repos[zsh]="git://git.code.sf.net/p/zsh/code"
 
 # Define the packages needed.  The names depend on whether
@@ -96,6 +101,7 @@ if suse-p; then
                ncurses-devel libXinerama-devel libXft-devel"
   deps[emacs]="autoconf automake giflib-devel gnutls-devel libXaw-devel      \
                libjpeg-devel libpng-devel libtiff-devel makeinfo"
+  deps[tilda]="clang libconfuse-dev libgtk-3-dev libvte-2.91-dev llvm"
   deps[zsh]="autoconf gcc pcre-devel ncurses-devel makeinfo yodl"
 
 elif arch-p; then
@@ -103,6 +109,7 @@ elif arch-p; then
   deps[emacs]="autoconf automake giflib-devel gnutls-devel libXaw-devel      \
                libjpeg-turbo-devel libtiff-devel texinfo"
   # sudo pacman --upgrade /media/sf_host-SSD-2TB/opt/zip/yodl/arch/yodl-package/yodl-3.08.01-1-x86_64.pkg.tar.xz
+  deps[tilda]="clang libconfuse-devel libgtk-3-devel libvte-2.91-devel llvm"
   deps[zsh]="autoconf gcc pcre-devel ncurses-devel texinfo"
 
 elif debian-p; then
@@ -116,6 +123,7 @@ elif debian-p; then
   deps[emacs]="autoconf automake libgif-dev libgnutls28-dev      \
                $(list_package 'jpeg.*turbo-dev')                 \
                libtiff5-dev libxaw7-dev libxpm-dev make texinfo"
+  deps[tilda]="clang libconfuse-dev libgtk-3-dev libvte-2.91-dev llvm"
   deps[zsh]="autoconf gcc libncurses5-dev libpcre3-dev make texinfo yodl"
 
 # Define the packages needed on a Fedora-based VM.
@@ -125,6 +133,7 @@ elif fedora-p ; then
                ncurses-devel"
   deps[emacs]="autoconf automake giflib-devel gnutls-devel libXaw-devel      \
                libjpeg-turbo-devel libtiff-devel texinfo"
+  deps[tilda]="clang libconfuse-dev libgtk-3-dev libvte-2.91-dev llvm"
   deps[zsh]="ftp://ftp.pbone.net/mirror/ftp5.gwdg.de/pub/opensuse/repositories/Publishing/openSUSE_Factory/x86_64/yodl-3.06.00-2777.25.x86_64.rpm \
              autoconf gcc pcre-devel ncurses-devel texinfo"
 fi
@@ -136,7 +145,7 @@ clone_git_repo ${nickname} ${repos[${nickname}]}
 install_package ${=deps[${nickname}]}
 
 # Build the package.
-${build_script}
+${=build_script}
 
 # Local Variables:
 # mode: shell-script

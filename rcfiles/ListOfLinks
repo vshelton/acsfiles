@@ -40,9 +40,10 @@ bin/find_newer                          $SCMROOT/binfiles/find_newer            
 bin/findpkg                             $SCMROOT/binfiles/findpkg                               linux,NT
 bin/gnome_sleep_status                  $SCMROOT/binfiles/gnome_sleep_status                    linux,NT
 bin/i3-autostart                        $SCMROOT/binfiles/i3-autostart                          linux,NT
-bin/init-conky                          $SCMROOT/binfiles/init-emacs                            linux,NT
+bin/init-conky                          init-emacs                                              linux,NT
 bin/init-emacs                          $SCMROOT/binfiles/init-emacs                            linux,NT
-bin/init-zsh                            $SCMROOT/binfiles/init-emacs                            linux,NT
+bin/init-tilda                          init-emacs                                              linux,NT
+bin/init-zsh                            init-emacs                                              linux,NT
 bin/install-packages                    $SCMROOT/binfiles/install-packages                      linux,NT
 bin/installed_packages                  $SCMROOT/binfiles/installed_packages                    linux,NT
 bin/latest                              $SCMROOT/binfiles/latest                                linux,NT

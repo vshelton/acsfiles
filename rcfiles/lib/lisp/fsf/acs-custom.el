@@ -31,6 +31,7 @@
  '(modeline-click-swaps-buffers t)
  '(mouse-yank-at-point nil)
  '(next-line-add-newlines nil)
+ '(package-selected-packages '(rust-mode))
  '(query-replace-highlight t)
  '(query-user-mail-address nil)
  '(require-final-newline t)

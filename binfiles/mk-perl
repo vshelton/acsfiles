@@ -59,6 +59,7 @@ srcdir=$(GetSource $scm_opts $pkgname) || exit $?
 # so they must build in the source directory.
 case $pkgname in
 (exa)
+  ;&  # Fall through
 (feh)
   cd $srcdir
   ;;

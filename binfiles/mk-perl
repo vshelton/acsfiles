@@ -92,7 +92,7 @@ case $pkgname in
   ;;
 
 (exa)
-  export ZSHDIR=$USRLOCAL/share/zsh/site-functions
+  export ZSHDIR=$USRLOCAL/zsh/share/zsh/site-functions
   BUILD=( "make" "-e" )
   INSTALL=( "make" "-e" "install" "install-zsh-completions" )
   ;;

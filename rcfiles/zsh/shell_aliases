@@ -1,73 +1,20 @@
 # Set up aliases for interactive shells.
 
-# Possible file listers in priority order.
-l=( exa ls )               
-
-# The 'LS' environment variable has priority.
-if [[ -z $LS ]]; then
-  for f in $l; do
-    LS=$(whence $f) && break
+if ! whence ls >& /dev/null ; then
+  print -u2 The \'ls\' command was not found.
+else
+  for o in --dereference-command-line-symlink-to-dir --quoting-style=escape ;  do
+    ls $o /dev/null >& /dev/null && alias ls="$(whence ls) $o"
   done
 fi
 
-# /bin/ls coreutils now supports dereferencing symlinks to directories!
-LS_opts=()
-z="--dereference-command-line-symlink-to-dir"
-if $LS $z /dev/null >& /dev/null; then
-  LS_opts=($z)
-
-else
-
-  # Dereference symbolic links in argv pointing to directories.
-  # Use 'eval' in order to use the value of LS as currently
-  # defined, not as defined at run-time.
-  eval "function ls() {
-    # Split out options.
-    opts=()
-    for a; do
-      [[ \"\$a\" != -* ]] && break
-      opts+=\"\$a\"
-      shift
-    done
-    #echo opts = \$#opts \"\$opts\" argv = \$#argv \"\$argv\"
-
-    # Save the filenames of nonexistent files
-    # so they don't get ignored in the glob below.
-    bad=()
-    for a; do
-      [[ ! -e \"\$a\" ]] && bad+=\"\$a\"
-    done
-    #echo bad = \$#bad \"\$bad\"
-    $LS \$opts \$bad \${^~argv}(N-M)
-  }"
-fi
-
-z="--quoting-style=escape"
-if $LS $z /dev/null >& /dev/null; then
-  LS_opts=($LS_opts $z)
-fi
-alias ls="$LS $LS_opts"
-
-# Define common aliases across all file listers.
 alias l="ls --classify"
-alias lr="ls -R"
-
-# Define aliases for /bin/ls.
 alias la="ls -A"
 alias ll="ls -l --time-style=long-iso"
+alias lr="ls -R"
 alias lt="ll -rt"
 
-# (Re)define aliases for exa.
-if [[ $LS == *exa ]]; then
-  #export EXA_COLORS="*.flac=38;5;125"
-  export EXA_COLORS="*.flac=0"
-  alias la="ls --all"
-  alias ll="ls --long --bytes --time-style=long-iso"
-  alias lt="ll --sort=modified"
-fi
-
-# Clean up.
-unset l LS LS_opts z
+alias el="exa --long --bytes --classify --time-style=long-iso"
 
 alias -- +w="chmod u+w"
 alias -- -w="chmod a-w"
@@ -80,7 +27,6 @@ alias e='fcedit -q'
 alias grep='command grep --extended-regexp --text'
 alias h=history
 alias m=$PAGER
-alias new_xp='new_default -v xemacs-packages $USRLOCAL'
 alias new_zsh='new_default -v zsh'
 alias patch='command patch --version-control=numbered --backup'
 alias pd=pushd

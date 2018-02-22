@@ -1,9 +1,12 @@
 # Wake the specified server and connect to it.
 
+if (( $# != 1 )); then
+  print -u2 "Usage: server <server_name>"
+  return 1
+fi
 server=$1
-wakeserver $server >& /dev/null
-retcode=$?
-if [[ $retcode != 0 ]]; then
+if ! wakeserver $server >& /dev/null; then
+  retcode=$?
   print -u2 "Unknown server: $server"
   return $retcode
 fi

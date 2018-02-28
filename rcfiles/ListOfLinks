@@ -59,7 +59,7 @@ bin/mk-emacs                            $SCMROOT/binfiles/mk-emacs              
 bin/mk-exa                              mk-perl                                                 linux
 bin/mk-feh                              mk-perl                                                 linux
 bin/mk-lastpass                         $SCMROOT/binfiles/mk-lastpass                           linux,NT
-bin/mk-perl                             mk-perl                                                 linux,NT
+bin/mk-perl                             $SCMROOT/binfiles/mk-perl                               linux,NT
 bin/mk-src                              $SCMROOT/binfiles/mk-src                                linux,NT
 bin/mk-tilda                            mk-perl                                                 linux
 bin/mk-xemacs                           $SCMROOT/binfiles/mk-xemacs                             linux,NT

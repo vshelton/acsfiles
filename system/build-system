@@ -141,17 +141,13 @@ if [[ ${host} == "VirtualBox" ]]; then
   host_home=$(find_host_home)
 fi
 
-echo host_home=\"$host_home\"
-echo ziproot=\"$ziproot\"
-read -p "Pause..."
-
 # Add the 'extra' repository if we're running under Arch linux.
 if arch-pm >/dev/null ; then
   sudo -s << EOF
   echo "
 
 [custom]
-Server = file:///${ziproot}/arch" >>/etc/pacman.conf
+Server = file://${ziproot}/arch" >>/etc/pacman.conf
   sudo pacman --sync --refresh
 EOF
 fi

@@ -115,6 +115,7 @@ lib/zsh-functions/addpath               $SCMROOT/rcfiles/lib/zsh-functions/addpa
 lib/zsh-functions/all_dirs              $SCMROOT/rcfiles/lib/zsh-functions/all_dirs             linux,NT
 lib/zsh-functions/all_versions          $SCMROOT/rcfiles/lib/zsh-functions/all_versions         linux,NT
 lib/zsh-functions/col                   $SCMROOT/rcfiles/lib/zsh-functions/col                  linux,NT
+lib/zsh-functions/exa                   $SCMROOT/rcfiles/lib/zsh-functions/exa                  linux,NT
 lib/zsh-functions/exists                $SCMROOT/rcfiles/lib/zsh-functions/exists               linux,NT
 lib/zsh-functions/f                     $SCMROOT/rcfiles/lib/zsh-functions/f                    linux,NT
 lib/zsh-functions/nfunc                 $SCMROOT/rcfiles/lib/zsh-functions/nfunc                linux,NT

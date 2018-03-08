@@ -293,15 +293,16 @@ PATH=${HOME}/bin:${PATH}
 # Build emacs and zsh.
 if arch-pm >/dev/null ; then
   (
-    cd $SRCROOT
-    git clone https://aur.archlinux.org/icmake.git icmake-$(today)
+    mkdir -p $SRCROOT/yodl-$(today)
+    cd $SRCROOT/yodl-$(today)
+    git clone https://aur.archlinux.org/icmake.git
     (
-      cd ./icmake-$(today)
+      cd ./icmake
       makepkg
       sudo pacman -U ./icmake-9.02.04-1-x86_64.pkg.tar.xz
     )
-    git clone https://aur.archlinux.org/yodl.git yodl-$(today)
-    cd ./yodl-$(today)
+    git clone https://aur.archlinux.org/yodl.git
+    cd ./yodl
     makepkg
     sudo pacman -U ./yodl-4.02.00-1-x86_64.pkg.tar.xz
   ) 

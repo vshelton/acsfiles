@@ -142,15 +142,15 @@ if [[ ${host} == "VirtualBox" ]]; then
 fi
 
 # Add the 'extra' repository if we're running under Arch linux.
-if arch-pm >/dev/null ; then
-  sudo -s << EOF
-  echo "
-
-[custom]
-Server = file://${ziproot}/arch" >>/etc/pacman.conf
-  sudo pacman --sync --refresh
-EOF
-fi
+#if arch-pm >/dev/null ; then
+#  sudo -s << EOF
+#  echo "
+#
+#[custom]
+#Server = file://${ziproot}/arch" >>/etc/pacman.conf
+#  sudo pacman --sync --refresh
+#EOF
+#fi
 
 # Install the Z-shell and move aside the customization.
 install-packages zsh
@@ -241,6 +241,7 @@ if suse-pm >/dev/null ; then
   fc-cache -f -v
 
 elif arch-pm >/dev/null ; then
+  # Probably doesn't work.
   install-packages ttf-ms-fonts ttf-ubuntu-font
   fc-cache -f -v
 
@@ -290,6 +291,21 @@ fi
 PATH=${HOME}/bin:${PATH}
 
 # Build emacs and zsh.
+if arch-pm >/dev/null ; then
+  (
+    cd $SRCROOT
+    git clone https://aur.archlinux.org/icmake.git icmake-$(today)
+    (
+      cd ./icmake-$(today)
+      makepkg
+      sudo pacman -U ./icmake-9.02.04-1-x86_64.pkg.tar.xz
+    )
+    git clone https://aur.archlinux.org/yodl.git yodl-$(today)
+    cd ./yodl-$(today)
+    makepkg
+    sudo pacman -U ./yodl-4.02.00-1-x86_64.pkg.tar.xz
+  ) 
+fi
 init-zsh
 link_latest zsh zsh-$(today)
 #if [[ -x ${USRLOCAL}/bin/zsh ]]; then

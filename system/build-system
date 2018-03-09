@@ -171,6 +171,7 @@ install-packages i3
 
 # Create USRLOCAL hierarchy
 : ${USRLOCAL:=/opt}
+: ${SRCROOT:=$USRLOCAL/src}
 sudo chown ${username} ${USRLOCAL}
 mkdir ${USRLOCAL}/{bin,build,include,lib,share,src}
 

@@ -60,7 +60,7 @@ function find_host_ziproot {
       print_list "${directory_list[@]}"
       echo " were tried.
 Set the \"ziproot\" environment variable to a directory on the host. Exiting."
-    ) 2>&1
+    ) >&2
     exit 1
   fi
  
@@ -191,11 +191,13 @@ bb.prefix = https://bitbucket.org
 bb.username = acs
 bb.password = Ether5802 Bullard
 
+[pager]
+ignore = version, help, update, diff
+
 [extensions]
 # uncomment these lines to enable some popular extensions
 # (see "hg help extensions" for more info)
 #
-# pager =
 # color =
 EOF
 chmod 600 .hgrc

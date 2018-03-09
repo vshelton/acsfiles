@@ -241,9 +241,28 @@ if suse-pm >/dev/null ; then
   fc-cache -f -v
 
 elif arch-pm >/dev/null ; then
-  # Probably doesn't work.
-  install-packages ttf-ms-fonts ttf-ubuntu-font
-  fc-cache -f -v
+  mkdir -p $SRCROOT/microsoft-fonts
+  (
+    cd $SRCROOT/microsoft-fonts
+    git clone https://aur.archlinux.org/ttf-ms-fonts.git
+    (
+      cd ./ttf-ms-fonts
+      makepkg -s
+      sudo pacman -U ./ttf-ms-fonts-2.0-10-any.pkg.tar.xz
+    )
+    git clone https://aur.archlinux.org/ttf-tahoma.git
+    (
+      cd ./ttf-tahoma
+      makepkg -s
+      sudo pacman -U ./ttf-tahoma-2.13-2-any.pkg.tar.xz
+    )
+    git clone https://aur.archlinux.org/ttf-vista-fonts.git
+    (
+      cd ./ttf-vista-fonts
+      makepkg -s
+      sudo pacman -U ./ttf-vista-fonts-1-8-any.pkg.tar.xz
+    )
+  )
 
 elif debian-pm >/dev/null ; then
   # A little too much inside baseball here:

@@ -263,6 +263,7 @@ elif arch-pm >/dev/null ; then
       makepkg -s
       sudo pacman -U ./ttf-vista-fonts-1-8-any.pkg.tar.xz
     )
+    sudo pacman -Sy ttf-anonymous-pro ttf-dejavu ttf-hack ttf-inconsolata ttf-roboto noto-fonts
   )
 
 elif debian-pm >/dev/null ; then

@@ -9,14 +9,14 @@ sleep 2
 tilda &
 emacs -f about-emacs &
 
-$HOME/firefoxDE/firefox &
+#$HOME/firefoxDE/firefox &
 #google-chrome-beta &
 #clementine &
 
 #conky --pause=5 &
-sleep 20    # Time to get the fullscreen display set up.
+sleep 2
 conky --alignment=top_middle \
-  --text='${color tomato}${font Comic Sans MS:bold:size=30}${nodename -s}' &
+  --text='${color tomato}${font Comic Sans MS:bold:size=40}${nodename -s}' &
 conky &
 
 # Local Variables:

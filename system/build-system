@@ -251,19 +251,19 @@ elif arch-pm >/dev/null ; then
     (
       cd ./ttf-ms-fonts
       makepkg -s
-      sudo pacman -U ./ttf-ms-fonts-2.0-10-any.pkg.tar.xz
+      sudo pacman --upgrade --noconfirm ./ttf-ms-fonts-2.0-10-any.pkg.tar.xz
     )
     git clone https://aur.archlinux.org/ttf-tahoma.git
     (
       cd ./ttf-tahoma
       makepkg -s
-      sudo pacman -U ./ttf-tahoma-2.13-2-any.pkg.tar.xz
+      sudo pacman --upgrade --noconfirm ./ttf-tahoma-2.13-2-any.pkg.tar.xz
     )
     git clone https://aur.archlinux.org/ttf-vista-fonts.git
     (
       cd ./ttf-vista-fonts
       makepkg -s
-      sudo pacman -U ./ttf-vista-fonts-1-8-any.pkg.tar.xz
+      sudo pacman --upgrade --noconfirm ./ttf-vista-fonts-1-8-any.pkg.tar.xz
     )
     sudo pacman -Sy ttf-anonymous-pro ttf-dejavu ttf-hack ttf-inconsolata ttf-roboto noto-fonts
   )
@@ -322,12 +322,12 @@ if arch-pm >/dev/null ; then
     (
       cd ./icmake
       makepkg
-      sudo pacman -U ./icmake-9.02.04-1-x86_64.pkg.tar.xz
+      sudo pacman --upgrade --noconfirm ./icmake-9.02.04-1-x86_64.pkg.tar.xz
     )
     git clone https://aur.archlinux.org/yodl.git
     cd ./yodl
     makepkg
-    sudo pacman -U ./yodl-4.02.00-1-x86_64.pkg.tar.xz
+    sudo pacman --upgrade --noconfirm ./yodl-4.02.00-1-x86_64.pkg.tar.xz
   ) 
 fi
 init-zsh

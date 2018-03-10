@@ -3,7 +3,7 @@
 # If the arch package manager exists, echo its name
 # and the options necessary to make it non-interactive.
 : ${arch_pm=/usr/bin/pacman}
-[[ -x $arch_pm ]] && echo $arch_pm --sync
+[[ -x $arch_pm ]] && echo $arch_pm --sync --noconfirm
 
 # Local Variables:
 # mode: shell-script

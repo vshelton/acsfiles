@@ -17,6 +17,16 @@ CreateBuildDirectory()
   cd $BLDROOT/$ver
 }
 
+# autoreconf for i3.
+function
+i3PreConfigure()
+{
+  (
+    cd $1
+    autoreconf -fi
+  )
+}
+
 # Update the symbolic link pointing to the most recent copy
 # of the specified package.
 function
@@ -63,7 +73,7 @@ case $pkgname in
 (feh)
   cd $srcdir
   ;;
-  
+
 # Other packages support building in a separate directory
 # and their package-specific recipes reflect that.
 (*)
@@ -101,6 +111,12 @@ case $pkgname in
   export VERSION=$(today)
   BUILD=( "make" "-e" )
   INSTALL=( "make" "-e" "install" )
+  ;;
+
+(i3)
+  PRECONFIGURE=( "i3PreConfigure" "$srcdir" )
+  CONFIGURE=( "$srcdir/configure"
+              "--prefix=$PREFIX" )
   ;;
 
 (perl)

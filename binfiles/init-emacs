@@ -112,12 +112,11 @@ if suse-p; then
 
 elif arch-p; then
   deps[conky]=cmake
-  deps[emacs]="autoconf automake giflib-devel gnutls-devel libXaw-devel      \
-               libjpeg-turbo-devel libtiff-devel texinfo"
+  deps[emacs]="autoconf automake giflib gnutls libxaw   \
+               libjpeg-turbo libtiff texinfo"
   deps[exa]="cargo cmake rustc"
-  deps[tilda]="clang libconfuse-devel libgtk-3-devel libvte-2.91-devel llvm"
-  # sudo pacman --upgrade /media/sf_host-SSD-2TB/opt/zip/yodl/arch/yodl-package/yodl-3.08.01-1-x86_64.pkg.tar.xz
-  deps[zsh]="autoconf gcc pcre-devel ncurses-devel texinfo"
+  deps[tilda]="clang libconfuse libgtk-3 libvte-2.91 llvm"
+  deps[zsh]="autoconf gcc pcre-devel ncurses-devel texinfo yodl"
 
 elif debian-p; then
   # On debian, at some point the package name changed from libXdamage-dev

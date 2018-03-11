@@ -2,7 +2,8 @@
 
 # This is a generic build script to download the latest source code and
 # build a new version of a software package.  This script knows how to
-# build conky, exa, feh and perl.  Link this to "mk-exa" or "mk-perl", etc.
+# build conky, exa, feh, i3, perl, tilda and zsh.
+# Link this to "mk-exa" or "mk-perl", etc.
 
 : ${USRLOCAL:=/usr/local}
 : ${BLDROOT:=$USRLOCAL/build}
@@ -40,7 +41,7 @@ LinkLatest()
 
 # Run the pre-config command in zsh.
 function
-ZshPreConfigure()
+zshPreConfigure()
 {
   (
     cd $1
@@ -134,7 +135,7 @@ case $pkgname in
   ;;
 
 (zsh)
-  PRECONFIGURE=( "ZshPreConfigure" "$srcdir" )
+  PRECONFIGURE=( "zshPreConfigure" "$srcdir" )
   CONFIGURE=( "$srcdir/configure"
               "--prefix=$PREFIX"
               "--enable-pcre" )

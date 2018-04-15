@@ -1,0 +1,18 @@
+#!/usr/bin/env zsh
+
+# Remove the latest copy of a package,
+# and build it the same way it is built in the daily build script.
+
+emulate -LR zsh
+
+pkg=$1
+rm_versions $(all_versions ${pkg}\* | tail -n 1) >& /dev/null
+touch --date=2001-01-01 ${SCMROOT}/${pkg}/last_update
+VERSION=$(today) $(grep mk-${pkg} =daily)
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

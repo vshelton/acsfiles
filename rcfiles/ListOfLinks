@@ -74,8 +74,7 @@ bin/newer_than                          $SCMROOT/binfiles/newer_than            
 bin/now                                 $SCMROOT/binfiles/now                                   linux,NT
 bin/permute                             $SCMROOT/binfiles/permute                               linux,NT
 bin/relative_links                      $SCMROOT/binfiles/relative_links                        linux,NT
-bin/remake-emacs                        $SCMROOT/binfiles/remake-emacs                          linux,NT
-bin/remake-zsh                          $SCMROOT/binfiles/remake-emacs                          linux,NT
+bin/remake-package                      $SCMROOT/binfiles/remake-package                        linux,NT
 bin/scm_update                          $SCMROOT/binfiles/scm_update                            linux,NT
 bin/setupfonts.sh                       $SCMROOT/binfiles/setupfonts.sh                         linux,NT
 bin/summarize_zsh_tests                 $SCMROOT/binfiles/summarize_zsh_tests                   linux,NT

@@ -5,21 +5,18 @@
 : ${USRLOCAL:=/opt}
 PATH=$HOME/bin:$USRLOCAL/bin:$PATH
 
-compton -b
+# sleep 5
+# compton -b
 
 sleep 2
+my_conky
+
 tilda &
 emacs -f about-emacs &
 
-#$HOME/firefoxDE/firefox &
+$HOME/firefoxDE/firefox &
 #google-chrome-beta &
 #clementine &
-
-#conky --pause=5 &
-sleep 2
-conky --alignment=top_middle \
-  --text='${color tomato}${font Comic Sans MS:bold:size=40}${nodename -s}' &
-conky &
 
 # Local Variables:
 # mode: shell-script

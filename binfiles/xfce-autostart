@@ -5,6 +5,8 @@
 : ${USRLOCAL:=/opt}
 PATH=$HOME/bin:$USRLOCAL/bin:$PATH
 
+compton -b
+
 sleep 2
 tilda &
 emacs -f about-emacs &

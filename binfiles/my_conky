@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Run conky.
+
+# Display the hostname at the center top of the display.
+conky --config=$HOME/.conky.hostname &
+
+# Display system status in the top right corner of the display.
+conky --config=$HOME/.conky.status &
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

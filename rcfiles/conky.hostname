@@ -1,0 +1,14 @@
+conky.config = {
+  alignment = 'top_middle',
+  double_buffer = true,
+  own_window = true,
+  own_window_transparent = true,
+  own_window_type = 'override',
+  total_run_times = 0,
+  update_interval = 300,
+  use_xft = true
+}
+
+conky.text = [[
+${color tomato}${font Comic Sans MS:bold:size=40}${nodename}
+]]

@@ -1,0 +1,34 @@
+conky.config = {
+  alignment = 'top_right',
+  -- Date and time are displayed in color0.
+  color0 = 'gray100',
+  -- color1 is used for the system status.
+  -- FFA300 works well as the color of the status line on dark backgrounds.
+  -- Other possible colors are: NavyBlue, DodgerBlue1 and LightYellow.
+  color1 = 'FFA300',
+  cpu_avg_samples = 2,
+  double_buffer = true,
+  font = 'Liberation Sans',
+  maximum_width = 3000,
+  no_buffers = true,
+  own_window = true,
+  own_window_transparent = true,
+  own_window_type = 'override',
+  total_run_times = 0,
+  update_interval = 1,
+  uppercase = no,
+  use_xft = true
+}
+
+-- On my 4K display at home:
+--   470 is the horizontal position for the date strings
+--   40 is the horizontal position for the system status
+conky.text = [[
+${color0}${font :size=60}${time %I:%M}
+${voffset -128}${goto 235}${font :size=28}${time %A}                   \
+${voffset 34}${goto 235}${font :size=24}${time %d %B %Y}
+${voffset -18}${color1}${font :size=12}\
+${goto 20}HD free: ${fs_free /home/acs} / ${fs_size /home/acs}
+${goto 20}RAM in use: $mem / $memmax
+${goto 20}CPU: ${cpu cpu0}%
+]]

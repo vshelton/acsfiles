@@ -2,12 +2,31 @@
 
 # This is a generic build script to download the latest source code and
 # build a new version of a software package.  This script knows how to
-# build conky, exa, feh, i3, perl, tilda and zsh.
-# Link this to "mk-exa" or "mk-perl", etc.
+# build various packages; see the definition of all_packages below.
 
 : ${USRLOCAL:=/usr/local}
 : ${BLDROOT:=$USRLOCAL/build}
 : ${SRCROOT:=$USRLOCAL/src}
+
+# autoreconf for i3.
+function
+i3PreConfigure()
+{
+  (
+    cd $1
+    autoreconf -fi
+  )
+}
+
+# Run the pre-config command in zsh.
+function
+zshPreConfigure()
+{
+  (
+    cd $1
+    ./Util/preconfig
+  )
+}
 
 # Make a suitable build directory under $BLDROOT and cd to it.
 function
@@ -18,14 +37,13 @@ CreateBuildDirectory()
   cd $BLDROOT/$ver
 }
 
-# autoreconf for i3.
-function
-i3PreConfigure()
-{
-  (
-    cd $1
-    autoreconf -fi
-  )
+function Help() {
+  print -u2 "usage: $progname [-f|--force] [-h|--help]  [-i|--install] [-s|--snapshot]"
+  print -u2 "           --force     build the package even if nothing has changed"
+  print -u2 "           --help      print this help message to stderr and exit"
+  print -u2 "           --install   install the package after building it"
+  print -u2 "           --snapshot  build the package for a snapshot prefix like \
+\"$USRLOCAL/$pkgname-$(today)\""
 }
 
 # Update the symbolic link pointing to the most recent copy
@@ -39,29 +57,55 @@ LinkLatest()
   ln -s ${package}*(oc[1]) $package
 }
 
-# Run the pre-config command in zsh.
-function
-zshPreConfigure()
-{
-  (
-    cd $1
-    ./Util/preconfig
-  )
+function PrintList() {
+  while (( $# > 0 ))
+  do
+    print -n "$1"
+    shift
+    if [[ $# -gt 1 ]]; then
+      print -n ", "
+    elif [[ $# -eq 1 ]]; then
+      print -n " and "
+    fi
+  done
 }
 
 export PREFIX=$USRLOCAL
 
+typeset -AA all_packages=(
+  conky 1
+  exa 1
+  feh 1
+  i3 1
+  perl 1
+  tilda 1
+  zsh 1
+)
+
+# Parse the options.
+help=
 install=
 snapshot=
-zparseopts -E -D i=install -install=install s=snapshot -snapshot=snapshot
+zparseopts -E -D i=install -install=install s=snapshot -snapshot=snapshot h=help -help=help
 
 # Strip "mk-" from the command name in order to get the package name.
 progname=${0:t}
 pkgname=${progname:s/mk-/}
 scm_opts=( --update $* )
 
+if [[ -n $help ]]; then
+  Help
+  exit 0
+fi
+
 # All packages potentially go through the same steps: update source control,
 # copy from source control, configure, make, make test & make install.
+
+if [[ -z $all_packages[$pkgname] ]]; then
+  print -u2 "$progname: unknown package \"$pkgname\"; this script knows how to build \
+$(PrintList ${(ki)all_packages})."
+  exit 1
+fi
 
 # Update the sources and copy them into a source directory.
 srcdir=$(GetSource $scm_opts $pkgname) || exit $?
@@ -143,11 +187,6 @@ case $pkgname in
   INSTALL=( "make" "install" "install.info" )
   ;;
 
-(*)
-  print -u2 "$progname: unknown package: ${pkgname}.
-This script knows how to build conky, exa, feh, perl and tilda."
-  exit 1
-  ;;
 esac
 
 if [[ -n $CONFIGURE ]]; then

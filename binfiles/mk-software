@@ -87,16 +87,16 @@ typeset -AA all_packages=(
 progname=${0:t}
 
 # Parse the options.
-force_option=
-help_option=
-install_option=
-snapshot_option=
-zparseopts -E -D f=force_option -force=force_option \
-                 h=help_option -help=help_option \
-                 i=install_option -install=install_option \
-                 s=snapshot_option -snapshot=snapshot_option
+force_opt=
+help_opt=
+install_opt=
+snapshot_opt=
+zparseopts -E -D f=force_opt -force=force_opt \
+                 h=help_opt -help=help_opt \
+                 i=install_opt -install=install_opt \
+                 s=snapshot_opt -snapshot=snapshot_opt
 
-if [[ -n $help_option ]]; then
+if [[ -n $help_opt ]]; then
   Help
   exit 0
 fi
@@ -123,7 +123,7 @@ fi
 
 # Update the sources and copy them into a source directory.
 scm_opts=( --update )
-[[ -n $force_option ]] && scm_opts+="--force"
+[[ -n $force_opt ]] && scm_opts+="--force"
 srcdir=$(GetSource $scm_opts $pkgname) || exit $?
 
 # exa and feh both lack real configuration mechanisms,
@@ -144,14 +144,14 @@ case $pkgname in
 esac
 
 # Implement the --snapshot option.
-[[ -n $snapshot_option ]] && PREFIX=$PREFIX/${pkgname}-$(today)
+[[ -n $snapshot_opt ]] && PREFIX=$PREFIX/${pkgname}-$(today)
 
 # Set the package-specific commands.
 BUILD=( "make" )
 CONFIGURE=()
 INSTALL=( "make" "install" )
 POSTINSTALL=()
-[[ -n $snapshot_option ]] && POSTINSTALL=( "LinkLatest" "$pkgname" )
+[[ -n $snapshot_opt ]] && POSTINSTALL=( "LinkLatest" "$pkgname" )
 PRECONFIGURE=()
 TEST=()
 case $pkgname in
@@ -202,8 +202,10 @@ case $pkgname in
   TEST=( "make" "-k" "check" )
   INSTALL=( "make" "install" "install.info" )
   ;;
-
 esac
+
+# Number of lines to tail on an error.
+: ${ERROR_LINES:=15}
 
 if [[ -n $CONFIGURE ]]; then
   out=conf.out
@@ -214,7 +216,7 @@ if [[ -n $CONFIGURE ]]; then
   print "done."
   if (( retval != 0 )); then
     print -u2 "$progname: configuration failed:"
-    tail -n 15 $out
+    tail -n $ERROR_LINES $out >&2
   fi
 fi
 
@@ -226,7 +228,7 @@ if (( retval == 0 )) && [[ -n $BUILD ]]; then
   print "done."
   if (( retval != 0 )); then
     print -u2 "$progname: building failed:"
-    tail -n 15 $out
+    tail -n $ERROR_LINES $out >&2
   fi
 fi
 
@@ -238,11 +240,11 @@ if  (( retval == 0 )) && [[ -n $TEST ]]; then
   print "done."
   if (( retval != 0 )); then
     print -u2 "$progname: testing failed:"
-    tail -n 15 $out
+    tail -n $ERROR_LINES $out >&2
   fi
 fi
 
-if (( retval == 0 )) && [[ -n $INSTALL ]] && [[ -n $install_option ]]; then
+if (( retval == 0 )) && [[ -n $INSTALL ]] && [[ -n $install_opt ]]; then
   out=inst.out
   print -n "Installing $pkgname ... "
   ( $INSTALL ) >& $out
@@ -251,7 +253,7 @@ if (( retval == 0 )) && [[ -n $INSTALL ]] && [[ -n $install_option ]]; then
   print "done."
   if (( retval != 0 )); then
     print -u2 "$progname: installation failed:"
-    tail -n 15 $out
+    tail -n $ERROR_LINES $out >&2
   fi
 fi
 

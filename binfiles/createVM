@@ -22,18 +22,19 @@ else
     exit 2
   fi
   host_home="$(cygpath -d $HOME)"
-  host_root="$(cygpath -d /)"
+  host_root="$(cygpath -d /c)"
   host_zip="$(cygpath -d $ZIPROOT)"
+
+  cd "/c/Users/shelta/Virtualbox VMs"
 fi
 
 #echo host_home=\"$host_home\"
 #echo host_root=\"$host_root\"
 #echo host_zip=\"$host_zip\"
 
-cd "$HOME/VirtualBox VMs"
 
 "$vbm" createvm --name ${vm} --register  --ostype Linux_64
-"$vbm" modifyvm ${vm} --memory 4096  --vram 48 --acpi on --cpus 2
+"$vbm" modifyvm ${vm} --memory 4096  --vram 32 --acpi on --cpus 2
 "$vbm" createmedium disk --filename ${vm}/${vm}.vdi --size 20000 --variant Fixed
 "$vbm" storagectl ${vm} --name "SATA" --add sata
 "$vbm" storageattach ${vm} --storagectl "SATA" --device 0 --port 0 \

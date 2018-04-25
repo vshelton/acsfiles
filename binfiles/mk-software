@@ -1,0 +1,265 @@
+#!/usr/bin/env zsh
+
+# This is a generic build script to download the latest source code and
+# build a new version of a software package.  This script knows how to
+# build various packages; see the definition of all_packages below.
+
+# The i3 pre-configure command is autoreconf.
+function
+i3PreConfigure()
+{
+  (
+    cd $1
+    autoreconf -fi
+  )
+}
+
+# The zsh pre-configure command is built in to the zsh sources.
+function
+zshPreConfigure()
+{
+  (
+    cd $1
+    ./Util/preconfig
+  )
+}
+
+# Make a suitable build directory under $BLDROOT and cd to it.
+function
+CreateBuildDirectory()
+{
+  ver=${1#$SRCROOT/}
+  mkdir $BLDROOT/$ver
+  cd $BLDROOT/$ver
+}
+
+function Help() {
+  print -u2 "usage:
+$progname package [-f|--force] [-h|--help]  [-i|--install] [-s|--snapshot]
+              --force     build the package even if nothing has changed
+              --help      print this help message to stderr and exit
+              --install   install the package after building it
+              --snapshot  build the package for a snapshot prefix like \
+\"$USRLOCAL/package-$(today)\""
+}
+
+# Update the symbolic link pointing to the most recent copy
+# of the specified package.
+function
+LinkLatest()
+{
+  cd $USRLOCAL
+  package=$1
+  rm $package || return $?
+  ln -s ${package}*(oc[1]) $package
+}
+
+# Print a list of things to stdout.
+function PrintList() {
+  while (( $# > 0 ))
+  do
+    print -n "$1"
+    shift
+    if [[ $# -gt 1 ]]; then
+      print -n ", "
+    elif [[ $# -eq 1 ]]; then
+      print -n " and "
+    fi
+  done
+}
+
+: ${USRLOCAL:=/usr/local}
+: ${BLDROOT:=$USRLOCAL/build}
+: ${SRCROOT:=$USRLOCAL/src}
+
+export PREFIX=$USRLOCAL
+
+typeset -AA all_packages=(
+  conky 1
+  exa   1
+  feh   1
+  i3    1
+  perl  1
+  tilda 1
+  zsh   1
+)
+
+progname=${0:t}
+
+# Parse the options.
+force_option=
+help_option=
+install_option=
+snapshot_option=
+zparseopts -E -D f=force_option -force=force_option \
+                 h=help_option -help=help_option \
+                 i=install_option -install=install_option \
+                 s=snapshot_option -snapshot=snapshot_option
+
+if [[ -n $help_option ]]; then
+  Help
+  exit 0
+fi
+
+# The old style was to determine the package to build
+# based on the command name, like "mk-perl".
+# The new style is to pass the package name as the first parameter.
+pkgname=${progname:s/mk-/}
+if [[ $progname == "mk-software" ]]; then
+  pkgname=$1
+  shift
+fi
+
+# All packages potentially go through the same steps: update source control,
+# copy from source control, configure, make, make test & make install.
+
+if [[ -z $all_packages[$pkgname] ]]; then
+  print -u2 "\
+$progname: unknown package \"$pkgname\".
+This script knows how to build \
+$(PrintList ${(ki)all_packages})."
+  exit 1
+fi
+
+# Update the sources and copy them into a source directory.
+scm_opts=( --update )
+[[ -n $force_option ]] && scm_opts+="--force"
+srcdir=$(GetSource $scm_opts $pkgname) || exit $?
+
+# exa and feh both lack real configuration mechanisms,
+# so they must build in the source directory.
+case $pkgname in
+(exa)
+  ;&  # Fall through
+(feh)
+  cd $srcdir
+  ;;
+
+# Other packages support building in a separate directory
+# and their package-specific recipes reflect that.
+(*)
+  CreateBuildDirectory $srcdir
+  srcdir=$(relative $srcdir)
+  ;;
+esac
+
+# Implement the --snapshot option.
+[[ -n $snapshot_option ]] && PREFIX=$PREFIX/${pkgname}-$(today)
+
+# Set the package-specific commands.
+BUILD=( "make" )
+CONFIGURE=()
+INSTALL=( "make" "install" )
+POSTINSTALL=()
+[[ -n $snapshot_option ]] && POSTINSTALL=( "LinkLatest" "$pkgname" )
+PRECONFIGURE=()
+TEST=()
+case $pkgname in
+(conky)
+  CONFIGURE=( "cmake"
+              "-DCMAKE_INSTALL_PREFIX=$PREFIX"
+              "-DBUILD_XDBE=true"
+              "$srcdir" )
+  ;;
+
+(exa)
+  export ZSHDIR=$USRLOCAL/zsh/share/zsh/site-functions
+  BUILD=( "make" "-e" )
+  INSTALL=( "make" "-e" "install" "install-zsh-completions" )
+  ;;
+
+(feh)
+  export VERSION=$(today)
+  BUILD=( "make" "-e" )
+  INSTALL=( "make" "-e" "install" )
+  ;;
+
+(i3)
+  PRECONFIGURE=( "i3PreConfigure" "$srcdir" )
+  CONFIGURE=( "$srcdir/configure"
+              "--prefix=$PREFIX" )
+  ;;
+
+(perl)
+  CONFIGURE=( "$srcdir/Configure"
+              "-Dprefix=$PREFIX"
+              "-Dusedevel"
+              "-Dcf_email=ethersoft@gmail.com"
+              "-Dmksymlinks"
+              "-des" )
+  TEST=( "make" "test" )
+  ;;
+
+(tilda)
+  CONFIGURE=( "$srcdir/autogen.sh" "--prefix=$PREFIX" "--enable-clang" )
+  ;;
+
+(zsh)
+  PRECONFIGURE=( "zshPreConfigure" "$srcdir" )
+  CONFIGURE=( "$srcdir/configure"
+              "--prefix=$PREFIX"
+              "--enable-pcre" )
+  TEST=( "make" "-k" "check" )
+  INSTALL=( "make" "install" "install.info" )
+  ;;
+
+esac
+
+if [[ -n $CONFIGURE ]]; then
+  out=conf.out
+  print -n "Configuring $pkgname ... "
+  [[ -n $PRECONFIGURE ]] && ( $PRECONFIGURE ) >& /dev/null
+  ( $CONFIGURE ) >& $out
+  retval=$?
+  print "done."
+  if (( retval != 0 )); then
+    print -u2 "$progname: configuration failed:"
+    tail -n 15 $out
+  fi
+fi
+
+if (( retval == 0 )) && [[ -n $BUILD ]]; then
+  out=mk.out
+  print -n "Building $pkgname ... "
+  ( $BUILD ) >& $out
+  retval=$?
+  print "done."
+  if (( retval != 0 )); then
+    print -u2 "$progname: building failed:"
+    tail -n 15 $out
+  fi
+fi
+
+if  (( retval == 0 )) && [[ -n $TEST ]]; then
+  out=check.out
+  print -n "Testing $pkgname ... "
+  ( $TEST ) >& $out
+  retval=$?
+  print "done."
+  if (( retval != 0 )); then
+    print -u2 "$progname: testing failed:"
+    tail -n 15 $out
+  fi
+fi
+
+if (( retval == 0 )) && [[ -n $INSTALL ]] && [[ -n $install_option ]]; then
+  out=inst.out
+  print -n "Installing $pkgname ... "
+  ( $INSTALL ) >& $out
+  retval=$?
+  ( $POSTINSTALL ) >>& $out
+  print "done."
+  if (( retval != 0 )); then
+    print -u2 "$progname: installation failed:"
+    tail -n 15 $out
+  fi
+fi
+
+exit $retval
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

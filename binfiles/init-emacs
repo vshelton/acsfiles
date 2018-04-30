@@ -65,7 +65,7 @@ done
 case $0 in
 (*conky*)
   nickname=conky
-  build_script=mk-conky
+  build_script=mk-software conky
   ;;
 (*emacs*)
   nickname=emacs
@@ -73,15 +73,19 @@ case $0 in
   ;;
 (*exa*)
   nickname=exa
-  build_script="mk-exa --snapshot --install"
+  build_script="mk-software exa --snapshot --install"
+  ;;
+(*i3*)
+  nickname=i3
+  build_script="mk-software i3 --snapshot --install"
   ;;
 (*tilda*)
   nickname=tilda
-  build_script="mk-tilda --snapshot --install"
+  build_script="mk-software tilda --snapshot --install"
   ;;
 (*zsh*)
   nickname=zsh
-  build_script="mk-zsh --snapshot --install"
+  build_script="mk-software zsh --snapshot --install"
   ;;
 (*)
   print -u2 "Only conky, emacs, tilda and zsh are currently supported."
@@ -94,6 +98,7 @@ typeset -A repos
 repos[conky]="https://github.com/brndnmtthws/conky.git"
 repos[emacs]="git://git.savannah.gnu.org/emacs.git"
 repos[exa]="https://github.com/ogham/exa.git"
+repos[i3]="https://github.com/i3/i3.git"
 repos[tilda]="https://github.com/lanoxx/tilda.git"
 repos[zsh]="git://git.code.sf.net/p/zsh/code"
 
@@ -130,6 +135,19 @@ elif debian-p; then
                $(list_package 'jpeg.*turbo-dev')                 \
                libtiff5-dev libxaw7-dev libxpm-dev make texinfo"
   deps[exa]="cargo cmake rustc"
+  deps[i3]="gir1.2-pango-1.0 libpango-1.0-0 libpango-perl libpango1.0-0     \
+            libpango1.0-dev libpangocairo-1.0-0 libpangoft2-1.0-0           \
+            libstartup-notification0-dev libstartup-notification0           \
+            libx11-xcb-dev libxcb-composite0-dev libxcb-cursor-dev          \
+            libxcb-damage0-dev libxcb-dpms0-dev libxcb-dri2-0-dev           \
+            libxcb-dri3-dev libxcb-glx0-dev libxcb-icccm4-dev libxcb-icccm4 \
+            libxcb-image0-dev libxcb-keysyms1-dev libxcb-present-dev        \
+            libxcb-randr0-dev libxcb-record0-dev libxcb-render-util0-dev    \
+            libxcb-render0-dev libxcb-shape0-dev libxcb-shm0-dev            \
+            libxcb-sync-dev libxcb-util0-dev libxcb-xfixes0-dev             \
+            libxcb-xinerama0-dev libxcb-xkb-dev libxcb-xrm-dev              \
+            libxcb1-dev libxkbcommon-dev libxkbcommon-x11-dev               \
+            libxkbfile-dev"
   deps[tilda]="clang libconfuse-dev libgtk-3-dev libvte-2.91-dev llvm"
   deps[zsh]="autoconf gcc libncurses5-dev libpcre3-dev make texinfo yodl"
 

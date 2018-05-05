@@ -226,7 +226,7 @@ update-packages
 
 scm_update acsfiles emacs zsh
 
-mk-zsh --snapshot --install
+mk-softwaare zsh --snapshot --install
 mk-emacs --with-x-toolkit=lucid
 
 # Local Variables:

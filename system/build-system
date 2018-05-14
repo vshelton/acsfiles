@@ -330,8 +330,7 @@ if arch-pm >/dev/null ; then
     sudo pacman --upgrade --noconfirm ./yodl-4.02.00-1-x86_64.pkg.tar.xz
   ) 
 fi
-init-zsh
-link_latest zsh zsh-$(today)
+init-software zsh && link_latest zsh
 #if [[ -x ${USRLOCAL}/bin/zsh ]]; then
 #  sudo -s <<EOF
 #    echo "${USRLOCAL}/bin/zsh" >>/etc/shells
@@ -339,8 +338,7 @@ link_latest zsh zsh-$(today)
 #EOF
 #fi
 
-init-emacs
-link_latest emacs emacs-$(today)
+init-software emacs && link_latest emacs
 
 # Local Variables:
 # mode: shell-script

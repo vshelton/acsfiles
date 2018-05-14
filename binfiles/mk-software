@@ -4,6 +4,8 @@
 # build a new version of a software package.  This script knows how to
 # build various packages; see the definition of all_packages below.
 
+emulate -LR zsh
+
 # The i3 pre-configure command is autoreconf.
 function
 i3PreConfigure()
@@ -113,7 +115,7 @@ fi
 # All packages potentially go through the same steps: update source control,
 # copy from source control, configure, make, make test & make install.
 
-if [[ -z $all_packages[$pkgname] ]]; then
+if [[ -z ${all_packages[$pkgname]} ]]; then
   print -u2 "\
 $progname: unknown package \"$pkgname\".
 This script knows how to build \

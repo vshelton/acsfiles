@@ -1,0 +1,173 @@
+#!/usr/bin/env zsh
+
+# Clone a repo, then build and install it,
+
+#
+# Utility functions.
+#
+
+# Define a function to clone a git repo.
+function CloneGitRepo() {
+  # $1 - name of git repo (i.e. emacs)
+  # $2 - URL of repo
+  local nickname=$1
+  local repo_url=$2
+
+  (
+    mkdir -p ${SCMROOT}/gitroot
+    cd ${SCMROOT}/gitroot
+    git clone ${repo_url} ${nickname}
+    touch --date=2001-01-01 ${nickname}/last_update
+    cd ..
+    ln -s gitroot/${nickname}
+  )
+}
+
+# Define a (debian) function to list a package name.
+function ListPackage() {
+  [[ -x /usr/bin/apt-cache ]] || return 1
+  apt-cache search "$1" | sed -sne 's/ .*//p'
+}
+
+# Print a list of things to stdout.
+function PrintList() {
+  while (( $# > 0 ))
+  do
+    print -n "$1"
+    shift
+    if [[ $# -gt 1 ]]; then
+      print -n ", "
+    elif [[ $# -eq 1 ]]; then
+      print -n " and "
+    fi
+  done
+}
+
+#
+# Code starts here.
+#
+
+progname=${0:t}
+
+# Define the source-code hierarchy.
+: ${SCMROOT:=$HOME/scmroot}
+
+# Define the build scripts.
+typeset -AA build_scripts=(
+  conky "mk-software conky --snapshot"
+  emacs "mk-emacs --with-x-toolkit=lucid"
+  exa   "mk-software exa --snapshot --install"
+  i3    "mk-software i3 --snapshot --install"
+  tilda "mk-software tilda --snapshot --install"
+  zsh   "mk-software zsh --snapshot --install"
+)
+
+# Define the git repositories.
+typeset -AA repos=(
+  conky "https://github.com/brndnmtthws/conky.git"
+  emacs "git://git.savannah.gnu.org/emacs.git"
+  exa   "https://github.com/ogham/exa.git"
+  i3    "https://github.com/i3/i3.git"
+  tilda "https://github.com/lanoxx/tilda.git"
+  zsh   "git://git.code.sf.net/p/zsh/code"
+)
+
+for d in $SCMROOT/acsfiles/rcfiles/lib/zsh-functions $HOME/lib/zsh-functions $HOME; do
+  if [[ -e $d/package_manager_functions ]]; then
+    . $d/package_manager_functions
+    break
+  fi
+done
+
+# Turn on zsh emulation here to override the "emulate sh"
+# statement in package_manager_functions.
+emulate -LR zsh
+
+# Figure out which app we're initializing.
+pkgname=$1
+
+if [[ -z ${build_scripts[$pkgname]} ]]; then
+  print -u2 "\
+$progname: unknown package \"$pkgname\".
+This script knows how to initialize \
+$(PrintList ${(ki)build_scripts})."
+  exit 1
+fi
+
+# Define the packages needed.  The names depend on whether
+# the system is arch, debian, Fedora or Suse.
+typeset -A deps
+
+if suse-p; then
+  deps[conky]="cmake gcc-c++ freetype2-devel lua-devel libXdamage-devel      \
+               ncurses-devel libXinerama-devel libXft-devel"
+  deps[emacs]="autoconf automake giflib-devel gnutls-devel libXaw-devel      \
+               libjpeg-devel libpng-devel libtiff-devel makeinfo"
+  deps[exa]="cargo cmake rustc"
+  deps[tilda]="clang libconfuse-dev libgtk-3-dev libvte-2.91-dev llvm"
+  deps[zsh]="autoconf gcc pcre-devel ncurses-devel makeinfo yodl"
+
+elif arch-p; then
+  deps[conky]="cmake"
+  deps[emacs]="autoconf automake giflib gnutls libxaw   \
+               libjpeg-turbo libtiff texinfo"
+  deps[exa]="cargo cmake rustc"
+  deps[tilda]="clang libconfuse libgtk-3 libvte-2.91 llvm"
+  deps[zsh]="autoconf gcc pcre-devel ncurses-devel texinfo yodl"
+
+elif debian-p; then
+  # On debian, at some point the package name changed from libXdamage-dev
+  # to libxdamage-dev, so we will special-case it here.
+  deps[conky]="cmake g++ libfreetype6-dev liblua5.2-dev         \
+               $(ListPackage 'lib.damage-dev')                 \
+               libncurses5-dev libxft-dev libxinerama-dev make"
+
+  # Figure out which turbo development library.
+  deps[emacs]="autoconf automake libgif-dev libgnutls28-dev      \
+               $(ListPackage 'jpeg.*turbo-dev')                 \
+               libtiff5-dev libxaw7-dev libxpm-dev make texinfo"
+  deps[exa]="cargo cmake rustc"
+  deps[i3]="gir1.2-pango-1.0 libpango-1.0-0 libpango-perl libpango1.0-0     \
+            libpango1.0-dev libpangocairo-1.0-0 libpangoft2-1.0-0           \
+            libstartup-notification0-dev libstartup-notification0           \
+            libx11-xcb-dev libxcb-composite0-dev libxcb-cursor-dev          \
+            libxcb-damage0-dev libxcb-dpms0-dev libxcb-dri2-0-dev           \
+            libxcb-dri3-dev libxcb-glx0-dev libxcb-icccm4-dev libxcb-icccm4 \
+            libxcb-image0-dev libxcb-keysyms1-dev libxcb-present-dev        \
+            libxcb-randr0-dev libxcb-record0-dev libxcb-render-util0-dev    \
+            libxcb-render0-dev libxcb-shape0-dev libxcb-shm0-dev            \
+            libxcb-sync-dev libxcb-util0-dev libxcb-xfixes0-dev             \
+            libxcb-xinerama0-dev libxcb-xkb-dev libxcb-xrm-dev              \
+            libxcb1-dev libxkbcommon-dev libxkbcommon-x11-dev               \
+            libxkbfile-dev"
+  deps[tilda]="clang libconfuse-dev libgtk-3-dev libvte-2.91-dev llvm"
+  deps[zsh]="autoconf gcc libncurses5-dev libpcre3-dev make texinfo yodl"
+
+# Define the packages needed on Fedora.
+elif fedora-p; then
+  deps[conky]="conky conky-manager cmake lua-devel gcc-c++ freetype-devel    \
+               libXdamage-devel libXext-devel libXft-devel libXinerama-devel \
+               ncurses-devel"
+  deps[emacs]="autoconf automake giflib-devel gnutls-devel libXaw-devel      \
+               libjpeg-turbo-devel libtiff-devel texinfo"
+  deps[exa]="cargo cmake rustc"
+  deps[tilda]="clang libconfuse-dev libgtk-3-dev libvte-2.91-dev llvm"
+  deps[zsh]="ftp://ftp.pbone.net/mirror/ftp5.gwdg.de/pub/opensuse/repositories/Publishing/openSUSE_Factory/x86_64/yodl-3.06.00-2777.25.x86_64.rpm \
+             autoconf gcc pcre-devel ncurses-devel texinfo"
+fi
+
+# Clone the source code repository.
+CloneGitRepo ${pkgname} ${repos[${pkgname}]}
+
+# Install the pre-requisite packages.
+install_package ${=deps[${pkgname}]}
+
+# Build the package.
+${=build_scripts[$pkgname]}
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

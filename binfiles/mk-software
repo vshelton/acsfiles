@@ -37,12 +37,13 @@ CreateBuildDirectory()
 
 function Help() {
   print -u2 "usage:
-$progname package [-f|--force] [-h|--help]  [-i|--install] [-s|--snapshot]
+$progname <package> [-f|--force] [-h|--help]  [-i|--install] [-s|--snapshot]
               --force     build the package even if nothing has changed
               --help      print this help message to stderr and exit
               --install   install the package after building it
               --snapshot  build the package for a snapshot prefix like \
-\"$USRLOCAL/package-$(today)\""
+\"$USRLOCAL/package-$(today)\"
+     <package> is one of $(PrintList ${(ki)all_packages})."
 }
 
 # Update the symbolic link pointing to the most recent copy

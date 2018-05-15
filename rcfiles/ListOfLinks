@@ -56,7 +56,6 @@ bin/mk-emacs                            $SCMROOT/binfiles/mk-emacs              
 bin/mk-exa                              $SCMROOT/binfiles/mk-package                            linux
 bin/mk-feh                              $SCMROOT/binfiles/mk-package                            linux
 bin/mk-i3                               $SCMROOT/binfiles/mk-package                            linux
-bin/mk-package                          $SCMROOT/binfiles/mk-package                            linux
 bin/mk-perl                             $SCMROOT/binfiles/mk-package                            linux
 bin/mk-software                         $SCMROOT/binfiles/mk-software                           linux
 bin/mk-tilda                            $SCMROOT/binfiles/mk-package                            linux
@@ -90,7 +89,7 @@ bin/vcsetup                             $SCMROOT/binfiles/NT/vcsetup            
 bin/wakeserver                          $SCMROOT/binfiles/wakeserver                            linux
 bin/xfce-autostart                      $SCMROOT/binfiles/xfce-autostart                        linux
 bin/xspf-prettyprint.pl                 $SCMROOT/binfiles/xspf-prettyprint.pl                   linux,NT
-bin/yesterday                           $SCMROOT/binfiles/roday                                 linux,NT
+bin/yesterday                           $SCMROOT/binfiles/today                                 linux,NT
 lib/app-defaults/Emacs.ad               $SCMROOT/rcfiles/lib/app-defaults/Emacs.ad              linux,NT
 lib/app-defaults/XEmacs.ad              $SCMROOT/rcfiles/lib/app-defaults/XEmacs.ad             linux,NT
 lib/app-defaults/XTerm.ad               $SCMROOT/rcfiles/lib/app-defaults/XTerm.ad              linux,NT

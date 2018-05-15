@@ -1,4 +1,3 @@
 #!/bin/sh
-
-# Print today's date as yyyy-mm-dd
-date +'%Y-%m-%d'
+# Print the date of yesterday, today or tomorrow as yyyy-mm-dd.
+date --date=$(basename $0) +'%Y-%m-%d'

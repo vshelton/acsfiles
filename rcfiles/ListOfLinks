@@ -101,6 +101,7 @@ lib/lisp/fsf/default.el                 $SCMROOT/rcfiles/lib/lisp/fsf/default.el
 lib/lisp/fsf/mic-paren.el               $SCMROOT/rcfiles/lib/lisp/fsf/mic-paren.el              linux,NT
 lib/lisp/xemacs/acs-custom.el           $SCMROOT/rcfiles/lib/lisp/xemacs/acs-custom.el          linux,NT
 lib/lisp/xemacs/default.el              $SCMROOT/rcfiles/lib/lisp/xemacs/default.el             linux,NT
+lib/zsh-functions/PrintList             $SCMROOT/rcfiles/lib/zsh-functions/PrintList            linux,NT
 lib/zsh-functions/_rm_versions          $SCMROOT/rcfiles/lib/zsh-functions/_rm_versions         linux,NT
 lib/zsh-functions/abspath               $SCMROOT/rcfiles/lib/zsh-functions/abspath              linux,NT
 lib/zsh-functions/addpath               $SCMROOT/rcfiles/lib/zsh-functions/addpath              linux,NT

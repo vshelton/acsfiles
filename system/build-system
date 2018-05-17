@@ -3,6 +3,10 @@
 # Build a new linux system, either a native one
 # or one hosted under VirtualBox.
 
+function today() {
+  date +'%Y-%m-%d'
+  }
+
 # Print the arguments separated by commas and, ultimately, "and".
 function print_list() {
   while (( $# > 0 ))
@@ -322,23 +326,17 @@ if arch-pm >/dev/null ; then
     (
       cd ./icmake
       makepkg
-      sudo pacman --upgrade --noconfirm ./icmake-9.02.04-1-x86_64.pkg.tar.xz
+      sudo pacman --upgrade --noconfirm $(ls ./icmake*pkg.tar.xz)
     )
     git clone https://aur.archlinux.org/yodl.git
     cd ./yodl
     makepkg
-    sudo pacman --upgrade --noconfirm ./yodl-4.02.00-1-x86_64.pkg.tar.xz
+    sudo pacman --upgrade --noconfirm $(ls ./yodl*pkg.tar.xz)
   ) 
 fi
-init-software zsh && link_latest zsh
-#if [[ -x ${USRLOCAL}/bin/zsh ]]; then
-#  sudo -s <<EOF
-#    echo "${USRLOCAL}/bin/zsh" >>/etc/shells
-#    usermod --shell ${USRLOCAL}/bin/zsh ${username}
-#EOF
-#fi
+init-software zsh && link_latest zsh zsh-$(today)
 
-init-software emacs && link_latest emacs
+init-software emacs && link_latest emacs emacs-$(today)
 
 # Local Variables:
 # mode: shell-script

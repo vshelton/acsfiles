@@ -1,0 +1,17 @@
+# Print a list of things to stdout.
+join="and"
+[[ $1 == "and" || $1 == "or" ]] && join=$1 && shift
+while (( $# > 1 ))
+do
+  print -n "$1"
+  shift
+  (( $# > 1 )) && print -n ", "
+done
+
+print -n " $join $1"
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

@@ -5,14 +5,13 @@ join="and"
 (( $# == 0 )) && return 1
 (( $# == 1 )) && print -n "$1" && return 0
 
-while (( $# > 1 ))
+while (( $# > 2 ))
 do
-  print -n "$1"
+  print -n "${1}, "
   shift
-  (( $# > 1 )) && print -n ", "
 done
 
-print -n " $join $1"
+print -n "$1 $join $2"
 
 # Local Variables:
 # mode: shell-script

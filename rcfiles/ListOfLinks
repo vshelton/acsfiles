@@ -61,6 +61,7 @@ bin/mk-software                         $SCMROOT/binfiles/mk-software           
 bin/mk-tilda                            $SCMROOT/binfiles/mk-package                            linux
 bin/mk-zsh                              $SCMROOT/binfiles/mk-package                            linux
 bin/mk_default                          $SCMROOT/binfiles/mk_default                            linux,NT
+bin/my_conky                            $SCMROOT/binfiles/my_conky                              linux
 bin/new_default                         $SCMROOT/binfiles/new_default                           linux,NT
 bin/newer_than                          $SCMROOT/binfiles/newer_than                            linux,NT
 bin/now                                 $SCMROOT/binfiles/now                                   linux,NT

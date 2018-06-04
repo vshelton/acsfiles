@@ -94,9 +94,9 @@ force_opt=
 help_opt=
 install_opt=
 snapshot_opt=
-zparseopts -E -D f=force_opt -force=force_opt \
-                 h=help_opt -help=help_opt \
-                 i=install_opt -install=install_opt \
+zparseopts -E -D f=force_opt -force=force_opt           \
+                 h=help_opt -help=help_opt              \
+                 i=install_opt -install=install_opt     \
                  s=snapshot_opt -snapshot=snapshot_opt
 
 if [[ -n $help_opt ]]; then

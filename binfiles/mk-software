@@ -6,6 +6,22 @@
 
 emulate -LR zsh
 
+# The emacs pre-configure command is autogen.sh.
+function
+emacsPreConfigure()
+{
+  (
+    cd $1
+    (
+      ./autogen.sh
+      ./autogen.sh autoconf
+    ) >& autogen.out
+
+    cd lisp
+    ln -s $SCMROOT/rust-mode/rust-mode.el
+  )
+}
+
 # The i3 pre-configure command is autoreconf.
 function
 i3PreConfigure()
@@ -79,6 +95,7 @@ export PREFIX=$USRLOCAL
 
 typeset -AA all_packages=(
   conky 1
+  emacs 1
   exa   1
   feh   1
   i3    1
@@ -157,12 +174,22 @@ POSTINSTALL=()
 [[ -n $snapshot_opt ]] && POSTINSTALL=( "LinkLatest" "$pkgname" )
 PRECONFIGURE=()
 TEST=()
+
 case $pkgname in
 (conky)
   CONFIGURE=( "cmake"
               "-DCMAKE_INSTALL_PREFIX=$PREFIX"
               "-DBUILD_XDBE=true"
               "$srcdir" )
+  ;;
+
+(emacs)
+  PRECONFIGURE=( "emacsPreConfigure" "$srcdir" )
+  CONFIGURE=( "$srcdir/configure"
+              "--prefix=$PREFIX"
+              "--without-selinux"
+              "--without-compress-install" )
+  BUILD=( "make" "CFLAGS=-O3" "bootstrap" )
   ;;
 
 (exa)

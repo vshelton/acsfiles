@@ -25,8 +25,8 @@ conky.config = {
 --   40 is the horizontal position for the system status
 conky.text = [[
 ${color0}${font :size=60}${time %I:%M}
-${voffset -128}${goto 235}${font :size=28}${time %A}                   \
-${voffset 34}${goto 235}${font :size=24}${time %d %B %Y}
+${voffset -190}${goto 348}${font :size=28}${time %A}                   \
+${voffset 44}${goto 348}${font :size=24}${time %d %B %Y}
 ${voffset -18}${color1}${font :size=12}\
 ${goto 20}HD free: ${fs_free /home/acs} / ${fs_size /home/acs}
 ${goto 20}RAM in use: $mem / $memmax

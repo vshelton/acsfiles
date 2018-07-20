@@ -188,7 +188,8 @@ case $pkgname in
   CONFIGURE=( "$srcdir/configure"
               "--prefix=$PREFIX"
               "--without-selinux"
-              "--without-compress-install" )
+              "--without-compress-install"
+	      $* )
   BUILD=( "make" "CFLAGS=-O3" "bootstrap" )
   ;;
 

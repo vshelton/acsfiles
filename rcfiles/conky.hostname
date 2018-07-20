@@ -10,5 +10,5 @@ conky.config = {
 }
 
 conky.text = [[
-${color tomato}${font Comic Sans MS:bold:size=40}${nodename}
+${color DarkRed}${font Comic Sans MS:bold:size=40}${nodename}
 ]]

@@ -2,9 +2,8 @@
 # This script is typically sourced from zshenv.
 
 usrpath=( $ZDOTDIR/bin
-          $HOME/.cargo/bin )
-[[ -d ${usrpath[1]} ]] || usrpath[1]=$HOME/bin
-[[ $OSTYPE == cygwin ]] && usrpath+=/XEmacs/cygwin/bin
+          $HOME/bin
+          /XEmacs/cygwin/bin )
 
 syspath=( $USRLOCAL/bin
           /usr/bin

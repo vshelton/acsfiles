@@ -5,7 +5,7 @@
 
 function today() {
   date +'%Y-%m-%d'
-  }
+}
 
 # Print the arguments separated by commas and, ultimately, "and".
 function print_list() {
@@ -263,12 +263,13 @@ elif arch-pm >/dev/null ; then
       makepkg -s
       sudo pacman --upgrade --noconfirm ./ttf-tahoma-2.13-2-any.pkg.tar.xz
     )
-    git clone https://aur.archlinux.org/ttf-vista-fonts.git
-    (
-      cd ./ttf-vista-fonts
-      makepkg -s
-      sudo pacman --upgrade --noconfirm ./ttf-vista-fonts-1-8-any.pkg.tar.xz
-    )
+    # PowerPointViewer.exe has been updated/moved!
+#    git clone https://aur.archlinux.org/ttf-vista-fonts.git
+#    (
+#      cd ./ttf-vista-fonts
+#      makepkg -s
+#      sudo pacman --upgrade --noconfirm ./ttf-vista-fonts-1-8-any.pkg.tar.xz
+#    )
     sudo pacman -Sy ttf-anonymous-pro ttf-dejavu ttf-hack ttf-inconsolata ttf-roboto noto-fonts
   )
 

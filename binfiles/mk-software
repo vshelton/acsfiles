@@ -53,12 +53,13 @@ CreateBuildDirectory()
 
 function Help() {
   print -u2 "usage:
-$progname <package> [-f|--force] [-h|--help]  [-i|--install] [-s|--snapshot]
+$progname <package> [-f|--force] [-h|--help]  [-i|--install] [-s|--snapshot] [-t|--tar]
               --force     build the package even if nothing has changed
               --help      print this help message to stderr and exit
               --install   install the package after building it
               --snapshot  build the package for a snapshot prefix like \
 \"$USRLOCAL/package-$(today)\"
+              --tar       build from a tarball, not SCM
      <package> is one of $(PrintList ${(ki)all_packages})."
 }
 
@@ -94,14 +95,15 @@ function PrintList() {
 export PREFIX=$USRLOCAL
 
 typeset -AA all_packages=(
-  conky 1
-  emacs 1
-  exa   1
-  feh   1
-  i3    1
-  perl  1
-  tilda 1
-  zsh   1
+  conky    1
+  emacs    1
+  exa      1
+  feh      1
+  i3       1
+  perl     1
+  tigervnc 1
+  tilda    1
+  zsh      1
 )
 
 progname=${0:t}
@@ -114,7 +116,8 @@ snapshot_opt=
 zparseopts -E -D f=force_opt -force=force_opt           \
                  h=help_opt -help=help_opt              \
                  i=install_opt -install=install_opt     \
-                 s=snapshot_opt -snapshot=snapshot_opt
+                 s=snapshot_opt -snapshot=snapshot_opt  \
+                 t=tarball_opt -tar=tarball_opt
 
 if [[ -n $help_opt ]]; then
   Help
@@ -141,9 +144,12 @@ $(PrintList ${(ki)all_packages})."
   exit 1
 fi
 
-# Update the sources and copy them into a source directory.
-scm_opts=( --update )
+# --tar option means use a tarball, not SCM.
+scm_opts=()
+[[ -n $tarball_opt ]] || scm_opts+="--update"
 [[ -n $force_opt ]] && scm_opts+="--force"
+
+# Update the sources and copy them into a source directory.
 srcdir=$(GetSource $scm_opts $pkgname) || exit $?
 
 # exa and feh both lack real configuration mechanisms,
@@ -219,6 +225,12 @@ case $pkgname in
               "-Dmksymlinks"
               "-des" )
   TEST=( "make" "test" )
+  ;;
+
+(tigervnc)
+  CONFIGURE=( "cmake"
+              "-DCMAKE_INSTALL_PREFIX=$PREFIX"
+              "$srcdir" )
   ;;
 
 (tilda)

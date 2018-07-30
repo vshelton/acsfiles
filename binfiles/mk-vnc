@@ -1,0 +1,3 @@
+#!/bin/sh
+# Syntactic sugar: convert "mk-foo" to "mk-software foo".
+mk-software tiger$(echo $0 | sed -e 's@.*mk-@@') --tar "$@"

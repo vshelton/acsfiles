@@ -61,7 +61,7 @@ $progname <package> "
   for f in ${(ki)abbrevs}; do
     print -u2 "    -${f}${desc[$f]}"
   done
-  print -u2 "            <package> is one of: $(PrintList ${(ki)all_packages})."
+  print -u2 "    <package> is one of: $(PrintList ${(ki)all_packages})."
 }
 
 # Update the symbolic link pointing to the most recent copy
@@ -225,7 +225,7 @@ case $pkgname in
               "--prefix=$PREFIX"
               "--without-selinux"
               "--without-compress-install"
-	      $* )
+              $* )
   BUILD=( "make" "CFLAGS=-O3" "bootstrap" )
   ;;
 

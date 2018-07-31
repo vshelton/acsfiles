@@ -52,15 +52,16 @@ CreateBuildDirectory()
 }
 
 function Help() {
-  print -u2 "usage:
-$progname <package> [-f|--force] [-h|--help]  [-i|--install] [-s|--snapshot] [-t|--tar]
-              --force     build the package even if nothing has changed
-              --help      print this help message to stderr and exit
-              --install   install the package after building it
-              --snapshot  build the package for a snapshot prefix like \
-\"$USRLOCAL/package-$(today)\"
-              --tar       build from a tarball, not SCM
-     <package> is one of $(PrintList ${(ki)all_packages})."
+  print -n -u2 "usage:
+$progname <package> "
+  for f in ${(ki)abbrevs}; do
+    print -n -u2 "[-$f|-${abbrevs[$f]}] "
+  done
+  print -u2
+  for f in ${(ki)abbrevs}; do
+    print -u2 "    -${f}${desc[$f]}"
+  done
+  print -u2 "            <package> is one of: $(PrintList ${(ki)all_packages})."
 }
 
 # Update the symbolic link pointing to the most recent copy
@@ -94,6 +95,10 @@ function PrintList() {
 
 export PREFIX=$USRLOCAL
 
+# Get the program name from arg0.
+progname=${0:t}
+
+# Add a new package here.
 typeset -AA all_packages=(
   conky    1
   emacs    1
@@ -106,18 +111,43 @@ typeset -AA all_packages=(
   zsh      1
 )
 
-progname=${0:t}
+# Add each new option here.
+typeset -AA abbrevs desc val
+force_opt=
+abbrevs[-force]=f
+   desc[-force]="     Build the package even if nothing has changed"
+    val[-force]=force_opt
+
+help_opt=
+abbrevs[-help]=h
+   desc[-help]="      Print this help message and exit"
+    val[-help]=help_opt
+
+install_opt=
+abbrevs[-install]=i
+   desc[-install]="   Install the package after building it"
+    val[-install]=install_opt
+
+snapshot_opt=
+abbrevs[-snapshot]=s
+   desc[-snapshot]="  Build the package for a snapshot prefix (i.e. \"$USRLOCAL/<package>-$(today)\")"
+    val[-snapshot]=snapshot_opt
+
+tar_opt=
+abbrevs[-tar]=t
+   desc[-tar]="       Build the package from a tarball, ignoring SCM"
+    val[-tar]=tar_opt
 
 # Parse the options.
-force_opt=
-help_opt=
-install_opt=
-snapshot_opt=
-zparseopts -E -D f=force_opt -force=force_opt           \
-                 h=help_opt -help=help_opt              \
-                 i=install_opt -install=install_opt     \
-                 s=snapshot_opt -snapshot=snapshot_opt  \
-                 t=tarball_opt -tar=tarball_opt
+for f in ${(k)abbrevs}; do
+  zparseopts -E -D $f=${val[$f]} ${abbrevs[$f]}=${val[$f]}
+done
+
+# print "force_opt=\"$force_opt\""
+# print "help_opt=\"$help_opt\""
+# print "install_opt=\"$install_opt\""
+# print "snapshot_opt=\"$snapshot_opt\""
+# print "tar_opt=\"$tar_opt\""
 
 if [[ -n $help_opt ]]; then
   Help
@@ -146,7 +176,7 @@ fi
 
 # --tar option means use a tarball, not SCM.
 scm_opts=()
-[[ -n $tarball_opt ]] || scm_opts+="--update"
+[[ -n $tar_opt ]] || scm_opts+="--update"
 [[ -n $force_opt ]] && scm_opts+="--force"
 
 # Update the sources and copy them into a source directory.

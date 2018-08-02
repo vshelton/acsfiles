@@ -3,6 +3,7 @@
 
 usrpath=( $ZDOTDIR/bin
           $HOME/bin
+          $HOME/.cargo/bin
           /XEmacs/cygwin/bin )
 
 syspath=( $USRLOCAL/bin

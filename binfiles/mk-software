@@ -163,8 +163,13 @@ if [[ $progname == "mk-software" ]]; then
   shift
 fi
 
-# All packages potentially go through the same steps: update source control,
-# copy from source control, configure, make, make test & make install.
+# All packages potentially go through the same steps:
+#  - Update source control
+#  - Copy from source control
+#  - configure
+#  - make
+#  - make test
+#  - make install
 
 if [[ -z ${all_packages[$pkgname]} ]]; then
   print -u2 "\

@@ -151,6 +151,10 @@ elif fedora-p; then
   deps[emacs]="autoconf automake giflib-devel gnutls-devel libXaw-devel      \
                libjpeg-turbo-devel libtiff-devel texinfo"
   deps[exa]="cargo cmake rustc"
+  deps[i3]="startup-notification-devel xcb-util-devel xcb-util-cursor-devel  \
+            xcb-util-{keysyms,wm,xrm}-devel libxkbcommon-devel               \
+	    libxkbcommon-x11-devel yajl-devel pcre-devel cairo-devel         \
+	    pango-devel"
   deps[tilda]="clang libconfuse-dev libgtk-3-dev libvte-2.91-dev llvm"
   deps[zsh]="ftp://ftp.pbone.net/mirror/ftp5.gwdg.de/pub/opensuse/repositories/Publishing/openSUSE_Factory/x86_64/yodl-3.06.00-2777.25.x86_64.rpm \
              autoconf gcc pcre-devel ncurses-devel texinfo"

@@ -228,10 +228,13 @@ emulate -LR zsh
 
 update-packages
 
-scm_update acsfiles emacs zsh
+setopt extended_glob
+scm_update $(cd $SCMROOT; print *~binfiles~rcfiles(@))
 
-mk-softwaare zsh --snapshot --install
-mk-emacs --with-x-toolkit=lucid
+common_options=( "--snapshot" "--install" )
+
+mk-zsh $common_options
+mk-emacs $common_options --with-x-toolkit=lucid
 
 # Local Variables:
 # mode: shell-script

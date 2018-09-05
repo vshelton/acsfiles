@@ -186,7 +186,7 @@ EOF
 fi
 
 # Install the pre-requisite packages.
-install_package ${=deps[${pkgname}]}
+install-packages ${=deps[${pkgname}]}
 
 # Build the package.
 ${=build_scripts[$pkgname]}

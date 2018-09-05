@@ -5,17 +5,20 @@
 : ${USRLOCAL:=/opt}
 PATH=$HOME/bin:$USRLOCAL/bin:$PATH
 
-compton -b
+compton &
 
 my_conky
-
-i3-sensible-terminal --title=zsh &
 
 # clementine &
 emacs -f about-emacs &
 
 # The browser is passed as the first parameter
 $1 &
+
+# The terminal is passed as the second parameter
+#export TERMINAL=$2
+#[[ $TERMINAL == tilix ]] && source /etc/profile.d/vte-2.91.sh
+#i3-sensible-terminal --title=zsh &
 
 # Local Variables:
 # mode: shell-script

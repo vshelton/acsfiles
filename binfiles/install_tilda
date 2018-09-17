@@ -1,0 +1,220 @@
+#!/usr/bin/env zsh
+
+# Install and configure tilda, the terminal emulator.
+
+emulate -LR zsh
+progname=${0:t}
+
+# Install tilda.
+install-packages tilda
+
+# Create the tilda configuration:
+#  - first window 95% of the screen on left, Solarized Dark;
+#  - second window upper right, Solarized Light
+#  - third window lower right, Solarized Light
+p=tilda
+#p=tilda-test	# Uncomment for debugging
+cd $HOME
+mkdir -p .config/$p
+cat >.config/$p/config_0 <<\EOF
+tilda_config_version="1.4.1"
+command="/opt/bin/zsh -l"
+font="Hack 11"
+key="F1"
+addtab_key="<Shift><Control>t"
+fullscreen_key="F11"
+toggle_transparency_key="F12"
+toggle_searchbar_key="<Shift><Control>f"
+closetab_key="<Shift><Control>w"
+nexttab_key="<Control>Page_Down"
+prevtab_key="<Control>Page_Up"
+movetableft_key="<Shift><Control>Page_Up"
+movetabright_key="<Shift><Control>Page_Down"
+gototab_1_key="<Alt>1"
+gototab_2_key="<Alt>2"
+gototab_3_key="<Alt>3"
+gototab_4_key="<Alt>4"
+gototab_5_key="<Alt>5"
+gototab_6_key="<Alt>6"
+gototab_7_key="<Alt>7"
+gototab_8_key="<Alt>8"
+gototab_9_key="<Alt>9"
+gototab_10_key="<Alt>0"
+copy_key="<Shift><Control>c"
+paste_key="<Shift><Control>v"
+quit_key="<Shift><Control>q"
+title="Tilda"
+background_color="white"
+# working_dir=""
+web_browser="x-www-browser"
+increase_font_size_key="<Control>equal"
+decrease_font_size_key="<Control>minus"
+normalize_font_size_key="<Control>0"
+# show_on_monitor=""
+word_chars="-A-Za-z0-9,./?%&#:_"
+lines=10000
+max_width=921
+max_height=1152
+min_width=1
+min_height=1
+x_pos=40
+y_pos=2
+tab_pos=0
+expand_tabs=false
+show_single_tab=false
+backspace_key=0
+delete_key=1
+d_set_title=3
+command_exit=2
+scheme=6
+slide_sleep_usec=20000
+animation_orientation=0
+timer_resolution=200
+auto_hide_time=2000
+on_last_terminal_exit=0
+prompt_on_exit=false
+palette_scheme=0
+non_focus_pull_up_behaviour=0
+cursor_shape=0
+# show_on_monitor_number=0
+# title_max_length_flag=false
+title_max_length=25
+palette = {11822, 13364, 13878, 52428, 0, 0, 20046, 39578, 1542, 50372, 41120, 0, 13364, 25957, 42148, 30069, 20560, 31611, 1542, 38944, 39578, 54227, 55255, 53199, 21845, 22359, 21331, 61423, 10537, 10537, 35466, 58082, 13364, 64764, 59881, 20303, 29298, 40863, 53199, 44461, 32639, 43176, 13364, 58082, 58082, 61166, 61166, 60652}
+scrollbar_pos=1
+back_red=0
+back_green=11141
+back_blue=13762
+text_red=33423
+text_green=38010
+text_blue=38666
+cursor_red=65535
+cursor_green=65535
+cursor_blue=65535
+scroll_history_infinite=false
+scroll_on_output=true
+notebook_border=true
+antialias=true
+scrollbar=false
+grab_focus=true
+above=false
+notaskbar=false
+bold=true
+blinks=true
+scroll_on_key=true
+bell=false
+run_command=true
+pinned=false
+animation=false
+hidden=false
+set_as_desktop=false
+centered_horizontally=false
+centered_vertically=false
+enable_transparency=true
+# double_buffer=false
+auto_hide_on_focus_lost=false
+auto_hide_on_mouse_leave=false
+title_behaviour=2
+inherit_working_dir=true
+command_login_shell=true
+start_fullscreen=false
+confirm_close_tab=false
+# image=""
+# scroll_background=false
+# use_image=false
+transparency=0
+back_alpha=60287
+EOF
+
+cp .config/$p/config_0 .config/$p/config_1
+patch .config/$p/config_1 >&/dev/null <<\EOF
+--- /dev/null	2018-09-17 06:47:28.335973475 -0400
++++ /dev/null	2018-09-17 07:02:34.974079740 -0400
+@@ -1,7 +1,7 @@
+ tilda_config_version="1.4.1"
+ command="/opt/bin/zsh -l"
+ font="Hack 11"
+-key="F1"
++key="F2"
+ addtab_key="<Shift><Control>t"
+ fullscreen_key="F11"
+ toggle_transparency_key="F12"
+@@ -34,11 +34,11 @@
+ # show_on_monitor=""
+ word_chars="-A-Za-z0-9,./?%&#:_"
+ lines=10000
+-max_width=921
+-max_height=1152
++max_width=847
++max_height=540
+ min_width=1
+ min_height=1
+-x_pos=40
++x_pos=1000
+ y_pos=2
+ tab_pos=0
+ expand_tabs=false
+@@ -47,7 +47,7 @@
+ delete_key=1
+ d_set_title=3
+ command_exit=2
+-scheme=6
++scheme=0
+ slide_sleep_usec=20000
+ animation_orientation=0
+ timer_resolution=200
+@@ -62,15 +62,15 @@
+ title_max_length=25
+ palette = {11822, 13364, 13878, 52428, 0, 0, 20046, 39578, 1542, 50372, 41120, 0, 13364, 25957, 42148, 30069, 20560, 31611, 1542, 38944, 39578, 54227, 55255, 53199, 21845, 22359, 21331, 61423, 10537, 10537, 35466, 58082, 13364, 64764, 59881, 20303, 29298, 40863, 53199, 44461, 32639, 43176, 13364, 58082, 58082, 61166, 61166, 60652}
+ scrollbar_pos=1
+-back_red=0
+-back_green=11141
+-back_blue=13762
+-text_red=33423
+-text_green=38010
+-text_blue=38666
+-cursor_red=65535
+-cursor_green=65535
+-cursor_blue=65535
++back_red=64880
++back_green=62914
++back_blue=58326
++text_red=26214
++text_green=31457
++text_blue=33423
++cursor_red=11822
++cursor_green=13364
++cursor_blue=13878
+ scroll_history_infinite=false
+ scroll_on_output=true
+ notebook_border=true
+EOF
+
+cp .config/$p/config_1 .config/$p/config_2
+patch .config/$p/config_2 >&/dev/null <<\EOF
+--- /dev/null	2018-09-17 07:02:34.974079740 -0400
++++ /dev/null	2018-09-17 07:30:08.248673532 -0400
+@@ -1,7 +1,7 @@
+ tilda_config_version="1.4.1"
+ command="/opt/bin/zsh -l"
+ font="Hack 11"
+-key="F2"
++key="F3"
+ addtab_key="<Shift><Control>t"
+ fullscreen_key="F11"
+ toggle_transparency_key="F12"
+@@ -39,7 +39,7 @@
+ min_width=1
+ min_height=1
+ x_pos=1000
+-y_pos=2
++y_pos=550
+ tab_pos=0
+ expand_tabs=false
+ show_single_tab=false
+EOF
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

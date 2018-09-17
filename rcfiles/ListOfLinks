@@ -43,6 +43,7 @@ bin/gnome_sleep_status                  $SCMROOT/binfiles/gnome_sleep_status    
 bin/i3-autostart                        $SCMROOT/binfiles/i3-autostart                          linux
 bin/init-software                       $SCMROOT/binfiles/init-software                         linux
 bin/install-packages                    $SCMROOT/binfiles/install-packages                      linux,NT
+bin/install_tilda                       $SCMROOT/binfiles/install_tilda                         linux,NT
 bin/installed_packages                  $SCMROOT/binfiles/installed_packages                    linux,NT
 bin/latest                              $SCMROOT/binfiles/latest                                linux,NT
 bin/link_latest                         $SCMROOT/binfiles/link_latest                           linux,NT

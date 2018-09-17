@@ -12,11 +12,10 @@ install-packages tilda
 #  - first window 95% of the screen on left, Solarized Dark;
 #  - second window upper right, Solarized Light
 #  - third window lower right, Solarized Light
-p=tilda
-#p=tilda-test	# Uncomment for debugging
+: ${TILDA:=tilda}        # Override for debugging
 cd $HOME
-mkdir -p .config/$p
-cat >.config/$p/config_0 <<\EOF
+mkdir -p .config/$TILDA
+cat >.config/$TILDA/config_0 <<\EOF
 tilda_config_version="1.4.1"
 command="/opt/bin/zsh -l"
 font="Hack 11"
@@ -125,8 +124,8 @@ transparency=0
 back_alpha=60287
 EOF
 
-cp .config/$p/config_0 .config/$p/config_1
-patch .config/$p/config_1 >&/dev/null <<\EOF
+cp .config/$TILDA/config_0 .config/$TILDA/config_1
+patch .config/$TILDA/config_1 >&/dev/null <<\EOF
 --- /dev/null	2018-09-17 06:47:28.335973475 -0400
 +++ /dev/null	2018-09-17 07:02:34.974079740 -0400
 @@ -1,7 +1,7 @@
@@ -189,8 +188,8 @@ patch .config/$p/config_1 >&/dev/null <<\EOF
  notebook_border=true
 EOF
 
-cp .config/$p/config_1 .config/$p/config_2
-patch .config/$p/config_2 >&/dev/null <<\EOF
+cp .config/$TILDA/config_1 .config/$TILDA/config_2
+patch .config/$TILDA/config_2 >&/dev/null <<\EOF
 --- /dev/null	2018-09-17 07:02:34.974079740 -0400
 +++ /dev/null	2018-09-17 07:30:08.248673532 -0400
 @@ -1,7 +1,7 @@

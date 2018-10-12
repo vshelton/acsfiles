@@ -1,0 +1,33 @@
+#!/usr/bin/env zsh
+
+# Build and install an obnam package on Arch linux.
+
+if [[ ! -x =pacman ]]; then
+  print -u2 "Not an arch system. Exiting."
+  exit 1
+fi
+
+mkdir obnam-$(today)
+cd obnam-$(today)
+
+# Install the already-built prerequisites.
+plist=( python2-paramiko
+        python2-yaml )
+#sudo pacman --sync --noconfirm $plist
+
+# cliapp, tracing, larch and ttystatus
+# need to be built and installed before obnam.
+aurlist=( python2-cliapp
+          python2-tracing
+          python2-larch
+          python2-ttystatus
+          obnam )
+for p in $aurlist; do
+  InstallAurPackage $p
+done
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

@@ -257,22 +257,23 @@ elif arch-pm >/dev/null ; then
     git clone https://aur.archlinux.org/ttf-ms-fonts.git
     (
       cd ./ttf-ms-fonts
-      makepkg -s
+      makepkg --syncdeps
       sudo pacman --upgrade --noconfirm ./ttf-ms-fonts-2.0-10-any.pkg.tar.xz
     )
     git clone https://aur.archlinux.org/ttf-tahoma.git
     (
       cd ./ttf-tahoma
-      makepkg -s
+      makepkg --syncdeps
       sudo pacman --upgrade --noconfirm ./ttf-tahoma-2.13-2-any.pkg.tar.xz
     )
-    # PowerPointViewer.exe has been updated/moved!
-#    git clone https://aur.archlinux.org/ttf-vista-fonts.git
-#    (
-#      cd ./ttf-vista-fonts
-#      makepkg -s
-#      sudo pacman --upgrade --noconfirm ./ttf-vista-fonts-1-8-any.pkg.tar.xz
-#    )
+    # PowerPointViewer.exe has been moved!
+    git clone https://aur.archlinux.org/ttf-vista-fonts.git
+    (
+      cd ./ttf-vista-fonts
+      perl -pi.bak -e 's@http://download.microsoft.com/download/E/6/7/E675FFFC-2A6D-4AB0-B3EB-27C9F8C8F696/PowerPointViewer.exe@https://archive.org/download/PowerPointViewer_201801/PowerPointViewer.exe@' PKGBUILD
+      makepkg --syncdeps
+      sudo pacman --upgrade --noconfirm ./ttf-vista-fonts-1-8-any.pkg.tar.xz
+    )
     sudo pacman -Sy ttf-anonymous-pro ttf-dejavu ttf-hack ttf-inconsolata ttf-roboto noto-fonts
   )
 

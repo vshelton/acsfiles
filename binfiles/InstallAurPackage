@@ -1,0 +1,24 @@
+#!/usr/bin/env zsh
+
+# Install a package from Arch User Repository on Arch linux.
+
+if [[ ! -x =pacman ]]; then
+  print -u2 "Not an arch system. Exiting."
+  exit 1
+fi
+
+pkg=$1
+
+git clone https://aur.archlinux.org/${pkg}.git
+if ! cd ${pkg} >& /dev/null ; then
+  print -u2 "Error downloading ${pkg}"
+  exit 2
+fi
+makepkg --syncdeps
+sudo pacman --upgrade --noconfirm ./${pkg}*pkg.tar.xz
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

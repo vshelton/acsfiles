@@ -6,6 +6,24 @@
 
 emulate -LR zsh
 
+# Install alacritty.
+function
+alacrittyInstall()
+{
+  case $(uname -a) in
+  (*deb*)
+    # Installs in /usr/local/bin/alacritty
+    cargo deb --install
+    mv /usr/local/bin/alacritty $USRLOCAL/bin
+    ;;
+  (*arch*)
+    cp target/release/alacritty $USRLOCAL/bin
+    sudo desktop-file-install alacritty.desktop
+    sudo update-desktop-database
+    ;;
+  esac
+}
+
 # The emacs pre-configure command is autogen.sh.
 function
 emacsPreConfigure()
@@ -100,15 +118,16 @@ progname=${0:t}
 
 # Add a new package here.
 typeset -AA all_packages=(
-  conky    1
-  emacs    1
-  exa      1
-  feh      1
-  i3       1
-  perl     1
-  tigervnc 1
-  tilda    1
-  zsh      1
+  alacritty 1
+  conky     1
+  emacs     1
+  exa       1
+  feh       1
+  i3        1
+  perl      1
+  tigervnc  1
+  tilda     1
+  zsh       1
 )
 
 # Add each new option here.
@@ -187,9 +206,11 @@ scm_opts=()
 # Update the sources and copy them into a source directory.
 srcdir=$(GetSource $scm_opts $pkgname) || exit $?
 
-# exa and feh both lack real configuration mechanisms,
+# alacritty, exa and feh real configuration mechanisms,
 # so they must build in the source directory.
 case $pkgname in
+(alacritty)
+  ;&  # Fall through
 (exa)
   ;&  # Fall through
 (feh)
@@ -217,6 +238,11 @@ PRECONFIGURE=()
 TEST=()
 
 case $pkgname in
+(alacritty)
+  BUILD=( make binary )
+  INSTALL=( alacrittyInstall )
+  ;;
+
 (conky)
   CONFIGURE=( "cmake"
               "-DCMAKE_INSTALL_PREFIX=$PREFIX"

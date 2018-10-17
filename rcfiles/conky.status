@@ -26,7 +26,7 @@ conky.config = {
 conky.text = [[
 ${color0}${font :size=60}${time %I:%M}
 ${voffset -190}${goto 348}${font :size=28}${time %A}                   \
-${voffset 44}${goto 348}${font :size=24}${time %d %B %Y}
+${voffset 44}${goto 348}${font :size=24}${time %B %d, %Y}
 ${voffset -18}${color1}${font :size=12}\
 ${goto 20}HD free: ${fs_free /home/acs} / ${fs_size /home/acs}
 ${goto 20}RAM in use: $mem / $memmax

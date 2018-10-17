@@ -11,8 +11,8 @@ mkdir obnam-$(today)
 cd obnam-$(today)
 
 # Install the already-built prerequisites.
-plist=( python2-paramiko
-        python2-yaml )
+#plist=( python2-paramiko
+#        python2-yaml )
 #sudo pacman --sync --noconfirm $plist
 
 # cliapp, tracing, larch and ttystatus

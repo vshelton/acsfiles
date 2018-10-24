@@ -3,7 +3,6 @@
 # Install and configure the terminal emulators I'm using.
 
 emulate -LR zsh
-progname=${0:t}
 
 cd $HOME/.config
 for t in alacritty kitty tilda; do

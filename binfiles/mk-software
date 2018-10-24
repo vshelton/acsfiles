@@ -177,7 +177,7 @@ fi
 # based on the command name, like "mk-perl".
 # The new style is to pass the package name as the first parameter.
 pkgname=${progname:s/mk-/}
-if [[ $progname == "mk-software" ]]; then
+if [[ $progname == mk-software ]]; then
   pkgname=$1
   shift
 fi
@@ -229,11 +229,11 @@ esac
 [[ -n $snapshot_opt ]] && PREFIX=$PREFIX/${pkgname}-$(today)
 
 # Set the package-specific commands.
-BUILD=( "make" )
+BUILD=( make )
 CONFIGURE=()
-INSTALL=( "make" "install" )
+INSTALL=( make install )
 POSTINSTALL=()
-[[ -n $snapshot_opt ]] && POSTINSTALL=( "LinkLatest" "$pkgname" )
+[[ -n $snapshot_opt ]] && POSTINSTALL=( LinkLatest $pkgname )
 PRECONFIGURE=()
 TEST=()
 
@@ -244,67 +244,67 @@ case $pkgname in
   ;;
 
 (conky)
-  CONFIGURE=( "cmake"
-              "-DCMAKE_INSTALL_PREFIX=$PREFIX"
-              "-DBUILD_XDBE=true"
-              "$srcdir" )
+  CONFIGURE=( cmake
+              -DCMAKE_INSTALL_PREFIX=$PREFIX
+              -DBUILD_XDBE=true
+              $srcdir )
   ;;
 
 (emacs)
-  PRECONFIGURE=( "emacsPreConfigure" "$srcdir" )
-  CONFIGURE=( "$srcdir/configure"
-              "--prefix=$PREFIX"
-              "--without-selinux"
-              "--without-compress-install"
+  PRECONFIGURE=( emacsPreConfigure $srcdir )
+  CONFIGURE=( $srcdir/configure
+              --prefix=$PREFIX
+              --without-selinux
+              --without-compress-install
               $* )
-  BUILD=( "make" "CFLAGS=-O3" "bootstrap" )
+  BUILD=( make CFLAGS=-O3 bootstrap )
   ;;
 
 (exa)
   export ZSHDIR=$USRLOCAL/zsh/share/zsh/site-functions
-  BUILD=( "make" "-e" )
-  INSTALL=( "make" "-e" "install" "install-zsh-completions" )
+  BUILD=( make -e )
+  INSTALL=( make -e install install-zsh-completions )
   ;;
 
 (feh)
   export VERSION=$(today)
-  BUILD=( "make" "-e" )
-  INSTALL=( "make" "-e" "install" )
+  BUILD=( make -e )
+  INSTALL=( make -e install )
   ;;
 
 (i3)
-  PRECONFIGURE=( "i3PreConfigure" "$srcdir" )
-  CONFIGURE=( "$srcdir/configure"
-              "--prefix=$PREFIX" )
+  PRECONFIGURE=( i3PreConfigure $srcdir )
+  CONFIGURE=( $srcdir/configure
+              --prefix=$PREFIX )
   ;;
 
 (perl)
-  CONFIGURE=( "$srcdir/Configure"
-              "-Dprefix=$PREFIX"
-              "-Dusedevel"
-              "-Dcf_email=ethersoft@gmail.com"
-              "-Dmksymlinks"
-              "-des" )
-  TEST=( "make" "test" )
+  CONFIGURE=( $srcdir/Configure
+              -Dprefix=$PREFIX
+              -Dusedevel
+              -Dcf_email=ethersoft@gmail.com
+              -Dmksymlinks
+              -des )
+  TEST=( make test )
   ;;
 
 (tigervnc)
-  CONFIGURE=( "cmake"
-              "-DCMAKE_INSTALL_PREFIX=$PREFIX"
-              "$srcdir" )
+  CONFIGURE=( cmake
+              -DCMAKE_INSTALL_PREFIX=$PREFIX
+              $srcdir )
   ;;
 
 (tilda)
-  CONFIGURE=( "$srcdir/autogen.sh" "--prefix=$PREFIX" "--enable-clang" )
+  CONFIGURE=( $srcdir/autogen.sh --prefix=$PREFIX --enable-clang )
   ;;
 
 (zsh)
-  PRECONFIGURE=( "zshPreConfigure" "$srcdir" )
-  CONFIGURE=( "$srcdir/configure"
-              "--prefix=$PREFIX"
-              "--enable-pcre" )
-  TEST=( "make" "-k" "check" )
-  INSTALL=( "make" "install" "install.info" )
+  PRECONFIGURE=( zshPreConfigure $srcdir )
+  CONFIGURE=( $srcdir/configure
+              --prefix=$PREFIX
+              --enable-pcre )
+  TEST=( make -k check )
+  INSTALL=( make install install.info )
   ;;
 esac
 

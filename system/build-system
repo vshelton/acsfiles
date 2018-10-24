@@ -178,6 +178,7 @@ install-packages i3
 : ${SRCROOT:=$USRLOCAL/src}
 sudo chown ${username} ${USRLOCAL}
 mkdir ${USRLOCAL}/{bin,build,include,lib,share,src}
+ln -s ${ziproot} ${USRLOCAL}/zip
 
 # These are the path names for my source code repository.
 scmbase="scmroot"
@@ -317,6 +318,9 @@ if debian-pm >/dev/null || fedora-pm >/dev/null ; then
     fc-cache -f -v
 EOF
 fi
+
+# Install the terminal emulators and their configurations.
+InstallTerminalEmulators
 
 # Set up the execution path to include my scripts
 # to make emacs and zsh.

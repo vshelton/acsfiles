@@ -9,7 +9,10 @@ bin/BuildXEmacsKits                     $SCMROOT/binfiles/NT/BuildXEmacsKits    
 bin/CopySourceVersion                   $SCMROOT/binfiles/CopySourceVersion                     linux,NT
 bin/GetSource                           $SCMROOT/binfiles/GetSource                             linux,NT
 bin/GetXEmacsPackages                   $SCMROOT/binfiles/NT/GetXEmacsPackages                  NT
+bin/InstallAurPackage                   $SCMROOT/binfiles/InstallAurPackage                     linux
 bin/InstallExtraXEmacsPackages          $SCMROOT/binfiles/NT/InstallExtraXEmacsPackages         NT
+bin/InstallObnam                        $SCMROOT/binfiles/InstallObnam                          linux
+bin/InstallTerminalEmulators            $SCMROOT/binfiles/InstallTerminalEmulators              linux
 bin/LinkStartupFiles                    $SCMROOT/binfiles/LinkStartupFiles                      linux,NT
 bin/MakeCygwinXEmacs                    $SCMROOT/binfiles/NT/MakeCygwinXEmacs                   NT
 bin/MakeLinuxLinks                      $SCMROOT/binfiles/MakeLinuxLinks                        neither

@@ -1,0 +1,18 @@
+#!/usr/bin/env zsh
+
+# Install and configure the terminal emulators I'm using.
+
+emulate -LR zsh
+progname=${0:t}
+
+cd $HOME/.config
+for t in alacritty kitty tilda; do
+  install-packages $t
+  tar xf $ZIPROOT/TerminalEmulators.tar $t
+done
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

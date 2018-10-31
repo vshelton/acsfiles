@@ -207,7 +207,7 @@ scm_opts=()
 # Update the sources and copy them into a source directory.
 srcdir=$(GetSource $scm_opts $pkgname) || exit $?
 
-# alacritty, exa, feh and kitty lack real configuration mechanisms,
+# alacritty, exa and feh lack real configuration mechanisms,
 # so we build those packages in their source directories.
 case $pkgname in
 (alacritty)
@@ -215,8 +215,6 @@ case $pkgname in
 (exa)
   ;&  # Fall through
 (feh)
-  ;&  # Fall through
-(kitty)
   cd $srcdir
   ;;
 
@@ -283,7 +281,7 @@ case $pkgname in
 
 (kitty)
   BUILD=()
-  INSTALL=( python3 setup.py --prefix $PREFIX linux-package )
+  INSTALL=( $srcdir/setup.py --prefix $PREFIX linux-package )
   ;;
 
 (perl)

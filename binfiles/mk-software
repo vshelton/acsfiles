@@ -280,8 +280,9 @@ case $pkgname in
   ;;
 
 (kitty)
-  BUILD=()
-  INSTALL=( $srcdir/setup.py --prefix $PREFIX linux-package )
+  BUILD=( $srcdir/setup.py --prefix $PREFIX linux-package )
+  TEST=( $srcdir/setup.py test )
+  INSTALL=()
   ;;
 
 (perl)

@@ -124,6 +124,7 @@ typeset -AA all_packages=(
   exa       1
   feh       1
   i3        1
+  kitty     1
   perl      1
   tigervnc  1
   tilda     1
@@ -206,14 +207,16 @@ scm_opts=()
 # Update the sources and copy them into a source directory.
 srcdir=$(GetSource $scm_opts $pkgname) || exit $?
 
-# alacritty, exa and feh real configuration mechanisms,
-# so they must build in the source directory.
+# alacritty, exa, feh and kitty lack real configuration mechanisms,
+# so we build those packages in their source directories.
 case $pkgname in
 (alacritty)
   ;&  # Fall through
 (exa)
   ;&  # Fall through
 (feh)
+  ;&  # Fall through
+(kitty)
   cd $srcdir
   ;;
 
@@ -228,7 +231,7 @@ esac
 # Implement the --snapshot option.
 [[ -n $snapshot_opt ]] && PREFIX=$PREFIX/${pkgname}-$(today)
 
-# Set the package-specific commands.
+# Set the default commands.
 BUILD=( make )
 CONFIGURE=()
 INSTALL=( make install )
@@ -276,6 +279,11 @@ case $pkgname in
   PRECONFIGURE=( i3PreConfigure $srcdir )
   CONFIGURE=( $srcdir/configure
               --prefix=$PREFIX )
+  ;;
+
+(kitty)
+  BUILD=()
+  INSTALL=( python3 setup.py --prefix $PREFIX linux-package )
   ;;
 
 (perl)

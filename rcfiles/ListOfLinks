@@ -60,6 +60,7 @@ bin/mk-emacs                            mk-package                              
 bin/mk-exa                              mk-package                                              linux
 bin/mk-feh                              mk-package                                              linux
 bin/mk-i3                               mk-package                                              linux
+bin/mk-kitty                            mk-package                                              linux
 bin/mk-perl                             mk-package                                              linux
 bin/mk-package                          $SCMROOT/binfiles/mk-package                            linux
 bin/mk-software                         $SCMROOT/binfiles/mk-software                           linux

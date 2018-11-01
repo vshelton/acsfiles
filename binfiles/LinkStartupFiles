@@ -8,6 +8,9 @@
 [[ $OSTYPE == *linux* ]] && OSTYPE=linux
 [[ $OSTYPE == *ygwin* ]] && OSTYPE=NT
 
+#LINK="ln -s"
+LINK=cp
+
 while read linkname src targetOS
 do
   #echo "linkname = $linkname; src = $src; OS = $targetOS"
@@ -15,7 +18,7 @@ do
     mkdir -p $(dirname $linkname)
     (
       src=$(eval echo $src)
-      ln -s $src $linkname
+      ${=LINK} $src $linkname
     )
   fi
 done < $SCMROOT/rcfiles/ListOfLinks

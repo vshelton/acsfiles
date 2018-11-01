@@ -1,4 +1,4 @@
-.Xresources                             $SCMROOT/rcfiles/Xresources                             linux
+.Xresources                             $SCMROOT/rcfiles/Xresources                             neither
 .conky.hostname                         $SCMROOT/rcfiles/conky.hostname                         linux
 .conky.status                           $SCMROOT/rcfiles/conky.status                           linux
 .emacs                                  $SCMROOT/rcfiles/emacs                                  linux,NT
@@ -98,10 +98,10 @@ bin/wakeserver                          $SCMROOT/binfiles/wakeserver            
 bin/xfce-autostart                      $SCMROOT/binfiles/xfce-autostart                        linux
 bin/xspf-prettyprint.pl                 $SCMROOT/binfiles/xspf-prettyprint.pl                   linux,NT
 bin/yesterday                           today                                                   linux,NT
-lib/app-defaults/Emacs.ad               $SCMROOT/rcfiles/lib/app-defaults/Emacs.ad              linux,NT
-lib/app-defaults/XEmacs.ad              $SCMROOT/rcfiles/lib/app-defaults/XEmacs.ad             linux,NT
-lib/app-defaults/XTerm.ad               $SCMROOT/rcfiles/lib/app-defaults/XTerm.ad              linux,NT
-lib/app-defaults/fonts.m4               $SCMROOT/rcfiles/lib/app-defaults/fonts.m4              linux,NT
+lib/app-defaults/Emacs.ad               $SCMROOT/rcfiles/lib/app-defaults/Emacs.ad              neither
+lib/app-defaults/XEmacs.ad              $SCMROOT/rcfiles/lib/app-defaults/XEmacs.ad             neither
+lib/app-defaults/XTerm.ad               $SCMROOT/rcfiles/lib/app-defaults/XTerm.ad              neither
+lib/app-defaults/fonts.m4               $SCMROOT/rcfiles/lib/app-defaults/fonts.m4              neither
 lib/lisp/detached-minibuf.el            $SCMROOT/rcfiles/lib/lisp/detached-minibuf.el           linux,NT
 lib/lisp/emacs.el                       $SCMROOT/rcfiles/lib/lisp/emacs.el                      neither
 lib/lisp/fsf/acs-custom.el              $SCMROOT/rcfiles/lib/lisp/fsf/acs-custom.el             linux,NT

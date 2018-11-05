@@ -282,7 +282,7 @@ case $pkgname in
 (kitty)
   BUILD=( $srcdir/setup.py --prefix $PREFIX linux-package )
   TEST=( $srcdir/setup.py test )
-  INSTALL=()
+  INSTALL=( : )         # In order to trigger LinkLatest in POSTINSTALL
   ;;
 
 (perl)

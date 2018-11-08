@@ -2,27 +2,30 @@
 # Implement the --dereference-command-line-symlink-to-dir
 # option for exa.
 
-# Split out options.
+# Split out options and nonexistent filenames.
 opts=()
-for a; do
-  [[ "$a" != -* ]] && break
-  shift
-  [[ "$a" == -- ]] && break
-  opts+="$a"
-done
-#print -u2 opts = $#opts \"$opts\" argv = $#argv \"$argv\"
-
-# Save the filenames of nonexistent files so they
-# don't get ignored in the argv expansion below.
 bad=()
 for a; do
-  [[ ! -e "$a" ]] && bad+="$a"
+  case $a in
+  (-*)
+    opts+=$a
+    shift
+    ;;
+  (*)
+    # The expansion in the exa call below will drop out the
+    # nonexistent filenames, so save them.
+    [[ ! -e $a ]] && bad+=$a && shift
+    ;;
+  esac
 done
-#print -u2 bad = $#bad \"$bad\"
+
+#print -u2 \
+# opts = $#opts \"$opts\" \
+# bad = $#bad \"$bad\" \
+# argv = $#argv \"$argv\"
 
 # argv expansion appends "/" to directory symlinks.
-# Invoke latest installed version of exa.
-$USRLOCAL/exa*/bin/exa(NOn[1]) $opts $bad ${^~argv}(N-M)
+command exa $opts $bad ${^~argv}(N-M)
 
 # Local Variables:
 # mode: shell-script

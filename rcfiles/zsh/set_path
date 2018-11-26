@@ -31,7 +31,7 @@ done
 typeset -gU path
 path=( $tmp )
 
-unset syspath tmp usrpath
+unset i syspath tmp usrpath
 
 # Local Variables:
 # mode: shell-script

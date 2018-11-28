@@ -50,6 +50,84 @@ i3PreConfigure()
   )
 }
 
+# After building kitty, copy and tweak the configuration.
+function
+kittyPostInstall()
+{
+  conf_dir=~/.config/kitty
+  mkdir -p $conf_dir
+  (
+    cp $1/docs/generated/conf/kitty.conf $conf_dir
+    cd $conf_dir
+    unset conf_dir
+    patch --backup <<EOF
+--- kitty.conf.orig	2018-11-28 09:40:40.566499143 -0500
++++ kitty.conf	2018-11-28 09:35:17.742194594 -0500
+@@ -6,7 +6,7 @@
+ #: individual font faces and even specify special fonts for particular
+ #: characters.
+ 
+-font_family      monospace
++font_family      hack
+ bold_font        auto
+ italic_font      auto
+ bold_italic_font auto
+@@ -86,7 +86,7 @@
+ 
+ #: Scrollback {{{
+ 
+-scrollback_lines 2000
++scrollback_lines 10000
+ 
+ #: Number of lines of history to keep in memory for scrolling back.
+ #: Memory is allocated on demand. Negative numbers are (effectively)
+@@ -367,12 +367,12 @@
+ 
+ #: Color scheme {{{
+ 
+-foreground #dddddd
+-background #000000
++foreground #839496
++background #002b36
+ 
+ #: The foreground and background colors
+ 
+-background_opacity         1.0
++background_opacity         0.92
+ dynamic_background_opacity no
+ 
+ #: The opacity of the background. A number between 0 and 1, where 1 is
+@@ -450,7 +450,7 @@
+ 
+ #: Advanced {{{
+ 
+-shell .
++shell /opt/bin/zsh -l
+ 
+ #: The shell program to execute. The default value of . means to use
+ #: whatever shell is set as the default shell for the current user.
+@@ -458,7 +458,7 @@
+ #: --login to ensure that the shell starts in interactive mode and
+ #: reads its startup rc files.
+ 
+-editor .
++editor emacsclient
+ 
+ #: The console editor to use when editing the kitty config file or
+ #: similar tasks. A value of . means to use the environment variable
+@@ -689,7 +689,7 @@
+ #: example, the following opens the scrollback buffer in less in an
+ #: overlay window::
+ 
+-#:     map f1 pipe @ansi overlay less +G -R
++map f1 pipe @ansi os_window less +G -R
+ 
+ #: Placeholders available are: ``@text`` (which is plain text) and
+ #: ``@ansi`` (which includes text styling escape codes). For only the
+EOF
+  )
+}
+
 # The zsh pre-configure command is built in to the zsh sources.
 function
 zshPreConfigure()
@@ -282,7 +360,7 @@ case $pkgname in
 (kitty)
   BUILD=( $srcdir/setup.py --prefix $PREFIX linux-package )
   TEST=( $srcdir/setup.py test )
-  INSTALL=( : )         # In order to trigger LinkLatest in POSTINSTALL
+  INSTALL=( kittyPostInstall $srcdir )
   ;;
 
 (perl)

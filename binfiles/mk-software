@@ -147,7 +147,8 @@ CreateBuildDirectory()
   cd $BLDROOT/$ver
 }
 
-function Help() {
+function
+Help() {
   print -n -u2 "usage:
 $progname <package> "
   for f in ${(ki)abbrevs}; do
@@ -337,6 +338,7 @@ case $pkgname in
               --without-compress-install
               $* )
   BUILD=( make CFLAGS=-O3 bootstrap )
+  TEST=( make -k check )
   ;;
 
 (exa)

@@ -83,7 +83,7 @@ PATH=$(cd $(dirname $0); pwd):$PATH
 vbox_prefix="/media/sf_"
 : ${shared_root:=host-root}
 : ${shared_home:=host-home}
-: ${shared_opt:=host-SSD-2TB/opt}
+: ${shared_opt:=host-opt}
 : ${host_user:=shelta}
 
 # This build script depends on sudo, so install sudo

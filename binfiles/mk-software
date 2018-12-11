@@ -111,7 +111,7 @@ kittyPostInstall()
  #: reads its startup rc files.
  
 -editor .
-+editor emacsclient
++editor /opt/bin/emacsclient -q
  
  #: The console editor to use when editing the kitty config file or
  #: similar tasks. A value of . means to use the environment variable

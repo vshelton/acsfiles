@@ -230,9 +230,9 @@ emulate -LR zsh
 update-packages
 
 setopt extended_glob
-scm_update $(cd $SCMROOT; print *~binfiles~rcfiles(@))
+scm_update \$(cd \$SCMROOT; print *~binfiles~rcfiles(@))
 
-common_options=( "--snapshot" "--install" )
+common_options=( \"--snapshot\" \"--install\" )
 
 mk-zsh $common_options
 mk-emacs $common_options --with-x-toolkit=lucid
@@ -291,18 +291,8 @@ elif debian-pm >/dev/null ; then
   fi
 
 elif fedora-pm >/dev/null ; then
-  # Like in debian, too much knowledge of RPM packaging is required here.
   install-packages cabextract ttmkfdir rpm-build
-  font_ver="msttcorefonts-2.5-1"
-  specfile="${font_ver}.spec"
-  wget http://corefonts.sourceforge.net/${specfile}
-  # The list of mirrors is old; update it.
-  perl -pi.orig -e 's/mirrors=".*"/mirrors="freefr"/;' -e 's/^mirror_count=.*/mirror_count=1/;' ${specfile}
-  echo '%_topdir %(echo $HOME)/rpmbuild' > .rpmmacros
-  for i in {1..10}; do
-    rpmbuild -bb ${specfile} && break
-  done
-  sudo rpm -ihv rpmbuild/RPMS/noarch/${font_ver}.noarch.rpm
+  rpm -i https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm
 
 else
   echo "Not a supported OS type." 2>&1

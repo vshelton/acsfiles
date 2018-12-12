@@ -72,11 +72,9 @@ bin/my_conky                            $SCMROOT/binfiles/my_conky              
 bin/new_default                         $SCMROOT/binfiles/new_default                           linux,NT
 bin/newer_than                          $SCMROOT/binfiles/newer_than                            linux,NT
 bin/now                                 $SCMROOT/binfiles/now                                   linux,NT
-bin/permute                             $SCMROOT/binfiles/permute                               linux,NT
 bin/relative_links                      $SCMROOT/binfiles/relative_links                        linux,NT
 bin/remake-package                      $SCMROOT/binfiles/remake-package                        linux,NT
 bin/scm_update                          $SCMROOT/binfiles/scm_update                            linux,NT
-bin/setupfonts.sh                       $SCMROOT/binfiles/setupfonts.sh                         linux,NT
 bin/summarize_zsh_tests                 $SCMROOT/binfiles/summarize_zsh_tests                   linux,NT
 bin/suse-pm                             $SCMROOT/binfiles/suse-pm                               linux,NT
 bin/symlink-tree                        $SCMROOT/binfiles/symlink-tree                          linux,NT
@@ -86,7 +84,6 @@ bin/toggle_sleep                        $SCMROOT/binfiles/toggle_sleep          
 bin/tomorrow                            today                                                   linux,NT
 bin/unpack                              $SCMROOT/binfiles/unpack                                linux,NT
 bin/unpack_and_build                    $SCMROOT/binfiles/unpack_and_build                      linux,NT
-bin/update-cygwin                       $SCMROOT/binfiles/update-cygwin                         linux,NT
 bin/update-emacs                        $SCMROOT/binfiles/update-emacs                          linux
 bin/update-packages                     $SCMROOT/binfiles/update-packages                       linux,NT
 bin/update-xemacs                       $SCMROOT/binfiles/update-xemacs                         linux,NT

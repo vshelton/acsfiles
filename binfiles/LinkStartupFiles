@@ -2,14 +2,11 @@
 
 # Link my startup files.
 
-: ${progname:=$(basename $0)}
-
 [[ -z $OSTYPE ]] && OSTYPE=linux
 [[ $OSTYPE == *linux* ]] && OSTYPE=linux
 [[ $OSTYPE == *ygwin* ]] && OSTYPE=NT
 
-#LINK="ln -s"
-LINK=cp
+LINK="ln -s"
 
 while read linkname src targetOS
 do
@@ -23,15 +20,35 @@ do
   fi
 done < $SCMROOT/rcfiles/ListOfLinks
 
-# On a Windoze box, the native XEmacs and FSF emacs applications
-# cannot read cygwin symbolic links, so hard-copy the files.
+# On a Windoze box, the native XEmacs and FSF emacs applications cannot
+# read cygwin symbolic links, so copy the customization files.
 if [[ $OSTYPE == NT ]]; then
-  for f in .emacs lib/lisp/{fsf,xemacs}/{acs-custom,default}.el lib/lisp/detached-minibuf.el lib/lisp/fsf/mic-paren.el; do
-    t=$(readlink $f)
-    rm $f
-    cp $t $f
-  done
+  harden_list=(
+    .emacs
+    lib/lisp/{fsf,xemacs}/{acs-custom,default}.el
+    lib/lisp/detached-minibuf.el
+    lib/lisp/fsf/mic-paren.el
+  )
+
+# These files change from system to system.
+else
+  harden_list=(
+    .conky.hostname
+    .conky.status
+    bin/i3-autostart
+    bin/xfce-autostart
+    .i3/config
+    lib/lisp/fsf/acs-custom.el
+  )
 fi
+
+# harden_list is the list of symbolic links to
+# 'break' by copying the contents.
+for f in ${harden_list[*]}; do
+  t=$(readlink $f)
+  rm $f
+  cp $t $f
+done
 
 # Local Variables:
 # mode: shell-script

@@ -6,7 +6,7 @@ emulate -LR zsh
 
 function usage() {
   print -u2 "\
-usage: $progname [-h|--help]
+usage: $progname [-h|--help] [suffix]
        -h|--help - Print this help message"
   return 0
 }
@@ -18,13 +18,15 @@ progname=${0:t}
 zparseopts -D h=help -help=help
 [[ -n $help ]] && usage && exit 0
 
-pushd $ZIPROOT
-[[ -d ISOs ]]  && cd ./ISOs
-for v in $(VBoxManage list vms | sed -n -e 's/\"\(.*\)\" .*/\1/p'); do
-  echo $v
-  rm -f $v.ova
-  VBoxManage export $v --output $v.ova --ovf20 --manifest
-  chmod 444 $v.ova
+suffix=${1:-$(today)}
+
+cd $ZIPROOT
+[[ -d ISOs ]] && cd ./ISOs
+for vm in $(VBoxManage list vms | sed -n -e 's/\"\(.*\)\" .*/\1/p'); do
+  print -n "$vm: "
+  savename="${vm}_${suffix}.ova"
+  VBoxManage export ${vm} --output ${savename} --ovf20 --manifest
+  chmod 444 ${savename}
 done
 
 # Local Variables:

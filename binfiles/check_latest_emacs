@@ -1,7 +1,6 @@
 #!/usr/bin/env zsh
 
-# Run 'make check' on the latest version of emacs
-
+# Run 'make check' on the latest version of emacs.
 emulate -LR zsh
 
 : ${USRLOCAL:/usr/local}

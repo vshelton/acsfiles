@@ -1,0 +1,17 @@
+#!/usr/bin/env zsh
+
+# Run 'make check' on the latest version of emacs
+
+emulate -LR zsh
+
+: ${USRLOCAL:/usr/local}
+: ${BLDROOT:/usr/local/build}
+
+cd $BLDROOT/emacs*(/om[1])
+make -k check
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Run 'make check' on for the version of zsh currently running
+# Run 'make check' on the version of zsh currently running
 
 emulate -LR zsh
 0=${0:t}

@@ -166,7 +166,7 @@ CloneGitRepo ${pkgname} ${repos[${pkgname}]}
 # I should make this generic.
 if [[ $pkgname == "exa" ]]; then
   cd $SCMROOT/$pkgname
-  patch -p1 <<EOF
+  patch -p1 <<\EOF
 --- a/Makefile
 +++ b/Makefile
 @@ -23,10 +23,10 @@ target/release/exa:

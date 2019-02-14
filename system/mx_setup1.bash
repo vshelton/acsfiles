@@ -5,6 +5,9 @@ function mk_and_push_dir() {
 
 set -x
 
+for a in update dist-upgrade autoclean autoremove; do
+  sudo apt --yes $a
+done
 sudo apt --yes install mercurial
 export SCMROOT=$HOME/scmroot
 mk_and_push_dir $SCMROOT/hgroot

@@ -227,17 +227,17 @@ mkdir -p \$t
 
 apt --yes purge firefox thunderbird libreoffice-base libreoffice-core
 apt --yes install fonts-hack-ttf fonts-inconsolata fonts-ubuntu-console emacs
-
-for t in update dist-upgrade autoclean autoremove; do
-  apt --yes \$t
-done
+apt --yes update
+apt --yes dist-upgrade
+apt --yes autoclean
+apt --yes autoremove
 
 t=tigervnc-1.9.0.x86_64.tar.gz
 wget --output-document=\$t https://bintray.com/tigervnc/stable/download_file?file_path=\$t
 tar xf \$t -C / --strip-components=1
 patch <<\EOF_patch
---- lightdm.conf.orig	2019-02-15 14:31:50.938959233 -0500
-+++ lightdm.conf	2019-02-15 15:43:52.573104362 -0500
+--- /etc/lightdm/lightdm.conf.orig	2019-02-15 14:31:50.938959233 -0500
++++ /etc/lightdm/lightdm.conf	        2019-02-15 15:43:52.573104362 -0500
 @@ -125,8 +125,11 @@
  #
  [VNCServer]
@@ -251,9 +251,11 @@ patch <<\EOF_patch
  #depth=8
 +depth=24
 EOF_patch
-echo vncpasswd /etc/vncpasswd
-echo Fix up /etc/fstab, /etc/exports...
+echo Fix up /etc/fstab and /etc/exports
 EOF
+
+echo -n vncpasswd ...
+sudo vncpasswd /etc/vncpasswd
 
 # Local Variables:
 # mode: shell-script

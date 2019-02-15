@@ -109,16 +109,16 @@ mkdir -p $t
   cd $t
   hg clone https://acs@bitbucket.org/acs/acs_script acsfiles
 )
-export PATH=$t/acsfiles/binfiles:$PATH
+(
+  cd $SCMROOT
+  ln -s hgroot/acsfiles
+  ln -s hgroot/acsfiles/{binfiles,rcfiles} .
+)
+export PATH=$SCMROOT/binfiles:$PATH
 if ! today >& /dev/null ; then
   echo "$0: 'today' not found in $PATH"
   exit 1
 fi
-(
-  cd $SCMROOT
-  ln -s hgroot/acsfiles
-  ln -s hgroot/{binfiles,rcfiles} .
-)
 
 [[ -x /usr/sbin/dmidecode ]] || install-packages dmidecode
 host=$(sudo dmidecode -s system-product-name)

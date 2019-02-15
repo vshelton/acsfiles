@@ -235,8 +235,6 @@ done
 t=tigervnc-1.9.0.x86_64.tar.gz
 wget --output-document=\$t https://bintray.com/tigervnc/stable/download_file?file_path=\$t
 tar xf \$t -C / --strip-components=1
-
-vncpasswd /etc/vncpasswd
 patch <<\EOF_patch
 --- lightdm.conf.orig	2019-02-15 14:31:50.938959233 -0500
 +++ lightdm.conf	2019-02-15 15:43:52.573104362 -0500
@@ -253,7 +251,7 @@ patch <<\EOF_patch
  #depth=8
 +depth=24
 EOF_patch
-
+echo vncpasswd /etc/vncpasswd
 echo Fix up /etc/fstab, /etc/exports...
 EOF
 

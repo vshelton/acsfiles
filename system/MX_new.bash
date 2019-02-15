@@ -132,7 +132,7 @@ if [[ ${host} == "VirtualBox" ]]; then
 fi
 
 # Install the Z-shell and move aside the customization.
-install-packages zsh
+install-packages zsh zsh-doc
 if [[ -d /etc/zsh ]]; then
   sudo mv /etc/zsh /etc/ZSH-dist
 else
@@ -218,7 +218,6 @@ fi
 sudo -s <<EOF
 set -- /Antergos /WD-4TB-1 /Seagate-4TB-1 /home
 mkdir \$*
-echo Fix up /etc/fstab, /etc/lightdm/lightdm.conf, /etc/exports...
 t=/srv/nfs
 mkdir -p \$t
 (
@@ -236,6 +235,26 @@ done
 t=tigervnc-1.9.0.x86_64.tar.gz
 wget --output-document=\$t https://bintray.com/tigervnc/stable/download_file?file_path=\$t
 tar xf \$t -C / --strip-components=1
+
+vncpasswd /etc/vncpasswd
+patch <<\EOF_patch
+--- lightdm.conf.orig	2019-02-15 14:31:50.938959233 -0500
++++ lightdm.conf	2019-02-15 15:43:52.573104362 -0500
+@@ -125,8 +125,11 @@
+ #
+ [VNCServer]
+ #enabled=false
++enabled=true
+ #command=Xvnc
++command=Xvnc -rfbauth /etc/vncpasswd
+ #port=5900
+ #width=1024
+ #height=768
+ #depth=8
++depth=24
+EOF_patch
+
+echo Fix up /etc/fstab, /etc/exports...
 EOF
 
 # Local Variables:

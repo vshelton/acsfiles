@@ -103,14 +103,12 @@ chmod 600 .hgrc
 sudo apt --yes update
 sudo apt --yes install mercurial
 export SCMROOT=$HOME/scmroot
-t=$SCMROOT/hgroot
-mkdir -p $t
-(
-  cd $t
-  hg clone https://acs@bitbucket.org/acs/acs_script acsfiles
-)
+mkdir -p $SCMROOT
 (
   cd $SCMROOT
+  hg clone https://acs@bitbucket.org/acs/acs_script acsfiles
+  mkdir hgroot
+  mv acsfiles hgroot
   ln -s hgroot/acsfiles
   ln -s hgroot/acsfiles/{binfiles,rcfiles} .
 )
@@ -223,7 +221,12 @@ mkdir -p \$t
 (
   cd \$t
   ln -s \$* .
+  ln -s / root
 )
+
+for x in \$t/*; do
+  echo "\$x     192.168.0.6(rw,no_root_squash)"
+done >> /etc/exports
 
 apt --yes purge firefox thunderbird libreoffice-base libreoffice-core
 apt --yes install fonts-hack-ttf fonts-inconsolata fonts-ubuntu-console emacs
@@ -251,10 +254,10 @@ patch <<\EOF_patch
  #depth=8
 +depth=24
 EOF_patch
-echo Fix up /etc/fstab and /etc/exports
+echo Remember to fix up /etc/fstab.
 EOF
 
-echo -n vncpasswd ...
+echo "\nvncpasswd ..."
 sudo vncpasswd /etc/vncpasswd
 
 # Local Variables:

@@ -150,7 +150,7 @@ mkdir ${USRLOCAL}/{bin,build,include,lib,share,src}
 
 # Link startup files.
 mv .emacs .emacs-dist >& /dev/null
-SCMROOT=${PWD}/${scmbase} ${acs_repo}/binfiles/LinkStartupFiles
+$SCMROOT/binfiles/LinkStartupFiles
 
 # Create a directory for saving shell history and unpack wallpapers.
 if [[ -d ${host_home}/.hist ]]; then
@@ -238,9 +238,11 @@ apt --yes autoremove
 t=tigervnc-1.9.0.x86_64.tar.gz
 wget --output-document=\$t https://bintray.com/tigervnc/stable/download_file?file_path=\$t
 tar xf \$t -C / --strip-components=1
+
+cd /etc/lightdm
 patch <<\EOF_patch
---- /etc/lightdm/lightdm.conf.orig	2019-02-15 14:31:50.938959233 -0500
-+++ /etc/lightdm/lightdm.conf	        2019-02-15 15:43:52.573104362 -0500
+--- lightdm.conf.orig	2019-02-15 14:31:50.938959233 -0500
++++ lightdm.conf        2019-02-15 15:43:52.573104362 -0500
 @@ -125,8 +125,11 @@
  #
  [VNCServer]
@@ -254,10 +256,11 @@ patch <<\EOF_patch
  #depth=8
 +depth=24
 EOF_patch
-echo Remember to fix up /etc/fstab.
 EOF
 
-echo "\nvncpasswd ..."
+echo Remember to fix up /etc/fstab.
+
+echo -n "Vnc"
 sudo vncpasswd /etc/vncpasswd
 
 # Local Variables:

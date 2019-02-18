@@ -1,6 +1,8 @@
 conky.config = {
   alignment = 'top_middle',
   double_buffer = true,
+  gap_y = 10,
+  maximum_width = 3840,
   own_window = true,
   own_window_transparent = true,
   own_window_type = 'override',
@@ -10,5 +12,6 @@ conky.config = {
 }
 
 conky.text = [[
-${color DarkRed}${font Comic Sans MS:bold:size=40}${nodename}
+${alignc}${color DarkRed}${font Comic Sans MS:bold:size=40}${nodename}
+${alignc}${voffset -20}${distribution}
 ]]

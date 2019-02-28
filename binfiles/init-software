@@ -123,9 +123,9 @@ elif arch-p; then
              cmake
              rustc"
   deps[tilda]="clang
-               libconfuse
-               libgtk-3
-               libvte-2.91
+               confuse
+               gtk3
+               vte3
                llvm"
   deps[zsh]="autoconf
              gcc

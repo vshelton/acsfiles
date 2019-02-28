@@ -129,8 +129,8 @@ elif arch-p; then
                llvm"
   deps[zsh]="autoconf
              gcc
-             pcre-devel
              ncurses-devel
+             pcre-devel
              texinfo
              yodl"
 
@@ -227,12 +227,28 @@ elif debian-p; then
 
 # Define the packages needed on Fedora.
 elif fedora-p; then
-  deps[conky]="conky conky-manager cmake lua-devel gcc-c++ freetype-devel
-               libXdamage-devel libXext-devel libXft-devel libXinerama-devel
+  deps[conky]="cmake
+               conky
+               conky-manager
+               freetype-devel
+               gcc-c++
+               libXdamage-devel
+               libXext-devel
+               libXft-devel
+               libXinerama-devel
+               lua-devel
                ncurses-devel"
-  deps[emacs]="autoconf automake giflib-devel gnutls-devel libXaw-devel
-               libjpeg-turbo-devel libtiff-devel texinfo"
-  deps[exa]="cargo cmake rustc"
+  deps[emacs]="autoconf
+               automake
+               giflib-devel
+               gnutls-devel
+               libXaw-devel
+               libjpeg-turbo-devel
+               libtiff-devel
+               texinfo"
+  deps[exa]="cargo
+             cmake
+             rustc"
   deps[i3]="cairo-devel
             libxkbcommon-devel
             libxkbcommon-x11-devel
@@ -245,7 +261,11 @@ elif fedora-p; then
             xcb-util-wm-devel
             xcb-util-xrm-devel
             yajl-devel"
-  deps[tilda]="clang libconfuse-dev libgtk-3-dev libvte-2.91-dev llvm"
+  deps[tilda]="clang
+               libconfuse-dev
+               libgtk-3-dev
+               libvte-2.91-dev
+               llvm"
   deps[zsh]="ftp://ftp.pbone.net/mirror/ftp5.gwdg.de/pub/opensuse/repositories/Publishing/openSUSE_Factory/x86_64/yodl-3.06.00-2777.25.x86_64.rpm
              autoconf gcc pcre-devel ncurses-devel texinfo"
 fi

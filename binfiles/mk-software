@@ -35,8 +35,10 @@ emacsPreConfigure()
       ./autogen.sh autoconf
     ) >& autogen.out
 
-    cd lisp
-    ln -s $SCMROOT/rust-mode/rust-mode.el
+    if [[ -e $SCMROOT/rust-mode ]]; then
+      cd lisp
+      ln -s $SCMROOT/rust-mode/rust-mode.el
+    fi
   )
 }
 

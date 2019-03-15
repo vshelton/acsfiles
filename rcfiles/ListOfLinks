@@ -1,4 +1,3 @@
-.Xresources                             $SCMROOT/rcfiles/Xresources                             neither
 .conky.hostname                         $SCMROOT/rcfiles/conky.hostname                         linux
 .conky.status                           $SCMROOT/rcfiles/conky.status                           linux
 .emacs                                  $SCMROOT/rcfiles/emacs                                  linux,NT
@@ -11,11 +10,9 @@ bin/GetSource                           $SCMROOT/binfiles/GetSource             
 bin/GetXEmacsPackages                   $SCMROOT/binfiles/NT/GetXEmacsPackages                  NT
 bin/InstallAurPackage                   $SCMROOT/binfiles/InstallAurPackage                     linux
 bin/InstallExtraXEmacsPackages          $SCMROOT/binfiles/NT/InstallExtraXEmacsPackages         NT
-bin/InstallObnam                        $SCMROOT/binfiles/InstallObnam                          linux
 bin/InstallTerminalEmulators            $SCMROOT/binfiles/InstallTerminalEmulators              linux
 bin/LinkStartupFiles                    $SCMROOT/binfiles/LinkStartupFiles                      linux,NT
 bin/MakeCygwinXEmacs                    $SCMROOT/binfiles/NT/MakeCygwinXEmacs                   NT
-bin/MakeLinuxLinks                      $SCMROOT/binfiles/MakeLinuxLinks                        neither
 bin/MakeNativeXEmacs                    $SCMROOT/binfiles/NT/MakeNativeXEmacs                   NT
 bin/MakeXEmacsWindowsKit                $SCMROOT/binfiles/NT/MakeXEmacsWindowsKit               NT
 bin/PrintProjectBuildTime               $SCMROOT/binfiles/PrintProjectBuildTime                 linux,NT
@@ -73,7 +70,6 @@ bin/new_default                         $SCMROOT/binfiles/new_default           
 bin/newer_than                          $SCMROOT/binfiles/newer_than                            linux,NT
 bin/now                                 $SCMROOT/binfiles/now                                   linux,NT
 bin/relative_links                      $SCMROOT/binfiles/relative_links                        linux,NT
-bin/remake-package                      $SCMROOT/binfiles/remake-package                        linux,NT
 bin/scm_update                          $SCMROOT/binfiles/scm_update                            linux,NT
 bin/summarize_zsh_tests                 $SCMROOT/binfiles/summarize_zsh_tests                   linux,NT
 bin/suse-pm                             $SCMROOT/binfiles/suse-pm                               linux,NT
@@ -95,12 +91,7 @@ bin/wakeserver                          $SCMROOT/binfiles/wakeserver            
 bin/xfce-autostart                      $SCMROOT/binfiles/xfce-autostart                        linux
 bin/xspf-prettyprint.pl                 $SCMROOT/binfiles/xspf-prettyprint.pl                   linux,NT
 bin/yesterday                           today                                                   linux,NT
-lib/app-defaults/Emacs.ad               $SCMROOT/rcfiles/lib/app-defaults/Emacs.ad              neither
-lib/app-defaults/XEmacs.ad              $SCMROOT/rcfiles/lib/app-defaults/XEmacs.ad             neither
-lib/app-defaults/XTerm.ad               $SCMROOT/rcfiles/lib/app-defaults/XTerm.ad              neither
-lib/app-defaults/fonts.m4               $SCMROOT/rcfiles/lib/app-defaults/fonts.m4              neither
 lib/lisp/detached-minibuf.el            $SCMROOT/rcfiles/lib/lisp/detached-minibuf.el           linux,NT
-lib/lisp/emacs.el                       $SCMROOT/rcfiles/lib/lisp/emacs.el                      neither
 lib/lisp/fsf/acs-custom.el              $SCMROOT/rcfiles/lib/lisp/fsf/acs-custom.el             linux,NT
 lib/lisp/fsf/default.el                 $SCMROOT/rcfiles/lib/lisp/fsf/default.el                linux,NT
 lib/lisp/fsf/mic-paren.el               $SCMROOT/rcfiles/lib/lisp/fsf/mic-paren.el              linux,NT
@@ -113,7 +104,6 @@ lib/zsh-functions/addpath               $SCMROOT/rcfiles/lib/zsh-functions/addpa
 lib/zsh-functions/all_dirs              $SCMROOT/rcfiles/lib/zsh-functions/all_dirs             linux,NT
 lib/zsh-functions/all_versions          $SCMROOT/rcfiles/lib/zsh-functions/all_versions         linux,NT
 lib/zsh-functions/col                   $SCMROOT/rcfiles/lib/zsh-functions/col                  linux,NT
-lib/zsh-functions/exa                   $SCMROOT/rcfiles/lib/zsh-functions/exa                  neither
 lib/zsh-functions/exists                $SCMROOT/rcfiles/lib/zsh-functions/exists               linux,NT
 lib/zsh-functions/f                     $SCMROOT/rcfiles/lib/zsh-functions/f                    linux,NT
 lib/zsh-functions/nfunc                 $SCMROOT/rcfiles/lib/zsh-functions/nfunc                linux,NT
@@ -121,8 +111,9 @@ lib/zsh-functions/nohist                $SCMROOT/rcfiles/lib/zsh-functions/nohis
 lib/zsh-functions/recentfiles           $SCMROOT/rcfiles/lib/zsh-functions/recentfiles          linux,NT
 lib/zsh-functions/recursivefiles        $SCMROOT/rcfiles/lib/zsh-functions/recursivefiles       linux,NT
 lib/zsh-functions/relative              $SCMROOT/rcfiles/lib/zsh-functions/relative             linux,NT
-lib/zsh-functions/rm_unused_zsh_scripts $SCMROOT/rcfiles/lib/zsh-functions/rm_unused_zsh_scripts linux,NT
 lib/zsh-functions/rename_as_modified    $SCMROOT/rcfiles/lib/zsh-functions/rename_as_modified   linux,NT
+lib/zsh-functions/rmk                   $SCMROOT/rcfiles/lib/zsh-functions/rmk                  linux,NT
+lib/zsh-functions/rm_unused_zsh_scripts $SCMROOT/rcfiles/lib/zsh-functions/rm_unused_zsh_scripts linux,NT
 lib/zsh-functions/rm_versions           $SCMROOT/rcfiles/lib/zsh-functions/rm_versions          linux,NT
 lib/zsh-functions/snapshot_directory    $SCMROOT/rcfiles/lib/zsh-functions/snapshot_directory   linux,NT
 lib/zsh-functions/system_specific       $SCMROOT/rcfiles/lib/zsh-functions/system_specific      linux,NT

@@ -1,0 +1,13 @@
+# Remake a package.
+
+# Remove today's version.
+rmver ${(q)1}-$(today)
+
+# Print the next command onto the command line, waiting for user approval.
+print -z mk-${(q)1} --snapshot --install --force
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

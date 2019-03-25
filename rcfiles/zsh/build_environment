@@ -1,4 +1,5 @@
 # Set up the software build environment.
+
 # USRLOCAL is the destination hierarchy for locally-built packages.
 # SRCROOT is the root of source hierarchy for locally-built packages.
 # BLDROOT is the root of the build hierarchy for locally-built packages.
@@ -8,6 +9,8 @@ export SRCROOT=${SRCROOT:-$USRLOCAL/src}
 export BLDROOT=${BLDROOT:-$USRLOCAL/build}
 export ZIPROOT=${ZIPROOT:-$USRLOCAL/zip}
 export SCMROOT=${SCMROOT:-~/scmroot}
+
+all_sources=( $(cd $SCMROOT; print *~binfiles~rcfiles(@)) )
 
 # Local Variables:
 # mode: shell-script

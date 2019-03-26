@@ -63,8 +63,8 @@ kittyPostInstall()
     cd $conf_dir
     unset conf_dir
     patch --backup <<EOF
---- kitty.conf.orig	2018-11-28 09:40:40.566499143 -0500
-+++ kitty.conf	2018-11-28 09:35:17.742194594 -0500
+--- kitty.conf.orig	2019-03-25 07:54:05.355001000 -0400
++++ kitty.conf	2019-03-26 12:09:04.977164763 -0400
 @@ -6,7 +6,7 @@
  #: individual font faces and even specify special fonts for particular
  #: characters.
@@ -74,7 +74,7 @@ kittyPostInstall()
  bold_font        auto
  italic_font      auto
  bold_italic_font auto
-@@ -86,7 +86,7 @@
+@@ -94,7 +94,7 @@
  
  #: Scrollback {{{
  
@@ -83,7 +83,7 @@ kittyPostInstall()
  
  #: Number of lines of history to keep in memory for scrolling back.
  #: Memory is allocated on demand. Negative numbers are (effectively)
-@@ -367,12 +367,12 @@
+@@ -401,12 +401,12 @@
  
  #: Color scheme {{{
  
@@ -99,7 +99,7 @@ kittyPostInstall()
  dynamic_background_opacity no
  
  #: The opacity of the background. A number between 0 and 1, where 1 is
-@@ -450,7 +450,7 @@
+@@ -488,7 +488,7 @@
  
  #: Advanced {{{
  
@@ -108,7 +108,7 @@ kittyPostInstall()
  
  #: The shell program to execute. The default value of . means to use
  #: whatever shell is set as the default shell for the current user.
-@@ -458,7 +458,7 @@
+@@ -496,7 +496,7 @@
  #: --login to ensure that the shell starts in interactive mode and
  #: reads its startup rc files.
  
@@ -117,15 +117,24 @@ kittyPostInstall()
  
  #: The console editor to use when editing the kitty config file or
  #: similar tasks. A value of . means to use the environment variable
-@@ -689,7 +689,7 @@
+@@ -694,7 +694,7 @@
+ 
+ #:     map ctrl+f>2 set_font_size 20
+ 
+-kitty_mod ctrl+shift
++kitty_mod ctrl+shift+alt
+ 
+ #: The value of kitty_mod is used as the modifier for all default
+ #: shortcuts, you can change it in your kitty.conf to change the
+@@ -748,7 +748,7 @@
  #: example, the following opens the scrollback buffer in less in an
  #: overlay window::
  
 -#:     map f1 pipe @ansi overlay less +G -R
-+map f1 pipe @ansi os_window less +G -R
++map kitty_mod+f1 pipe @ansi os_window less +G -R
  
- #: Placeholders available are: ``@text`` (which is plain text) and
- #: ``@ansi`` (which includes text styling escape codes). For only the
+ #: For more details on piping screen and buffer contents to external
+ #: programs, see pipe.
 EOF
   )
 }

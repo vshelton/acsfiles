@@ -216,6 +216,7 @@ typeset -AA all_packages=(
   i3        1
   kitty     1
   perl      1
+  ripgrep   1
   tigervnc  1
   tilda     1
   zsh       1
@@ -297,7 +298,7 @@ scm_opts=()
 # Update the sources and copy them into a source directory.
 srcdir=$(GetSource $scm_opts $pkgname) || exit $?
 
-# alacritty, exa and feh lack real configuration mechanisms,
+# alacritty, exa, feh and ripgrep lack real configuration mechanisms,
 # so we build those packages in their source directories.
 case $pkgname in
 (alacritty)
@@ -305,6 +306,8 @@ case $pkgname in
 (exa)
   ;&  # Fall through
 (feh)
+  ;&  # Fall through
+(ripgrep)
   cd $srcdir
   ;;
 
@@ -384,6 +387,12 @@ case $pkgname in
               -Dmksymlinks
               -des )
   TEST=( make test )
+  ;;
+
+(ripgrep)
+  BUILD=( cargo build --release --features 'pcre2' )
+  INSTALL=( install -Dm755 target/release/rg $PREFIX/bin/rg )
+  TEST=( cargo test --all )
   ;;
 
 (tigervnc)

@@ -63,8 +63,9 @@ kittyPostInstall()
     cd $conf_dir
     unset conf_dir
     patch --backup <<EOF
---- kitty.conf.orig	2019-03-25 07:54:05.355001000 -0400
-+++ kitty.conf	2019-03-26 12:09:04.977164763 -0400
+EOF
+--- kitty.conf.orig	2019-04-24 16:50:04.007290415 -0400
++++ kitty.conf	2019-04-24 17:06:35.009755308 -0400
 @@ -6,7 +6,7 @@
  #: individual font faces and even specify special fonts for particular
  #: characters.
@@ -74,7 +75,7 @@ kittyPostInstall()
  bold_font        auto
  italic_font      auto
  bold_italic_font auto
-@@ -94,7 +94,7 @@
+@@ -97,7 +97,7 @@
  
  #: Scrollback {{{
  
@@ -83,7 +84,7 @@ kittyPostInstall()
  
  #: Number of lines of history to keep in memory for scrolling back.
  #: Memory is allocated on demand. Negative numbers are (effectively)
-@@ -401,12 +401,12 @@
+@@ -413,12 +413,12 @@
  
  #: Color scheme {{{
  
@@ -94,12 +95,12 @@ kittyPostInstall()
  
  #: The foreground and background colors
  
--background_opacity         1.0
-+background_opacity         0.92
- dynamic_background_opacity no
+-background_opacity 1.0
++background_opacity 0.92
  
  #: The opacity of the background. A number between 0 and 1, where 1 is
-@@ -488,7 +488,7 @@
+ #: opaque and 0 is fully transparent.  This will only work if
+@@ -505,7 +505,7 @@
  
  #: Advanced {{{
  
@@ -108,7 +109,7 @@ kittyPostInstall()
  
  #: The shell program to execute. The default value of . means to use
  #: whatever shell is set as the default shell for the current user.
-@@ -496,7 +496,7 @@
+@@ -513,7 +513,7 @@
  #: --login to ensure that the shell starts in interactive mode and
  #: reads its startup rc files.
  
@@ -117,7 +118,7 @@ kittyPostInstall()
  
  #: The console editor to use when editing the kitty config file or
  #: similar tasks. A value of . means to use the environment variable
-@@ -694,7 +694,7 @@
+@@ -711,7 +711,7 @@
  
  #:     map ctrl+f>2 set_font_size 20
  
@@ -126,7 +127,7 @@ kittyPostInstall()
  
  #: The value of kitty_mod is used as the modifier for all default
  #: shortcuts, you can change it in your kitty.conf to change the
-@@ -748,7 +748,7 @@
+@@ -765,7 +765,7 @@
  #: example, the following opens the scrollback buffer in less in an
  #: overlay window::
  
@@ -135,7 +136,6 @@ kittyPostInstall()
  
  #: For more details on piping screen and buffer contents to external
  #: programs, see pipe.
-EOF
   )
 }
 

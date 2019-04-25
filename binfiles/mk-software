@@ -63,7 +63,6 @@ kittyPostInstall()
     cd $conf_dir
     unset conf_dir
     patch --backup <<EOF
-EOF
 --- kitty.conf.orig	2019-04-24 16:50:04.007290415 -0400
 +++ kitty.conf	2019-04-24 17:06:35.009755308 -0400
 @@ -6,7 +6,7 @@
@@ -136,6 +135,7 @@ EOF
  
  #: For more details on piping screen and buffer contents to external
  #: programs, see pipe.
+EOF
   )
 }
 

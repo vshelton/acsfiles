@@ -230,9 +230,9 @@ emulate -LR zsh
 update-packages
 
 setopt extended_glob
-scm_update \$(cd \$SCMROOT; print *~binfiles~rcfiles(@))
+scm_update \$all_sources
 
-common_options=( \"--snapshot\" \"--install\" )
+common_options=( "--snapshot" "--install" )
 
 mk-zsh $common_options
 mk-emacs $common_options --with-x-toolkit=lucid

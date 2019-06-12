@@ -1,0 +1,9 @@
+
+# Return 0 if a command (as defined by PATH) is found
+[[ -n "$(whence -p $1)" ]]
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

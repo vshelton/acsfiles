@@ -209,6 +209,7 @@ progname=${0:t}
 # Add a new package here.
 typeset -AA all_packages=(
   alacritty 1
+  bzip2     1
   conky     1
   emacs     1
   exa       1
@@ -335,6 +336,11 @@ case $pkgname in
 (alacritty)
   BUILD=( make binary )
   INSTALL=( alacrittyInstall )
+  ;;
+
+(bzip2)
+  CONFIGURE=( $srcdir/autogen.sh --prefix=$PREFIX )
+  TEST=( make check )
   ;;
 
 (conky)

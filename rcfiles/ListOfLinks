@@ -52,6 +52,8 @@ bin/make-Manifest                       $SCMROOT/binfiles/make-Manifest         
 bin/make_conky_config                   $SCMROOT/binfiles/make_conky_config                      linux
 bin/make_symlinks_relative              $SCMROOT/binfiles/make_symlinks_relative                 linux,NT
 bin/mk-XEmacs-from-scratch              $SCMROOT/binfiles/NT/mk-XEmacs-from-scratch              NT
+bin/mk-alacritty                        mk-package                                               linux
+bin/mk-bzip2                            mk-package                                               linux
 bin/mk-conky                            mk-package                                               linux
 bin/mk-emacs                            mk-package                                               linux
 bin/mk-exa                              mk-package                                               linux
@@ -106,6 +108,7 @@ lib/zsh-functions/all_versions          $SCMROOT/rcfiles/lib/zsh-functions/all_v
 lib/zsh-functions/col                   $SCMROOT/rcfiles/lib/zsh-functions/col                   linux,NT
 lib/zsh-functions/exists                $SCMROOT/rcfiles/lib/zsh-functions/exists                linux,NT
 lib/zsh-functions/f                     $SCMROOT/rcfiles/lib/zsh-functions/f                     linux,NT
+lib/zsh-functions/installed-p           $SCMROOT/rcfiles/lib/zsh-functions/installed-p           linux,NT
 lib/zsh-functions/nfunc                 $SCMROOT/rcfiles/lib/zsh-functions/nfunc                 linux,NT
 lib/zsh-functions/nohist                $SCMROOT/rcfiles/lib/zsh-functions/nohist                linux,NT
 lib/zsh-functions/recentfiles           $SCMROOT/rcfiles/lib/zsh-functions/recentfiles           linux,NT

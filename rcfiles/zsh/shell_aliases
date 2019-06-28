@@ -14,8 +14,8 @@ alias ll="ls -l --time-style=long-iso"
 alias lr="ls -R"
 alias lt="ll -rt"
 
-installed-p exa && alias ll="exa --long --bytes --classify --time-style=long-iso"
-installed-p exa && alias lt="exa --long --bytes --classify --time-style=long-iso --sort=modified"
+installed-p exa && alias ll="exa --long --group --bytes --classify --time-style=long-iso"
+installed-p exa && alias lt="exa --long --group --bytes --classify --time-style=long-iso --sort=modified"
 
 alias -- +w="chmod u+w"
 alias -- -w="chmod a-w"

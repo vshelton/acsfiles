@@ -52,6 +52,12 @@ i3PreConfigure()
   )
 }
 
+# Build the kitty package
+kittyBuild()
+{
+  $srcdir/setup.py --prefix $PREFIX --full linux-package
+}
+
 # After building kitty, copy and tweak the configuration.
 function
 kittyPostInstall()
@@ -339,7 +345,9 @@ case $pkgname in
   ;;
 
 (bzip2)
-  CONFIGURE=( $srcdir/autogen.sh --prefix=$PREFIX )
+  CONFIGURE=( cmake
+              -DCMAKE_INSTALL_PREFIX=$PREFIX
+              $srcdir )
   TEST=( make check )
   ;;
 
@@ -380,7 +388,7 @@ case $pkgname in
   ;;
 
 (kitty)
-  BUILD=( $srcdir/setup.py --prefix $PREFIX linux-package )
+  BUILD=( kittyBuild )
   TEST=( $srcdir/setup.py test )
   INSTALL=( kittyPostInstall $srcdir )
   ;;

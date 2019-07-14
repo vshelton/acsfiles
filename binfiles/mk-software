@@ -305,16 +305,10 @@ scm_opts=()
 # Update the sources and copy them into a source directory.
 srcdir=$(GetSource $scm_opts $pkgname) || exit $?
 
-# alacritty, exa, feh and ripgrep lack real configuration mechanisms,
+# These packages lack real configuration mechanisms,
 # so we build those packages in their source directories.
 case $pkgname in
-(alacritty)
-  ;&  # Fall through
-(exa)
-  ;&  # Fall through
-(feh)
-  ;&  # Fall through
-(ripgrep)
+(alacritty|exa|feh|kitty|ripgrep)
   cd $srcdir
   ;;
 

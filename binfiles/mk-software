@@ -39,13 +39,13 @@ emacsPreConfigure()
         ln -s $SCMROOT/rust-mode/rust-mode.el lisp
     fi
 
-    if [[ -e $SCMROOT/dash.el ]]; then
-      ln -s $SCMROOT/dash.el/dash.el lisp
-      if [[ -e $SCMROOT/solarized-emacs ]]; then
-        ln -s $SCMROOT/solarized-emacs/solarized.el lisp
-        ln -s $SCMROOT/solarized-emacs/solarized-{dark,light}-theme.el etc/themes
-      fi
-    fi
+#    if [[ -e $SCMROOT/dash.el ]]; then
+#      ln -s $SCMROOT/dash.el/dash.el lisp
+#      if [[ -e $SCMROOT/solarized-emacs ]]; then
+#        ln -s $SCMROOT/solarized-emacs/solarized.el lisp
+#        ln -s $SCMROOT/solarized-emacs/solarized-{dark,light}-theme.el etc/themes
+#      fi
+#    fi
   )
 }
 

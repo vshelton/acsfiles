@@ -20,13 +20,13 @@ set $mod Mod4
 # chose a FreeType font, such as:
 #font pango:DejaVu Sans Mono 10
 #font pango:Verdana 10
-font pango:Comic Sans 16
+font pango:Comic Sans 12
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
 # start a terminal
-set $terminal "/opt/bin/tilda"
+set $terminal "/opt/bin/kitty"
 bindsym $mod+Return exec $terminal
 
 # kill focused window
@@ -90,15 +90,15 @@ bindsym $mod+a focus parent
 #bindsym $mod+d focus child
 
 set $workspace1 "1: Shell"
-set $workspace2 "2: Clementine"
+set $workspace2 "2: Music"
 set $workspace3 "3: Browser"
 set $workspace4 "4: Windows"
-set $workspace5 "5: Synaptic"
+set $workspace5 "5: Packages"
 set $workspace6 "6: Gmail"
 
 #set $browser "vivaldi"
 #set $browser "firefox-esr"
-set $browser "/home/acs/firefoxDE/firefox"
+set $browser "firefox-developer-edition"
 
 # switch to workspace
 bindsym $mod+1 workspace $workspace1
@@ -125,11 +125,12 @@ bindsym $mod+Shift+9 move container to workspace 9
 bindsym $mod+Shift+0 move container to workspace 10
 
 assign[class="Clementine"] $workspace2
-assign[class="vivaldi-preview"] $workspace3
-assign[class="Firefox"] $workspace3
+assign[class="(?)vivaldi"] $workspace3
+assign[class="(?i)firefox"] $workspace3
 assign[class="qemu-system-x86_64"] $workspace4
 assign[class="VirtualBox"] $workspace4
 assign[class="Synaptic"] $workspace5
+assign[class="(?i)pamac-manager"] $workspace5
 
 # reload the configuration file
 bindsym $mod+Shift+c reload

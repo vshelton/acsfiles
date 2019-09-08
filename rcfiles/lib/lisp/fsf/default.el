@@ -87,7 +87,7 @@ commands to use in that buffer.
   (set-frame-parameter (selected-frame) 'alpha value))
 
 ; Turn on a solarized-dark theme
-(and (functionp 'create-solarized-theme)
+(and (functionp 'solarized-color-blend)
      (load-theme 'solarized-dark t))
 
 ;(message "Leaving default.el")

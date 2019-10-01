@@ -1,30 +1,22 @@
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+1. Clone the repo.
+2. Add the binfiles directory to your PATH.
+3. Link the zsh, i3, etc startup scripts as you desire.
+4. See system/build-system for examples of 2 & 3.
 
 ### What is this repository for? ###
 
-* Quick summary
+* Here lie the startup scripts for Vin Shelton.
+
 ### Personal scripts for Vin Shelton.
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
-### How do I get set up? ###
-
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+* First github-hosted version.
 
 ### Contribution guidelines ###
 
-* Writing tests
-* Code review
-* Other guidelines
+* Send an email to Vin
 
-### Who do I talk to? ###
+### Whom do I talk to? ###
 
-* Repo owner or admin
-* Other community or team contact
+* Vin Shelton <acs@alumni.princeton.edu>

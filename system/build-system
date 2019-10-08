@@ -145,17 +145,6 @@ if [[ ${host} == "VirtualBox" ]]; then
   host_home=$(find_host_home)
 fi
 
-# Add the 'extra' repository if we're running under Arch linux.
-#if arch-pm >/dev/null ; then
-#  sudo -s << EOF
-#  echo "
-#
-#[custom]
-#Server = file://${ziproot}/arch" >>/etc/pacman.conf
-#  sudo pacman --sync --refresh
-#EOF
-#fi
-
 # Install the Z-shell and move aside the customization.
 install-packages zsh
 if [[ -d /etc/zsh ]]; then
@@ -169,9 +158,7 @@ else
   fi
 fi
 
-# Install i3, git and mercurial.
-install-packages git mercurial
-install-packages i3
+install-packages git i3
 
 # Create USRLOCAL hierarchy
 : ${USRLOCAL:=/opt}
@@ -180,38 +167,20 @@ sudo chown ${username} ${USRLOCAL}
 mkdir ${USRLOCAL}/{bin,build,include,lib,share,src}
 ln -s ${ziproot} ${USRLOCAL}/zip
 
-# These are the path names for my source code repository.
-scmbase="scmroot"
-hgroot="${scmbase}/hgroot"
-acs_repo="${hgroot}/acsfiles"
-
-# Clone my source repo from bitbucket.
-cat >.hgrc <<EOF
-# example user config (see "hg help config" for more info)
-[ui]
-username = Vin Shelton <ethersoft@gmail.com>
-
-[auth]
-bb.prefix = https://bitbucket.org
-bb.username = acs
-bb.password = Ether5802 Bullard
-
-[pager]
-ignore = version, help, update, diff
-
-[extensions]
-# uncomment these lines to enable some popular extensions
-# (see "hg help extensions" for more info)
-#
-# color =
-EOF
-chmod 600 .hgrc
-hg clone https://acs@bitbucket.org/acs/acs_script ${acs_repo}
-ln -s ${acs_repo#${scmbase}/}{,/binfiles,/rcfiles} ${scmbase}
+# Clone my source repo from github.
+export SCMROOT=${PWD}/scmroot
+(
+  cd $SCMROOT/gitroot
+  git clone https://github.com/vshelton/acsfiles.git
+  cd ..
+  ln -s gitroot/acsfiles
+  ln -s acsfiles/binfiles
+  ln -s acsfiles/rcfiles
+)
 
 # Link startup files.
 mv .emacs .emacs-dist
-SCMROOT=${PWD}/${scmbase} ${acs_repo}/binfiles/LinkStartupFiles
+$SCMROOT/binfiles/LinkStartupFiles
 
 # Create a directory for saving shell history, unpack wallpapers
 # and create a startup-script for xfce.

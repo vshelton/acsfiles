@@ -320,7 +320,7 @@ case $pkgname in
               --prefix=$PREFIX
               --without-selinux
               --without-compress-install
-              -- with-x-toolkit=lucid
+              --with-x-toolkit=lucid
               $* )
   BUILD=( make CFLAGS=-O3 bootstrap )
   # TEST=( make -k check )

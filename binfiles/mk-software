@@ -10,18 +10,34 @@ emulate -LR zsh
 function
 alacrittyInstall()
 {
-  case $(uname -a) in
-  (*deb*)
-    # Installs in /usr/local/bin/alacritty
-    cargo deb --install
-    mv /usr/local/bin/alacritty $USRLOCAL/bin
-    ;;
-  (*arch*)
-    cp target/release/alacritty $USRLOCAL/bin
-    sudo desktop-file-install alacritty.desktop
-    sudo update-desktop-database
-    ;;
-  esac
+  (
+    cargo install --force --path alacritty --root $USRLOCAL
+
+    conf_dir=~/.config/alacritty
+    mkdir -p $conf_dir >& /dev/null
+    cd $conf_dir
+    cp $1/alacritty.yml .
+
+    # Customize alacritty:
+    #   1. Use Cascadia Code font.
+    #   2. Implement the solarized dark color scheme.
+    #   3. Set a transparent background.
+    #   4. Use my locally-built zsh.
+
+    # key = original text.
+    # value = replacement text.
+    typeset -AA replacements=(
+      \^#font:.+?#family:\ monospace	"font:\n   normal:\n    family: Cascadia Code"
+      \#background_opacity:\ 1.0	"background_opacity: 0.92"
+      \^\ \ \#size:\ 11.0		"  size: 14.0"
+      \^\#\ If\ .+?\^\ \ \#\ Indexed	"$(cat $SCMROOT/base16-alacritty/colors/base16-solarized-dark.yml)\n\n  # Indexed"
+      \^\#shell.+?--login		"shell:\n program: /opt/bin/zsh\n args:\n   - --login"
+    )
+
+    for o in ${(k)replacements}; do
+      perl -0777 -pi -e "s|^$o|$replacements[$o]|gms" alacritty.yml
+    done
+  )
 }
 
 # The emacs pre-configure command is autogen.sh.
@@ -38,14 +54,6 @@ emacsPreConfigure()
     if [[ -e $SCMROOT/rust-mode ]]; then
         ln -s $SCMROOT/rust-mode/rust-mode.el lisp
     fi
-
-#    if [[ -e $SCMROOT/dash.el ]]; then
-#      ln -s $SCMROOT/dash.el/dash.el lisp
-#      if [[ -e $SCMROOT/solarized-emacs ]]; then
-#        ln -s $SCMROOT/solarized-emacs/solarized.el lisp
-#        ln -s $SCMROOT/solarized-emacs/solarized-{dark,light}-theme.el etc/themes
-#      fi
-#    fi
   )
 }
 
@@ -69,86 +77,32 @@ kittyBuild()
 function
 kittyPostInstall()
 {
-  conf_dir=~/.config/kitty
-  mkdir -p $conf_dir
   (
-    cp $1/docs/generated/conf/kitty.conf $conf_dir
+    conf_dir=~/.config/kitty
+    mkdir -p $conf_dir
     cd $conf_dir
-    unset conf_dir
-    patch --backup <<EOF
---- kitty.conf.orig	2019-04-24 16:50:04.007290415 -0400
-+++ kitty.conf	2019-04-24 17:06:35.009755308 -0400
-@@ -6,7 +6,7 @@
- #: individual font faces and even specify special fonts for particular
- #: characters.
- 
--font_family      monospace
-+font_family      hack
- bold_font        auto
- italic_font      auto
- bold_italic_font auto
-@@ -97,7 +97,7 @@
- 
- #: Scrollback {{{
- 
--scrollback_lines 2000
-+scrollback_lines 10000
- 
- #: Number of lines of history to keep in memory for scrolling back.
- #: Memory is allocated on demand. Negative numbers are (effectively)
-@@ -413,12 +413,12 @@
- 
- #: Color scheme {{{
- 
--foreground #dddddd
--background #000000
-+foreground #839496
-+background #002b36
- 
- #: The foreground and background colors
- 
--background_opacity 1.0
-+background_opacity 0.92
- 
- #: The opacity of the background. A number between 0 and 1, where 1 is
- #: opaque and 0 is fully transparent.  This will only work if
-@@ -505,7 +505,7 @@
- 
- #: Advanced {{{
- 
--shell .
-+shell /opt/bin/zsh -l
- 
- #: The shell program to execute. The default value of . means to use
- #: whatever shell is set as the default shell for the current user.
-@@ -513,7 +513,7 @@
- #: --login to ensure that the shell starts in interactive mode and
- #: reads its startup rc files.
- 
--editor .
-+editor /opt/bin/emacsclient -q
- 
- #: The console editor to use when editing the kitty config file or
- #: similar tasks. A value of . means to use the environment variable
-@@ -711,7 +711,7 @@
- 
- #:     map ctrl+f>2 set_font_size 20
- 
--kitty_mod ctrl+shift
-+kitty_mod ctrl+shift+alt
- 
- #: The value of kitty_mod is used as the modifier for all default
- #: shortcuts, you can change it in your kitty.conf to change the
-@@ -765,7 +765,7 @@
- #: example, the following opens the scrollback buffer in less in an
- #: overlay window::
- 
--#:     map f1 pipe @ansi overlay less +G -R
-+map kitty_mod+f1 pipe @ansi os_window less +G -R
- 
- #: For more details on piping screen and buffer contents to external
- #: programs, see pipe.
-EOF
+    cp $1/docs/generated/conf/kitty.conf .
+
+    # The foreground and background colors
+    # implement the solarized dark color scheme.
+
+    # key = original text.
+    # value = replacement text.
+    typeset -AA replacements=(
+      font_family\.\*		font_family\ Cascadia\ Code
+      font_size\.\*		font_size\ 14.0
+      scrollback_lines\ 2000	scrollback_lines\ 15000
+      foreground\ #dddddd	foreground\ #839496
+      background\ #000000	background\ #002b36
+      background_opacity\ 1.0	background_opacity\ 0.92
+      shell\ \.\$		shell\ /opt/bin/zsh\ -l
+      kitty_mod\.\*		kitty_mod\ ctrl+shift+alt
+      \#\.\*map\ f1\.\*		map\ kitty_mod+f1\ pipe\ \\@ansi\ os_window\ less\ +G\ -R
+    )
+
+    for o in ${(k)replacements}; do
+      perl -i -p -e "s|^$o|$replacements[$o]|" kitty.conf
+    done
   )
 }
 
@@ -341,7 +295,8 @@ TEST=()
 
 case $pkgname in
 (alacritty)
-  BUILD=( make binary )
+  BUILD=( cargo build )
+  TEST=( cargo test )
   INSTALL=( alacrittyInstall )
   ;;
 
@@ -365,6 +320,7 @@ case $pkgname in
               --prefix=$PREFIX
               --without-selinux
               --without-compress-install
+              -- with-x-toolkit=lucid
               $* )
   BUILD=( make CFLAGS=-O3 bootstrap )
   # TEST=( make -k check )

@@ -54,6 +54,7 @@ emacsPreConfigure()
 
     if [[ -e $SCMROOT/rust-mode ]]; then
         ln -s $SCMROOT/rust-mode/rust-mode.el lisp
+        ln -s $SCMROOT/rust-mode/rust-mode-tests.el test/lisp
     fi
   )
 }

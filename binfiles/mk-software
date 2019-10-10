@@ -13,15 +13,16 @@ alacrittyInstall()
   (
     cargo install --force --path alacritty --root $USRLOCAL
 
-    conf_dir=~/.config/alacritty
+    conf_dir=$HOME/.config/alacritty
     mkdir -p $conf_dir >& /dev/null
     cd $conf_dir
     cp $1/alacritty.yml .
 
     # Customize alacritty:
     #   1. Use Cascadia Code font.
-    #   2. Implement the solarized dark color scheme.
-    #   3. Set a transparent background.
+    #   2. Set a transparent background.
+    #   3. Implement the solarized dark color scheme.  (This requires
+    #      https://github.com/aaron-williamson/base16-alacritty.git.)
     #   4. Use my locally-built zsh.
 
     # key = original text.
@@ -29,12 +30,12 @@ alacrittyInstall()
     typeset -AA replacements=(
       \^#font:.+?#family:\ monospace	"font:\n   normal:\n    family: Cascadia Code"
       \#background_opacity:\ 1.0	"background_opacity: 0.92"
-      \^\ \ \#size:\ 11.0		"  size: 14.0"
       \^\#\ If\ .+?\^\ \ \#\ Indexed	"$(cat $SCMROOT/base16-alacritty/colors/base16-solarized-dark.yml)\n\n  # Indexed"
       \^\#shell.+?--login		"shell:\n program: /opt/bin/zsh\n args:\n   - --login"
     )
 
     for o in ${(k)replacements}; do
+      # This requires multi-line matching, hence the "-0777".
       perl -0777 -pi -e "s|^$o|$replacements[$o]|gms" alacritty.yml
     done
   )
@@ -297,7 +298,7 @@ case $pkgname in
 (alacritty)
   BUILD=( cargo build )
   TEST=( cargo test )
-  INSTALL=( alacrittyInstall )
+  INSTALL=( alacrittyInstall $srcdir )
   ;;
 
 (bzip2)

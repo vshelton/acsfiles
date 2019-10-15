@@ -15,8 +15,10 @@ alacrittyInstall()
 
     conf_dir=$HOME/.config/alacritty
     mkdir -p $conf_dir >& /dev/null
+    prefs=alacritty.yml
+    cp --force $prefs $conf_dir
     cd $conf_dir
-    cp $1/alacritty.yml .
+    chmod 644 $prefs
 
     # Customize alacritty:
     #   1. Use Cascadia Code font.
@@ -28,15 +30,15 @@ alacrittyInstall()
     # key = original text.
     # value = replacement text.
     typeset -AA replacements=(
-      \^#font:.+?#family:\ monospace	"font:\n   normal:\n    family: Cascadia Code"
-      \#background_opacity:\ 1.0	"background_opacity: 0.92"
-      \^\#\ If\ .+?\^\ \ \#\ Indexed	"$(cat $SCMROOT/base16-alacritty/colors/base16-solarized-dark.yml)\n\n  # Indexed"
-      \^\#shell.+?--login		"shell:\n program: /opt/bin/zsh\n args:\n   - --login"
+      "^#font:.+?#family: monospace"	"font:\n   normal:\n    family: Cascadia Code"
+      "#background_opacity: 1.0"	"background_opacity: 0.92"
+      "^# If .+?^  # Indexed"		"$(cat $SCMROOT/base16-alacritty/colors/base16-solarized-dark.yml)\n\n  # Indexed"
+      "^#shell.+?--login"		"shell:\n program: /opt/bin/zsh\n args:\n   - --login"
     )
 
     for o in ${(k)replacements}; do
       # This requires multi-line matching, hence the "-0777".
-      perl -0777 -pi -e "s|^$o|$replacements[$o]|gms" alacritty.yml
+      perl -0777 -pi -e "s|^$o|$replacements[$o]|gms" $prefs
     done
   )
 }
@@ -72,7 +74,7 @@ i3PreConfigure()
 # Build the kitty package
 kittyBuild()
 {
-  $srcdir/setup.py --prefix $PREFIX --full linux-package
+  $1/setup.py --prefix $PREFIX --full linux-package
 }
 
 # After building kitty, copy and tweak the configuration.
@@ -80,10 +82,13 @@ function
 kittyPostInstall()
 {
   (
-    conf_dir=~/.config/kitty
-    mkdir -p $conf_dir
+    conf_dir=$HOME/.config/kitty
+    mkdir -p $conf_dir >& /dev/null
     cd $conf_dir
-    cp $1/docs/generated/conf/kitty.conf .
+
+    prefs=kitty.conf
+    cp --force $1/docs/generated/conf/$prefs .
+    chmod 644 $prefs
 
     # The foreground and background colors
     # implement the solarized dark color scheme.
@@ -92,7 +97,6 @@ kittyPostInstall()
     # value = replacement text.
     typeset -AA replacements=(
       font_family\.\*		font_family\ Cascadia\ Code
-      font_size\.\*		font_size\ 14.0
       scrollback_lines\ 2000	scrollback_lines\ 15000
       foreground\ #dddddd	foreground\ #839496
       background\ #000000	background\ #002b36
@@ -103,7 +107,7 @@ kittyPostInstall()
     )
 
     for o in ${(k)replacements}; do
-      perl -i -p -e "s|^$o|$replacements[$o]|" kitty.conf
+      perl -i -p -e "s|^$o|$replacements[$o]|" $prefs
     done
   )
 }
@@ -299,7 +303,7 @@ case $pkgname in
 (alacritty)
   BUILD=( cargo build )
   TEST=( cargo test )
-  INSTALL=( alacrittyInstall $srcdir )
+  INSTALL=( alacrittyInstall )
   ;;
 
 (bzip2)
@@ -347,7 +351,7 @@ case $pkgname in
   ;;
 
 (kitty)
-  BUILD=( kittyBuild )
+  BUILD=( kittyBuild $srcdir )
   TEST=( $srcdir/setup.py test )
   INSTALL=( kittyPostInstall $srcdir )
   ;;

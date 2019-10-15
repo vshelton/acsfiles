@@ -1,10 +1,17 @@
 # Remake a package.
 
-# Remove today's version.
-rmver ${(q)1}-$(today)
+if [[ $# != 1 ]]; then
+  print -u2 "Usage: $0 <package>"
+  return 1
+fi
 
-# Print the next command onto the command line, waiting for user approval.
-print -z mk-${(q)1} --snapshot --install --force
+local pkg=${(q)1}
+
+# Remove today's version.
+rmver ${pkg}-$(today)
+
+# Print the build command onto the command line, waiting for user approval.
+print -z mk-${pkg} --snapshot --install --force
 
 # Local Variables:
 # mode: shell-script

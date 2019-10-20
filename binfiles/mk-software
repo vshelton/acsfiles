@@ -56,7 +56,7 @@ emacsPreConfigure()
 
     if [[ -e $SCMROOT/rust-mode ]]; then
         ln -s $SCMROOT/rust-mode/rust-mode.el lisp
-        ln -s $SCMROOT/rust-mode/rust-mode-tests.el test/lisp
+        #ln -s $SCMROOT/rust-mode/rust-mode-tests.el test/lisp
     fi
   )
 }
@@ -74,14 +74,19 @@ i3PreConfigure()
 # Build the kitty package
 kittyBuild()
 {
-  $1/setup.py --prefix $PREFIX --full linux-package
+  (
+    cd $1
+    ./setup.py --prefix $PREFIX --full linux-package
+  )
 }
 
 # After building kitty, copy and tweak the configuration.
 function
-kittyPostInstall()
+kittyInstall()
 {
   (
+    ln --force --symbolic $PREFIX/bin/kitty $USRLOCAL/bin
+
     conf_dir=$HOME/.config/kitty
     mkdir -p $conf_dir >& /dev/null
     cd $conf_dir
@@ -97,6 +102,7 @@ kittyPostInstall()
     # value = replacement text.
     typeset -AA replacements=(
       font_family\.\*		font_family\ Cascadia\ Code
+      font_size\.\*		font_size\ 12.0
       scrollback_lines\ 2000	scrollback_lines\ 15000
       foreground\ #dddddd	foreground\ #839496
       background\ #000000	background\ #002b36
@@ -353,7 +359,7 @@ case $pkgname in
 (kitty)
   BUILD=( kittyBuild $srcdir )
   TEST=( $srcdir/setup.py test )
-  INSTALL=( kittyPostInstall $srcdir )
+  INSTALL=( kittyInstall $srcdir )
   ;;
 
 (perl)

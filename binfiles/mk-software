@@ -11,7 +11,12 @@ function
 alacrittyInstall()
 {
   (
-    cargo install --force --path alacritty --root $USRLOCAL
+    cp --force target/release/alacritty $USRLOCAL/bin
+#    sudo -s <<EOF
+#      cp extra/logo/alacritty-term.svg /usr/share/pixmaps/Alacritty.svg
+#      desktop-file-install extra/linux/alacritty.desktop
+#      update-desktop-database
+#EOF
 
     conf_dir=$HOME/.config/alacritty
     mkdir -p $conf_dir >& /dev/null
@@ -307,7 +312,7 @@ TEST=()
 
 case $pkgname in
 (alacritty)
-  BUILD=( cargo build )
+  BUILD=( cargo build --release )
   TEST=( cargo test )
   INSTALL=( alacrittyInstall )
   ;;

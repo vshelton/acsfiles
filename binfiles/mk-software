@@ -35,10 +35,20 @@ alacrittyInstall()
     # key = original text.
     # value = replacement text.
     typeset -AA replacements=(
-      "^#font:.+?#family: monospace"	"font:\n   normal:\n    family: Cascadia Code"
-      "#background_opacity: 1.0"	"background_opacity: 0.92"
-      "^# If .+?^  # Indexed"		"$(cat $SCMROOT/base16-alacritty/colors/base16-solarized-dark.yml)\n\n  # Indexed"
-      "^#shell.+?--login"		"shell:\n program: /opt/bin/zsh\n args:\n   - --login"
+      "^#font:.+?#family: monospace"	"\
+font:
+   normal:
+    family: Cascadia Code"
+      "#(background_opacity:) 1.0"	"\$1 0.92"
+      "^# If .+?^(  # Indexed)"		"\
+$(cat $SCMROOT/base16-alacritty/colors/base16-solarized-dark.yml)
+
+\$1"
+      "^#shell.+?--login"		"\
+shell:
+ program: /opt/bin/zsh
+ args:
+   - --login"
     )
 
     for o in ${(k)replacements}; do
@@ -106,17 +116,17 @@ kittyInstall()
     # key = original text.
     # value = replacement text.
     typeset -AA replacements=(
-      "font_family.*"			"font_family Cascadia Code"
-      "font_size.*"			"font_size 12.0"
-      "scrollback_lines 2000"		"scrollback_lines 15000"
-      "remember_window_size  yes"	"remember_window_size no"
-      "initial_window_width  640"	"initial_window_width 115c"
-      "initial_window_height 400"	"initial_window_height 50c"
-      "foreground #dddddd"		"foreground #839496"
-      "background #000000"		"background #002b36"
-      "background_opacity 1.0"		"background_opacity 0.92"
-      "shell .*"			"shell /opt/bin/zsh -l"
-      "kitty_mod.*"			"kitty_mod ctrl+shift+alt"
+      "^(font_family)\s.*"		"\$1 Cascadia Code"
+      "^(font_size)\s.*"		"\$1 12.0"
+      "^(scrollback_lines)\s.*"		"\$1 15000"
+      "^(remember_window_size)\s.*"	"\$1 no"
+      "^(initial_window_width)\s.*"	"\$1 115c"
+      "^(initial_window_height)\s.*"	"\$1 50c"
+      "^(foreground)\s.*"		"\$1 #839496"
+      "^(background)\s.*"		"\$1 #002b36"
+      "^(background_opacity)\s.*"	"\$1 0.92"
+      "^(shell)\s.*"			"\$1 /opt/bin/zsh -l"
+      "^(kitty_mod)\s.*"		"\$1 ctrl+shift+alt"
       "^#.*map f1.*"			"map kitty_mod+f1 pipe \@ansi os_window less +G -R"
     )
 

@@ -1,0 +1,15 @@
+# Remove each package installed yesterday
+# if that package was successfully installed today.
+
+# Keep 'milestone' releases from the first day of each month.
+[[ $(date '+%d') == "02" ]] && return 0
+
+for p in $( all_versions *-$(yesterday) ); do
+  [[ -d ${USRLOCAL}/${p//$(yesterday)}$(today) ]] && rm_versions $p
+done
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

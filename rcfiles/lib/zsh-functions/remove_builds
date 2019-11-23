@@ -4,9 +4,19 @@
 # Keep 'milestone' releases from the first day of each month.
 [[ $(date '+%d') == "02" ]] && return 0
 
-for p in $( all_versions *-$(yesterday) ); do
-  [[ -d ${USRLOCAL}/${p//$(yesterday)}$(today) ]] && rm_versions $p
+# The list of versions to (potentially) be removed.
+typeset -a rmv
+
+# Loop through all of yesterday's builds.
+for y in $( all_versions *-$(yesterday) ); do
+  # If a source directory for today exists,
+  # potentially remove yesterday's build.
+  t=${y//$(yesterday)}$(today)
+  [[ -d ${USRLOCAL}/src/$t ]] && rmv+=$y
 done
+
+[[ -n $rmv ]] && print -z rmver $rmv
+unset rmv
 
 # Local Variables:
 # mode: shell-script

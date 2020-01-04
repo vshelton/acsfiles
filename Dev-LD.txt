@@ -1,0 +1,26 @@
+
+20 hours requirement effort per feature
+
+Features:
+  Account sign-in and access control
+  Scheduling
+  Goal Tracking (Templates)
+  Shared Notes
+  Client Feedback
+  Progress Reporting
+  Help??
+  Dashboard??
+  Back-end??
+  Analysis??
+
+Sprint 1 - Design and Implement SIGN-IN AND ACCESS CONTROL
+Sprint 2 - Design and Implement SCHEDULING
+Sprint 3 - Design and Implement GOAL-TRACKING AND TEMPLATES
+
+Sprint n - Design and Implement
+Sprint n - Design and Implement
+Sprint n - Design and Implement
+Sprint n - Design and Implement
+Sprint n - Design and Implement
+
+vulnerability / sustainability score

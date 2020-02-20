@@ -1,16 +1,6 @@
 * TODO Sort bedroom papers
 * TODO FedEx stocks to FNFD
-* TODO Find out if signing on with LD negates DUA payment
-* TODO 2016 and 2018 taxes to Kevin Goodness for condo depreciation
 * TODO Sort Bank of America papers
-* TODO Sign annuity paperwork
-* TODO Review will
-* TODO Enter MC transactions
-* TODO Pay Kevin Goodness
-* TODO Pay parking ticket
-* TODO Pay COBRA
-* TODO Pay MA interest on taxes
-* TODO Write TY note to Joe and Anne
-* TODO Email/FB to Betsy
-* TODO Contact Princeton interviewee
-* DONE Resume to Maggie at Facebook
+* TODO Give away books
+* TODO Write check to Anne-Marie
+* TODO Prep for FB interview

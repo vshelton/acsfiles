@@ -2,5 +2,5 @@
 * TODO FedEx stocks to FNFD
 * TODO Sort Bank of America papers
 * TODO Give away books
-* TODO Write check to Anne-Marie
-* TODO Prep for FB interview
+* DONE Write check to Anne-Marie
+* DONE Prep for FB interview

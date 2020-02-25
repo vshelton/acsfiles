@@ -2,7 +2,7 @@
 
 # Build up an arch linux system with the default additional packages.
 
-# Install and configure etckeeper.
+# Install and configure etckeeper to keep track of system changes.
 sudo pacman --noconfirm --sync etckeeper
 sudo git config --global user.email "acs@alumni.princeton.edu"
 sudo git config --global user.name "Vin Shelton"
@@ -42,9 +42,12 @@ sudo pacman --noconfirm --remove ${remove[*]}
 # Install the non-default (essential, in my view) packages.
 sudo pacman --noconfirm --sync ${install[*]}
 
-# Initialize wake on LAN capability
+# Update the installed packages.
+sudo pacman --noconfirm -Syu
+
+# Initialize the wake on LAN capability.
 sudo ethtool -s enp2s0 wol g
-sudo nmcli c modify "Wired connection 1" 802-3-ethernet.wake-on-lan magic
+#sudo nmcli c modify "Wired connection 1" 802-3-ethernet.wake-on-lan magic
 
 # Local Variables:
 # mode: shell-script

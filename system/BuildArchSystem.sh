@@ -21,14 +21,19 @@ remove=(apm
         gnome-keyring gnome-screenshot
         gnome-software
         gnome-software-packagekit-plugin
-        pragha)
+        pragha
+        thunderbird)
 
 # Packages to add.
 install=(borg
          dos2unix
          emacs
+         ethtool
+         feh
+         i3status
          i3-wm
          kitty
+         net-tools
          picom
          tigervnc
          tlp
@@ -47,7 +52,21 @@ sudo pacman --noconfirm -Syu
 
 # Initialize the wake on LAN capability.
 sudo ethtool -s enp2s0 wol g
-#sudo nmcli c modify "Wired connection 1" 802-3-ethernet.wake-on-lan magic
+sudo nmcli c modify "Wired connection 1" 802-3-ethernet.wake-on-lan magic
+
+# Change TLP to support wake on LAN.
+sudo echo "WOL_DISABLE=N" >> /etc/tlp.conf
+
+# Enable tigervnc.
+vncpwfile=/etc/vncpasswd
+echo "Setting up VNC passwd"
+sudo vncpasswd $vncpwfile
+sudo echo "enabled=true
+command=Xvnc -rfbauth $vncpwfile -dpi 144
+depth=24" >> /etc/lightdm/lightdm.conf
+
+echo "Copy ssh ID to this system."
+echo "Copy kitty configuration here."
 
 # Local Variables:
 # mode: shell-script

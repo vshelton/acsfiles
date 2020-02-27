@@ -1,0 +1,47 @@
+#!/usr/bin/env zsh
+
+# Run a full backup of the system.
+
+if [[ ! -e /WD-3TB-1/backups/borg ]] ||
+     [[ ! -e /WD-4TB-1/backups/borg ]]; then
+  print -u2 "Please mount the WD 3TB and 4TB disks".
+  exit 1
+fi
+
+# Make sure this directory is in the PATH.
+PATH=$(cd $0:h >&/dev/null; pwd -r):$PATH
+
+# Back up all the VMs.
+# SaveAllVMs
+
+# Save multiple local copies and copies to the fileserver nuc.
+#all_repos=( /SSD-2/backups/borg /WD-3TB-1/backups/borg /WD-4TB-1/backups/borg acs@legolas:/SSD-2/backups/borg acs@nuc:/SSD-2TB/backups/borg )
+all_repos=( /SSD-2/backups/borg /WD-3TB-1/backups/borg /WD-4TB-1/backups/borg acs@nuc:/SSD-2TB/backups/borg )
+for r in $all_repos; do
+  echo "
+$r:"
+  repo=$r do_backup
+done
+
+# Save (and compress) multiple directories to legolas.
+typeset -a exclude
+exclude=(*/.cache
+         */go
+         */.cargo
+         */.rustup
+         */scmroot
+         */.thumbnails
+         */VirtualBox*
+         */AUR-packages
+         */.vscode-oss
+         */.dvdcss)
+borg create --stats --progress --compression auto,zstd,5 --exclude ${(j: --exclude :)exclude} acs@legolas:/Seagate-4TB/backups/borg::$(uname -n)-$(today) /SSD-2/{Movies,Music,home,opt}
+
+# Run a remote borg backup to rsync.net.
+#borg create --stats --progress --compression auto,lzma --exclude-from=rsync-exclude 14456@ch-s012.rsync.net:backup::rsync-$(today) /home/acs
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:

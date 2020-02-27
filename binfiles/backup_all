@@ -15,7 +15,6 @@ PATH=$(cd $0:h >&/dev/null; pwd -r):$PATH
 # SaveAllVMs
 
 # Save multiple local copies and copies to the fileserver nuc.
-#all_repos=( /SSD-2/backups/borg /WD-3TB-1/backups/borg /WD-4TB-1/backups/borg acs@legolas:/SSD-2/backups/borg acs@nuc:/SSD-2TB/backups/borg )
 all_repos=( /SSD-2/backups/borg /WD-3TB-1/backups/borg /WD-4TB-1/backups/borg acs@nuc:/SSD-2TB/backups/borg )
 for r in $all_repos; do
   echo "
@@ -36,9 +35,6 @@ exclude=(*/.cache
          */.vscode-oss
          */.dvdcss)
 borg create --stats --progress --compression auto,zstd,5 --exclude ${(j: --exclude :)exclude} acs@legolas:/Seagate-4TB/backups/borg::$(uname -n)-$(today) /SSD-2/{Movies,Music,home,opt}
-
-# Run a remote borg backup to rsync.net.
-#borg create --stats --progress --compression auto,lzma --exclude-from=rsync-exclude 14456@ch-s012.rsync.net:backup::rsync-$(today) /home/acs
 
 # Local Variables:
 # mode: shell-script

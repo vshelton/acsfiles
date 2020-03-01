@@ -19,7 +19,7 @@ all_repos=( /SSD-2/backups/borg /WD-3TB-1/backups/borg /WD-4TB-1/backups/borg ac
 for r in $all_repos; do
   echo "
 $r:"
-  #repo=$r do_backup
+  repo=$r do_backup
 done
 
 # Save (and compress) multiple directories to legolas.

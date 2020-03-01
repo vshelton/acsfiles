@@ -19,22 +19,22 @@ all_repos=( /SSD-2/backups/borg /WD-3TB-1/backups/borg /WD-4TB-1/backups/borg ac
 for r in $all_repos; do
   echo "
 $r:"
-  repo=$r do_backup
+  #repo=$r do_backup
 done
 
 # Save (and compress) multiple directories to legolas.
-typeset -a exclude
-exclude=(*/.cache
-         */go
-         */.cargo
-         */.rustup
-         */scmroot
-         */.thumbnails
-         */VirtualBox*
-         */AUR-packages
-         */.vscode-oss
-         */.dvdcss)
-borg create --stats --progress --compression auto,zstd,5 --exclude ${(j: --exclude :)exclude} acs@legolas:/Seagate-4TB/backups/borg::$(uname -n)-$(today) /SSD-2/{Movies,Music,home,opt}
+typeset -a exclusions
+exclusions=("*/.cache/*"
+            "*/go/*"
+            "*/.cargo/*"
+            "*/.rustup/*"
+            "*/scmroot/*"
+            "*/.thumbnails/*"
+            "*/VirtualBox VMs/*"
+            "*/AUR-packages/*"
+            "*/.vscode-oss/*"
+            "*/.dvdcss/*")
+borg create --stats --progress --compression auto,zstd,5 --exclude-from =( echo ${(F)exclusions} ) acs@legolas:/Seagate-4TB/backups/borg::$(uname -n)-$(today) /SSD-2/{Movies,Music,home,opt}
 
 # Local Variables:
 # mode: shell-script

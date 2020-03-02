@@ -2,8 +2,20 @@
 
 # Run borg backup.
 
-cmd=( borg )
-opts=( create --stats --progress --compression auto,zstd --exclude-caches )
+typeset -a exclusions
+exclusions=("*/.cache/*"
+            "*/go/*"
+            "*/.cargo/*"
+            "*/.rustup/*"
+            "*/scmroot/*"
+            "*/.thumbnails/*"
+            "*/VirtualBox VMs/*"
+            "*/AUR-packages/*"
+            "*/.vscode-oss/*"
+            "*/.dvdcss/*")
+
+cmd=( borg create )
+opts=( --stats --progress --compression auto,zstd --exclude-caches --exclude-from =( echo ${(F)exclusions} ))
 [[ -z $repo ]] && repo=/WD-3TB-1/backups/borg
 
 #if [[ ! -d $repo ]]; then
@@ -24,7 +36,7 @@ typeset -A dirs=(
 )
 
 for d in ${(k)dirs}; do
-  ${cmd} ${opts} --exclude $SCMROOT --exclude "$HOME/.cache/*" ${repo}::${dirs[$d]}-$(today) $d
+  ${cmd} ${opts} ${repo}::${dirs[$d]}-$(today) $d
 done
 
 # Local Variables:

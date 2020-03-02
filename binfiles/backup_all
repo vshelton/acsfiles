@@ -34,7 +34,7 @@ exclusions=("*/.cache/*"
             "*/AUR-packages/*"
             "*/.vscode-oss/*"
             "*/.dvdcss/*")
-borg create --stats --progress --compression auto,zstd,5 --exclude-from =( echo ${(F)exclusions} ) acs@legolas:/Seagate-4TB/backups/borg::$(uname -n)-$(today) /SSD-2/{Movies,Music,home,opt}
+BORG_PASSPHRASE="1999Noah2006Pico" borg create --stats --progress --compression auto,zstd,5 --exclude-from =( echo ${(F)exclusions} ) acs@legolas:/Seagate-4TB/backups/borg::$(uname -n)-$(today) /SSD-2/{Movies,Music,home,opt}
 
 # Local Variables:
 # mode: shell-script

@@ -8,21 +8,12 @@ if [[ ! -e /WD-3TB-1/backups/borg ]] ||
   exit 1
 fi
 
-# Make sure this directory is in the PATH.
+# Make sure the directory contining this script is in the PATH.
 PATH=$(cd $0:h >&/dev/null; pwd -r):$PATH
 
 # Back up all the VMs.
 # SaveAllVMs
 
-# Save multiple local copies and copies to the fileserver nuc.
-all_repos=( /SSD-2/backups/borg /WD-3TB-1/backups/borg /WD-4TB-1/backups/borg acs@nuc:/SSD-2TB/backups/borg )
-for r in $all_repos; do
-  echo "
-$r:"
-  repo=$r do_backup
-done
-
-# Save (and compress) multiple directories to legolas.
 typeset -a exclusions
 exclusions=("*/.cache/*"
             "*/go/*"
@@ -34,7 +25,22 @@ exclusions=("*/.cache/*"
             "*/AUR-packages/*"
             "*/.vscode-oss/*"
             "*/.dvdcss/*")
-BORG_PASSPHRASE="1999Noah2006Pico" borg create --stats --progress --compression auto,zstd,5 --exclude-from =( echo ${(F)exclusions} ) acs@legolas:/Seagate-4TB/backups/borg::$(uname -n)-$(today) /SSD-2/{Movies,Music,home,opt}
+x=$(mktemp)
+echo ${(F)exclusions} >$x
+
+# Use borg to save copies of /opt/src, /opt/zip, /home/acs, and /Music
+# to the local directories /SSD-2, /WD-3TB, /WD-4TB and to the nuc server.
+all_repos=( /SSD-2/backups/borg /WD-3TB-1/backups/borg /WD-4TB-1/backups/borg acs@nuc:/SSD-2TB/backups/borg )
+for r in $all_repos; do
+  echo "
+$r:"
+  repo=$r do_backup --exclude-from $x
+done
+
+# Save (and compress) multiple directories to legolas.
+BORG_PASSPHRASE="1999Noah2006Pico" borg create --stats --progress --compression auto,zstd,5 --exclude-from $x acs@legolas:/Seagate-4TB/backups/borg::$(uname -n)-$(today) /SSD-2/{Movies,Music,home,opt}
+
+rm $x
 
 # Local Variables:
 # mode: shell-script

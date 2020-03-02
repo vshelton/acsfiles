@@ -2,30 +2,13 @@
 
 # Run borg backup.
 
-typeset -a exclusions
-exclusions=("*/.cache/*"
-            "*/go/*"
-            "*/.cargo/*"
-            "*/.rustup/*"
-            "*/scmroot/*"
-            "*/.thumbnails/*"
-            "*/VirtualBox VMs/*"
-            "*/AUR-packages/*"
-            "*/.vscode-oss/*"
-            "*/.dvdcss/*")
-
-cmd=( borg create )
-opts=( --stats --progress --compression auto,zstd --exclude-caches --exclude-from =( echo ${(F)exclusions} ))
-[[ -z $repo ]] && repo=/WD-3TB-1/backups/borg
-
-#if [[ ! -d $repo ]]; then
-#  print -u2 "$0: Repository $repo does not exist."
-#  exit 1
-#fi
-
 : {USRLOCAL:=/opt}
 : {SRCROOT:=$USRLOCAL/src}
 : {ZIPROOT:=$USRLOCAL/zip}
+
+cmd=( borg create )
+opts=( --stats --progress --compression auto,zstd --exclude-caches
+[[ -z $repo ]] && repo=/SSD-2/backups/borg
 
 # Key is directory to back up and value is archive name.
 typeset -A dirs=(
@@ -36,7 +19,7 @@ typeset -A dirs=(
 )
 
 for d in ${(k)dirs}; do
-  ${cmd} ${opts} ${repo}::${dirs[$d]}-$(today) $d
+  ${cmd} ${opts} $@ ${repo}::${dirs[$d]}-$(today) $d
 done
 
 # Local Variables:

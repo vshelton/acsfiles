@@ -410,7 +410,8 @@ case $pkgname in
   PRECONFIGURE=( zshPreConfigure $srcdir )
   CONFIGURE=( $srcdir/configure
               --prefix=$PREFIX
-              --enable-pcre )
+              --enable-pcre
+              --enable-gdbm )
   TEST=( make -k check )
   INSTALL=( make install install.info )
   ;;

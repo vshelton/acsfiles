@@ -4,3 +4,14 @@
 * TODO Give away books
 * DONE Write check to Anne-Marie
 * DONE Prep for FB interview
+* DONE Send check to Anne-Marie
+* DONE Create icons for gandalf
+* DONE Add battery status to conky for gandalf
+* DONE Review Around The Horn
+* DONE Install veracrypt on gandalf
+* TODO Fill out Nationwide annuity form
+* TODO Email Jeanne Cook
+* TODO Contact NHS
+* TODO Research Intel check
+* DONE Oil change
+* TODO Starry test

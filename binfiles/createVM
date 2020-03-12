@@ -14,6 +14,7 @@ if vbm=$(which VBoxManage 2>/dev/null); then
   host_root=/
   host_zip=/opt/zip
 
+  cd ~/VirtualBox\ VMs
 # Check for Cygwin (with VBoxManage outside PATH).
 else
   PATH="/c/Program Files/Oracle/VirtualBox:$PATH"
@@ -32,15 +33,21 @@ fi
 #echo host_root=\"$host_root\"
 #echo host_zip=\"$host_zip\"
 
+# Various sizes
+: ${DISK1:=15000}
+: ${DISK2:=15000}
+: ${MEM:=8192}
+: ${VRAM:=64}
 
-"$vbm" createvm --name ${vm} --register  --ostype Linux_64
-"$vbm" modifyvm ${vm} --memory 4096  --vram 32 --acpi on --cpus 2
-"$vbm" createmedium disk --filename ${vm}/${vm}.vdi --size 20000 --variant Fixed
-"$vbm" storagectl ${vm} --name "SATA" --add sata
-"$vbm" storageattach ${vm} --storagectl "SATA" --device 0 --port 0 \
-  --type hdd --medium ${vm}/${vm}.vdi
-"$vbm" storageattach ${vm} --storagectl "SATA" --device 0 --port 1 \
-  --type dvddrive --medium emptydrive
+"$vbm" createvm --name ${vm} --register --ostype Linux_64
+"$vbm" modifyvm        ${vm} --memory ${MEM} --vram ${VRAM} --acpi on --cpus 2
+"$vbm" storagectl      ${vm} --name "SATA" --add sata
+
+"$vbm" createmedium disk --filename ${vm}/${vm}1.vdi --size ${DISK1} --variant Fixed
+"$vbm" createmedium disk --filename ${vm}/${vm}2.vdi --size ${DISK2}--variant Fixed
+"$vbm" storageattach ${vm} --storagectl "SATA" --device 0 --port 0 --type hdd --medium ${vm}/${vm}1.vdi
+"$vbm" storageattach ${vm} --storagectl "SATA" --device 0 --port 1 --type hdd --medium ${vm}/${vm}2.vdi
+"$vbm" storageattach ${vm} --storagectl "SATA" --device 0 --port 2 --type dvddrive --medium emptydrive
 
 "$vbm" sharedfolder add ${vm} --name "host-home" --hostpath "$host_home" --automount
 "$vbm" sharedfolder add ${vm} --name "host-root" --hostpath "$host_root" --automount

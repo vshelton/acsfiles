@@ -79,8 +79,8 @@ commands to use in that buffer.
 (add-hook 'term-mode-hook 'acs::term-mode-hook)
 
 ;; Set transparency of emacs
-(set-frame-parameter (selected-frame) 'alpha '(92 50))
-(add-to-list 'default-frame-alist '(alpha 92 50))
+(set-frame-parameter (selected-frame) 'alpha '(92 88))
+(add-to-list 'default-frame-alist '(alpha 92 88))
 (defun acs::frame-transparency (value)
   "Sets the transparency of the frame window. 0=transparent/100=opaque"
   (interactive "nTransparency Value 0 - 100 opaque:")

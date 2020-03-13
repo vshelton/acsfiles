@@ -8,6 +8,9 @@ if [[ -n $TRACE_ZSH ]]; then
   setopt xtrace
 fi
 
+home_system=nuc2
+[[ $(hostname) == $home_system ]] || title "$(hostname): zsh"
+
 umask 022
 
 zdirs=( $HOME/zsh/$OSTYPE/$(/bin/uname -n) $HOME/zsh/$OSTYPE $HOME/zsh $HOME )

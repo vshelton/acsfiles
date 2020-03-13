@@ -13,6 +13,6 @@
 * TODO Email Jeanne Cook
 * TODO Contact NHS
 * TODO Research Intel check
-* TODO CT Scan
+* DONE CT Scan
 * DONE Oil change
 * DONE Starry test

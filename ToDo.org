@@ -1,7 +1,7 @@
 * TODO Sort bedroom papers
 * TODO FedEx stocks to FNFD
 * TODO Sort Bank of America papers
-* TODO Give away books
+* DONE Give away books
 * DONE Write check to Anne-Marie
 * DONE Prep for FB interview
 * DONE Send check to Anne-Marie
@@ -13,5 +13,6 @@
 * TODO Email Jeanne Cook
 * TODO Contact NHS
 * TODO Research Intel check
+* TODO CT Scan
 * DONE Oil change
-* TODO Starry test
+* DONE Starry test

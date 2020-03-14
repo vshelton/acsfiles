@@ -1,18 +1,8 @@
 * TODO Sort bedroom papers
 * TODO FedEx stocks to FNFD
 * TODO Sort Bank of America papers
-* DONE Give away books
-* DONE Write check to Anne-Marie
-* DONE Prep for FB interview
-* DONE Send check to Anne-Marie
-* DONE Create icons for gandalf
-* DONE Add battery status to conky for gandalf
-* DONE Review Around The Horn
-* DONE Install veracrypt on gandalf
 * TODO Fill out Nationwide annuity form
 * TODO Email Jeanne Cook
 * TODO Contact NHS
 * TODO Research Intel check
-* DONE CT Scan
-* DONE Oil change
-* DONE Starry test
+* TODO Prepare for 2019 tax meeting

@@ -41,9 +41,6 @@ else
   desire .zshenv
 fi
 
-home_system=nuc2
-[[ $(hostname) == $home_system ]] || title "$(hostname): zsh"
-
 # Local Variables:
 # mode: shell-script
 # sh-indentation: 2

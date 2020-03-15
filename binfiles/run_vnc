@@ -12,7 +12,7 @@ fi
 
 ping -c1 -W1 $server >/dev/null
 
-if [[ $? != 0 ]]; then
+if (( $? != 0 )); then
   wakeserver $server
   echo "Please wait while this script starts $server \
 and then make sure you complete the login process."

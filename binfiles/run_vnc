@@ -1,13 +1,35 @@
 #!/bin/bash
 
-# Connect a secure shell tunnel and run VNC through it.
+# Connect via VNC to the specified server.
 
-server=${1:-nuc}
-local_port=${2:-5900}
+if (( $# > 0 )); then
+  server=$1
+  shift
+else
+  echo -n "Enter server name: "
+  read server
+fi
 
-ssh -N -L ${local_port}:localhost:5900 ${server} &
-sleep 1
-vncviewer -Fullscreen -menuKey Pause localhost:${local_port}
+ping -c1 -W1 $server >/dev/null
+
+if [[ $? != 0 ]]; then
+  wakeserver $server
+  echo "Please wait while this script starts $server \
+and then make sure you complete the login process."
+  sleep 30
+  vncviewer $server
+else
+  # Start an ssh tunnel.
+  if (( $# > 0 )); then
+    local_port=$1
+  else
+    echo -n "Enter local port number: "
+    read local_port
+  fi
+  ssh -N -L ${local_port}:localhost:5900 ${server} &
+  sleep 1
+  vncviewer localhost:${local_port}
+fi
 
 # Local Variables:
 # mode: shell-script

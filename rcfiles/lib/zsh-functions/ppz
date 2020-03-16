@@ -1,0 +1,3 @@
+
+# Pretty-print zsh source
+source-highlight --src-lang=zsh --output=$1.html --input=$HOME/bin/$1

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Connect via VNC to the specified server.
+PATH=/home/acs/bin:/usr/bin
 
 if (( $# > 0 )); then
   server=$1
@@ -10,9 +11,7 @@ else
   read server
 fi
 
-ping -c1 -W1 $server >/dev/null
-
-if (( $? != 0 )); then
+if ! ping -c1 -W1 $server >/dev/null ; then
   wakeserver $server
   echo "Please wait while this script starts $server \
 and then make sure you complete the login process."
@@ -26,8 +25,7 @@ else
     echo -n "Enter local port number: "
     read local_port
   fi
-  ssh -N -L ${local_port}:localhost:5900 ${server} &
-  sleep 1
+  ssh -f -L ${local_port}:localhost:5900 ${server} sleep 10
   vncviewer localhost:${local_port}
 fi
 

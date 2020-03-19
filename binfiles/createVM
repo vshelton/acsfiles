@@ -44,7 +44,7 @@ fi
 "$vbm" storagectl      ${vm} --name "SATA" --add sata
 
 "$vbm" createmedium disk --filename ${vm}/${vm}1.vdi --size ${DISK1} --variant Fixed
-"$vbm" createmedium disk --filename ${vm}/${vm}2.vdi --size ${DISK2}--variant Fixed
+"$vbm" createmedium disk --filename ${vm}/${vm}2.vdi --size ${DISK2} --variant Fixed
 "$vbm" storageattach ${vm} --storagectl "SATA" --device 0 --port 0 --type hdd --medium ${vm}/${vm}1.vdi
 "$vbm" storageattach ${vm} --storagectl "SATA" --device 0 --port 1 --type hdd --medium ${vm}/${vm}2.vdi
 "$vbm" storageattach ${vm} --storagectl "SATA" --device 0 --port 2 --type dvddrive --medium emptydrive

@@ -1,8 +1,15 @@
-* TODO Sort bedroom papers
+* DONE Sort bedroom papers
 * TODO FedEx stocks to FNFD
 * TODO Sort Bank of America papers
 * TODO Fill out Nationwide annuity form
 * TODO Email Jeanne Cook
 * TODO Contact NHS
 * TODO Research Intel check
-* TODO Prepare for 2019 tax meeting
+* DONE Prepare for 2019 tax meeting
+* TODO Pico - write to congressman
+* DONE Find out Julia's plans
+* TODO Find 2019 tax info for: Intel and E*Trade (5279)
+* TODO Schedule eye appointment
+* TODO Send package to Jeanie
+* DONE Pay April COBRA
+  SCHEDULED: <2020-03-19 Thu>

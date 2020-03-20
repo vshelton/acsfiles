@@ -34,11 +34,14 @@ install=(borg
          i3-wm
          kitty
          net-tools
+         python-llfuse
          picom
          tigervnc
          tlp
          ttf-cascadia-code
          ttf-hack
+         vlc
+         yay
          zsh)
 
 # Remove the extraneous packages.
@@ -65,8 +68,8 @@ sudo echo "enabled=true
 command=Xvnc -rfbauth $vncpwfile -dpi 144
 depth=24" >> /etc/lightdm/lightdm.conf
 
-echo "Copy ssh ID to this system."
-echo "Copy kitty configuration here."
+echo "Copy ssh ID to this system." >&2
+echo "Copy kitty configuration here." >&2
 
 # Local Variables:
 # mode: shell-script

@@ -18,7 +18,10 @@ remove=(apm
         gnome-autoar
         gnome-disk-utility
         gnome-icon-theme
-        gnome-keyring gnome-screenshot
+        gnome-icon-theme-symbolic
+        gnome-themes-extra
+        gnome-keyring
+        gnome-screenshot
         gnome-software
         gnome-software-packagekit-plugin
         pragha

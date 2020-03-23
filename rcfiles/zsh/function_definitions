@@ -1,8 +1,8 @@
 # Define utility shell functions for all shells.
 
 setopt extendedglob
-f=$ZDOTDIR/lib/zsh-functions
-[[ -d $f ]] || f=$HOME/lib/zsh-functions
+f=$ZDOTDIR/zsh/functions
+[[ -d $f ]] || f=$HOME/zsh/functions
 if [[ -d $f ]]; then
   fpath=($f $fpath)
   autoload $(print $f/*~*~(:t))

@@ -1,10 +1,12 @@
-# Change the title of an xterm
-if [[ $TERM == xterm* ]]
-then
-  print -n "\033]2;$@\007"
-else
-  print -u2 "$0 only works for xterm windows."
+# Change the title of a window.
+
+if ! echoti tsl 2>/dev/null ; then
+  retval=$?
+  print -u2 "Terminal does not support setting the title."
+  return $retval
 fi
+print -n $@
+echoti fsl
 
 # Local Variables:
 # mode: shell-script

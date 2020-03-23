@@ -54,7 +54,9 @@ install=(dos2unix
 sudo pacman --noconfirm --remove ${remove[*]}
 
 # Install the non-default (essential, in my view) packages.
-sudo pacman --noconfirm --sync ${install[*]} ${borg[*]} ${vnc[*]}
+sudo pacman --noconfirm --sync ${install[*]}
+sudo pacman --noconfirm --sync ${borg[*]}
+sudo pacman --noconfirm --sync ${vnc[*]}
 
 # Update the installed packages.
 sudo pacman --noconfirm -Syu

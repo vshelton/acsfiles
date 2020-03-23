@@ -122,128 +122,12 @@ alias pd=pushd
 alias pp=popd
 alias rm_versions="noglob rm_versions"
 alias rmver="rm_versions -v"
-alias root="ZDOTDIR=$HOME/.root xterm -name root -e su root -c $USRLOCAL/bin/zsh"
 alias tvf='tar tv -f'
 alias xvf='tar xv -f'
 alias ve=vared
 
 unalias run-help
 autoload -U run-help
-
-# Use tkman where appropriate
-[[ -n $DISPLAY ]] && whence tkmanclient >/dev/null && alias man=tkmanclient
-
-# Define the map of symlinks to my cutomization files
-typeset -AA rc_map
-rc_map=(
-  .zlogout $SCMROOT/rcfiles/zlogout
-  .emacs $SCMROOT/rcfiles/emacs
-  .zprofile $SCMROOT/rcfiles/zprofile
-  lib/lisp/detached-minibuf.el $SCMROOT/rcfiles/lib/lisp/detached-minibuf.el
-  lib/lisp/fsf/default.el $SCMROOT/rcfiles/lib/lisp/fsf/default.el
-  lib/lisp/fsf/mic-paren.el $SCMROOT/rcfiles/lib/lisp/fsf/mic-paren.el
-  lib/lisp/fsf/acs-custom.el $SCMROOT/rcfiles/lib/lisp/fsf/acs-custom.el
-  lib/lisp/xemacs/default.el $SCMROOT/rcfiles/lib/lisp/xemacs/default.el
-  lib/lisp/xemacs/acs-custom.el $SCMROOT/rcfiles/lib/lisp/xemacs/acs-custom.el
-  lib/lisp/emacs.el $SCMROOT/rcfiles/lib/lisp/emacs.el
-  lib/app-defaults/XEmacs.ad $SCMROOT/rcfiles/lib/app-defaults/XEmacs.ad
-  lib/app-defaults/fonts.m4 $SCMROOT/rcfiles/lib/app-defaults/fonts.m4
-  lib/app-defaults/XTerm.ad $SCMROOT/rcfiles/lib/app-defaults/XTerm.ad
-  lib/app-defaults/Emacs.ad $SCMROOT/rcfiles/lib/app-defaults/Emacs.ad
-  lib/zsh-functions/dx4 $SCMROOT/rcfiles/lib/zsh-functions/dx5
-  lib/zsh-functions/dx5 $SCMROOT/rcfiles/lib/zsh-functions/dx5
-  lib/zsh-functions/newer_than $SCMROOT/rcfiles/lib/zsh-functions/newer_than
-  lib/zsh-functions/new_XEmacs $SCMROOT/rcfiles/lib/zsh-functions/new_XEmacs
-  lib/zsh-functions/abspath $SCMROOT/rcfiles/lib/zsh-functions/abspath
-  lib/zsh-functions/xres $SCMROOT/rcfiles/lib/zsh-functions/xres
-  lib/zsh-functions/f $SCMROOT/rcfiles/lib/zsh-functions/f
-  lib/zsh-functions/nohist $SCMROOT/rcfiles/lib/zsh-functions/nohist
-  lib/zsh-functions/exists $SCMROOT/rcfiles/lib/zsh-functions/exists
-  lib/zsh-functions/relative $SCMROOT/rcfiles/lib/zsh-functions/relative
-  lib/zsh-functions/rm_versions $SCMROOT/rcfiles/lib/zsh-functions/rm_versions
-  lib/zsh-functions/loop_while_failing $SCMROOT/rcfiles/lib/zsh-functions/loop_while_failing
-  lib/zsh-functions/all_dirs $SCMROOT/rcfiles/lib/zsh-functions/all_dirs
-  lib/zsh-functions/link-latest $SCMROOT/rcfiles/lib/zsh-functions/link-latest
-  lib/zsh-functions/all_versions $SCMROOT/rcfiles/lib/zsh-functions/all_versions
-  lib/zsh-functions/addpath $SCMROOT/rcfiles/lib/zsh-functions/addpath
-  lib/zsh-functions/system_specific $SCMROOT/rcfiles/lib/zsh-functions/system_specific
-  lib/zsh-functions/nfunc $SCMROOT/rcfiles/lib/zsh-functions/nfunc
-  lib/zsh-functions/_rm_versions $SCMROOT/rcfiles/lib/zsh-functions/_rm_versions
-  lib/zsh-functions/xdef $SCMROOT/rcfiles/lib/zsh-functions/xdef
-  lib/zsh-functions/check_versions $SCMROOT/rcfiles/lib/zsh-functions/check_versions
-  lib/zsh-functions/check_zsh $SCMROOT/rcfiles/lib/zsh-functions/check_zsh
-  lib/zsh-functions/new_default $SCMROOT/rcfiles/lib/zsh-functions/new_default
-  lib/zsh-functions/title $SCMROOT/rcfiles/lib/zsh-functions/title
-  lib/zsh-functions/loop_update $SCMROOT/rcfiles/lib/zsh-functions/loop_update
-  lib/zsh-functions/col $SCMROOT/rcfiles/lib/zsh-functions/col
-  .zlogin.elrond $SCMROOT/rcfiles/AOA/linux/zlogin.AOA
-  .zshenv.elrond-post $SCMROOT/rcfiles/AOA/linux/zshenv.AOA-post
-  .zshrc $SCMROOT/rcfiles/zshrc
-  .zshenv.elrond-pre $SCMROOT/rcfiles/AOA/linux/zshenv.AOA-pre
-  .Xresources $SCMROOT/rcfiles/Xresources
-  .zlogin $SCMROOT/rcfiles/zlogin
-  .zshenv $SCMROOT/rcfiles/zshenv
-  bin/mk-xp $SCMROOT/binfiles/mk-xp
-  bin/cleanup-xemacs $SCMROOT/binfiles/cleanup-xemacs
-  bin/today $SCMROOT/binfiles/today
-  bin/mk-src $SCMROOT/binfiles/mk-src
-  bin/newer_than $SCMROOT/binfiles/newer_than
-  bin/loop_while_failing $SCMROOT/binfiles/loop_while_failing
-  bin/check_cfg $SCMROOT/binfiles/check_cfg
-  bin/all_dirs $SCMROOT/binfiles/all_dirs
-  bin/mk_default $SCMROOT/binfiles/mk_default
-  bin/update-emacs $SCMROOT/binfiles/update-emacs
-  bin/symlink-tree $SCMROOT/binfiles/symlink-tree
-  bin/diff-xemacs-tests $SCMROOT/binfiles/diff-xemacs-tests
-  bin/all_versions $SCMROOT/binfiles/all_versions
-  bin/tomorrow $SCMROOT/binfiles/tomorrow
-  bin/copy_to_xemacs.org $SCMROOT/binfiles/NT/copy_to_xemacs.org
-  bin/GetXEmacsPackages $SCMROOT/binfiles/NT/GetXEmacsPackages
-  bin/InstallExtraXEmacsPackages $SCMROOT/binfiles/NT/InstallExtraXEmacsPackages
-  bin/MakeComponentList $SCMROOT/binfiles/NT/MakeComponentList
-  bin/MakeCygwinXEmacs $SCMROOT/binfiles/NT/MakeCygwinXEmacs
-  bin/MakeNativeXEmacs $SCMROOT/binfiles/NT/MakeNativeXEmacs
-  bin/MakeXEmacsWindowsKit $SCMROOT/binfiles/NT/MakeXEmacsWindowsKit
-  bin/mk-XEmacs-from-scratch $SCMROOT/binfiles/NT/mk-XEmacs-from-scratch
-  bin/vcsetup $SCMROOT/binfiles/NT/vcsetup
-  bin/yesterday $SCMROOT/binfiles/yesterday
-  bin/update-zsh $SCMROOT/binfiles/update-zsh
-  bin/latest $SCMROOT/binfiles/latest
-  bin/update_and_build $SCMROOT/binfiles/update_and_build
-  bin/find_install_root $SCMROOT/binfiles/find_install_root
-  bin/mk-xemacs-min $SCMROOT/binfiles/mk-xemacs-min
-  bin/now $SCMROOT/binfiles/now
-  bin/sysprefix $SCMROOT/binfiles/sysprefix
-  bin/diff_output_files $SCMROOT/binfiles/diff_output_files
-  bin/installed_packages $SCMROOT/binfiles/installed_packages
-  bin/mk-xemacs $SCMROOT/binfiles/mk-xemacs
-  bin/cfg $SCMROOT/binfiles/cfg
-  bin/scm_update $SCMROOT/binfiles/scm_update
-  bin/mk-xemacs-21.5 $SCMROOT/binfiles/mk-xemacs-21.5
-  bin/summarize_zsh_tests $SCMROOT/binfiles/summarize_zsh_tests
-  bin/link_latest $SCMROOT/binfiles/link_latest
-  bin/update-xemacs $SCMROOT/binfiles/update-xemacs
-  bin/check_versions $SCMROOT/binfiles/check_versions
-  bin/mk-zsh $SCMROOT/binfiles/mk-zsh
-  bin/check_zsh $SCMROOT/binfiles/check_zsh
-  bin/findpkg $SCMROOT/binfiles/findpkg
-  bin/update_screenenv $SCMROOT/binfiles/update_screenenv
-  bin/trim_extra_history $SCMROOT/binfiles/trim_extra_history
-  bin/new_default $SCMROOT/binfiles/new_default
-  bin/bld $SCMROOT/binfiles/bld
-  bin/diffs $SCMROOT/binfiles/diffs
-  bin/diff_xemacs_build_results $SCMROOT/binfiles/diff_xemacs_build_results
-)
-
-# To re-generate all the links -
-#cd
-#foreach l in ${(k)rc_map}; do
-#  mkdir -p $(dirname $l)
-#  cd $(dirname $l)
-#  ln -s $(relative $rc_map[$l]) $l
-#done
-#cd
-
 
 # Source a system-specific .zshrc before loading completion functions
 system_specific .zshrc

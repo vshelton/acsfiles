@@ -1,6 +1,12 @@
 #!/bin/bash
 
 # Connect via VNC to the specified server.
+
+# Contents of .vnc/default.tigervnc on nuc2:
+# TigerVNC Configuration file Version 1.0
+# fullscreen=1
+# menukey=Pause
+
 PATH=/home/acs/bin:/usr/bin
 
 if (( $# > 0 )); then

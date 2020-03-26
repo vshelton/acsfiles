@@ -21,6 +21,7 @@ alias -- -x="chmod a-x"
 alias all_versions="noglob all_versions"
 alias aver=all_versions
 alias d='dirs -v'
+alias df="df --human --output='source,target,size,pcent,avail' --exclude-type={tmpfs,devtmpfs}"
 alias e='fcedit -q'
 alias grep='command grep --extended-regexp --text'
 alias h=history

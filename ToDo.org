@@ -6,10 +6,11 @@
 * TODO Contact NHS
 * TODO Research Intel check
 * DONE Prepare for 2019 tax meeting
-* TODO Pico - write to congressman
+* DONE Pico - write to congressman
 * DONE Find out Julia's plans
-* TODO Find 2019 tax info for: Intel and E*Trade (5279)
+* DONE Find 2019 tax info for: Intel and E*Trade (5279)
 * TODO Schedule eye appointment
 * TODO Send package to Jeanie
 * DONE Pay April COBRA
   SCHEDULED: <2020-03-19 Thu>
+* DONE Schedule appointment with Dr. Schmahmann

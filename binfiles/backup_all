@@ -38,7 +38,7 @@ $r:"
 done
 
 # Save (and compress) multiple directories to legolas.
-BORG_PASSPHRASE="1999Noah2006Pico" borg create --stats --progress --compression auto,zstd,5 --exclude-from $x acs@legolas:/Seagate-4TB/backups/borg::$(uname -n)-$(today) /SSD-2/{Movies,Music,home,opt}
+BORG_PASSPHRASE="1999Noah2006Pico" borg create --stats --progress --compression auto,zstd,5 --exclude-from $x acs@legolas:/Seagate-4TB/backups/borg::$(uname -n)-$(today) /SSD-2/{Movies,Music,opt} /home/acs
 
 rm $x
 

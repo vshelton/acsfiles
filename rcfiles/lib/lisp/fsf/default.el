@@ -90,6 +90,7 @@ commands to use in that buffer.
 (and (functionp 'solarized-color-blend)
      (load-theme 'solarized-dark t))
 
+(set-cursor-color "coral")
 ;(message "Leaving default.el")
 
 ;; Local Variables:

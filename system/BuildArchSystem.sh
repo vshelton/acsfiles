@@ -1,31 +1,38 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # Build up an arch linux system with the default additional packages.
 
+if [[ $(id -u) != 0 ]]; then
+  echo Must be run as root! >&2
+  exit 1
+fi
+
 # Install and configure etckeeper to keep track of system changes.
-sudo pacman --noconfirm --sync etckeeper
-sudo git config --global user.email "acs@alumni.princeton.edu"
-sudo git config --global user.name "Vin Shelton"
-sudo etckeeper init
+pacman --noconfirm --sync etckeeper
+git config --global user.email "acs@alumni.princeton.edu"
+git config --global user.name "Vin Shelton"
+etckeeper init
 
 # List packages to remove.
-remove=(apm
-        atp
-        electron4
-        evolution
-        evolution-data-server
-        geoip
-        gnome-autoar
-        gnome-disk-utility
-        gnome-icon-theme
-        gnome-icon-theme-symbolic
-        gnome-themes-extra
-        gnome-keyring
-        gnome-screenshot
-        gnome-software
-        gnome-software-packagekit-plugin
-        pragha
-        thunderbird)
+remove=(
+#   apm
+#   atp
+#   electron4
+#   evolution
+#   evolution-data-server
+#   geoip
+#   gnome-autoar
+#   gnome-disk-utility
+#   gnome-icon-theme
+#   gnome-icon-theme-symbolic
+#   gnome-themes-extra
+#   gnome-keyring
+#   gnome-screenshot
+#   gnome-software
+#   gnome-software-packagekit-plugin
+#   pragha
+    thunderbird
+)
 
 # List packages to add.
 borg=(borg
@@ -41,6 +48,7 @@ install=(dos2unix
          ethtool
          feh
          kitty
+         macchanger
          net-tools
          picom
          tlp
@@ -51,48 +59,51 @@ install=(dos2unix
          zsh)
 
 # Remove the extraneous packages.
-sudo pacman --noconfirm --remove ${remove[*]}
+pacman --noconfirm --remove ${remove[*]}
 
 # Install the non-default (essential, in my view) packages.
-sudo pacman --noconfirm --sync ${install[*]}
-sudo pacman --noconfirm --sync ${borg[*]}
-sudo pacman --noconfirm --sync ${vnc[*]}
+pacman --noconfirm --sync ${install[*]}
+pacman --noconfirm --sync ${borg[*]}
+pacman --noconfirm --sync ${vnc[*]}
 
 # Update the installed packages.
-sudo pacman --noconfirm -Syu
+pacman --noconfirm -Syu
 
 # Initialize the wake on LAN capability.
-#sudo ethtool -s enp2s0 wol g
-#sudo nmcli c modify "Wired connection 1" 802-3-ethernet.wake-on-lan magic
+#ethtool -s enp2s0 wol g
+#nmcli c modify "Wired connection 1" 802-3-ethernet.wake-on-lan magic
 
 # Change TLP to support wake on LAN.
-#sudo echo "WOL_DISABLE=N" >> /etc/tlp.conf
+#echo "WOL_DISABLE=N" >> /etc/tlp.conf
 
 # Enable lightdm and tigervnc.
 #USER=acs
 vncpwfile=/etc/vncpasswd
 dmcfg=/etc/lightdm/lightdm.conf
 
-sed -i \
-    -e "s/#greeter-session=example-gtk-gnome/greeter-session=lightdm-gtk-greeter/" \
+#sed -i \
+#    -e "s/#greeter-session=example-gtk-gnome/greeter-session=lightdm-gtk-greeter/" \
 #   -e "s/# autologin-user =.*/autologin-user = ${USER}"/ \
 #   -e "s/# autologin-user-timeout =.*/autologin-user-timeout = 0/" \
-$dmcfg  
+#$dmcfg  
 echo "enabled=true
 command=Xvnc -rfbauth $vncpwfile -dpi 144
-depth=24" | sudo tee -a $dmcfg
-echo "Setting up VNC passwd." >&2
-sudo vncpasswd $vncpwfile
-sudo systemctl enable lightdm.service --force
+depth=24" >> $dmcfg
+
+echo "
+Setting up VNC passwd." >&2
+vncpasswd $vncpwfile
+systemctl enable lightdm.service --force
 
 # Enable system-wide IP address generation.
 lfile=/etc/rc.local
 echo '#!/bin/bash
 
 sleep 5
+macchanger -p wlp2s0
 rfkill unblock wifi
-dhcpcd wlp2s0' | sudo tee -a $lfile
-sudo chmod 755 $lfile
+dhcpcd wlp2s0' >$lfile
+chmod 755 $lfile
 
 echo "[Unit]
  Description=$lfile Compatibility
@@ -107,11 +118,26 @@ echo "[Unit]
  SysVStartPriority=99
 
 [Install]
- WantedBy=multi-user.target" | sudo tee -a /etc/systemd/system/rc-local.service
-sudo systemctl enable rc-local
+ WantedBy=multi-user.target" >/etc/systemd/system/rc-local.service
+systemctl enable rc-local
+systemctl enable sshd
 
-echo "Copy ssh ID to this system." >&2
-echo "Copy kitty configuration here." >&2
+ln -s /usr/share/dhcpcd/hooks/10-wpa_supplicant /usr/lib/dhdpcd/dhcpcd-hooks
+echo 'ctrl_interface=/run/wpa_supplicant
+ctrl_interface_group=wheel
+
+ap_scan=1
+
+country=US
+
+network={
+    ssid="31Cornell"
+    psk="Tupac#1Dylan"
+}' >/etc/wpa_supplicant.conf
+
+echo "
+Copy ssh ID to this system.
+Copy kitty configuration here." >&2
 
 # Local Variables:
 # mode: shell-script

@@ -34,6 +34,7 @@ fi
 #echo host_zip=\"$host_zip\"
 
 # Various sizes
+DISK1=40000
 : ${DISK1:=15000}
 : ${DISK2:=15000}
 : ${MEM:=8192}
@@ -44,10 +45,10 @@ fi
 "$vbm" storagectl      ${vm} --name "SATA" --add sata
 
 "$vbm" createmedium disk --filename ${vm}/${vm}1.vdi --size ${DISK1} --variant Fixed
-"$vbm" createmedium disk --filename ${vm}/${vm}2.vdi --size ${DISK2} --variant Fixed
+#"$vbm" createmedium disk --filename ${vm}/${vm}2.vdi --size ${DISK2} --variant Fixed
 "$vbm" storageattach ${vm} --storagectl "SATA" --device 0 --port 0 --type hdd --medium ${vm}/${vm}1.vdi
-"$vbm" storageattach ${vm} --storagectl "SATA" --device 0 --port 1 --type hdd --medium ${vm}/${vm}2.vdi
-"$vbm" storageattach ${vm} --storagectl "SATA" --device 0 --port 2 --type dvddrive --medium emptydrive
+#"$vbm" storageattach ${vm} --storagectl "SATA" --device 0 --port 1 --type hdd --medium ${vm}/${vm}2.vdi
+"$vbm" storageattach ${vm} --storagectl "SATA" --device 0 --port 1 --type dvddrive --medium emptydrive
 
 "$vbm" sharedfolder add ${vm} --name "host-home" --hostpath "$host_home" --automount
 "$vbm" sharedfolder add ${vm} --name "host-root" --hostpath "$host_root" --automount

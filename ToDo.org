@@ -6,16 +6,11 @@
 * TODO Research Intel check
 * TODO Schedule eye appointment
 * TODO Send package to Jeanie
-* DONE Submit 2019 taxes
 * TODO Email Nick
 * TODO Pay May COBRA
 * TODO Pay Kevin
 * TODO Read Noah's eval
-* DONE Call Adler
-* DONE Make and Rip Noah07
-* DONE Create label for B14
-* DONE Create label for B15
-* DONE Create label for N07
 * TODO Create Noah09
 * TODO Pay Jim Brown
-* TODO Cancel LinkedIn Premium
+* TODO Cancel LinkedIn Premium (mid-May)
+* TODO Cancel starz (April 23)

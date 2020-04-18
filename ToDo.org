@@ -9,7 +9,7 @@
 * TODO Email Nick
 * TODO Pay May COBRA
 * TODO Pay Kevin
-* TODO Read Noah's eval
+* DONE Read Noah's eval
 * TODO Create Noah09
 * TODO Pay Jim Brown
 * TODO Cancel LinkedIn Premium (mid-May)

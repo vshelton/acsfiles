@@ -105,34 +105,23 @@ kittyInstall()
     conf_dir=$HOME/.config/kitty
     mkdir -p $conf_dir >& /dev/null
     cd $conf_dir
-
-    prefs=kitty.conf
-    cp --force $1/docs/generated/conf/$prefs .
-    chmod 644 $prefs
+    ln --force --symbolic $1/docs/generated/conf/kitty.conf kitty1.conf
 
     # The foreground and background colors
     # implement the solarized dark color scheme.
-
-    # key = original text.
-    # value = replacement text.
-    typeset -AA replacements=(
-      "^(font_family)\s.*"		"\$1 Cascadia Code"
-      "^(font_size)\s.*"		"\$1 12.0"
-      "^(scrollback_lines)\s.*"		"\$1 15000"
-      "^(remember_window_size)\s.*"	"\$1 no"
-      "^(initial_window_width)\s.*"	"\$1 115c"
-      "^(initial_window_height)\s.*"	"\$1 50c"
-      "^(foreground)\s.*"		"\$1 #839496"
-      "^(background)\s.*"		"\$1 #002b36"
-      "^(background_opacity)\s.*"	"\$1 0.92"
-      "^(shell)\s.*"			"\$1 /opt/bin/zsh -l"
-      "^(kitty_mod)\s.*"		"\$1 ctrl+shift+alt"
-      "^#.*map f1.*"			"map kitty_mod+f1 pipe \@ansi os_window less +G -R"
-    )
-
-    for o in ${(k)replacements}; do
-      perl -i -p -e "s|^$o|$replacements[$o]|" $prefs
-    done
+    cat >kitty2.conf <<EOF
+font_family Cascadia Code
+font_size 12.0
+scrollback_lines 20000
+remember_window_size no
+initial_window_width 110c
+initial_window_height 60c
+foreground #839496
+background #002b36
+background_opacity 0.92
+shell /opt/bin/zsh -l
+map kitty_mod+f1 launch --stdin-source=@screen_scrollback --stdin-add-formatting --type=overlay less +G -R
+EOF
   )
 }
 

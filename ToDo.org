@@ -13,4 +13,4 @@
 * TODO Create Noah09
 * TODO Pay Jim Brown
 * TODO Cancel LinkedIn Premium (mid-May)
-* TODO Cancel starz (April 23)
+* DONE Cancel starz (April 23)

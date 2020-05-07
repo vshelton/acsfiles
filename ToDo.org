@@ -7,10 +7,14 @@
 * TODO Schedule eye appointment
 * TODO Send package to Jeanie
 * TODO Email Nick
-* TODO Pay May COBRA
+* DONE Pay May COBRA
 * TODO Pay Kevin
 * DONE Read Noah's eval
 * TODO Create Noah09
 * TODO Pay Jim Brown
 * TODO Cancel LinkedIn Premium (mid-May)
 * DONE Cancel starz (April 23)
+* DONE Pay June COBRA
+* DONE Call Mass DUA
+* DONE Take Altaeros test
+* TODO Create PU Memorial

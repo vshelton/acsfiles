@@ -10,7 +10,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(magit flycheck-rust racer company smart-mode-line flycheck rainbow-delimiters solarized-theme)))
+   '(company flycheck flycheck-rust magit racer rainbow-delimiters solarized-theme)))
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 

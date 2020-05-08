@@ -20,9 +20,13 @@
 (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
 (add-hook 'rust-mode-hook
           '(lambda ()
-	     (setq racer-cmd (concat (getenv "HOME") "/.cargo/bin/racer"))
-	     (setq racer-rust-src-path (concat (getenv "HOME") "/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust"))
+             (setq racer-cmd (concat (getenv "HOME") "/.cargo/bin/racer"))
+             (setq racer-rust-src-path (concat (getenv "HOME") "/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust"))
              (local-set-key (kbd "TAB") #'company-indent-or-complete-common)
-	     (electric-pair-mode 1)))
+             (electric-pair-mode 1)))
 
 (provide 'init-rust)
+
+;; Local Variables:
+;; indent-tabs-mode: nil
+;; End:

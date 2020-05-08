@@ -35,13 +35,7 @@
 ;; (load-theme 'solarized-light t)
 (load-theme 'solarized-dark t)
 
-;; Configure the mode-line.
-(set-face-font 'mode-line "-*-comic sans ms-medium-r-normal-*-20-*-*-*-*-*-iso8859-*")
-(set-face-background 'mode-line "LightSalmon")
-(set-face-foreground 'mode-line "Black")
-(set-face-foreground 'mode-line-inactive "LightSalmon")
-(set-face-background 'mode-line-inactive "Black")
-(set-face-foreground 'mode-line-buffer-id "DodgerBlue3")
+(require 'init-fonts)
 
 (provide 'init-ui)
 

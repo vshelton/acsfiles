@@ -23,7 +23,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(flycheck-rust racer company smart-mode-line flycheck rainbow-delimiters solarized-theme)))
+   '(magit flycheck-rust racer company smart-mode-line flycheck rainbow-delimiters solarized-theme)))
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
@@ -33,6 +33,7 @@
 (require 'init-editing)
 (require 'init-miscellaneous)
 (require 'init-rust)
+(require 'init-vc)
 
 (provide 'init)
 

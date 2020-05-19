@@ -1,7 +1,8 @@
 
 ;; Use Cascadia Code as the default font.
 ;; (set-face-font 'default "-*-Cascadia Code-medium-r-normal-*-24-*-*-*-*-*-iso8859-*")
-(set-frame-font "Cascadia Code-13" nil t)
+;; (set-frame-font "Cascadia Code-13" nil t)
+(set-face-font 'default "FiraCode 13")
 
 ;; Configure the mode-line, using Comic Sans.
 (set-face-font 'mode-line "-*-Comic Sans ms-medium-r-normal-*-20-*-*-*-*-*-iso8859-*")

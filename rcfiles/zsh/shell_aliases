@@ -8,10 +8,10 @@ else
   done
 fi
 
-alias l="ls --classify"
-alias la="ls -A"
-alias ll="ls -l --time-style=long-iso"
-alias lr="ls -R"
+alias l="ls --classify --group-directories-first"
+alias la="l --almost-all"
+alias ll="l -l --time-style=long-iso"
+alias lr="l --recursive"
 alias lt="ll -rt"
 
 alias -- +w="chmod u+w"
@@ -44,9 +44,6 @@ alias ve=vared
 
 unalias run-help >&/dev/null
 autoload -U run-help
-
-# Use tkman where appropriate
-[[ -n $DISPLAY ]] && whence tkmanclient >/dev/null && alias man=tkmanclient
 
 # Local Variables:
 # mode: shell-script

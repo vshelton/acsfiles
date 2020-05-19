@@ -20,8 +20,6 @@
       save-interprogram-paste-before-kill t
       apropos-do-all t)
 
-(set-cursor-color "yellow3")
-
 ;; (golden-ratio-mode 1)
 
 ;; Set the transparency of emacs.
@@ -34,6 +32,8 @@
 (require-package 'solarized-theme)
 ;; (load-theme 'solarized-light t)
 (load-theme 'solarized-dark t)
+
+(set-cursor-color "yellow3")
 
 (require 'init-fonts)
 

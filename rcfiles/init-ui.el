@@ -33,7 +33,7 @@
 ;; (load-theme 'solarized-light t)
 (load-theme 'solarized-dark t)
 
-(set-cursor-color "yellow3")
+;; (set-cursor-color "yellow3")
 
 (require 'init-fonts)
 

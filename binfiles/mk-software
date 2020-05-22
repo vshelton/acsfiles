@@ -100,12 +100,14 @@ kittyInstall()
     # The foreground and background colors
     # implement the solarized dark color scheme.
     cat >kitty2.conf <<EOF
-font_family Cascadia Code
+font_family Fira Code
 font_size 12.0
 scrollback_lines 20000
 remember_window_size no
 initial_window_width 110c
 initial_window_height 60c
+window_padding_width 2
+# Solarized dark (https://ethanschoonover.com/solarized).
 foreground #839496
 background #002b36
 background_opacity 0.92

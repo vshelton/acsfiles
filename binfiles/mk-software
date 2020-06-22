@@ -117,6 +117,15 @@ EOF
   )
 }
 
+# Install the rclone command.
+function
+rcloneInstall()
+{
+  cd $USRLOCAL/bin
+  rm rclone
+  ln -s $1/rclone
+}
+
 # The zsh pre-configure command is built in to the zsh sources.
 function
 zshPreConfigure()
@@ -195,6 +204,7 @@ typeset -AA all_packages=(
   i3        1
   kitty     1
   perl      1
+  rclone    1
   ripgrep   1
   tigervnc  1
   tilda     1
@@ -280,7 +290,7 @@ srcdir=$(GetSource $scm_opts $pkgname) || exit $?
 # These packages lack real configuration mechanisms,
 # so we build those packages in their source directories.
 case $pkgname in
-(alacritty|exa|feh|kitty|ripgrep)
+(alacritty|exa|feh|kitty|rclone|ripgrep)
   cd $srcdir
   ;;
 
@@ -369,6 +379,12 @@ case $pkgname in
               -Dmksymlinks
               -des )
   TEST=( make test )
+  ;;
+
+(rclone)
+  # rclone forces --snapshot to be specified.
+  BUILD=( go build )
+  INSTALL=( rcloneInstall $srcdir )
   ;;
 
 (ripgrep)

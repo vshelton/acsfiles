@@ -2,7 +2,7 @@
 * TODO Sort Bank of America papers
 * TODO Fill out Nationwide annuity form
 * TODO Email Jeanne Cook
-* TODO Contact NHS
+* TODO Contact Britain's National Health Service
 * TODO Research Intel check
 * TODO Schedule eye appointment
 * TODO Send package to Jeanie
@@ -18,4 +18,14 @@
 * DONE Call Mass DUA
 * DONE Take Altaeros test
 * TODO Create PU Memorial
-* TODO Update resume
+* DONE Update resume
+* DONE Build and test tigervnc for Fedora32
+* DONE Send out renters' application
+* TODO Pay July COBRA?
+* TODO Create ether CD
+* DONE Pay Cathy
+* DONE Speak with Jimmy
+* DONE Review insurance
+* TODO Pay 2017 tax penalty
+* TODO Get Camry inspected
+* TODO Scan Noah's eval

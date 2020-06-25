@@ -5,7 +5,7 @@
 * TODO Contact Britain's National Health Service
 * TODO Research Intel check
 * TODO Schedule eye appointment
-* TODO Send package to Jeanie
+* DONE Send package to Jeanie
 * DONE Email Nick
 * DONE Pay May COBRA
 * DONE Pay Kevin
@@ -27,5 +27,6 @@
 * DONE Speak with Jimmy
 * DONE Review insurance
 * TODO Pay 2017 tax penalty
-* TODO Get Camry inspected
+* DONE Get Camry inspected
 * TODO Scan Noah's eval
+* TODO Email Abraxis

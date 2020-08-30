@@ -5,28 +5,20 @@
 * TODO Contact Britain's National Health Service
 * TODO Research Intel check
 * TODO Schedule eye appointment
-* DONE Send package to Jeanie
-* DONE Email Nick
-* DONE Pay May COBRA
-* DONE Pay Kevin
-* DONE Read Noah's eval
 * TODO Create Noah10
-* TODO Pay Jim Brown
-* DONE Cancel LinkedIn Premium (mid-May)
-* DONE Cancel starz (April 23)
-* DONE Pay June COBRA
-* DONE Call Mass DUA
-* DONE Take Altaeros test
+* DONE Pay Jim Brown
 * TODO Create PU Memorial
-* DONE Update resume
-* DONE Build and test tigervnc for Fedora32
-* DONE Send out renters' application
-* TODO Pay July COBRA?
+* TODO Pay September COBRA?
 * TODO Create ether CD
-* DONE Pay Cathy
-* DONE Speak with Jimmy
-* DONE Review insurance
-* TODO Pay 2017 tax penalty
-* DONE Get Camry inspected
+* DONE Pay 2017 tax penalty
 * TODO Scan Noah's eval
-* TODO Email Abraxis
+* DONE Email Abraxis
+* TODO Email learning strategies to Noah
+* TODO Call Mike Quinn
+* DONE Email Raphael
+* DONE Reinvigorate comfi account
+* TODO Pay John V
+* TODO Get homeowner's insurance
+* DONE Pay Newton and Manchester
+* DONE Pay Nick
+* DONE Transfer money to Noah's account

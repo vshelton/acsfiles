@@ -16,7 +16,7 @@ PATH=$(cd $0:h >&/dev/null; pwd -r):$PATH
 
 typeset -a exclusions
 exclusions=("*/.cache/*"
-            "*/go/*"
+            "*/.local/share/baloo/index"
             "*/.cargo/*"
             "*/.rustup/*"
             "*/scmroot/*"

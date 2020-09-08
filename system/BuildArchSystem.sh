@@ -7,6 +7,61 @@ if [[ $(id -u) != 0 ]]; then
   exit 1
 fi
 
+function setup_legolas {
+    # Initialize the wake on LAN capability.
+    ethtool -s enp2s0 wol g
+    nmcli c modify "Wired connection 1" 802-3-ethernet.wake-on-lan magic
+
+    # Change TLP to support wake on LAN.
+    echo "WOL_DISABLE=N" >> /etc/tlp.conf
+}
+
+function setup_nuc {
+    # Enable system-wide IP address generation.
+    lfile=/etc/rc.local
+    echo '#!/bin/bash
+
+WLAN_DEVICE=wlan0
+
+sleep 5
+macchanger -p $WLAN_DEVICE
+rfkill unblock wifi
+dhcpcd $WLAN_DEVICE' >$lfile
+    chmod 755 $lfile
+
+    echo "[Unit]
+ Description=$lfile Compatibility
+ ConditionPathExists=$lfile
+
+[Service]
+ Type=forking
+ ExecStart=$lfile start
+ TimeoutSec=0
+ StandardOutput=tty
+ RemainAfterExit=yes
+ SysVStartPriority=99
+
+[Install]
+ WantedBy=multi-user.target" >/etc/systemd/system/rc-local.service
+    systemctl enable rc-local
+    systemctl enable sshd
+
+    ln -s /usr/share/dhcpcd/hooks/10-wpa_supplicant /usr/lib/dhdpcd/dhcpcd-hooks
+    echo 'ctrl_interface=/run/wpa_supplicant
+ctrl_interface_group=wheel
+
+ap_scan=1
+
+country=US
+
+network={
+    ssid="31Cornell"
+    psk="Tupac#1Dylan"
+}' >/etc/wpa_supplicant.conf
+
+}
+
+
 # Install and configure etckeeper to keep track of system changes.
 pacman --noconfirm --sync etckeeper
 git config --global user.email "acs@alumni.princeton.edu"
@@ -43,7 +98,9 @@ vnc=(lightdm
      lightdm-gtk-greeter
      lightdm-gtk-greeter-settings
      tigervnc)
-install=(dos2unix
+install=(
+         dhcpcd
+         dos2unix
          emacs
          ethtool
          feh
@@ -56,7 +113,8 @@ install=(dos2unix
          ttf-hack
          vlc
          yay
-         zsh)
+         zsh
+)
 
 # Remove the extraneous packages.
 pacman --noconfirm --remove ${remove[*]}
@@ -69,58 +127,14 @@ pacman --noconfirm --sync ${vnc[*]}
 # Update the installed packages.
 pacman --noconfirm -Syu
 
-# Allow different actions for legolas and nuc
+# Allow different actions for legolas and nuc.
 case $(uname -n) in
   (legolas)
-
-    # Initialize the wake on LAN capability.
-    ethtool -s enp2s0 wol g
-    nmcli c modify "Wired connection 1" 802-3-ethernet.wake-on-lan magic
-
-    # Change TLP to support wake on LAN.
-    echo "WOL_DISABLE=N" >> /etc/tlp.conf
+    setup-legolas
     ;;
 
   (nuc)
-    # Enable system-wide IP address generation.
-    lfile=/etc/rc.local
-    echo '#!/bin/bash
-
-sleep 5
-macchanger -p wlp2s0
-rfkill unblock wifi
-dhcpcd wlp2s0' >$lfile
-    chmod 755 $lfile
-
-    echo "[Unit]
- Description=$lfile Compatibility
- ConditionPathExists=$lfile
-
-[Service]
- Type=forking
- ExecStart=$lfile start
- TimeoutSec=0
- StandardOutput=tty
- RemainAfterExit=yes
- SysVStartPriority=99
-
-[Install]
- WantedBy=multi-user.target" >/etc/systemd/system/rc-local.service
-    systemctl enable rc-local
-    systemctl enable sshd
-
-    ln -s /usr/share/dhcpcd/hooks/10-wpa_supplicant /usr/lib/dhdpcd/dhcpcd-hooks
-    echo 'ctrl_interface=/run/wpa_supplicant
-ctrl_interface_group=wheel
-
-ap_scan=1
-
-country=US
-
-network={
-    ssid="31Cornell"
-    psk="Tupac#1Dylan"
-}' >/etc/wpa_supplicant.conf
+    setup-nuc
     ;;
 
   (*)
@@ -147,8 +161,7 @@ vncpasswd $vncpwfile
 systemctl enable lightdm.service --force
 
 echo "
-Copy ssh ID to this system.
-Copy kitty configuration here." >&2
+Copy ssh ID and kitty configuration to this system." >&2
 
 # Local Variables:
 # mode: shell-script

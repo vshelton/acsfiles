@@ -52,17 +52,6 @@ progname=${0:t}
 # Define the source-code hierarchy.
 : ${SCMROOT:=$HOME/scmroot}
 
-# Define the build scripts.
-typeset -AA build_scripts=(
-  conky "mk-software conky --snapshot"
-  emacs "mk-emacs --with-x-toolkit=lucid"
-  exa   "mk-software exa --snapshot --install"
-  i3    "mk-software i3 --snapshot --install"
-  kitty "mk-software kitty --snapshot --install"
-  tilda "mk-software tilda --snapshot --install"
-  zsh   "mk-software zsh --snapshot --install"
-)
-
 # Define the git repositories.
 typeset -AA repos=(
   conky "https://github.com/brndnmtthws/conky.git"
@@ -299,7 +288,7 @@ fi
 install-packages ${=deps[${pkgname}]}
 
 # Build the package.
-${=build_scripts[$pkgname]}
+mk-software $pkgname --snapshot --install
 
 # Local Variables:
 # mode: shell-script

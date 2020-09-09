@@ -1,4 +1,4 @@
-reate VM
+Create VM
 Install Arch
 pacman -S sudo git binutils gcc make vi vim fakeroot
 Edit /etc/sudoers
@@ -15,7 +15,8 @@ ln -s gitroot/acsfiles
 ln -s acsfiles/{bin,rc}files .
 popd
 yay -S ttf-ms-fonts
-sudo pacman -S adobe-source-code-pro-fonts cantarell-fonts nerd-fonts-complete noto-fonts ttf-bitstream-vera ttf-cascadia-code ttf-dejavu ttf-droid ttf-fira-code ttf-hack ttf-inconsolata ttf-liberation
+yay -S nerd-fonts-complete
+sudo pacman -S adobe-source-code-pro-fonts cantarell-fonts noto-fonts ttf-bitstream-vera ttf-cascadia-code ttf-dejavu ttf-droid ttf-fira-code ttf-hack ttf-inconsolata ttf-liberation
 
 sudo pacman -S xorg-xserver xorg-xinit i3-wm kitty
 cp /etc/X11/xinit/xinitrc .xinitrc

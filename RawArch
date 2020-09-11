@@ -1,6 +1,7 @@
 Create VM
 Install Arch
-pacman -S sudo git binutils gcc make vi vim fakeroot patch
+pacman -S sudo git binutils gcc make vi vim
+pacman -S fakeroot patch autoconf automake
 Edit /etc/sudoers
 
 mkdir -p scmroot/gitroot

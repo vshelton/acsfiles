@@ -1,0 +1,29 @@
+// Common conky definitions
+
+// Monitor-specific
+#define MAX_WIDTH	3840
+
+// Detailed statistics
+//#define STATS_COLOR	DodgerBlue1
+//#define STATS_COLOR	NavyBlue
+//#define STATS_COLOR	FFA300
+#define STATS_COLOR	LightYellow
+#define STATS_FONT	Tahoma
+#define STATS_XPOS	20
+
+// Date and time
+#define DT_COLOR	gray100
+#define DT_FONT		Droid Sans
+#define DT_XPOS		304
+
+// Host name
+#define HOST_COLOR	DarkRed
+#define HOST_FONT	Comic Sans MS
+
+// How to make a transparent window
+// See .conky.host for usage
+#define TRANSPARENT1	own_window = true,
+#define TRANSPARENT2	own_window_transparent = true,
+#define TRANSPARENT3	own_window_argb_visual = true,
+#define TRANSPARENT4	own_window_hints = 'undecorated,below,sticky,skip_taskbar',
+#define TRANSPARENT5

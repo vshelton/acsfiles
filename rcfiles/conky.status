@@ -1,36 +1,35 @@
+// Use conky to display date and time on the top right of the terminal window
+
+// Preprocess with cpp -P before passing to conky:
+// conky --config =(cpp -P thisfile)
+
+#include ".conky.common"
+
 conky.config = {
+  maximum_width = MAX_WIDTH,
+  TRANSPARENT1
+  TRANSPARENT2
+  TRANSPARENT3
+  TRANSPARENT4
+  TRANSPARENT5
   alignment = 'top_right',
-  -- Date and time are displayed in color0.
-  color0 = 'gray100',
-  -- color1 is used for the system status.
-  -- FFA300 works well as the color of the status line on dark backgrounds.
-  -- Other possible colors are: NavyBlue, DodgerBlue1 and LightYellow.
-  color1 = 'FFA300',
   cpu_avg_samples = 2,
   double_buffer = true,
-  font = 'Liberation Sans',
+  gap_x = 20,
   gap_y = 10,
-  maximum_width = 3840,
   no_buffers = true,
-  own_window = true,
-  own_window_transparent = true,
-  own_window_argb_visual = true,
-  own_window_hints = 'undecorated,below,sticky,skip_taskbar',
   total_run_times = 0,
   update_interval = 1,
   uppercase = no,
   use_xft = true
 }
 
--- On my 4K display at home:
---   470 is the horizontal position for the date strings
---   40 is the horizontal position for the system status
 conky.text = [[
-${color0}${font :size=60}${time %I:%M}
-${voffset -190}${goto 348}${font :size=28}${time %A}                   \
-${voffset 44}${goto 348}${font :size=24}${time %B %d, %Y}
-${voffset -18}${color1}${font :size=12}\
-${goto 20}HD free: ${fs_free /home/acs} / ${fs_size /home/acs}
-${goto 20}RAM in use: $mem / $memmax
-${goto 20}CPU: ${cpu cpu0}%
+${color DT_COLOR}${font DT_FONT:size=60}${time %I:%M}
+${voffset -190}${goto DT_XPOS}${font DT_FONT:size=28}${time %A}                   \
+${voffset 48}${goto DT_XPOS}${font TIME_FONT:size=24}${time %B %d, %Y}
+${voffset -24}${color STATS_COLOR}${font TIME_FONT:size=12}\
+${goto STATS_XPOS}HD free: ${fs_free /home/acs} / ${fs_size /home/acs}
+${goto STATS_XPOS}RAM in use: $mem / $memmax
+${goto STATS_XPOS}CPU: ${cpu cpu0}%
 ]]

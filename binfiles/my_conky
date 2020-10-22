@@ -1,12 +1,13 @@
 #!/bin/bash
 
 # Run conky.
+cd ~
 
 # Display the hostname at the center top of the display.
-conky --config=$HOME/.conky.hostname &
+conky --config =(cpp -P .conky.hostname) &
 
-# Display system status in the top right corner of the display.
-conky --config=$HOME/.conky.status &
+# Optionally display status info on the top right corner.
+[[ -z "$KDE_FULL_SESSION" ]] && conky --config =(cpp -P .conky.status) &
 
 # Local Variables:
 # mode: shell-script

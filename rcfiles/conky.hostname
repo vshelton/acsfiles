@@ -1,18 +1,28 @@
+// Put the host and host type at the top of the screen
+
+// Preprocess with cpp -P before passing to conky:
+// conky --config =(cpp -P thisfile)
+
+#include ".conky.common"
+
 conky.config = {
+  maximum_width = MAX_WIDTH,
+  TRANSPARENT1
+  TRANSPARENT2
+  TRANSPARENT3
+  TRANSPARENT4
+  TRANSPARENT5
   alignment = 'top_middle',
   double_buffer = true,
-  gap_y = 10,
-  maximum_width = 3840,
-  own_window = true,
-  own_window_transparent = true,
-  own_window_argb_visual = true,
-  own_window_hints = 'undecorated,below,sticky,skip_taskbar',
-  total_run_times = 0,
-  update_interval = 300,
+  gap_x = 10,
+  gap_y = 5,
+  no_buffers = true,
+  update_interval = 3600,
   use_xft = true
 }
 
 conky.text = [[
-${alignc}${color DarkRed}${font Comic Sans MS:bold:size=40}${nodename}
-${alignc}${voffset -20}${distribution}
+${alignc}${color HOST_COLOR}${font HOST_FONT:bold:size=48}${nodename}
+// Add a trailing blank to the distribution line
+${alignc}${voffset -80}${color HOST_COLOR}${font HOST_FONT:size=24}${distribution}
 ]]

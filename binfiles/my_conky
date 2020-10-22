@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env zsh
+emulate -LR zsh
 
 # Run conky.
 cd ~

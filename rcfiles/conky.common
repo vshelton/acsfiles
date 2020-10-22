@@ -6,8 +6,8 @@
 // Detailed statistics
 //#define STATS_COLOR	DodgerBlue1
 //#define STATS_COLOR	NavyBlue
-//#define STATS_COLOR	FFA300
-#define STATS_COLOR	LightYellow
+#define STATS_COLOR	FFA300
+//#define STATS_COLOR	LightYellow
 #define STATS_FONT	Tahoma
 #define STATS_XPOS	20
 

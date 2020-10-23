@@ -12,7 +12,8 @@ alias l="ls --classify --group-directories-first"
 alias la="l --almost-all"
 alias ll="l -l --time-style=long-iso"
 alias lr="l --recursive"
-alias lt="ll -rt"
+# Used to use "l", but I changed it to not group directories first
+alias lt="ls -l --time-style=long-iso -rt"
 
 alias -- +w="chmod u+w"
 alias -- -w="chmod a-w"

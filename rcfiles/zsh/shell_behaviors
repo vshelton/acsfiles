@@ -9,7 +9,7 @@ cdpath=($BLDROOT $SRCROOT ${BLDROOT:h} ${SRCROOT:h} $USRLOCAL ~ ..)
 
 typeset -g DIRSTACKSIZE=20 FIGNORE='~'
 histchars=\!,#
-typeset -g HISTSIZE=4096 WORDCHARS='.-_'
+typeset -g HISTSIZE=4096 WORDCHARS='*?_-[]~=/&;!#$%^(){}<>'
 typeset -g SAVEHIST=$HISTSIZE HISTFILE=~/.zhistory
 
 # Set manpath based on path, but include /usr/share/man.

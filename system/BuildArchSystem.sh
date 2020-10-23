@@ -17,50 +17,6 @@ function setup_legolas {
 }
 
 function setup_nuc {
-    # Enable system-wide IP address generation.
-    lfile=/etc/rc.local
-    echo '#!/bin/bash
-
-WLAN_DEVICE=wlan0
-
-sleep 5
-macchanger -p $WLAN_DEVICE
-rfkill unblock wifi
-dhcpcd $WLAN_DEVICE' >$lfile
-    chmod 755 $lfile
-
-    echo "[Unit]
- Description=$lfile Compatibility
- ConditionPathExists=$lfile
-
-[Service]
- Type=forking
- ExecStart=$lfile start
- TimeoutSec=0
- StandardOutput=tty
- RemainAfterExit=yes
- SysVStartPriority=99
-
-[Install]
- WantedBy=multi-user.target" >/etc/systemd/system/rc-local.service
-    systemctl enable rc-local
-    systemctl enable sshd
-
-    ln -s /usr/share/dhcpcd/hooks/10-wpa_supplicant /usr/lib/dhdpcd/dhcpcd-hooks
-    echo 'ctrl_interface=/run/wpa_supplicant
-ctrl_interface_group=wheel
-
-ap_scan=1
-
-country=US
-
-network={
-    ssid="31Cornell"
-    psk="Tupac#1Dylan"
-}' >/etc/wpa_supplicant.conf
-
-}
-
 
 # Install and configure etckeeper to keep track of system changes.
 pacman --noconfirm --sync etckeeper
@@ -99,13 +55,11 @@ vnc=(lightdm
      lightdm-gtk-greeter-settings
      tigervnc)
 install=(
-         dhcpcd
          dos2unix
          emacs
          ethtool
          feh
          kitty
-         macchanger
          net-tools
          picom
          tlp
@@ -150,7 +104,7 @@ dmcfg=/etc/lightdm/lightdm.conf
 #    -e "s/#greeter-session=example-gtk-gnome/greeter-session=lightdm-gtk-greeter/" \
 #   -e "s/# autologin-user =.*/autologin-user = ${USER}"/ \
 #   -e "s/# autologin-user-timeout =.*/autologin-user-timeout = 0/" \
-#$dmcfg  
+#$dmcfg
 echo "enabled=true
 command=Xvnc -rfbauth $vncpwfile -dpi 144
 depth=24" >> $dmcfg

@@ -61,7 +61,6 @@ emacsPreConfigure()
     cd $1
     (
       ./autogen.sh
-      ./autogen.sh autoconf
     ) >& autogen.out
   )
 }

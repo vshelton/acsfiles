@@ -28,6 +28,10 @@
 (when (fboundp 'transient-mark-mode)
   (transient-mark-mode t))
 
+;; Turn on line number mode and provide a way to toggle it.
+;; (global-display-line-numbers-mode)
+(global-set-key (kbd "C-M-$") 'display-line-numbers-mode)
+
 (provide 'init-miscellaneous)
 
 ;; Local Variables:

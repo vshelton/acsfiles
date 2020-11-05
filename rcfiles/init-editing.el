@@ -6,13 +6,13 @@
 (server-start)
 
 ;; Save the session for next time.
-(desktop-save-mode 1)
+;(desktop-save-mode 1)
 
 ;; Highlights matching parenthesis
 (show-paren-mode 1)
 
 ;; Highlight current line
-;; (global-hl-line-mode 1)
+;(global-hl-line-mode 1)
 
 (eldoc-mode 1)
 

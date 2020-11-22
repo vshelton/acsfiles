@@ -8,7 +8,7 @@ desire key_bindings
 
 desire shell_aliases
 
-desire set_rcmap
+#desire set_rcmap
 
 desire cygwin_additions
 

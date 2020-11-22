@@ -1,13 +1,11 @@
 
 # Save a record of this session
-if [[ -e $acs_session_histfile ]]; then
-  exec 2>/dev/null
-  chmod 400 $acs_session_histfile
-  : ${HISTDIR:=$HOME/.hist}
-  mkdir -p $HISTDIR
-  cd $HISTDIR
-  mv $acs_session_histfile $(date '+%Y-%m-%d-%H%M').${HOST%%.*}
-fi
+: ${HISTDIR:=$HOME/.hist}
+mkdir -p $HISTDIR 2>/dev/null
+cd $HISTDIR
+f=$(date '+%Y-%m-%d-%H%M').${HOST%%.*}
+fc -ilDIL >$f
+chmod 400 $f
 
 # Local Variables:
 # mode: shell-script

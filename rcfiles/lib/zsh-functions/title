@@ -1,11 +1,7 @@
 # Change the title of a window.
 
-if ! echoti tsl 2>/dev/null ; then
-  retval=$?
-  print -u2 "Terminal does not support setting the title."
-  return $retval
-fi
-print -n $@
+echoti tsl 2>/dev/null || return 1
+print -D -n $@
 echoti fsl
 
 # Local Variables:

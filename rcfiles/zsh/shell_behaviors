@@ -3,46 +3,38 @@
 # Remove duplicates from common path variables.
 # Note the "-g", which is required because this
 # script is being sourced through a function.
-typeset -gU cdpath fpath manpath
+typeset -gU cdpath fpath
 
 cdpath=($BLDROOT $SRCROOT ${BLDROOT:h} ${SRCROOT:h} $USRLOCAL ~ ..)
 
-typeset -g DIRSTACKSIZE=20 FIGNORE='~'
-histchars=\!,#
-typeset -g HISTSIZE=4096 WORDCHARS='*?_-[]~=/&;!#$%^(){}<>'
-typeset -g SAVEHIST=$HISTSIZE HISTFILE=~/.zhistory
-
-# Set manpath based on path, but include /usr/share/man.
-manpath=( $path:gs/bin/man/ )
-manpath[(r)$USRLOCAL/man]="$USRLOCAL/share/man"
-manpath[(r)/usr/man]="/usr/share/man"
-manpath[(r)/etc]=''
-
-# Clean up manpath: remove trailing slashes and non-existant directories
-# and resolve symbolic links.
-manpath=($^manpath(N))
-manpath=(${^manpath%%/##})
-for (( i=1; i < $#manpath+1; i++ )); do
-  [[ -L $manpath[$i] ]] && manpath[$i]=$(abspath $manpath[$i])
-done
+typeset -g DIRSTACKSIZE=20
+typeset -g FIGNORE='~'
+typeset -g WORDCHARS='*?_-[]~=/&;!#$%^(){}<>'
 
 # Capture core files
 whence ulimit >/dev/null && ulimit -c unlimited
 
-# Shell-specific behavior
-setopt noalwayslastprompt
-setopt appendhistory
-setopt autolist
-setopt automenu
-setopt autoremoveslash
-setopt extendedglob
-setopt extendedhistory
-setopt hashcmds
-setopt hashdirs
+# Set history-related stuff
+histchars=\!,#
+integer h=4096
+typeset -g HISTSIZE=$((h*2))
+typeset -g SAVEHIST=$h
+typeset -g HISTFILE=~/.zhistory
+setopt histexpiredupsfirst
 setopt histignorealldups
 setopt histignoredups
 setopt histignorespace
 setopt histnostore
+setopt incappendhistory
+
+# Shell-specific behavior
+setopt noalwayslastprompt
+setopt autolist
+setopt automenu
+setopt autoremoveslash
+setopt extendedglob
+setopt hashcmds
+setopt hashdirs
 setopt interactivecomments
 setopt kshoptionprint
 setopt listtypes
@@ -57,10 +49,18 @@ setopt pushdignoredups
 setopt pushdsilent
 setopt rmstarsilent
 
+# Set up the prompt
 PROMPT="%2c %w %T%(#.#.); "
 PROMPT="%B: $PROMPT%b"
 PROMPT2="; "
-
+# Include host name and working directory in window title
+if title "$HOST:$PWD"; then
+  function chpwd {
+    local d=$(print -nD $PWD)
+    title "$HOST:$d"
+  }
+  cd $PWD
+fi
 if [[ $TERM != emacs ]]; then
   autoload -U promptinit
   promptinit

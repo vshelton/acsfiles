@@ -1,10 +1,9 @@
-# Define the map of symlinks to my customization files from
-# my source code repository.
-typeset -gA rc_map
-while read key val junk
-do
-  rc_map[$key]=$(eval echo $val)
-done < $SCMROOT/rcfiles/ListOfLinks
+# Define the map of symlinks to my customization files from my source code repository.
+#typeset -gA rc_map
+#while read key val junk
+#do
+#  rc_map[$key]=$(eval echo $val)
+#done < $SCMROOT/rcfiles/ListOfLinks
 
 # To re-generate all the links -
 # pushd ~

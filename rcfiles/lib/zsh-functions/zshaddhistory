@@ -2,7 +2,7 @@ local cmd=${1%%$'\n'}
 
 # Only first time through
 if [[ -z $acs_session_histfile ]]; then
-  zmodload zsh/parameter
+  #zmodload zsh/parameter
   # acs_session_histfile=$HOME/.hist/$(date '+%Y-%m-%d-%H%M').${HOST%%.*}
   # touch $acs_session_histfile || acs_session_histfile=-~/zsh_detail_history
   # chmod 600 $acs_session_histfile
@@ -13,16 +13,10 @@ fi
 [[ -z $cmd ]] && return 1
 
 # Ignore history commands, if appropriate
-[[ $options[histnostore] == on && $cmd =~ "^h$|history|fc " ]] && return 0
+[[ -o histnostore && $cmd =~ "^h$|history|fc " ]] && return 0
 
 # Ignore commands starting with a space, if appropriate
-[[ $options[histignorespace] == on && $cmd =~ "^ .*" ]] && return 0
-
-# Ignore duplicate commands, if appropriate
-[[ $options[histignoredups] == on && "$cmd" == "$(fc -l -n -1)" ]] && return 0
-
-# Implement HIST_IGNORE_ALL_DUPS
-#[[ $options[histignorealldups] == on ]] && unset history[(R)$cmd]
+[[ -o histignorespace && $cmd =~ "^ .*" ]] && return 0
 
 # Save all commands (along with time and current directory)
 # to a special per-shell file

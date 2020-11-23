@@ -50,9 +50,9 @@ setopt pushdsilent
 setopt rmstarsilent
 
 # Set up the prompt
-PROMPT="%2c %w %T%(#.#.); "
-PROMPT="%B: $PROMPT%b"
+PROMPT="%B: %2c %w %T%(#.#.)%b; "
 PROMPT2="; "
+#RPS1="%D{%Y-%m-%d}%t"
 # Include host name and working directory in window title
 if title "$HOST:$PWD"; then
   function chpwd {

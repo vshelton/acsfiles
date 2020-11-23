@@ -5,7 +5,10 @@
 [[ $(date '+%d') == "02" ]] && return 0
 
 # The list of versions to (potentially) be removed.
-typeset -a rmv
+local -a rmv
+
+local t
+local y
 
 # Loop through all of yesterday's builds.
 for y in $( all_versions *-$(yesterday) ); do
@@ -16,7 +19,6 @@ for y in $( all_versions *-$(yesterday) ); do
 done
 
 [[ -n $rmv ]] && print -z rmver $rmv
-unset rmv
 
 # Local Variables:
 # mode: shell-script

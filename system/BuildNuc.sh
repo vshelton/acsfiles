@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Build up an arch linux server on Nuc with the default additional packages.
-# I added this comment in order to test my github configuration.
 
 if [[ $(id -u) != 0 ]]; then
   echo Must be run as root! >&2

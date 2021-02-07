@@ -8,8 +8,6 @@ desire key_bindings
 
 desire shell_aliases
 
-#desire set_rcmap
-
 desire cygwin_additions
 
 desire completion_definitions

@@ -25,7 +25,7 @@ alias d='dirs -v'
 alias df="df --human --output='source,target,size,pcent,avail' --exclude-type={tmpfs,devtmpfs}"
 alias e='fcedit -q'
 alias grep='command grep --extended-regexp --text'
-alias h=history
+alias h='history -i'
 alias m=$PAGER
 alias new_zsh='new_default -v zsh'
 alias patch='command patch --version-control=numbered --backup'

@@ -11,15 +11,17 @@ progname=${0:t}
 # 192.168.0.4  legolas	BC:5F:F4:8B:7C:A5
 # 192.168.0.5  nuc      B8:AE:ED:79:33:98
 # 192.168.0.9  nuc2     54:B2:03:0B:68:B0
+# 192.168.0.19 pi       DC:A6:32:B9:0E:64
 
 typeset -A macs
 macs[legolas]="BC:5F:F4:8B:7C:A5"
 macs[nuc]="B8:AE:ED:79:33:98"
 macs[nuc2]="54:B2:03:0B:68:B0"
+macs[pi]="DC:A6:32:B9:0E:64"
 
 [[ -z "$1" ]] && set legolas
 if [[ -z "$macs[$1]" ]]; then
-  print -u2 "Usage: $progname [legolas|nuc|nuc2]"
+  print -u2 "Usage: $progname [legolas|nuc|nuc2|pi]"
   exit 1
 fi
 

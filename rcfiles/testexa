@@ -32,6 +32,7 @@ alias la="ls --all"
 alias ll="ls --long --bytes --time-style=long-iso"
 alias llrt="ll --sort=modified"
 
+
 # Local Variables:
 # mode: shell-script
 # sh-basic-offset: 2

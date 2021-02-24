@@ -1,29 +1,33 @@
-local cmd=${1%%$'\n'}
+# Keep a per-session history file
 
 # Only first time through
 if [[ -z $acs_session_histfile ]]; then
-  #zmodload zsh/parameter
-  # acs_session_histfile=$HOME/.hist/$(date '+%Y-%m-%d-%H%M').${HOST%%.*}
-  # touch $acs_session_histfile || acs_session_histfile=-~/zsh_detail_history
-  # chmod 600 $acs_session_histfile
   acs_session_histfile=$(mktemp)
+  typeset -A hist_cmds
+  hist_cmds=(history 1 fc 1 h 1)
 fi
 
+local cmd=${1%%$'\n'}
+local int dontsave=1
+
 # Return if command is empty
-[[ -z $cmd ]] && return 1
+[[ -z $cmd ]] && return $dontsave
 
-# Ignore history commands, if appropriate
-[[ -o histnostore && $cmd =~ "^h$|history|fc " ]] && return 0
+# Ignore (if appropriate):
+#  commands starting with a space, or
+#  duplicate commands, or
+#  history commands
+[[ -o histignorespace && $cmd =~ "^ .*" ]] && return $dontsave
+[[ -o histignoredups && $cmd == ${history[$HISTCMD]} ]] && return $dontsave
+[[ -o histnostore && -n ${hist_cmds[${${=cmd}[1]}]} ]] && return $dontsave
 
-# Ignore commands starting with a space, if appropriate
-[[ -o histignorespace && $cmd =~ "^ .*" ]] && return 0
+# Save this command (with time and current directory) to the per-shell file
+print -- "$(date +'%Y-%m-%d-%H%M'); $PWD; $cmd" >> $acs_session_histfile
 
-# Save all commands (along with time and current directory)
-# to a special per-shell file
-print -- "$(now); $PWD; $cmd" >> $acs_session_histfile
-
-# Save command to in-memory history list
+# Save this command to the in-memory history list
 print -sr -- $cmd
+
+return 0
 
 # Local Variables:
 # mode: shell-script

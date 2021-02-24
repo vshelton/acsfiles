@@ -9,7 +9,7 @@ cdpath=($BLDROOT $SRCROOT ${BLDROOT:h} ${SRCROOT:h} $USRLOCAL ~ ..)
 
 typeset -g DIRSTACKSIZE=20
 typeset -g FIGNORE='~'
-typeset -g WORDCHARS='*?_-[]~=/&;!#$%^(){}<>'
+typeset -g WORDCHARS='*?_-[]~=&;!#$%^(){}<>'
 
 # Capture core files
 whence ulimit >/dev/null && ulimit -c unlimited

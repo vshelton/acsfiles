@@ -1,17 +1,16 @@
 # Keep a per-session history file
 
 # Only first time through
-if [[ -z $acs_session_histfile ]]; then
-  acs_session_histfile=$(mktemp)
-  typeset -A hist_cmds
-  hist_cmds=(history 1 fc 1 h 1)
-fi
+[[ -z $acs_session_histfile ]] && acs_session_histfile=$(mktemp)
 
 local cmd=${1%%$'\n'}
 local int dontsave=1
 
 # Return if command is empty
 [[ -z $cmd ]] && return $dontsave
+
+local -A hist_cmds
+hist_cmds=(history 1 fc 1 h 1)
 
 # Ignore (if appropriate):
 #  commands starting with a space, or
